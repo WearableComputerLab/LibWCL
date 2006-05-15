@@ -7,8 +7,6 @@ INCLUDES= -I@top_srcdir@/src
 libwcl_network_a_SOURCES=\
 	      Socket.h\
 	      Socket.cpp\
-	      Manufacturer.cpp\
-              Manufacturer.h\
               Network.h\
               TCPServer.cpp\
               TCPServer.h\
