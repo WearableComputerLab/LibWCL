@@ -1,0 +1,16 @@
++--------+
+| libwcl |
++--------+---------
+| $Id$
+
+This CVS module contains libwcl, a library that has been 
+developed to aid in the building of applications or other libraries.
+
+In order to build and install libwcl do:
+
+sh autogen.sh
+./configure --help
+# Work out what options you would like
+./configure --enable-option1 --enable-option2
+make
+make install

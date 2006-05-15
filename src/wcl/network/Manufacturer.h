@@ -1,0 +1,32 @@
+/**
+ * The Manufacturer class represents contains 
+ * a list of MAC->Manufacturer names tuples.
+ * The class provides specific details to deal with tuples
+ *
+ * $ClearChain: projects/clearchain/src/network/Manufacturer.h,v 1.3 2005/11/30 04:57:49 benjsc Exp $
+ *
+ * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
+ */
+
+#ifndef MANUFACTURER_H
+#define MANUFACTURER_H
+
+#include "Network.h"
+
+class Manufacturer
+{
+public:
+
+	static const char *getManufacturer( const EthernetAddress & );
+
+private:
+	Manufacturer();
+
+	char ****machash;
+
+	static Manufacturer *instance;
+	static char *manufacturerlist[];
+
+};
+
+#endif
