@@ -8,3 +8,7 @@ that have happened to the libwcl library
 2006-05-16 benjsc
 + Added cfg directory for storing m4 macros
 + Use AM_CONFIG_HEADER in configure.ac so that it builds with automake 16
++ Added the REPO file, indicating Repository changes
+o Moved src/* to src/wcl/*
+o Use the makefile at the base level for subdirectories (avoids recursive make issue)
+o make the command: make install install headers in the correct location

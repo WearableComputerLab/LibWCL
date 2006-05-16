@@ -1,5 +1,16 @@
 # $Id$
 #
+
+# 
+# Indicate this is not a GNU project and that 
+# missing files should be automatically created
 AUTOMAKE_OPTIONS=foreign
 
-SUBDIRS=src
+# Instruct aclocal to check the cfg directory for
+# extra macros
+ACLOCAL_AMFLAGS=-I cfg
+
+#
+# Indicate which directories to process
+#
+SUBDIRS=src/wcl

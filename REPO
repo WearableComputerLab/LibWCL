@@ -1,0 +1,11 @@
++--------------------+
+| Repository Changes |
++--------------------+---------
+| $Id$
+
+This file documents changes that have occured directly in
+the libwcl repository
+
+2006-05-16| src/* | src/wcl/* | Shifted all files in the src directory so automake will install them correctly and
+                                we can use real #include <wcl/...> paths in the include files
+

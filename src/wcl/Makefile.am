@@ -4,21 +4,24 @@
 # it indicates what is built, what requires what, etc
 #
 
-# What to build
+# Environment
 INCLUDES= -I@top_srcdir@/src/
+libwcl_a_includedir=$(includedir)/wcl
+
+# What to build
 lib_LIBRARIES=libwcl.a
 
 #  Predefines
 AM_CXXFLAGS=
 AM_LDFLAGS=
 libwcl_a_SOURCES=
-nobase_include_HEADERS=
+nobase_libwcl_a_include_HEADERS=
 
 # 
 # Networking Support
 # 
 if ENABLE_NETWORK
-nobase_include_HEADERS+=\
+nobase_libwcl_a_include_HEADERS+=\
               network/Socket.h\
               network/TCPServer.h\
               network/TCPSocket.h \
