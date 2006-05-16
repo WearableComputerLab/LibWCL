@@ -1,17 +1,42 @@
-# $ClearChain: projects/clearchain/src/Makefile.am,v 1.4 2006/01/25 04:52:37 benjsc Exp $
+# $Id$
 #
-OPTIONS=
+# This is the main Makefile defined for libwcl
+# it indicates what is built, what requires what, etc
+#
 
-if ENABLE_NETWORK
-    OPTIONS+=network
-endif 
-
-SUBDIRS= $(OPTIONS) .
-
+# What to build
 INCLUDES= -I@top_srcdir@/src/
-
 lib_LIBRARIES=libwcl.a
-#inst_LIBRARIES=libwcl.a
 
+#  Predefines
+AM_CXXFLAGS=
+AM_LDFLAGS=
 libwcl_a_SOURCES=
-libwcl_a_LIBADD= network/libwcl_network.a
+nobase_include_HEADERS=
+
+# 
+# Networking Support
+# 
+if ENABLE_NETWORK
+nobase_include_HEADERS+=\
+              network/Socket.h\
+              network/TCPServer.h\
+              network/TCPSocket.h \
+              network/UDPPacket.h\
+              network/UDPServer.h\
+              network/UDPSocket.h
+
+libwcl_a_SOURCES+=\
+              network/Socket.h\
+              network/Socket.cpp\
+              network/Network.h\
+              network/TCPServer.cpp\
+              network/TCPServer.h\
+              network/TCPSocket.cpp\
+              network/TCPSocket.h\
+              network/UDPPacket.h\
+              network/UDPServer.cpp\
+              network/UDPServer.h\
+              network/UDPSocket.cpp\
+              network/UDPSocket.h
+endif
