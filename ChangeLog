@@ -12,3 +12,4 @@ that have happened to the libwcl library
 o Moved src/* to src/wcl/*
 o Use the makefile at the base level for subdirectories (avoids recursive make issue)
 o make the command: make install install headers in the correct location
+o Modify all network headers to correctly use #include <wcl/...>  

@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "Socket.h"
+#include <wcl/network/Socket.h>
 
 class TCPSocket: public Socket
 {

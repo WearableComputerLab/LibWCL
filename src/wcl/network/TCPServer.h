@@ -9,7 +9,7 @@
 #ifndef TCPSERVERSOCKET_H
 #define TCPSERVERSOCKET_H
 
-#include "TCPSocket.h"
+#include <wcl/network/TCPSocket.h>
 
 #define  DEFAULT_SERVER_QUEUE_LENGTH 100
 

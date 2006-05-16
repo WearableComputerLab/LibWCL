@@ -10,8 +10,8 @@
 #define UDPSOCKET_H
 
 #include <string>
-#include "Socket.h"
-#include "UDPPacket.h"
+#include <wcl/network/Socket.h>
+#include <wcl/network/UDPPacket.h>
 
 class UDPSocket: public Socket
 {

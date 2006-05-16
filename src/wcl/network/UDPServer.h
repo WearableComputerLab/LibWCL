@@ -9,17 +9,13 @@
 #ifndef UDPSERVER_H
 #define UDPSERVER_H
 
-#include <vector>
-#include "UDPSocket.h"
-#include "UDPPacket.h"
+#include <wcl/network/UDPSocket.h>
+#include <wcl/network/UDPPacket.h>
 
 class UDPServer: public UDPSocket
 {
     public:
 	UDPServer( const unsigned port );
-
-    private:
-
 };
 
 #endif

@@ -11,7 +11,7 @@
 #ifndef MANUFACTURER_H
 #define MANUFACTURER_H
 
-#include "Network.h"
+#include <wcl/network/Network.h>
 
 class Manufacturer
 {
