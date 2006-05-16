@@ -1,0 +1,10 @@
+ChangeLog
+===========
+This file contains a cronological history of changes/improvements and more
+that have happened to the libwcl library
+
+===========
+
+2006-05-16 benjsc
++ Added cfg directory for storing m4 macros
++ Use AM_CONFIG_HEADER in configure.ac so that it builds with automake 16
