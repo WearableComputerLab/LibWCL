@@ -33,7 +33,6 @@ AM_CONFIG_HEADER(config.h)
 # dependancies for changes between Makefile.am and Makefile.in
 # should not be checked. This makes compiling faster. If you are working
 # on the library, run: ./configure --enable-maintainer-mode to enable the dependancies
-
 AM_MAINTAINER_MODE
 
 #
@@ -43,10 +42,45 @@ AM_MAINTAINER_MODE
 
 #
 # TCP/UDP Networking
-#    When enabled: ENABLE_NETWORK is defined to 'yes' or 'no'
+#    When enabled: enable_network is defined to 'yes' or 'no'
 #
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
+
+#
+# Microsoft Visual C++ Compiler
+# 	When enabled: enable_msvc is defined to 'yes' or 'no'
+#
+AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib & .dll library]), , enable_msvc="no")
+
+#
+# Serial Port / RS232 Code
+# 	When enabled: enable_serial is defined to 'yes' or 'no'
+#
+#AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
+
+#
+# Firewire/1394 Video Support 
+# 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
+#
+#AC_ARG_ENABLE(video_1394, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), , enable_video_1394="no")
+
+# 
+#  Enable All Options
+# 	This simply enables each option
+AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
+	     enable_network="yes";
+	     enable_serial="yes";
+	     enable_video_1394="yes")
+
+
+#
+# Automake Substitution Variables
+#
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
+AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
+AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
+
 
 #
 # System Checks
@@ -57,6 +91,17 @@ AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 # Check which system we are on
 #  	This sets: host variable
 AC_CANONICAL_HOST
+
+#
+# Check to see if an Microsoft Compiler is requested, if so
+# we need to check a few other things
+#
+
+if test "x$enable_msvc" = "xyes"; then
+    WCL_AC_MSVC_SETUP
+fi
+
+WCL_FRIDGE_CHECK
 
 #
 # Check for programs
@@ -100,23 +145,25 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset])
 
 #
-# Files to create
-#
-##############################
-AC_CONFIG_FILES([Makefile
-                 src/wcl/Makefile
-		])
-
-
-#
 # Indicate what will be built into libwcl
 #
 ###############################
 echo "-----------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "network support: $enable_network"
+echo "Microsoft (msvc) support: $enable_msvc"
+echo "network support         : $enable_network"
+#echo "serial (rs232) support  : $enable_serial"
+#echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "-----------------------------"
+
+#
+# Files to create
+#
+##############################
+AC_CONFIG_FILES([Makefile
+                 src/wcl/Makefile
+		])
 
 #
 # Build the configure file

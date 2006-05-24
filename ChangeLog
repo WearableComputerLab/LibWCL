@@ -5,6 +5,10 @@ that have happened to the libwcl library
 
 ===========
 
+2006-05-24
++ Added a number of macros (cfg/msvc.cfg) to support compiling under MSVC enabled with --enable-msvc
++ Added wrapmsvc.exe / .cpp to cfg/ these are used to support MSVC binaries
+
 2006-05-16 benjsc
 + Added cfg directory for storing m4 macros
 + Use AM_CONFIG_HEADER in configure.ac so that it builds with automake 16
