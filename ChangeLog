@@ -8,6 +8,9 @@ that have happened to the libwcl library
 2006-05-24
 + Added a number of macros (cfg/msvc.cfg) to support compiling under MSVC enabled with --enable-msvc
 + Added wrapmsvc.exe / .cpp to cfg/ these are used to support MSVC binaries
++ Fix an issue with automake and there not being a src/Makefile.am
+o modify the WCL_AC_MSVC_SETUP macro to correctly check the link.exe 
+  not sure if it works but it gets us closer to building
 
 2006-05-16 benjsc
 + Added cfg directory for storing m4 macros

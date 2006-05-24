@@ -12,10 +12,10 @@ libwcl_a_includedir=$(includedir)/wcl
 lib_LIBRARIES=libwcl.a
 
 #  Predefines
-AM_CXXFLAGS=
-AM_LDFLAGS=
-libwcl_a_SOURCES=
+#AM_CXXFLAGS=
+#AM_LDFLAGS=
 nobase_libwcl_a_include_HEADERS=
+libwcl_a_SOURCES=
 
 # 
 # Networking Support

@@ -13,4 +13,4 @@ ACLOCAL_AMFLAGS=-I cfg
 #
 # Indicate which directories to process
 #
-SUBDIRS=src/wcl
+SUBDIRS=src

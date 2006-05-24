@@ -67,17 +67,19 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 	   m4_ifdef([$0_VISITED], [AC_FATAL([Macro $0 invoked multiple times])])
 		    m4_define([$0_VISITED], 1)
 		    CC=$wcl_ac_wrapmsvc
-		    CXX=$wcl__ac_wrapmsvc
+		    CXX=$wcl_ac_wrapmsvc
 		    export CC CXX
 		    BUILD_WITH_MSVC=true
 	    AC_MSG_RESULT([working])
 
 	    wcl_ac_check_link=`type link`
 	    AC_MSG_CHECKING([whether Cygwin's /usr/bin/link shadows MSVC link.exe])
+
 	    case x"$wcl_ac_check_link" in
 	    x"link is /usr/bin/link"* )
-		    AC_MSG_RESULT(yes)
-		    AC_MSG_ERROR([/usr/sbin/link shaddows MSVC link.exe, MSVC build will fail])
+		    wcl_ac_link="`which cl.exe`"
+		    wcl_ac_link=`dirname "$wcl_ac_link"`/link.exe
+		    AC_MSG_RESULT([yes, using $wcl_ac_link instead])
 		    ;;
 	    * )
 		    AC_MSG_RESULT(no)
@@ -91,7 +93,7 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 		;;
 	    *)
 		AC_MSG_RESULT([not working (as expected)])
-		AC_MSG_ERROR([Something is seriously stuffed!])
+		AC_MSG_ERROR([This aint windows, MSVC only works on Windows!])
 		;;
 	    esac
 	fi
