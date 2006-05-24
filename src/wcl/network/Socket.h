@@ -9,9 +9,14 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#include <string>
-#include <sys/types.h>
-#include <netinet/in.h>
+#if defined(WIN32) ||  defined ( _WIN32) || defined (__WIN32__) /* Window Includes */
+	#include <windows.h>
+	#include <winsock.h>
+#else					  /* Unix Includes */
+	#include <string>
+	#include <sys/types.h>
+	#include <netinet/in.h>
+#endif
 
 class SocketException
 {
