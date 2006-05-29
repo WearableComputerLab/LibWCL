@@ -10,6 +10,7 @@
 #define UDPSOCKET_H
 
 #include <string>
+#include <wcl/wcl.h>
 #include <wcl/network/Socket.h>
 #include <wcl/network/UDPPacket.h>
 

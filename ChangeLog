@@ -5,6 +5,12 @@ that have happened to the libwcl library
 
 ===========
 
+2006-05-29
+o Modified networking library to compile under MSVC
++ Add libtool builder for future use
+o Update project to successfully build MSVC dll/lib pair.
+  This change includes lots of changes to configure, makefile, etc
+
 2006-05-24
 + Added a number of macros (cfg/msvc.cfg) to support compiling under MSVC enabled with --enable-msvc
 + Added wrapmsvc.exe / .cpp to cfg/ these are used to support MSVC binaries

@@ -1,11 +1,16 @@
 #include "TCPSocket.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <unistd.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
+
+#ifdef WIN32
+		
+#else
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <unistd.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+#endif
 
 /**
  * Default Constructor, this constructor should only be used by
@@ -37,6 +42,18 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
     address.sin_family = AF_INET;
     address.sin_port = htons ( port );
 
+#ifdef WIN32
+
+	// If we can't do a quick conversion, try the long way
+	he = gethostbyname( server.c_str());
+	if ( he == NULL ){
+	    throw new SocketException("Unable to find specified host");
+	}
+
+	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
+
+
+#else /* Unix */
     // Attempt to perform a quick conversion, this only works provided the server string
     // passed in is a fully qualified name/ip. 
     if ( inet_pton( AF_INET, server.c_str(), &address.sin_addr ) == 0 ){
@@ -48,7 +65,9 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
 	}
 
 	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
+
     }
+#endif
 
     // Perform the connection
     if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
@@ -79,7 +98,7 @@ bool TCPSocket::create()
     }
 
     // Enable the user to send to the broadcast address
-    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof (on))){
+    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, (const char *)&on, sizeof (on))){
 	this->close();
 	return false;
     }

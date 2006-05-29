@@ -1,8 +1,12 @@
+#include <assert.h>
+
 #include "TCPServer.h"
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
+#ifndef WIN32
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+#endif
 
 /**
  * Construct a TCP server to listen on the given port of the localhost.

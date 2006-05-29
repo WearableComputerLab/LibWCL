@@ -1,8 +1,10 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-
 #include "UDPServer.h"
+
+#ifndef WIN32
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+#endif
 
 /** 
  * Create a UDP Server that listens on the given port

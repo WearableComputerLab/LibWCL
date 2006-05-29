@@ -77,7 +77,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 # Automake Substitution Variables
 #
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
+AM_CONDITIONAL(BUILD_WITH_MSVC, test "x$enable_msvc" = "xyes")
 AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 
@@ -123,6 +123,7 @@ WCL_FRIDGE_CHECK
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
+#AC_PROG_LIBTOOL
 
 #
 # Check for libraries

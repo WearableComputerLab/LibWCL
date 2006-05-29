@@ -1,9 +1,4 @@
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-
+#include <assert.h>
 #include "UDPSocket.h"
 
 /**
@@ -26,6 +21,16 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 {
     struct hostent *he;
 
+#ifdef WIN32
+	// If we can't do a quick conversion, try the long way
+	he = gethostbyname( server.c_str());
+	if ( he == NULL ){
+	    throw new SocketException("Unable to find specified host");
+	}
+
+	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
+#else
+
     // Lookup the address of the remote machine
     // Attempt to perform a quick conversion, this only works provided the server string
     // passed in is a fully qualified name/ip. 
@@ -39,7 +44,7 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 
 	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
     }
-
+#endif
     // Store the port add set the address type
     raddress.sin_family = AF_INET;
     raddress.sin_port=htons(port);
@@ -77,7 +82,7 @@ bool UDPSocket::create()
     }
 
     // Enable the user to send to the broadcast address
-    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, &on, sizeof (on))){
+    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, (const char *)&on, sizeof (on))){
 	this->close();
 	return false;
     }
@@ -87,12 +92,20 @@ bool UDPSocket::create()
 
 int UDPSocket::read(void *buffer, int size)
 {
+#ifdef WIN32
+    return recv(this->sockfd, (char *)buffer, size, 0x0);
+#else 
     return recv(this->sockfd, buffer, size, 0x0);
+#endif
 }
-
+	
 int UDPSocket::write(const void *buffer, int size)
 {
+#ifdef WIN32
+    return sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+#else
     return sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+#endif
 }
 
 /**
@@ -108,12 +121,21 @@ int UDPSocket::write( const UDPPacket *packet )
 
     raddress = packet->getRecipient();
 
+#ifdef WIN32
+    return sendto( this->sockfd, 
+		    (const char *)packet->getData(), 
+		    packet->getSize(), 
+		    0x0, 
+		    (struct sockaddr *)&raddress, 
+		    sizeof(raddress));
+#else
     return sendto( this->sockfd, 
 		    packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
+#endif
 }
 
 /**
@@ -126,14 +148,23 @@ int UDPSocket::read( UDPPacket *packet )
 {
     assert( packet != NULL && packet->getData() != NULL);
 
+#ifdef WIN32
     struct sockaddr_in clientAddress;
     int clientAddressLen = sizeof(clientAddress);
+    int result =  recvfrom( this->sockfd, 
+			(char *)packet->getData(), 
+			packet->getSize(), 
+			0x0,
+			(struct sockaddr *)&clientAddress, 
+			(socklen_t*)&clientAddressLen);
+#else /* UNIX */
     int result =  recvfrom( this->sockfd, 
 			packet->getData(), 
 			packet->getSize(), 
 			0x0,
 			(struct sockaddr *)&clientAddress, 
 			(socklen_t*)&clientAddressLen);
+#endif
 
     if( result >= -1 )packet->setRecipient( clientAddress );
     return result;

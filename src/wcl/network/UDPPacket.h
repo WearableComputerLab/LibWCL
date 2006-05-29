@@ -1,9 +1,13 @@
 #ifndef UDPPACKET_H
 #define UDPPACKET_H
 
+#include <wcl/wcl.h>
+
+#ifndef WIN32
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <stdlib.h>
+#endif
 
 // Forward Declaration
 class UDPSocket;

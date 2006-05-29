@@ -9,11 +9,14 @@
 #ifndef SOCKET_H
 #define SOCKET_H
 
-#if defined(WIN32) ||  defined ( _WIN32) || defined (__WIN32__) /* Window Includes */
+#include <string>
+#include <wcl/wcl.h>
+
+#ifdef WIN32
 	#include <windows.h>
 	#include <winsock.h>
+	typedef int socklen_t;
 #else					  /* Unix Includes */
-	#include <string>
 	#include <sys/types.h>
 	#include <netinet/in.h>
 #endif
