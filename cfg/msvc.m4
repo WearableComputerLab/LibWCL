@@ -103,5 +103,10 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 		;;
 	    esac
 	fi
+
+
+	RANLIB=:
+	export RANLIB
+
   fi
 ])
