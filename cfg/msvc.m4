@@ -68,8 +68,8 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 		    m4_define([$0_VISITED], 1)
 		    CC=$wcl_ac_wrapmsvc
 		    CXX=$wcl_ac_wrapmsvc
-		    CFLAGS="$CFLAGS /EHsc /DWIN32"
-		    CXXFLAGS="$CXXFLAGS /EHsc /DWIN32"
+		    CFLAGS="$CFLAGS /EHsc /DWIN32 /MLd"
+		    CXXFLAGS="$CXXFLAGS /EHsc /DWIN32 /MLd"
 		    export CC CXX CXXFLAGS
 		    BUILD_WITH_MSVC=true
 	    AC_MSG_RESULT([working])

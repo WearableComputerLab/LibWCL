@@ -29,9 +29,7 @@ wcl_lib_SOURCES=
 libwcl_a_SOURCES=
 #nobase_wcl_lib_include_HEADERS=
 nobase_libwcl_a_include_HEADERS=
-
 LIBFLAGS=ws2_32.lib
-
 
 # 
 # Networking Support
@@ -74,34 +72,20 @@ libwcl_a_SOURCES+=$(network_sources)
 # Custom rule for linking a Visual C++ (MS Windows) library.
 
 if BUILD_WITH_MSVC
-wcl.lib: Makefile wcl.dll\
+wcl.lib: Makefile\
   $(wcl_lib_OBJECTS) \
   $(wcl_lib_DEPENDENCIES)
 	@basename="wcl"; \
 	rm -f "$$basename.dll" "$$basename.lib"; \
 	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -lib /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS) \
+	echo $(CXX) -LIB /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS) \
 	  $(wcl_lib_OBJECTS) \
 	  $(wcl_lib_LIBADD) $(LIBS); \
-	$(CXX) -lib /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS)\
+	$(CXX) -LIB /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS)\
 	  $(wcl_lib_OBJECTS) \
 	  $(wcl_lib_LIBADD) $(LIBS); 
 
-
-wcl.dll: Makefile \
-  $(wcl_lib_OBJECTS) \
-  $(wcl_lib_DEPENDENCIES)
-	@basename="wcl"; \
-	rm -f "$$basename.dll" "$$basename.lib"; \
-	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -dll /OUT:wcl.dll $(LDFLAGS) $(LIBFLAGS) \
-	  $(wcl_lib_OBJECTS) \
-	  $(wcl_lib_LIBADD) $(LIBS); \
-	$(CXX) -dll /OUT:wcl.dll $(LDFLAGS) $(LIBFLAGS)\
-	  $(wcl_lib_OBJECTS) \
-	  $(wcl_lib_LIBADD) $(LIBS); 
-
-install-exec-local: wcl.lib wcl.dll
+install-exec-local: wcl.lib
 	@basename="wcl"; \
 	for ext in dll pdb; do \
 	  file="$$basename.$$ext"; \
