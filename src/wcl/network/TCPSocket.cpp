@@ -1,9 +1,7 @@
 #include "TCPSocket.h"
 
 
-#ifdef WIN32
-		
-#else
+#ifndef WIN32 /* UNIX */
 	#include <sys/types.h>
 	#include <sys/socket.h>
 	#include <unistd.h>

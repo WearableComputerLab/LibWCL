@@ -81,7 +81,11 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 	    x"link is /usr/bin/link"* )
 		    wcl_ac_link="`which cl.exe`"
 		    wcl_ac_link=`dirname "$wcl_ac_link"`/link.exe
-		    AC_MSG_RESULT([yes, using $wcl_ac_link instead])
+		    #AC_MSG_RESULT([yes, using $wcl_ac_link instead])
+		    AC_MSG_RESULT([yes])
+		    AC_MSG_ERROR([This will break the build, please rename /usr/bin/link.exe to something else then try again])
+		    #LINK=$wcl_ac_link
+		    #export LINK	
 		    ;;
 	    * )
 		    AC_MSG_RESULT(no)

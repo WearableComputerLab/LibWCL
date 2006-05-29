@@ -1,5 +1,4 @@
 
-#include <wcl/wcl.h>
 #include <string.h>
 
 #ifndef WIN32 /* UNIX */

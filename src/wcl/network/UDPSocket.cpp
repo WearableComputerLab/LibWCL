@@ -1,5 +1,15 @@
 #include <assert.h>
-#include "UDPSocket.h"
+#include <wcl/network/UDPSocket.h>
+
+#ifndef WIN32 /* UNIX */
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <unistd.h>
+	#include <netdb.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
+	#include <fcntl.h>
+#endif
 
 /**
  * Called by subclasses. No initialisation is done
@@ -148,9 +158,10 @@ int UDPSocket::read( UDPPacket *packet )
 {
     assert( packet != NULL && packet->getData() != NULL);
 
-#ifdef WIN32
     struct sockaddr_in clientAddress;
     int clientAddressLen = sizeof(clientAddress);
+
+#ifdef WIN32
     int result =  recvfrom( this->sockfd, 
 			(char *)packet->getData(), 
 			packet->getSize(), 

@@ -10,7 +10,6 @@
 #define SOCKET_H
 
 #include <string>
-#include <wcl/wcl.h>
 
 #ifdef WIN32
 	#include <windows.h>

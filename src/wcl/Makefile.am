@@ -74,13 +74,13 @@ libwcl_a_SOURCES+=$(network_sources)
 # Custom rule for linking a Visual C++ (MS Windows) library.
 
 if BUILD_WITH_MSVC
-wcl.lib: Makefile \
+wcl.lib: Makefile wcl.dll\
   $(wcl_lib_OBJECTS) \
   $(wcl_lib_DEPENDENCIES)
 	@basename="wcl"; \
 	rm -f "$$basename.dll" "$$basename.lib"; \
 	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -lib wcl.lib $(LDFLAGS) $(LIBFLAGS) \
+	echo $(CXX) -lib /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS) \
 	  $(wcl_lib_OBJECTS) \
 	  $(wcl_lib_LIBADD) $(LIBS); \
 	$(CXX) -lib /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS)\
@@ -94,7 +94,7 @@ wcl.dll: Makefile \
 	@basename="wcl"; \
 	rm -f "$$basename.dll" "$$basename.lib"; \
 	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -dll wcl.dll $(LDFLAGS) $(LIBFLAGS) \
+	echo $(CXX) -dll /OUT:wcl.dll $(LDFLAGS) $(LIBFLAGS) \
 	  $(wcl_lib_OBJECTS) \
 	  $(wcl_lib_LIBADD) $(LIBS); \
 	$(CXX) -dll /OUT:wcl.dll $(LDFLAGS) $(LIBFLAGS)\
