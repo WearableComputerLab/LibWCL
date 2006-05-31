@@ -18,12 +18,16 @@
  */
 TCPServer::TCPServer( const unsigned port, const unsigned queuelength )
 {
+    if ( this->create() == false ){
+	throw new SocketException(this);
+    }
+
     if ( this->bind(port) == false ){
-	throw new SocketException("Faile to bind to server socket");
+	throw new SocketException(this);
     }
     
     if ( ::listen( this->sockfd, queuelength ) < 0 ){
-	throw new SocketException("Failed ot set listen Queue");
+	throw new SocketException(this);
     }
 }
 

@@ -15,11 +15,11 @@
 UDPServer::UDPServer( const unsigned port )
 {
     if ( this->create() == false ){
-	throw new SocketException("Unable To Create Server Socket");	
+	throw new SocketException(this);	
     }
 
     if ( this->bind(port) == false ){
 	this->close();
-	throw new SocketException("Unable to bind server socket to port");
+	throw new SocketException(this);
     }
 }

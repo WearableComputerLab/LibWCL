@@ -35,7 +35,7 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 	// If we can't do a quick conversion, try the long way
 	he = gethostbyname( server.c_str());
 	if ( he == NULL ){
-	    throw new SocketException("Unable to find specified host");
+	    throw new SocketException(this);
 	}
 
 	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
@@ -49,7 +49,7 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 	// If we can't do a quick conversion, try the long way
 	he = gethostbyname( server.c_str());
 	if ( he == NULL ){
-	    throw new SocketException("Unable to find specified host");
+	    throw new SocketException(this);
 	}
 
 	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
@@ -61,13 +61,13 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 
 
     if ( this->create() == false ){
-	throw new SocketException( "Failed to open socket");
+	throw new SocketException(this);
     }
 
     // Bind to a port on the local host, first free port.
     if ( this->bind(0) == false ){
 	this->close();
-	throw new SocketException("Failed to bind to port");
+	throw new SocketException(this);
     }
 }
 
@@ -103,19 +103,28 @@ bool UDPSocket::create()
 int UDPSocket::read(void *buffer, int size)
 {
 #ifdef WIN32
-    return recv(this->sockfd, (char *)buffer, size, 0x0);
+    int retval = recv(this->sockfd, (char *)buffer, size, 0x0);
 #else 
-    return recv(this->sockfd, buffer, size, 0x0);
+    int retval = recv(this->sockfd, buffer, size, 0x0);
 #endif
+    if ( retval == -1 ){
+	throw new SocketException(this);
+    }
+    return retval;
 }
 	
 int UDPSocket::write(const void *buffer, int size)
 {
 #ifdef WIN32
-    return sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+    int retval = sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
 #else
-    return sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+    int retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+
 #endif
+    if (retval == -1 ){
+	throw new SocketException(this);
+    }
+    return retval;
 }
 
 /**
@@ -132,20 +141,24 @@ int UDPSocket::write( const UDPPacket *packet )
     raddress = packet->getRecipient();
 
 #ifdef WIN32
-    return sendto( this->sockfd, 
+    int retval = sendto( this->sockfd, 
 		    (const char *)packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
 #else
-    return sendto( this->sockfd, 
+    int retval = sendto( this->sockfd, 
 		    packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
 #endif
+    if ( retval == -1 ){
+	throw new SocketException(this);
+    }
+    return retval;
 }
 
 /**
@@ -176,8 +189,11 @@ int UDPSocket::read( UDPPacket *packet )
 			(struct sockaddr *)&clientAddress, 
 			(socklen_t*)&clientAddressLen);
 #endif
+    if ( result == -1 ){
+	throw new SocketException(this);
+    }
 
-    if( result >= -1 )packet->setRecipient( clientAddress );
+    packet->setRecipient( clientAddress );
     return result;
 }
 

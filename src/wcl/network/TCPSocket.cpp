@@ -33,7 +33,7 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
 
     // Create a new socket
     if ( !this->create()){
-	throw new SocketException("Unable to create Socket Object");
+	throw new SocketException(this);
     } 
 
     // Setup the address to connect too
@@ -45,7 +45,7 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
 	// If we can't do a quick conversion, try the long way
 	he = gethostbyname( server.c_str());
 	if ( he == NULL ){
-	    throw new SocketException("Unable to find specified host");
+	    throw new SocketException(this);
 	}
 
 	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
@@ -59,7 +59,7 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
 	// If we can't do a quick conversion, try the long way
 	he = gethostbyname( server.c_str());
 	if ( he == NULL ){
-	    throw new SocketException("Unable to find specified host");
+	    throw new SocketException(this);
 	}
 
 	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
@@ -69,8 +69,8 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
 
     // Perform the connection
     if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
-	this->sockfd = -1;
-	throw new SocketException("Unable to connect to remote host, on specified port");
+	this->close();
+	throw new SocketException(this);
     }
 }
 
@@ -95,11 +95,19 @@ bool TCPSocket::create()
 	return false;
     }
 
+#ifndef WIN32 /* UNIX */
+    // XXX/FIXME: For some reason this fails under MSVC
+    // with error 10042 - Unknown, invalid option (SO_BROADCAST)
+    // I don't know why at present - Ben 20060529
+
     // Enable the user to send to the broadcast address
-    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, (const char *)&on, sizeof (on))){
+    on = 1;
+    if (setsockopt (this->sockfd, SOL_SOCKET, SO_BROADCAST, (const char *)&on, sizeof (on)) == -1){
 	this->close();
 	return false;
     }
+
+#endif
 
     return true; 
 }

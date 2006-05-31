@@ -5,6 +5,13 @@ that have happened to the libwcl library
 
 ===========
 
+2006-05-31
+o Modify the networking library to handle exceptions correctly. The
+  SocketException class now takes in the socket only and records
+  the last error used. This made a modification to all the read/write
+  methods so they all throw an exception
++ Add * operator to socket class to allow obtaining the file descriptor 
+
 2006-05-29
 o Modified networking library to compile under MSVC
 + Add libtool builder for future use

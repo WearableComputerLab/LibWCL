@@ -20,18 +20,6 @@
 	#include <netinet/in.h>
 #endif
 
-class SocketException
-{
-public:
-    SocketException( const std::string &);
-    virtual ~SocketException();
-
-    const std::string getReason() const;
-
-private:
-    std::string reason;
-};
-
 class Socket
 {
 
@@ -43,9 +31,11 @@ class Socket
 		virtual int write( const void *buffer, size_t size );
 		virtual int write( const std::string & );
 		virtual void close();
-		virtual bool isValid() const ;
+		virtual bool isValid() const;
 		virtual bool setBlockingMode( const BlockingMode );
 		virtual BlockingMode getBlockingMode() const;
+
+		int operator *() const;
 	
 	protected:
 		int sockfd;	
@@ -53,6 +43,22 @@ class Socket
 
 		Socket();
 		virtual bool bind( const unsigned port);
+
+};
+
+
+class SocketException
+{
+public:
+    SocketException(const Socket *);
+    virtual ~SocketException();
+
+    int getCause() const;
+    const std::string getReason() const;
+
+private:
+    int sockid;
+    int errornumber;
 };
 
 #endif

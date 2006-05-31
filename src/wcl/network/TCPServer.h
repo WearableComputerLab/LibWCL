@@ -28,6 +28,7 @@ class TCPServer: private TCPSocket
 
 		TCPSocket::setBlockingMode;
 		TCPSocket::getBlockingMode;
+		TCPSocket::operator *;
 };
 
 #endif

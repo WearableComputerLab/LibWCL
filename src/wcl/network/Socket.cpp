@@ -1,10 +1,14 @@
 
 #include <string.h>
 
-#ifndef WIN32 /* UNIX */
+#ifdef WIN32
+	#include <strstream>
+#else /* UNIX */
+	#include <iostream>
 	#include <unistd.h>
 	#include <sys/socket.h>
 	#include <fcntl.h>
+	#include <errno.h>
 #endif
 
 #include "Socket.h"
@@ -66,10 +70,17 @@ void Socket::close()
     }
 }
 
+/**
+ * Indicate if the socket object is valid.  
+ * This is a lightweight call that checks class internals only
+ *
+ * @return true if the socket object is valid, false if it is not
+ */
 bool Socket::isValid() const
 {
-    return (this->sockfd != -1 );
+    return (this->sockfd != -1);
 }
+
 
 /**
  * Bind the socket to a given port on any address of the local host
@@ -95,21 +106,67 @@ bool Socket::bind( const unsigned port )
 }
 
 
+/**
+ * Attempt to read data from a socket into a buffer.
+ * If the remote socket is closed a SocketException is
+ * thrown.
+ *
+ * @param buffer The buffer to read into
+ * @param size How much to read, the buffer must be at least this size
+ * @return The amount of data read if all ok, -1 on a read error, not caused
+ *         by the close of a socket, 0 on a graceful close
+ * @throws SocketException if the remote end has forcable closed the * socket 
+ */
 int Socket::read ( void *buffer, size_t size )
 {
+
+    if ( !isValid()){
+	return -1;
+    }
+
 #ifdef WIN32
-	return ::recv(this->sockfd, (char*)buffer, size, 0x0);
+    int retval = ::recv(this->sockfd, (char*)buffer, size, 0x0);
+    if( retval == SOCKET_ERROR ){
+	throw new SocketException(this);	
+    }
+    return retval;
 #else
-    return ::read(this->sockfd, buffer, size );
+    int retval = ::read(this->sockfd, buffer, size );
+    if ( retval == -1 ){
+	throw new SocketException(this);
+    }
+    return retval;
 #endif
 }
 
+/**
+ * Attempt to write size characters from buffer to the socket.
+ * This method throws an exception if the remote end has forcable closed
+ * the socket.
+ *
+ * @param buffer The buffer containing the data to write
+ * @param size The amount of characters to write, the buffer must be this big
+ * @return The amount of charaters written
+ * @throws SockcetException if the remote peer has forced the socket * closed
+ */
 int Socket::write( const void *buffer, size_t size )
 {
+    if ( !isValid()){
+	return -1;
+    }
+
 #ifdef WIN32
-	return ::send(this->sockfd, (const char *)buffer, size, 0x0);
+    int retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
+    if ( retval == SOCKET_ERROR ){
+	throw new SocketException(this);
+    }
+    return retval;
 #else
-    return ::write( this->sockfd, buffer, size );
+    int retval =  ::write( this->sockfd, buffer, size );
+    if ( retval == -1 ){
+	throw new SocketException(this);
+    }
+    return retval;
 #endif
 }
 
@@ -142,7 +199,7 @@ bool Socket::setBlockingMode( const BlockingMode mode)
 
 #ifdef WIN32
 	/** 
-     * Windows does non blocking very, very differently.
+         * Windows does non blocking very, very differently.
 	 * hence we don't support it. We return false to indicate this.
 	 */
 	return false;
@@ -192,21 +249,38 @@ Socket::BlockingMode Socket::getBlockingMode() const
 #endif
 }
 
+/**
+ * Return the file descriptor associated with this socket
+ *
+ * @return the socket descriptor, -1 if its in error
+ */
+int Socket::operator *() const
+{
+    return this->sockfd;
+}
 
-/*================================================================================
+
+
+/*==============================================================================
  *
  *  SocketException Class Methods
  *
- *===============================================================================*/
+ *=============================================================================*/
 
 /**
  * Construct a socket exception with the specified reason
  *
  * @param reason The reason the exception occurred
  */
-SocketException::SocketException( const std::string &reason )
+SocketException::SocketException( const Socket *s )
 {
-    this->reason = reason;
+    this->sockid = **s;
+
+#ifdef WIN32
+    this->errornumber  = WSAGetLastError();
+#else
+    this->errornumber  = errno; /* errno defined in errno.h */
+#endif
 }
 
 SocketException::~SocketException()
@@ -220,6 +294,14 @@ SocketException::~SocketException()
  */
 const std::string SocketException::getReason() const
 {
-    return this->reason;
+#ifdef WIN32
+    std::strstream s;
+    s << "Winsock Errno:";
+    s << this->errornumber;
+    s << std::ends;
+    return s.str();
+#else
+    return strerror( this->errornumber );
+#endif
 }
 
