@@ -5,6 +5,7 @@
 #include <QuickTime/QuickTime.h>
 #include <pthread.h>
 #include <sys/time.h>
+//#include "ARVideoSettingsController.h"
 
 #define arMalloc(V,T,S)  \
 { if( ((V) = (T *)malloc( sizeof(T) * (S) )) == 0 ) \
@@ -79,22 +80,34 @@ struct _AR2VideoParamT {
 typedef struct _AR2VideoParamT* AR2VideoParamTRef;
 typedef struct _AR2VideoParamT AR2VideoParamT;
 
-static AR2VideoParamT   *gVid = NULL;
-static unsigned int             gVidCount = 0;
+ //AR2VideoParamT   *gVid = NULL;
+ //unsigned int             gVidCount = 0;
 
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
+
+#ifdef __cplusplus
+}
+#endif
+
+AR2VideoParamT* ar2VideoOpen(char *config);
 int ar2VideoDispOption(void);
 VdigGrabRef vdgAllocAndInit(const int grabber);
-static ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex);
-static VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg);
-static VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, long*           pMilliSecPerFrame, Fixed*      pFramesPerSecond, long*       pBytesPerSecond); 
-static VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
-static OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
-static ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg);
+ ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex);
+ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg);
+ VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, long*           pMilliSecPerFrame, Fixed*      pFramesPerSecond, long*       pBytesPerSecond); 
+ VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
+ OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
+ ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg);
 int ar2VideoInqSize(AR2VideoParamT *vid, int *x,int *y);
 unsigned char *ar2VideoGetImage(AR2VideoParamT *vid);
 int ar2VideoCapStart(AR2VideoParamT *vid);
 int ar2VideoCapStop(AR2VideoParamT *vid);
 int ar2VideoCapNext(AR2VideoParamT *vid);
-OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
+//OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
 
 #endif // _VIDEO_H_

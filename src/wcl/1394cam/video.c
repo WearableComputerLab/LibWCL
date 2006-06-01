@@ -77,6 +77,7 @@
 // ============================================================================
 
 #include "video.h"
+//#include "videoInternal.h"
 
 // ============================================================================
 //	Private definitions
@@ -96,7 +97,11 @@
 #  define AR_PTHREAD_CANCELLED ((void *) 1);
 #endif
 
-AR2VideoParamT *ar2VideoOpen(char *config)
+AR2VideoParamT   *gVid = NULL;
+unsigned int             gVidCount = 0;
+
+
+AR2VideoParamT* ar2VideoOpen(char *config)
 {
 	static int			initF = 0;
 	long				qtVersion = 0L;
@@ -480,7 +485,7 @@ int ar2VideoClose(AR2VideoParamT *vid)
 // --------------------
 // MakeSequenceGrabber  (adapted from Apple mung sample)
 //
-static SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
+ SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 {
 	SeqGrabComponent	seqGrab = NULL;
 	ComponentResult		err = noErr;
@@ -543,7 +548,7 @@ endFunc:
 // --------------------
 // MakeSequenceGrabChannel (adapted from Apple mung sample)
 //
-static ComponentResult MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
+ ComponentResult MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
 {
 	long  flags = 0;
 	ComponentResult err = noErr;
@@ -571,7 +576,7 @@ endFunc:
 	return err;
 }
 
-static ComponentResult vdgGetSettings(VdigGrab* pVdg)
+ ComponentResult vdgGetSettings(VdigGrab* pVdg)
 {	
 	ComponentResult err;
 
@@ -627,7 +632,7 @@ VdigGrabRef vdgAllocAndInit(const int grabber)
 	return (pVdg);
 }
 
-static ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex)
+ ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex)
 {
 	ComponentResult err;
 
@@ -646,7 +651,7 @@ endFunc:
 	return err;
 }
 
-static VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
+ VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
 {
 	VideoDigitizerError err;
 	Str255	vdName; // Pascal string (first byte is string length).
@@ -684,14 +689,14 @@ endFunc:
 	return err;
 }
 
-static OSErr vdgSetDestination(  VdigGrab* pVdg,
+ OSErr vdgSetDestination(  VdigGrab* pVdg,
 		CGrafPtr  dstPort )
 {
 	pVdg->dstPort = dstPort;
 	return noErr;
 }
 
-static VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
+ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 {
 	/* from Steve Sisak (on quicktime-api list):
 	   A much more optimal case, if you're doing it yourself is:
@@ -816,7 +821,7 @@ endFunc:
 	return (err);
 }
 
-static VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
+ VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
 		long*		pMilliSecPerFrame,
 		Fixed*      pFramesPerSecond,
 		long*       pBytesPerSecond)
@@ -835,7 +840,7 @@ endFunc:
 	return (err);
 }
 
-static VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
+ VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
 		ImageDescriptionHandle vdImageDesc )
 {
 	VideoDigitizerError err;
@@ -850,7 +855,7 @@ endFunc:
 	return err;
 }
 
-static OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
+ OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
 		CGrafPtr dstPort, 
 		Rect* pDstRect,
 		MatrixRecord* pDstScaleMatrix )
@@ -898,7 +903,7 @@ endFunc:
 	return err;
 }
 
-static OSErr vdgDecompressionSequenceWhen(   VdigGrab* pVdg,
+ OSErr vdgDecompressionSequenceWhen(   VdigGrab* pVdg,
 		Ptr theData,
 		long dataSize)
 {
@@ -921,7 +926,7 @@ endFunc:
 	return err;
 }
 
-static OSErr vdgDecompressionSequenceEnd( VdigGrab* pVdg )
+ OSErr vdgDecompressionSequenceEnd( VdigGrab* pVdg )
 {
 	OSErr err;
 
@@ -944,7 +949,7 @@ endFunc:
 	return err;
 }
 
-static VideoDigitizerError vdgStartGrabbing(VdigGrab*   pVdg, MatrixRecord* pDstScaleMatrix)
+ VideoDigitizerError vdgStartGrabbing(VdigGrab*   pVdg, MatrixRecord* pDstScaleMatrix)
 {
 	VideoDigitizerError err;
 
@@ -973,7 +978,7 @@ endFunc:
 	return err;
 }
 
-static VideoDigitizerError vdgStopGrabbing(VdigGrab* pVdg)
+ VideoDigitizerError vdgStopGrabbing(VdigGrab* pVdg)
 {
 	VideoDigitizerError err;
 
@@ -995,12 +1000,12 @@ static VideoDigitizerError vdgStopGrabbing(VdigGrab* pVdg)
 	return err;
 }
 
-static bool vdgIsGrabbing(VdigGrab* pVdg)
+ bool vdgIsGrabbing(VdigGrab* pVdg)
 {
 	return pVdg->isGrabbing;
 }
 
-static VideoDigitizerError vdgPoll(	VdigGrab*   pVdg,
+ VideoDigitizerError vdgPoll(	VdigGrab*   pVdg,
 		UInt8*		pQueuedFrameCount,
 		Ptr*		pTheData,
 		long*		pDataSize,
@@ -1041,7 +1046,7 @@ endFunc:
 	return err;
 }
 
-static VideoDigitizerError vdgReleaseBuffer(VdigGrab*   pVdg, Ptr theData)
+ VideoDigitizerError vdgReleaseBuffer(VdigGrab*   pVdg, Ptr theData)
 {
 	VideoDigitizerError err;
 
@@ -1055,7 +1060,7 @@ endFunc:
 	return err;
 }
 
-static VideoDigitizerError vdgIdle(VdigGrab* pVdg, int*  pIsUpdated)
+ VideoDigitizerError vdgIdle(VdigGrab* pVdg, int*  pIsUpdated)
 {
 	VideoDigitizerError err;
 
@@ -1105,7 +1110,7 @@ endFunc:
 	return err;
 }
 
-static ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg)
+ ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg)
 {
 	ComponentResult err = noErr;		
 
@@ -1204,7 +1209,7 @@ int arVideoCapNext(void)
 }
 
 #pragma mark -
-static int ar2VideoInternalLock(pthread_mutex_t *mutex)
+ int ar2VideoInternalLock(pthread_mutex_t *mutex)
 {
 	int err;
 
@@ -1231,7 +1236,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 }
 #endif
 
-static int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
+ int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
 {
 	int err;
 
@@ -1243,7 +1248,7 @@ static int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
 	return (1);
 }
 
-static void ar2VideoInternalThreadCleanup(void *arg)
+ void ar2VideoInternalThreadCleanup(void *arg)
 {
 	AR2VideoParamT *vid;
 
@@ -1257,7 +1262,7 @@ static void ar2VideoInternalThreadCleanup(void *arg)
 // Its sole function is to call vdgIdle() on a regular basis during a capture operation.
 // It should be terminated by a call pthread_cancel() from the instantiating thread.
 //
-static void *ar2VideoInternalThread(void *arg)
+ void *ar2VideoInternalThread(void *arg)
 {
 	OSErr				err_o;
 	AR2VideoParamT		*vid;
