@@ -28,7 +28,6 @@
 #import <Cocoa/Cocoa.h>
 #import <Carbon/Carbon.h>
 #import <QuickTime/QuickTime.h>
-#import "videoInternal.h"
 
 //OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
 
