@@ -1,6 +1,13 @@
 #ifndef _IEEE1394CAM_H_
 #define _IEEE1394CAM_H_
 
+#include "AbstractIEEE1394Cam.h"
+#include "debug.h"
+
+#ifdef MACOSX
+#include "osx/OSXIEEE1394Cam.h"
+#endif
+
 class IEEE1394Cam
 {
 public:
@@ -15,11 +22,14 @@ public:
 //	1394cam( some kind of struct );
 
 	// method to retrieve an image from the camera.
-	unsigned char* getImage();
+	unsigned char* getFrame();
 
 	// destructor
 	~IEEE1394Cam();
 private:
+	// a pointer to the camera
+	AbstractIEEE1394Cam *camera;
+
 	// a pointer to the memory location of the image from the camera
 	unsigned char* imageBuffer;
 };
