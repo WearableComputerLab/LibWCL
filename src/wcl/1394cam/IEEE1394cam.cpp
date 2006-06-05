@@ -1,4 +1,4 @@
-#include "1394cam.h"
+#include "IEEE1394cam.h"
 
 // constructor
 IEEE1394cam::IEEE1394cam()
