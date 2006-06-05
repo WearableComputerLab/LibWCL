@@ -9,7 +9,7 @@ ifeq ($(OSTYPE),Darwin)
 	CXX += $(CXX_MACOSX)
 endif
 
-SOURCES = AbstractIEEE1394Cam.cpp IEEE1394Cam.cpp
+SOURCES = AbstractIEEE1394Cam.cpp IEEE1394Cam.cpp debug.cpp
 
 OFILES = $(SOURCES:.cpp=.o)
 
