@@ -2,8 +2,9 @@
 #define _LINUXIEEE1394CAM_H_	
 
 #include "../AbstractIEEE1394Cam.h"
-#include "video.h"
 #include "../debug.h"
+#include <unistd.h>
+#include "firewire.h"
 
 class LinuxIEEE1394Cam : public AbstractIEEE1394Cam
 {
