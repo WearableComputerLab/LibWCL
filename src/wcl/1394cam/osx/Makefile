@@ -1,15 +1,13 @@
 CXX = g++ -Wall -g -O2
 
-SOURCES = video.cpp
+SOURCES = video.cpp OSXIEEE1394Cam.cpp
 
 OFILES = $(SOURCES:.cpp=.o)
 
-all: $(OFILES)
+all: $(OFILES) ARVideoSettingsController.o
 
-#all: ARVideoSettingsController.o
-
-#ARVideoSettingsController.o :
-#	g++ -c -fpascal-strings ARVideoSettingsController.m
+ARVideoSettingsController.o :
+	$(CXX) -c -fpascal-strings ARVideoSettingsController.m
 
 # rule that calulates the prerequisites for any .cpp file
 %.d: %.cpp
@@ -22,3 +20,4 @@ include $(SOURCES:.cpp=.d)
 
 clean:
 	rm -rf *.o
+	rm -rf *.d
