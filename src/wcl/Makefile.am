@@ -9,27 +9,13 @@
 #
 INCLUDES= -I@top_srcdir@/src/
 libwcl_a_includedir=$(includedir)/wcl
-
-#
-# What to build
-#
-
-if BUILD_WITH_MSVC
-lib_LIBRARIES=wcl.lib
-else
-
-lib_LIBRARIES=libwcl.a
-
-endif
+libwcl_win32_a_includedir=$(includedir)/wcl
 
 #
 # Predefines, needed for the conditionals below
 #
-wcl_lib_SOURCES=
-libwcl_a_SOURCES=
-#nobase_wcl_lib_include_HEADERS=
-nobase_libwcl_a_include_HEADERS=
 LIBFLAGS=ws2_32.lib
+CLEANFILES=
 
 # 
 # Networking Support
@@ -37,7 +23,7 @@ LIBFLAGS=ws2_32.lib
 network_headers=
 network_sources=
 
-#if ENABLE_NETWORK
+if ENABLE_NETWORK
 network_headers+=\
               network/Socket.h\
               network/TCPServer.h\
@@ -47,43 +33,70 @@ network_headers+=\
               network/UDPSocket.h
 
 network_sources+=\
-              network/Socket.h\
               network/Socket.cpp\
-              network/Network.h\
               network/TCPServer.cpp\
-              network/TCPServer.h\
               network/TCPSocket.cpp\
-              network/TCPSocket.h\
-              network/UDPPacket.h\
               network/UDPServer.cpp\
-              network/UDPServer.h\
-              network/UDPSocket.cpp\
-              network/UDPSocket.h
+              network/UDPSocket.cpp
+endif
 
-#nobase_wcl_lib_include_HEADERS+=$(network_headers)
-wcl_lib_SOURCES+=$(network_sources)
-nobase_libwcl_a_include_HEADERS+=$(network_headers)
-libwcl_a_SOURCES+=$(network_sources)
+#
+# 1394 Camera Support
+#
+video_1394_headers=
+video_1394_sources=
 
-#endif
+if ENABLE_VIDEO_1394
+video_1394_headers+=1394cam/IEEE1394Cam.h
 
+video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
+		    1394cam/IEEE1394Cam.cpp\
+		    1394cam/debug.cpp
 
-# **************************************************************************
+#
+# Platform Specific Sources
+#
+if PLATFORM_OSX
+video_1394_sources+=1394cam/osx/video.cpp\
+		    1394cam/osx/OSXIEEE1394Cam.cpp\
+		    1394cam/osx/ARVideoSettingsController.m
+endif
+
+endif
+
+#
+# What to build and what to install
+#
+if !ENABLE_MSVC
+lib_LIBRARIES=libwcl.a
+nobase_libwcl_a_include_HEADERS=$(network_headers) $(video_1394_headers)
+libwcl_a_SOURCES=$(network_sources) $(video_1394_sources)
+
+else
+lib_LIBRARIES=libwcl_win32.a
+nobase_libwcl_win32_a_include_HEADERS=$(network_headers) $(video_1394_headers)
+libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources)
+noinst_DATA=wcl.lib
+CLEANFILES+=wcl.lib
+
+#	
 # Custom rule for linking a Visual C++ (MS Windows) library.
+#
+wcl.lib: libwcl_win32_a
+    copy libwcl_win32.a wcl.lib
 
-if BUILD_WITH_MSVC
-wcl.lib: Makefile\
-  $(wcl_lib_OBJECTS) \
-  $(wcl_lib_DEPENDENCIES)
+libwcl_win32.a: Makefile\
+  $(libwcl_win32_a_OBJECTS) \
+  $(libwcl_win32_a_DEPENDENCIES)
 	@basename="wcl"; \
 	rm -f "$$basename.dll" "$$basename.lib"; \
 	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -LIB /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS) \
-	  $(wcl_lib_OBJECTS) \
-	  $(wcl_lib_LIBADD) $(LIBS); \
-	$(CXX) -LIB /OUT:wcl.lib $(LDFLAGS) $(LIBFLAGS)\
-	  $(wcl_lib_OBJECTS) \
-	  $(wcl_lib_LIBADD) $(LIBS); 
+	echo $(CXX) -LIB /OUT:libwcl_win32.a $(LDFLAGS) $(LIBFLAGS) \
+	  $(libwcl_win32_a_OBJECTS) \
+	  $(libwcl_win32_a_LIBADD) $(LIBS); \
+	$(CXX) -LIB /OUT:libwcl_win32.a $(LDFLAGS) $(LIBFLAGS)\
+	  $(libwcl_win32_a_OBJECTS) \
+	  $(libwcl_win32_a_LIBADD) $(LIBS); 
 
 install-exec-local: wcl.lib
 	@basename="wcl"; \

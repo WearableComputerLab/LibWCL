@@ -71,7 +71,6 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 		    CFLAGS="$CFLAGS /EHsc /DWIN32 /MLd"
 		    CXXFLAGS="$CXXFLAGS /EHsc /DWIN32 /MLd"
 		    export CC CXX CXXFLAGS
-		    BUILD_WITH_MSVC=true
 	    AC_MSG_RESULT([working])
 
 	    wcl_ac_check_link=`type link`

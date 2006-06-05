@@ -1,5 +1,10 @@
 #include "IEEE1394Cam.h"
 
+#ifdef MACOSX
+#include "osx/OSXIEEE1394Cam.h"
+#endif
+
+
 // constructor
 IEEE1394Cam::IEEE1394Cam()
 {

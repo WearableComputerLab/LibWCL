@@ -5,6 +5,11 @@ that have happened to the libwcl library
 
 ===========
 
+2006-06-05
+o Add 1394 Camera support
+o Restructure the wcl.lib compilation to make automake happy. It doesn't like
+  libraries not starting with lib and ending in a. 
+
 2006-05-31
 o Modify the networking library to handle exceptions correctly. The
   SocketException class now takes in the socket only and records

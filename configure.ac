@@ -62,7 +62,7 @@ AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib &
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
-#AC_ARG_ENABLE(video_1394, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), , enable_video_1394="no")
+AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
 # 
 #  Enable All Options
@@ -72,12 +72,25 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_serial="yes";
 	     enable_video_1394="yes")
 
+#
+#  Check to see if anything is configured
+#
+AC_MSG_CHECKING([Checking we need to build something]);
+if test "x$enable_network" == "xno" && \
+# test "x$enable_serial" == "xno" && \
+   test "x$enable_video_1394" == "xno"; then
+   AC_MSG_RESULT([nup])
+   AC_MSG_ERROR([You must select something to build!, use --help for details])
+fi
+AC_MSG_RESULT([yes])
+
 
 #
 # Automake Substitution Variables
 #
+
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(BUILD_WITH_MSVC, test "x$enable_msvc" = "xyes")
+AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
 AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 
@@ -91,6 +104,16 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 # Check which system we are on
 #  	This sets: host variable
 AC_CANONICAL_HOST
+case $host_os in
+darwin* ) 
+   AM_CONDITIONAL(PLATFORM_OSX,true)
+  ;;
+*)
+  AM_CONDITIONAL(PLATFORM_OSX,false)
+  ;;
+esac
+
+AM_CONDITIONAL([am__fastdepOBJC], false)
 
 #
 # Check to see if an Microsoft Compiler is requested, if so
@@ -125,6 +148,10 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 #AC_PROG_LIBTOOL
 
+_AM_DEPENDENCIES([OBJC])
+OBJC="$CC"
+AC_SUBST(OBJC)
+
 #
 # Check for libraries
 #
@@ -146,7 +173,8 @@ AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset])
 
 #
-# Indicate what will be built into libwcl
+# Indicate what will be built into libwcl, 
+# Crash out if nothing is defined
 #
 ###############################
 echo "-----------------------------"
@@ -155,7 +183,7 @@ echo "-----------------------------"
 echo "Microsoft (msvc) support: $enable_msvc"
 echo "network support         : $enable_network"
 #echo "serial (rs232) support  : $enable_serial"
-#echo "1394 (Firewire) Video   : $enable_video_1394"
+echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "-----------------------------"
 
 #

@@ -4,10 +4,6 @@
 #include "AbstractIEEE1394Cam.h"
 #include "debug.h"
 
-#ifdef MACOSX
-#include "osx/OSXIEEE1394Cam.h"
-#endif
-
 class IEEE1394Cam
 {
 public:
