@@ -364,10 +364,9 @@ VideoParams *videoOpenHandle( char *config )
 				&(vid->features)) != DC1394_SUCCESS ) {
 		message( "unable to get feature set\n");
 	}
-	else if( vid->debug ) {
+//	else if( vid->debug ) {
 		dc1394_print_feature_set( &(vid->features) );
-	}
-
+//	}
 
 	/* Change the camera settings if we need to */
 	if (iris != -1)
@@ -377,7 +376,7 @@ VideoParams *videoOpenHandle( char *config )
 	}
 	if (gain != -1)
 	{
-		message ("Adjusting GAIN setting to %d\n", gain);
+		message ("Adjusting GAIN setting to %d", gain);
 		dc1394_set_gain (V1394.handle, vid->node, (unsigned int)gain);
 	}
 
@@ -397,7 +396,7 @@ VideoParams *videoOpenHandle( char *config )
 	p1 = 1 << i;
 	p2 = value & p1;
 	if( p2 == 0 ) {
-		message( "unable to use this camera on VGA_NONCOMPRESSED format.\n");
+		message( "unable to use this camera on VGA_NONCOMPRESSED format.");
 		exit(0);
 	}
 
@@ -414,13 +413,13 @@ VideoParams *videoOpenHandle( char *config )
 		p2 = value & p1;
 		if (p2 == 0)
 		{
-			message( "Unsupported Mode for the specified camera.\n");
+			message( "Unsupported Mode for the specified camera.");
 			videoDisplayOptions();
 			exit(0);
 		}
 		else
 		{
-			message ("Detected a mono camera, assuming DragonFly camera with Bayer image decoding\n");
+			message ("Detected a mono camera, assuming DragonFly camera with Bayer image decoding");
 			vid->int_mode = MODE_640x480_MONO;
 			ar2Video_dragonfly = 1;
 		}
@@ -431,7 +430,7 @@ VideoParams *videoOpenHandle( char *config )
 	p1 = 1 << i;
 	p2 = value & p1;
 	if( p2 == 0 ) {
-		message( "Unsupported Framerate for the specified mode.\n");
+		message( "Unsupported Framerate for the specified mode.");
 		videoDisplayOptions();
 		exit(0);
 	}
@@ -459,23 +458,25 @@ VideoParams *videoOpenHandle( char *config )
 				1, video1394devname, /* drop_frames, dma_device_file */
 #endif
 				&(vid->camera)) != DC1394_SUCCESS ) {
-		message("unable to setup camera-\n"
-				"check if you did 'insmod video1394' or,\n"
-				"check line %d of %s to make sure\n"
-				"that the video mode,framerate and format are\n"
-				"supported by your camera\n",
+		message("unable to setup camera-"
+				"check if you did 'insmod video1394' or,"
+				"check line %d of %s to make sure"
+				"that the video mode,framerate and format are"
+				"supported by your camera",
 				__LINE__,__FILE__);
 		exit(1);
 	}
 
 	/* set trigger mode */
-	if( dc1394_set_trigger_mode(V1394.handle, vid->node, TRIGGER_MODE_0) != DC1394_SUCCESS ) {
-		message( "unable to set camera trigger mode (ignored)\n");
+	if( dc1394_set_trigger_mode(V1394.handle, vid->node, TRIGGER_MODE_0) != DC1394_SUCCESS )
+	{
+		message( "unable to set camera trigger mode (ignored)" );
 	}
 
 	vid->image = (uint8_t*)malloc(sizeof(uint8_t) * (vid->camera.frame_width * vid->camera.frame_height * 3));
-	if(vid->image == NULL) {
-		message( "Error allocating memory while opening video camera");
+	if(vid->image == NULL)
+	{
+		message( "Error allocating memory while opening video camera" );
 		exit(-1);
 	}
 
