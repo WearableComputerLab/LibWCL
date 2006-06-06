@@ -2,6 +2,8 @@
 
 #ifdef MACOSX
 #include "osx/OSXIEEE1394Cam.h"
+#else ifdef LINUX
+#include "linux/LinuxIEEE1394Cam.h"
 #endif
 
 
@@ -13,6 +15,9 @@ IEEE1394Cam::IEEE1394Cam()
 #ifdef MACOSX
 	this->camera = new OSXIEEE1394Cam();
 	message( "creating an OSXIEEE1394Cam" );
+#else ifdef LINUX
+	this->camera = new LinuxIEEE1394Cam();	
+	message( "creating a LinuxIEEE1394Cam" );
 #endif
 
 	message( "in IEEE1394 constructor" );
