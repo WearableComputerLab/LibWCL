@@ -103,8 +103,9 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 #
 # Check which system we are on
 #  	This sets: host variable
-AC_CANONICAL_HOST
-WCL_PLATFORM_SETUP
+
+# Aaron put this in as a quick hack to test something, shouldn't really be here though
+_AM_DEPENDENCIES([OBJC])
 
 #
 # Add required hacks to make automake work
@@ -139,11 +140,18 @@ WCL_FRIDGE_CHECK
 #
 # Need the C++ Compiler, Installer and ranlib to strip libraries
 #
+AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
 #AC_PROG_LIBTOOL
 
+#
+# Platform specific setup
+#
+#############################
+AC_CANONICAL_HOST
+WCL_PLATFORM_SETUP
 
 #
 # Check for libraries

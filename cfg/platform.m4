@@ -30,9 +30,13 @@ CXXFLAGS="$CXXFLAGS -DMACOSX"
 export CFLAGS CXXFLAGS
 
 # Setup Objective C Compiler
-OBJC="$CC"
+_AM_DEPENDENCIES(OBJC)
+
+OBJC="${CC}"
+OBJCFLAGS="${CFLAGS}"
+AC_SUBST(OBJCCOMPILER)
 AC_SUBST(OBJC)
-export OBJC
+AC_SUBST(OBJCFLAGS)
 
 # Define that which platform we are on
 platform_osx=yes

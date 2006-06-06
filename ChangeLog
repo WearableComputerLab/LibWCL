@@ -8,6 +8,7 @@ that have happened to the libwcl library
 2006-06-06
 o Fix up platform defines. 
 o Check for correct version of autotools
+o Support Objective C on the osx
 
 2006-06-05
 o Add 1394 Camera support

@@ -60,6 +60,9 @@ if PLATFORM_OSX
 video_1394_sources+=1394cam/osx/video.cpp\
 		    1394cam/osx/OSXIEEE1394Cam.cpp\
 		    1394cam/osx/ARVideoSettingsController.m
+
+AM_OBJCFLAGS=-fpascal-strings
+
 endif
 
 endif
