@@ -19,7 +19,6 @@
  *
  */
 
-#ifdef __linux
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -34,10 +33,8 @@
 #include <libraw1394/raw1394.h>
 #include <libdc1394/dc1394_control.h>
 
-#include "base/global.h"
-
 #include "firewire.h"
-
+#include "../debug.h"
 
 
 
@@ -116,18 +113,18 @@ static int video1394Init( int debug, int *card, int *node );
 
 int videoDisplayOptions( void )
 {
-	err(" -node=N\n");
-	err("    specifies detected node ID of a FireWire camera (-1: Any).\n");
-	err(" -card=N\n");
-	err("    specifies the FireWire adaptor id number (-1: Any).\n");
-	err(" -mode=[320x240_YUV422|640x480_RGB|640x480_YUV411]\n");
-	err("    specifies input image format.\n");
-	err(" -rate=N\n");
-	err("    specifies desired framerate of a FireWire camera. \n");
-	err("    (1.875, 3.75, 7.5, 15, 30, 60)\n");
-	err(" -[name]=N  where name is brightness, iris, shutter, gain, saturation, gamma, sharpness\n");
-	err("    (value must be a legal value for this parameter - use coriander to find what they are\n");
-	err("\n");
+	message( " -node=N" );
+	message( "    specifies detected node ID of a FireWire camera (-1: Any)." );
+	message( " -card=N" );
+	message( "    specifies the FireWire adaptor id number (-1: Any)." );
+	message( " -mode=[320x240_YUV422|640x480_RGB|640x480_YUV411]" );
+	message( "    specifies input image format." );
+	message( " -rate=N" );
+	message( "    specifies desired framerate of a FireWire camera." );
+	message( "    (1.875, 3.75, 7.5, 15, 30, 60)" );
+	message( " -[name]=N  where name is brightness, iris, shutter, gain, saturation, gamma, sharpness" );
+	message( "    (value must be a legal value for this parameter - use coriander to find what they are" );
+	message( "");
 
 	return 0;
 }
@@ -164,7 +161,7 @@ int videoGetSize(int *x,int *y){
 }
 
 int videoOpen(char* config){
-	if(vid!=NULL) fatal("Attempt to open firewire video camera but a connection is already present");
+	if(vid!=NULL) gen_fatal("Attempt to open firewire video camera but a connection is already present");
 	vid = videoOpenHandle(config);
 	if(vid==NULL) return -1;
 	return 0;
@@ -189,7 +186,7 @@ VideoParams *videoOpenHandle( char *config )
 
 	vid = (VideoParams*)malloc(sizeof(VideoParams));
 	if(vid==NULL) {
-		err("Error allocating memory for VideoParams");
+		message("Error allocating memory for VideoParams");
 		exit(-1);
 	}
 	vid->node         = DEFAULT_VIDEO_NODE;
@@ -203,7 +200,7 @@ VideoParams *videoOpenHandle( char *config )
 	vid->debug        = 0;
 	vid->status       = 0;
 
-	err ("Processing config string [%s]\n", config);
+	message ("Processing config string [%s]\n", config);
 
 	a = config;
 	if( a != NULL) {
@@ -212,6 +209,7 @@ VideoParams *videoOpenHandle( char *config )
 			if( *a == '\0' ) break;
 
 			if( strncmp( a, "-mode=", 6 ) == 0 ) {
+				message("");
 				if ( strncmp( &a[6], "320x240_YUV422", 14 ) == 0 ) {
 					vid->mode = VIDEO_MODE_320x240_YUV422;
 				}
@@ -229,6 +227,7 @@ VideoParams *videoOpenHandle( char *config )
 			}
 
 			else if( strncmp( a, "-iris=", 6 ) == 0 ) {
+				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &iris ) == 0 ) {
 					videoDisplayOptions();
@@ -237,6 +236,7 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-gain=", 6 ) == 0 ) {
+				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &gain ) == 0 ) {
 					videoDisplayOptions();
@@ -246,6 +246,7 @@ VideoParams *videoOpenHandle( char *config )
 			}
 
 			else if( strncmp( a, "-node=", 6 ) == 0 ) {
+				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &vid->node ) == 0 ) {
 					videoDisplayOptions();
@@ -254,6 +255,7 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-card=", 6 ) == 0 ) {
+				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &vid->card ) == 0 ) {
 					videoDisplayOptions();
@@ -262,6 +264,7 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-rate=", 6 ) == 0 ) {
+				message("");
 				if ( strncmp( &a[6], "1.875", 5 ) == 0 ) {
 					vid->rate = VIDEO_FRAME_RATE_1_875;
 				}
@@ -287,12 +290,15 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-debug", 6 ) == 0 ) {
+				message("");
 				vid->debug = 1;
 			}
 			else if( strncmp( a, "-adjust", 7 ) == 0 ) {
+				message("");
 				/* Do nothing - this is for V4L compatibility */
 			}
 			else {
+				message("");
 				videoDisplayOptions();
 				free( vid );
 				return 0;
@@ -307,7 +313,7 @@ VideoParams *videoOpenHandle( char *config )
 	{
 		if( video1394Init(vid->debug, &vid->card, &vid->node) < 0 )
 		{
-			err ("Could not initialise 1394\n");
+			message ("Could not initialise 1394\n");
 			exit(1);
 		}
 		initFlag = 1;
@@ -325,7 +331,7 @@ VideoParams *videoOpenHandle( char *config )
 			vid->int_mode = MODE_640x480_RGB;
 			break;
 		default:
-			err("Sorry, Unsupported Video Format for IEEE1394 Camera.\n");
+			message("Sorry, Unsupported Video Format for IEEE1394 Camera.\n");
 			exit(1);
 			break;
 	}
@@ -351,7 +357,7 @@ VideoParams *videoOpenHandle( char *config )
 			vid->int_rate = FRAMERATE_60;
 			break;
 		default:
-			err("Sorry, Unsupported Frame Rate for IEEE1394 Camera.\n");
+			message("Sorry, Unsupported Frame Rate for IEEE1394 Camera.\n");
 			exit(1);
 	}
 
@@ -365,7 +371,7 @@ VideoParams *videoOpenHandle( char *config )
 	if( dc1394_get_camera_feature_set(V1394.handle, 
 				vid->node,
 				&(vid->features)) != DC1394_SUCCESS ) {
-		err( "unable to get feature set\n");
+		message( "unable to get feature set\n");
 	}
 	else if( vid->debug ) {
 		dc1394_print_feature_set( &(vid->features) );
@@ -375,12 +381,12 @@ VideoParams *videoOpenHandle( char *config )
 	/* Change the camera settings if we need to */
 	if (iris != -1)
 	{
-		err ("Adjusting IRIS setting to %d\n", iris);
+		message ("Adjusting IRIS setting to %d\n", iris);
 		dc1394_set_iris (V1394.handle, vid->node, (unsigned int)iris);
 	}
 	if (gain != -1)
 	{
-		err ("Adjusting GAIN setting to %d\n", gain);
+		message ("Adjusting GAIN setting to %d\n", gain);
 		dc1394_set_gain (V1394.handle, vid->node, (unsigned int)gain);
 	}
 
@@ -394,13 +400,13 @@ VideoParams *videoOpenHandle( char *config )
 	/*  check parameters                                                     */
 	/*-----------------------------------------------------------------------*/
 	if( dc1394_query_supported_formats(V1394.handle, vid->node, &value) != DC1394_SUCCESS ) {
-		err( "unable to query_supported_formats\n");
+		message( "unable to query_supported_formats\n");
 	}
 	i = 31 - (FORMAT_VGA_NONCOMPRESSED - FORMAT_MIN);
 	p1 = 1 << i;
 	p2 = value & p1;
 	if( p2 == 0 ) {
-		err( "unable to use this camera on VGA_NONCOMPRESSED format.\n");
+		message( "unable to use this camera on VGA_NONCOMPRESSED format.\n");
 		exit(0);
 	}
 
@@ -417,13 +423,13 @@ VideoParams *videoOpenHandle( char *config )
 		p2 = value & p1;
 		if (p2 == 0)
 		{
-			err( "Unsupported Mode for the specified camera.\n");
+			message( "Unsupported Mode for the specified camera.\n");
 			videoDisplayOptions();
 			exit(0);
 		}
 		else
 		{
-			err ("Detected a mono camera, assuming DragonFly camera with Bayer image decoding\n");
+			message ("Detected a mono camera, assuming DragonFly camera with Bayer image decoding\n");
 			vid->int_mode = MODE_640x480_MONO;
 			ar2Video_dragonfly = 1;
 		}
@@ -434,7 +440,7 @@ VideoParams *videoOpenHandle( char *config )
 	p1 = 1 << i;
 	p2 = value & p1;
 	if( p2 == 0 ) {
-		err( "Unsupported Framerate for the specified mode.\n");
+		message( "Unsupported Framerate for the specified mode.\n");
 		videoDisplayOptions();
 		exit(0);
 	}
@@ -462,7 +468,7 @@ VideoParams *videoOpenHandle( char *config )
 				1, video1394devname, /* drop_frames, dma_device_file */
 #endif
 				&(vid->camera)) != DC1394_SUCCESS ) {
-		err("unable to setup camera-\n"
+		message("unable to setup camera-\n"
 				"check if you did 'insmod video1394' or,\n"
 				"check line %d of %s to make sure\n"
 				"that the video mode,framerate and format are\n"
@@ -473,12 +479,12 @@ VideoParams *videoOpenHandle( char *config )
 
 	/* set trigger mode */
 	if( dc1394_set_trigger_mode(V1394.handle, vid->node, TRIGGER_MODE_0) != DC1394_SUCCESS ) {
-		err( "unable to set camera trigger mode (ignored)\n");
+		message( "unable to set camera trigger mode (ignored)\n");
 	}
 
 	vid->image = (uint8_t*)malloc(sizeof(uint8_t) * (vid->camera.frame_width * vid->camera.frame_height * 3));
 	if(vid->image == NULL) {
-		err( "Error allocating memory while opening video camera");
+		message( "Error allocating memory while opening video camera");
 		exit(-1);
 	}
 
@@ -509,7 +515,7 @@ int videoStartCapture( VideoParams *vid )
 
 
 	if(vid->status != 0 && vid->status != 3){
-		err("arVideoCapStart has already been called.\n");
+		message("arVideoCapStart has already been called.\n");
 		return -1;
 	}
 
@@ -537,7 +543,7 @@ int videoStartCapture( VideoParams *vid )
 					1, video1394devname, /* drop_frames, dma_device_file */
 #endif
 					&(vid->camera)) != DC1394_SUCCESS ) {
-			err("unable to setup camera-\n"
+			message("unable to setup camera-\n"
 					"check if you did 'insmod video1394' or,\n"
 					"check line %d of %s to make sure\n"
 					"that the video mode,framerate and format are\n"
@@ -548,7 +554,7 @@ int videoStartCapture( VideoParams *vid )
 	}
 
 	if( dc1394_start_iso_transmission(V1394.handle, vid->node) != DC1394_SUCCESS ) {
-		err( "unable to start camera iso transmission\n");
+		message( "unable to start camera iso transmission\n");
 		return -1;
 	}
 
@@ -560,7 +566,7 @@ int videoStartCapture( VideoParams *vid )
 int videoCaptureNext( VideoParams *vid )
 {
 	if(vid->status == 0 || vid->status == 3){
-		err("arVideoCapStart has never been called.\n");
+		message("arVideoCapStart has never been called.\n");
 		return -1;
 	}
 	if(vid->status == 2) vid->status = 1;
@@ -574,17 +580,17 @@ int videoStopCapture( VideoParams *vid )
 {
 	if(vid->status == 2){
 		if( dc1394_dma_single_capture( &(vid->camera) ) != DC1394_SUCCESS ) {
-			err("unable to capture a frame\n");
+			message("unable to capture a frame\n");
 		}
 	}
 	if(vid->status == 0){
-		err("arVideoCapStart has never been called.\n");
+		message("arVideoCapStart has never been called.\n");
 		return -1;
 	}
 	vid->status = 3;
 
 	if( dc1394_stop_iso_transmission(V1394.handle, vid->node) != DC1394_SUCCESS ) {
-		err("couldn't stop the camera?\n");
+		message("couldn't stop the camera?\n");
 		return -1;
 	}
 
@@ -610,16 +616,16 @@ uint8_t *videoGetImage( VideoParams *vid )
 	register uint8_t r, g, b;
 
 	if(vid->status == 0){
-		err("arVideoCapStart has never been called.\n");
+		message("arVideoCapStart has never been called.\n");
 		return NULL;
 	}
 	if(vid->status == 2){
-		err("arVideoCapNext has never been called since previous arVideoGetImage.\n");
+		message("arVideoCapNext has never been called since previous arVideoGetImage.\n");
 		return NULL;
 	}
 
 	if( dc1394_dma_single_capture( &(vid->camera) ) != DC1394_SUCCESS ) {
-		err("unable to capture a frame\n");
+		message("unable to capture a frame\n");
 		return NULL;
 	}
 	vid->status = 2;
@@ -635,7 +641,7 @@ uint8_t *videoGetImage( VideoParams *vid )
 				/* We only currently support Bayer image decoding from Point Grey cameras */
 				if (ar2Video_dragonfly < 0)
 				{
-					err ("It is not possible to be in mono mode without the dragonfly flag being set previously\n");
+					message ("It is not possible to be in mono mode without the dragonfly flag being set previously\n");
 					exit (1);
 				}
 
@@ -665,18 +671,18 @@ uint8_t *videoGetImage( VideoParams *vid )
 						pattern = BAYER_PATTERN_GBRG;
 						break;
 					case 0x59595959:  /* YYYY = BW */
-						err ("Camera is black and white, Bayer conversion is not possible\n");
+						message ("Camera is black and white, Bayer conversion is not possible\n");
 						exit (1);
 					default:
 						if (prev_pattern == -1)
 						{
-							err ("Camera BAYER_TILE_MAPPING register has an unexpected value 0x%x on initial startup, which should not occur\n", qValue);
+							message ("Camera BAYER_TILE_MAPPING register has an unexpected value 0x%x on initial startup, which should not occur\n", qValue);
 							exit (1);
 						}
 						else
 						{
 							/* This is a wierd bug where occasionally you get an invalid register value and I have no idea why this is */
-							err ("WARNING! The BAYER_TILE_MAPPING register has an unexpected value 0x%x, but I was able to use the previous stored result\n", qValue);
+							message ("WARNING! The BAYER_TILE_MAPPING register has an unexpected value 0x%x, but I was able to use the previous stored result\n", qValue);
 							pattern = prev_pattern;
 						}
 				}
@@ -830,7 +836,7 @@ static int video1394Init( int debug, int *card, int *node )
 	if (((*card == -1) && (*node != -1)) ||
 			((*card != -1) && (*node == -1)))
 	{
-		err ("Card value is %d and node value is %d, you must either auto-detect both or specify both\n", *card, *node);
+		message ("Card value is %d and node value is %d, you must either auto-detect both or specify both\n", *card, *node);
 		exit (1);
 	}
 
@@ -844,14 +850,14 @@ static int video1394Init( int debug, int *card, int *node )
 		raw1394handle_t raw_handle = raw1394_new_handle ();
 		if (raw_handle == NULL)
 		{
-			err ("Could not acquire a raw1394 handle - driver not installed?\n");
+			message ("Could not acquire a raw1394 handle - driver not installed?\n");
 			exit (1);
 		}
 		numPorts = raw1394_get_port_info (raw_handle, ports, numPorts);
 		raw1394_destroy_handle (raw_handle);
 
 		/* Perform autodetection */
-		err ("Auto-detecting firewire camera because card and node is not specified\n");
+		message ("Auto-detecting firewire camera because card and node is not specified\n");
 
 		/* We need to traverse all available cards and process each one */
 		for (p = 0; p < numPorts; p++)
@@ -874,21 +880,21 @@ static int video1394Init( int debug, int *card, int *node )
 				dc1394_camerainfo info;
 				if (dc1394_get_camera_info (handle, c, &info) < 0)
 				{
-					err ("1394 card %d node %d is not a camera [INVALID]\n", p, c);
+					message ("1394 card %d node %d is not a camera [INVALID]\n", p, c);
 				}
 				else
 				{
-					err ("1394 card %d node %d is a [%s - %s] --> ", p, c, info.vendor, info.model);
+					message ("1394 card %d node %d is a [%s - %s] --> ", p, c, info.vendor, info.model);
 
 					/* Store the node numbers */
 					if (*card == -1)
 					{
-						err ("auto detected\n");
+						message ("auto detected\n");
 						*card = p;
 						*node = c;
 					}
 					else
-						err ("not used\n");
+						message ("not used\n");
 				}
 			}
 		}
@@ -896,10 +902,10 @@ static int video1394Init( int debug, int *card, int *node )
 		/* If we still haven't found a camera then we are in trouble */
 		if ((*card == -1) && (*node == -1))
 		{
-			err ("Could not auto detect any cameras on the %d firewire cards available\n", numPorts);
+			message ("Could not auto detect any cameras on the %d firewire cards available\n", numPorts);
 			exit (1);
 		}
-		err ("Using the firewire camera on card %d and node %d\n", *card, *node);
+		message ("Using the firewire camera on card %d and node %d\n", *card, *node);
 	}
 
 
@@ -907,7 +913,7 @@ static int video1394Init( int debug, int *card, int *node )
 	V1394.handle = dc1394_create_handle(*card);
 	if (V1394.handle==NULL)
 	{
-		err ("Could not acquire a raw1394 handle, did you insmod the drivers?\n");
+		message ("Could not acquire a raw1394 handle, did you insmod the drivers?\n");
 		exit(1);
 	}
 
@@ -915,7 +921,3 @@ static int video1394Init( int debug, int *card, int *node )
 	/* Success */
 	return 0;
 }
-
-#endif
-
-
