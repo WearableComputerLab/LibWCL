@@ -51,6 +51,52 @@ LinuxIEEE1394Cam::LinuxIEEE1394Cam()
 	videoStartCapture(handle);
 }
 
+// constructor that takes the desired width and height of
+// the camera frame. Default is to return and RGB image.
+LinuxIEEE1394Cam::LinuxIEEE1394Cam( int width, int height )
+{
+	/*
+	char mode = char[ 15 ];
+	sprintf( mode, "%dx%d_YUV411", width, height );
+
+	float rate = 7.5;
+	int card = 0;
+	int node = 0;
+		
+	char* rateStr;
+	if(rate == 30) rateStr = "30";
+	else if(rate == 15) rateStr = "15";
+	else if(rate == 7.5) rateStr = "7.5";
+	else if(rate == 3.75) rateStr = "3.75";
+	else if(rate == 1.875) rateStr = "1.875";
+	else gen_fatal("You must specify a valid video framerate [30, 15, 7.5, 3.75, 1.875]. You specified %f", rate);
+
+	char cameraConf[1024]; //= "-mode=320x240_YUV422 -rate=7.5 -card=0 -node=2";
+	snprintf(cameraConf, 1024, "-mode=%s -rate=%s -card=%d -node=%d", mode, rateStr, card, node);
+
+	// Open the 1394 video camera
+	handle = videoOpenHandle(cameraConf);
+
+	if(handle == NULL)
+	{
+		gen_fatal("Error opening the video camera with options: %s", cameraConf);
+	}
+		
+	message( "Camera stream opened succesfully: %s", cameraConf );
+
+
+	// Find the resolution of the video stream we opened
+	if(videoGetSize(&xsize, &ysize, handle) < 0)
+		gen_fatal("Error finding size of the video image");
+
+	message( "Camera image size %d x %d", xsize, ysize );
+
+	videoStartCapture(handle);
+	*/
+}
+
+
+
 // returns a frame from the camera.
 unsigned char* LinuxIEEE1394Cam::getFrame()
 {

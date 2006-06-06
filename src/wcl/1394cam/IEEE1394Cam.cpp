@@ -6,11 +6,9 @@
 #include "linux/LinuxIEEE1394Cam.h"
 #endif
 
-
 // constructor
 IEEE1394Cam::IEEE1394Cam()
 {
-
 // check if we are on a mac
 #ifdef MACOSX
 	this->camera = new OSXIEEE1394Cam();
@@ -19,9 +17,21 @@ IEEE1394Cam::IEEE1394Cam()
 	this->camera = new LinuxIEEE1394Cam();	
 	message( "creating a LinuxIEEE1394Cam" );
 #endif
-
-	message( "in IEEE1394 constructor" );
 }
+
+// constructor
+IEEE1394Cam::IEEE1394Cam( int width, int height )
+{
+// check if we are on a mac
+#ifdef MACOSX
+	this->camera = new OSXIEEE1394Cam( width, height );
+	message( "creating an OSXIEEE1394Cam" );
+#elif defined(LINUX)
+	this->camera = new LinuxIEEE1394Cam( width, height );	
+	message( "creating a LinuxIEEE1394Cam" );
+#endif
+}
+
 
 // method to retrieve an image from the camera.
 unsigned char* IEEE1394Cam::getFrame()

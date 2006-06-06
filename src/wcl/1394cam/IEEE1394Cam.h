@@ -9,6 +9,10 @@ class IEEE1394Cam
 public:
 	// default constructor
 	IEEE1394Cam();
+	
+	// constructor that enables the user to pass in a width and height
+	// value. The default is to return an RGB image.
+	IEEE1394Cam( int width, int height );
 
 	// constructor that takes a char* argument of configuration options
 	IEEE1394Cam( char* );

@@ -28,6 +28,15 @@ OSXIEEE1394Cam::OSXIEEE1394Cam()
 	message( "create an OSXIEEE1394 object" );
 }
 
+
+// constructor that enables the user to enter the 
+// width and height of the image. The default colour
+// space is RGB
+OSXIEEE1394Cam::OSXIEEE1394Cam( int width, int height )
+{
+	message( "not implemented yet" );
+}
+
 // returns a frame from the camera.
 unsigned char* OSXIEEE1394Cam::getFrame()
 {
