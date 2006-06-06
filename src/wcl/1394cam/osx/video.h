@@ -60,12 +60,9 @@ struct _AR2VideoParamT {
         int                                             threadRunning;  // PRL.
         long                                    rowBytes;               // PRL.
         long                                    bufSize;                // PRL.
-        //ARUint8*                              bufPixels;              // PRL.
         unsigned char*                          bufPixels;              // PRL.
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
         unsigned char*                          bufPixelsCopy1; // PRL.
-//      ARUint8*                                bufPixelsCopy1; // PRL.
-//      ARUint8*                                bufPixelsCopy2; // PRL.
         unsigned char*                          bufPixelsCopy2; // PRL.
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
         int                                             grabber;
@@ -79,10 +76,6 @@ struct _AR2VideoParamT {
 };
 typedef struct _AR2VideoParamT* AR2VideoParamTRef;
 typedef struct _AR2VideoParamT AR2VideoParamT;
-
- //AR2VideoParamT   *gVid = NULL;
- //unsigned int             gVidCount = 0;
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -108,6 +101,5 @@ unsigned char *ar2VideoGetImage(AR2VideoParamT *vid);
 int ar2VideoCapStart(AR2VideoParamT *vid);
 int ar2VideoCapStop(AR2VideoParamT *vid);
 int ar2VideoCapNext(AR2VideoParamT *vid);
-//OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
 
 #endif // _VIDEO_H_

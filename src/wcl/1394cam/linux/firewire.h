@@ -8,24 +8,16 @@
  * Revision: 4.3
  * Date: 2002/01/01
  *
-*******************************************************/
+ *******************************************************/
 #ifndef AR_VIDEO_H
 #define AR_VIDEO_H
-#ifdef  __cplusplus
-//extern "C" {
-#endif
 
-//#include <AR/config.h>
-//#include <AR/ar.h>
-
-#ifdef __linux
-	#include <stdlib.h>
-	#include <stdint.h>
-	#include <linux/types.h>
-	#include <linux/videodev.h>
-	#include <libraw1394/raw1394.h>
-	#include <libdc1394/dc1394_control.h>
-
+#include <stdlib.h>
+#include <stdint.h>
+#include <linux/types.h>
+#include <linux/videodev.h>
+#include <libraw1394/raw1394.h>
+#include <libdc1394/dc1394_control.h>
 
 #define   VIDEO_NODE_ANY              -1
 #define   VIDEO_MODE_320x240_YUV422   32
@@ -42,47 +34,26 @@
 #define   DEFAULT_VIDEO_MODE          VIDEO_MODE_640x480_YUV411
 #define   DEFAULT_VIDEO_FRAME_RATE    VIDEO_FRAME_RATE_30
 
-
 typedef struct {
-    int      node;
-    int      card;
-    int      mode;
-    int      rate;
-    int      debug;
+	int      node;
+	int      card;
+	int      mode;
+	int      rate;
+	int      debug;
 
-    int      channel;
-    int      speed;
-    int      format;
-    int      dma_buf_num;
-    int      int_mode;
-    int      int_rate;
-    int      status;
+	int      channel;
+	int      speed;
+	int      format;
+	int      dma_buf_num;
+	int      int_mode;
+	int      int_rate;
+	int      status;
 
-    int                    internal_id;
-    dc1394_feature_set     features;
-    dc1394_cameracapture   camera;
-    uint8_t                *image;
+	int                    internal_id;
+	dc1394_feature_set     features;
+	dc1394_cameracapture   camera;
+	uint8_t                *image;
 } VideoParams;
-
-#endif
-#ifdef __APPLE__
-
-typedef struct {
-
-} VideoParams;
-
-#endif
-
-
-/*
-int        videoGetSize( int *x, int *y );
-uint8_t   *videoGetImage( void );
-
-int        videoStartCapture( void );
-int        videoStopCapture( void );
-int        videoCaptureNext( void );
-*/
-
 
 int videoDisplayOptions();
 
@@ -107,7 +78,4 @@ uint8_t *videoGetImage(VideoParams *vid);
 int videoGetSize(int *x,int *y);
 int videoGetSize(int *x,int *y,VideoParams *vid);
 
-#ifdef  __cplusplus
-//}
-#endif
 #endif
