@@ -209,7 +209,6 @@ VideoParams *videoOpenHandle( char *config )
 			if( *a == '\0' ) break;
 
 			if( strncmp( a, "-mode=", 6 ) == 0 ) {
-				message("");
 				if ( strncmp( &a[6], "320x240_YUV422", 14 ) == 0 ) {
 					vid->mode = VIDEO_MODE_320x240_YUV422;
 				}
@@ -227,7 +226,6 @@ VideoParams *videoOpenHandle( char *config )
 			}
 
 			else if( strncmp( a, "-iris=", 6 ) == 0 ) {
-				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &iris ) == 0 ) {
 					videoDisplayOptions();
@@ -236,7 +234,6 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-gain=", 6 ) == 0 ) {
-				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &gain ) == 0 ) {
 					videoDisplayOptions();
@@ -246,7 +243,6 @@ VideoParams *videoOpenHandle( char *config )
 			}
 
 			else if( strncmp( a, "-node=", 6 ) == 0 ) {
-				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &vid->node ) == 0 ) {
 					videoDisplayOptions();
@@ -255,7 +251,6 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-card=", 6 ) == 0 ) {
-				message("");
 				sscanf( a, "%s", line );
 				if( sscanf( &line[6], "%d", &vid->card ) == 0 ) {
 					videoDisplayOptions();
@@ -264,7 +259,6 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-rate=", 6 ) == 0 ) {
-				message("");
 				if ( strncmp( &a[6], "1.875", 5 ) == 0 ) {
 					vid->rate = VIDEO_FRAME_RATE_1_875;
 				}
@@ -290,15 +284,12 @@ VideoParams *videoOpenHandle( char *config )
 				}
 			}
 			else if( strncmp( a, "-debug", 6 ) == 0 ) {
-				message("");
 				vid->debug = 1;
 			}
 			else if( strncmp( a, "-adjust", 7 ) == 0 ) {
-				message("");
 				/* Do nothing - this is for V4L compatibility */
 			}
 			else {
-				message("");
 				videoDisplayOptions();
 				free( vid );
 				return 0;
