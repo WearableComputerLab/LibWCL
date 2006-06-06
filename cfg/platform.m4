@@ -9,12 +9,16 @@ AC_DEFUN([WCL_PLATFORM_SETUP],[
     darwin* ) 
 	WCL_PLATFORM_MACOSX()
 	;;
+    linux*)
+	WCL_PLATFORM_LINUX()
+        ;;
     *)
         ;;
     esac
 
     # Define a Makefile.am conditional that we are on mac
     AM_CONDITIONAL(PLATFORM_OSX,test "x$platform_osx" = "xyes")
+    AM_CONDITIONAL(PLATFORM_LINUX,test "x$platform_linux" = "xyes")
 ])
 
 #
@@ -43,3 +47,20 @@ platform_osx=yes
 
 ])
 
+
+#
+# WCL_AC_PLATFORM_LINUX
+#-----------------------------------
+# Define specific features needed for Linux
+#
+AC_DEFUN([WCL_PLATFORM_LINUX], [
+
+# Setup platform specific compile flags
+CFLAGS="$CFLAGS -DLINUX"
+CXXFLAGS="$CXXFLAGS -DLINUX"
+export CFLAGS CXXFLAGS
+
+# Define that which platform we are on
+platform_liinux=yes
+
+])
