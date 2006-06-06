@@ -104,16 +104,12 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 # Check which system we are on
 #  	This sets: host variable
 AC_CANONICAL_HOST
-case $host_os in
-darwin* ) 
-   AM_CONDITIONAL(PLATFORM_OSX,true)
-  ;;
-*)
-  AM_CONDITIONAL(PLATFORM_OSX,false)
-  ;;
-esac
+WCL_PLATFORM_SETUP
 
-AM_CONDITIONAL([am__fastdepOBJC], false)
+#
+# Add required hacks to make automake work
+# (defined in cfg/other.m4)
+WCL_HACKS
 
 #
 # Check to see if an Microsoft Compiler is requested, if so
@@ -148,9 +144,6 @@ AC_PROG_INSTALL
 AC_PROG_RANLIB
 #AC_PROG_LIBTOOL
 
-_AM_DEPENDENCIES([OBJC])
-OBJC="$CC"
-AC_SUBST(OBJC)
 
 #
 # Check for libraries

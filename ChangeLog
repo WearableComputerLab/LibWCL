@@ -5,6 +5,9 @@ that have happened to the libwcl library
 
 ===========
 
+2006-06-06
+o Fix up platform defines. 
+
 2006-06-05
 o Add 1394 Camera support
 o Restructure the wcl.lib compilation to make automake happy. It doesn't like
