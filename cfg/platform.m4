@@ -61,6 +61,6 @@ CXXFLAGS="$CXXFLAGS -DLINUX"
 export CFLAGS CXXFLAGS
 
 # Define that which platform we are on
-platform_liinux=yes
+platform_linux=yes
 
 ])
