@@ -47,7 +47,8 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=1394cam/IEEE1394Cam.h
+video_1394_headers+=1394cam/IEEE1394Cam.h\
+		    1394cam/AbstractIEEE1394Cam.h
 
 video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
 		    1394cam/IEEE1394Cam.cpp\
