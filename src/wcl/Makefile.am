@@ -67,7 +67,9 @@ AM_OBJCFLAGS=-fpascal-strings
 endif
 
 if PLATFORM_LINUX
-video_1394_sources+=1394cam/linux/LinuxIEEE1394Cam.cpp
+video_1394_sources+=1394cam/linux/LinuxIEEE1394Cam.cpp\
+		    1394cam/linux/firewire.cpp\
+		    1394cam/linux/conversions.cpp
 
 endif
 
