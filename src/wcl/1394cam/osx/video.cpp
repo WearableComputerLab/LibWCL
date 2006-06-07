@@ -125,21 +125,52 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	// Process configuration options.
 	a = config;
 	if (a) {
-		for(;;) {
-			while (*a == ' ' || *a == '\t') a++; // Skip whitespace.
-			if (*a == '\0') break;
+		for(;;)
+		{
+			// skip over the whitspaces
+			while( *a == ' ' || *a == '\t' )
+			{
+				 a++; // Skip whitespace.
+			}
+		
+			// check if we have reached the end of the line.	
+			if( *a == '\0' )
+			{
+				break;
+			}
 
-			if (strncmp(a, "-width=", 7) == 0) {
-				sscanf(a, "%s", line);
-				if (sscanf( &line[7], "%d", &width) == 0 ) {
+			// see if it is the width.
+			if( strncmp( a, "-width=", 7 ) == 0 )
+			{
+				// grab a copy of the width
+				sscanf( a, "%s", line );
+
+				// check if the width was read in okay
+				if( sscanf( &line[7], "%d", &width ) == 0 )
+				{
+					// dsiplay the option flags.
 					ar2VideoDispOption();
-					return(NULL);
+					return NULL;
 				}
-			} else if (strncmp(a, "-height=", 8) == 0) {
-				sscanf(a, "%s", line);
-				if (sscanf(&line[8], "%d", &height) == 0) {
+				else
+				{
+					message( "width = %d", width );
+				}
+			}
+			// see if it was the height flag
+			else if( strncmp( a, "-height=", 8 ) == 0 )
+			{
+				sscanf( a, "%s", line );
+
+				// check if the height was read in okay
+				if (sscanf(&line[8], "%d", &height) == 0)
+				{
 					ar2VideoDispOption();
 					return (NULL);
+				}
+				else
+				{
+					message( "height = %d", height );
 				}
 			} else if (strncmp(a, "-grabber=", 9) == 0) {
 				sscanf(a, "%s", line);
@@ -203,12 +234,6 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 //	bytesPerPixel = 1l;
 
 	fprintf( stderr, "%s:%d Aarons hack ********", __FILE__, __LINE__ );	
-
-	// Once only, initialize for Carbon.
-	if(initF == 0) {
-		InitCursor();
-		initF = 1;
-	}
 
 	// If there are no active grabbers, init QuickTime.
 	if (gVidCount == 0) {
@@ -1248,23 +1273,20 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 
 //
 // This function will run in a separate pthread.
-// Its sole function is to call vdgIdle() on a regular basis during a capture operation.
-// It should be terminated by a call pthread_cancel() from the instantiating thread.
-//
- void *ar2VideoInternalThread(void *arg)
+// Its sole function is to call vdgIdle() on a regular basis during a capture 
+// operation. It should be terminated by a call pthread_cancel() from the 
+// instantiating thread.
+void *ar2VideoInternalThread(void *arg)
 {
 	OSErr				err_o;
 	AR2VideoParamT		*vid;
 	int					keepAlive = 1;
-	struct timeval		tv;  // Seconds and microseconds since Jan 1, 1970.
-	struct timespec		ts;  // Seconds and nanoseconds since Jan 1, 1970.
+	struct timeval	tv;
+	struct timespec ts;
 	ComponentResult		err;
 	int					err_i;
 	int					isUpdated = 0;
 
-	// Variables for fps counter.
-	//float				fps = 0;
-	//float				averagefps = 0;
 	char				status[64];
 	Str255				theString;
 	CGrafPtr			theSavedPort;
@@ -1300,14 +1322,16 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 			ts.tv_sec += 1;
 		}
 
-		if ((err = vdgIdle(vid->pVdg, &isUpdated)) != noErr) {
+		if( ( err = vdgIdle( vid->pVdg, &isUpdated ) ) != noErr )
+		{
 			// In QT 4 you would always encounter a cDepthErr error after a user drags
 			// the window, this failure condition has been greatly relaxed in QT 5
 			// it may still occur but should only apply to vDigs that really control
 			// the screen.
 			// You don't always know where these errors originate from, some may come
 			// from the VDig.
-			fprintf(stderr, "vdgIdle err=%ld.\n", err);
+
+			message( "vdgIdle err=%ld.", err );
 			// ... to fix this we could simply call SGStop and SGStartRecord again
 			// calling stop allows the SG to release and re-prepare for grabbing
 			// hopefully fixing any problems, this is obviously a very relaxed
@@ -1316,42 +1340,8 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 			break;
 		}
 
-		if (isUpdated) {
-			// Write status information onto the frame if so desired.
-			if (vid->showFPS) {
-				// Reset frame and time counters after a stop/start.
-				/*
-				   if (vid->lastTime > time) {
-				   vid->lastTime = 0;
-				   vid->frameCount = 0;
-				   }
-				 */
-//				vid->frameCount++;
-				// If first time here, get the time scale.
-				/*
-				   if (vid->timeScale == 0) {
-				   if ((err = SGGetChannelTimeScale(c, &vid->timeScale)) != noErr) {
-				   fprintf(stderr, "SGGetChannelTimeScale err=%ld.\n", err);
-				   }
-				   }
-				 */
-/*
-				GetGWorld(&theSavedPort, &theSavedDevice);
-				SetGWorld(vid->pGWorld, NULL);
-				TextSize(12);
-				TextMode(srcCopy);
-				MoveTo(vid->theRect.left + 10, vid->theRect.bottom - 14);
-				//fps = (float)vid->timeScale / (float)(time - vid->lastTime);
-				//averagefps = (float)vid->frameCount * (float)vid->timeScale / (float)time;
-				//sprintf(status, "time: %ld, fps:%5.1f avg fps:%5.1f", time, fps, averagefps);
-				sprintf(status, "frame: %ld", vid->frameCount);
-				CopyCStringToPascal(status, theString);
-				DrawString(theString);
-				SetGWorld(theSavedPort, theSavedDevice);
-				//vid->lastTime = time;
-				*/
-			}
-
+		if( isUpdated )
+		{
 			// Mark status to indicate we have a frame available.
 			vid->status |= AR_VIDEO_STATUS_BIT_READY;			
 		}
@@ -1433,6 +1423,7 @@ int ar2VideoCapStart(AR2VideoParamT *vid)
 			fprintf(stderr, "ar2VideoCapStart(): Error %d detaching thread.\n", err_i);
 		}
 	}
+
 	return (err_i);
 }
 
