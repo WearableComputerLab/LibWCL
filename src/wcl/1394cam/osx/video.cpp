@@ -172,13 +172,25 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 				{
 					message( "height = %d", height );
 				}
-			} else if (strncmp(a, "-grabber=", 9) == 0) {
-				sscanf(a, "%s", line);
-				if (sscanf(&line[9], "%d", &grabber) == 0) {
+			}
+			// see if the grabber was set.
+			else if( strncmp( a, "-grabber=", 9 ) == 0 )
+			{
+				// copy the info into line
+				sscanf( a, "%s", line );
+
+				// try and rip out the grabber info
+				if( sscanf( &line[9], "%d", &grabber ) == 0 )
+				{
 					ar2VideoDispOption();
 					return (NULL);
 				}
-			} else if (strncmp(a, "-pixelformat=", 13) == 0) {
+				else
+				{
+					message( "grabber = %d", grabber );
+				}
+			} 
+			else if (strncmp(a, "-pixelformat=", 13) == 0) {
 				sscanf(a, "%s", line);
 				if (sscanf(&line[13], "%c%c%c%c", (char *)&pixFormat, ((char *)&pixFormat) + 1,
 							((char *)&pixFormat) + 2, ((char *)&pixFormat) + 3) < 4) { // Try 4-cc first.
@@ -233,39 +245,70 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 //	pixFormat = k8IndexedGrayPixelFormat;
 //	bytesPerPixel = 1l;
 
-	fprintf( stderr, "%s:%d Aarons hack ********", __FILE__, __LINE__ );	
+	message( "checking that quicktime is installed..." );
 
-	if ((err_s = Gestalt(gestaltQuickTimeVersion, &qtVersion)) != noErr) {
-		fprintf(stderr,"ar2VideoOpen(): QuickTime not installed (%d).\n", err_s);
-		return (NULL);
+	// check that quicktime is installed.
+	if( ( err_s = Gestalt( gestaltQuickTimeVersion, &qtVersion ) ) != noErr )
+	{
+		gen_fatal( "QuickTime is not installed!! (%d).", err_s );
+	}
+	else
+	{
+		message( "Quicktime is installed" );
+		message( "checking quicktime version..." );
+
+		// check the quicktime version.
+		if( ( qtVersion >> 16 ) < 0x640 )
+		{
+			gen_fatal( "QuickTime version 6.4 or newer is required, found %ld", qtVersion );
+		}
+		else
+		{
+			message( "QuickTime version okay, found version: %ld", qtVersion );
+		}
 	}
 
-	if ((qtVersion >> 16) < 0x640) {
-		fprintf(stderr,"ar2VideoOpen(): QuickTime version 6.4 or newer is required by this program.\n");;
-		return (NULL);
+	// Initialize the Movie Toolbox and creates a private storage area
+	if( ( err_s = EnterMovies() ) != noErr )
+	{
+		gen_fatal( "Unable to initialise Carbon/QuickTime (%d).", err_s );
+	}
+	else
+	{
+		message( "Initialized the Movie Toolbox" );
 	}
 
-	// Initialise QuickTime (a.k.a. Movie Toolbox).
-	if ((err_s = EnterMovies()) != noErr) {
-		fprintf(stderr,"ar2VideoOpen(): Unable to initialise Carbon/QuickTime (%d).\n", err_s);
-		return (NULL);
-	}
-
+	// increment the video device count in use.
 	gVidCount++;
 
-	// Allocate the parameters structure and fill it in.
-	arMalloc(vid, AR2VideoParamT, 1);
-	memset(vid, 0, sizeof(AR2VideoParamT));
-	vid->status         = 0;
-	vid->showFPS		= showFPS;
-	vid->frameCount		= 0;
-	//vid->lastTime		= 0;
-	//vid->timeScale	= 0;
-	vid->grabber		= grabber;
+	// Allocate some memory for the video parameters.
+	arMalloc( vid, AR2VideoParamT, 1 );
 
-	if(!(vid->pVdg = vdgAllocAndInit(grabber))) {
-		fprintf(stderr, "ar2VideoOpen(): vdgAllocAndInit err=%ld\n", err);
-		goto out1;
+	// initialize the memory with zeros
+	memset( vid, 0, sizeof( AR2VideoParamT ) );
+
+	// set the status
+	vid->status = 0;
+	
+	// copy the FPS that was defined previously
+	vid->showFPS = showFPS;
+
+	// set the frame count.
+	vid->frameCount = 0;
+
+	// the last time we grabbed a frame??
+	vid->lastTime = 0;
+
+	// not sure??
+	vid->timeScale = 0;
+
+	//
+	vid->grabber = grabber;
+
+	// attempt to allocate memory for a grabber and initialize it.
+	if( !( vid->pVdg = vdgAllocAndInit( grabber ) ) )
+	{
+		gen_fatal( "Unable to Initialize the grabber: err=%ld", err );
 	}
 
 	if (err = vdgRequestSettings(vid->pVdg, showDialog, gVidCount)) {
@@ -423,10 +466,6 @@ out3:
 	DisposeHandle((Handle)vid->vdImageDesc);
 out2:	
 	vdgReleaseAndDealloc(vid->pVdg);
-out1:	
-	free(vid);
-	vid = NULL;
-	gVidCount--;
 out:
 	return (vid);
 }
@@ -498,21 +537,43 @@ int ar2VideoClose(AR2VideoParamT *vid)
 //
 SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 {
-	SeqGrabComponent	seqGrab = NULL;
-	ComponentResult		err = noErr;
+	SeqGrabComponent seqGrab = NULL;
+	ComponentResult	err = noErr;
+
 	ComponentDescription cDesc;
-	long				cCount;
-	Component			c;
-	int					i;
 
 	// Open the sequence grabber.
+	// A four-character code that identifies the type of component, in this
+	// case SeqGrabComponentType is = 'barg'. All components of a particular 
+	// type support a common set of interface routines. This field is used 
+	// to search for components of a given type "barg"
 	cDesc.componentType = SeqGrabComponentType;
-	cDesc.componentSubType = 0L; // Could use subtype vdSubtypeIIDC for IIDC-only cameras (i.e. exclude DV and other cameras.)
-	cDesc.componentManufacturer = cDesc.componentFlags = cDesc.componentFlagsMask = 0L;
-	cCount = CountComponents(&cDesc);
-	fprintf(stdout, "Opening sequence grabber %d of %ld.\n", grabber, cCount);
-	c = 0;
-	for (i = 1; (c = FindNextComponent(c, &cDesc)) != 0; i++) {
+
+	// Could use subtype vdSubtypeIIDC for IIDC-only cameras (i.e. exclude 
+	// DV and other cameras.), but we are not interested in restricting to
+	// subtypes at this point.
+	cDesc.componentSubType = 0L; 
+	
+	// can use this field to select devices based on manufacturer. TODO - 
+	// use thid field to check if it is a ptgrey camera.
+	cDesc.componentManufacturer = 0L;
+
+	// used to indicate a components features
+	cDesc.componentFlags = 0L;
+	
+	// ignore all flags.
+	cDesc.componentFlagsMask = 0L;
+
+	// find out how many components fit the criteria that we set.
+	long cCount = CountComponents( &cDesc );
+	message( "Opening sequence grabber %d of %ld", grabber, cCount );
+
+	// initialize a component object
+	Component c = 0;
+
+	// attempt to find the grabber that we are interested in.
+	for( int i = 1; (c = FindNextComponent(c, &cDesc)) != 0; i++ )
+	{
 		// Could call GetComponentInfo() here to get more info on this SeqGrabComponentType component.
 		// Is this the grabber requested?
 		if (i == grabber) {
@@ -625,13 +686,15 @@ VdigGrabRef vdgAllocAndInit(const int grabber)
 	OSErr err;
 
 	// Allocate the grabber structure
-	arMalloc(pVdg, VdigGrab, 1)
-		memset(pVdg, 0, sizeof(VdigGrab));	
+	arMalloc( pVdg, VdigGrab, 1 );
 
-	if (!(pVdg->seqGrab = MakeSequenceGrabber(NULL, grabber))) {
-		fprintf(stderr, "MakeSequenceGrabber error.\n"); 
-		free(pVdg);
-		return (NULL);
+	// initialize the memory to zeros.
+	memset( pVdg, 0, sizeof( VdigGrab ) );	
+
+	// attempt to make a sequence grabber.
+	if( !( pVdg->seqGrab = MakeSequenceGrabber( NULL, grabber ) ) )
+	{
+		gen_fatal( "Couldn't make a sequence grabber"); 
 	}
 
 	if ((err = MakeSequenceGrabChannel(pVdg->seqGrab, &pVdg->sgchanVideo))) {
