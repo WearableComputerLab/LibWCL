@@ -235,24 +235,20 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 
 	fprintf( stderr, "%s:%d Aarons hack ********", __FILE__, __LINE__ );	
 
-	// If there are no active grabbers, init QuickTime.
-	if (gVidCount == 0) {
+	if ((err_s = Gestalt(gestaltQuickTimeVersion, &qtVersion)) != noErr) {
+		fprintf(stderr,"ar2VideoOpen(): QuickTime not installed (%d).\n", err_s);
+		return (NULL);
+	}
 
-		if ((err_s = Gestalt(gestaltQuickTimeVersion, &qtVersion)) != noErr) {
-			fprintf(stderr,"ar2VideoOpen(): QuickTime not installed (%d).\n", err_s);
-			return (NULL);
-		}
+	if ((qtVersion >> 16) < 0x640) {
+		fprintf(stderr,"ar2VideoOpen(): QuickTime version 6.4 or newer is required by this program.\n");;
+		return (NULL);
+	}
 
-		if ((qtVersion >> 16) < 0x640) {
-			fprintf(stderr,"ar2VideoOpen(): QuickTime version 6.4 or newer is required by this program.\n");;
-			return (NULL);
-		}
-
-		// Initialise QuickTime (a.k.a. Movie Toolbox).
-		if ((err_s = EnterMovies()) != noErr) {
-			fprintf(stderr,"ar2VideoOpen(): Unable to initialise Carbon/QuickTime (%d).\n", err_s);
-			return (NULL);
-		}
+	// Initialise QuickTime (a.k.a. Movie Toolbox).
+	if ((err_s = EnterMovies()) != noErr) {
+		fprintf(stderr,"ar2VideoOpen(): Unable to initialise Carbon/QuickTime (%d).\n", err_s);
+		return (NULL);
 	}
 
 	gVidCount++;
@@ -500,7 +496,7 @@ int ar2VideoClose(AR2VideoParamT *vid)
 // --------------------
 // MakeSequenceGrabber  (adapted from Apple mung sample)
 //
- SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
+SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 {
 	SeqGrabComponent	seqGrab = NULL;
 	ComponentResult		err = noErr;
@@ -563,7 +559,7 @@ endFunc:
 // --------------------
 // MakeSequenceGrabChannel (adapted from Apple mung sample)
 //
- ComponentResult MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
+ComponentResult MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
 {
 	long  flags = 0;
 	ComponentResult err = noErr;
@@ -591,7 +587,7 @@ endFunc:
 	return err;
 }
 
- ComponentResult vdgGetSettings(VdigGrab* pVdg)
+ComponentResult vdgGetSettings(VdigGrab* pVdg)
 {	
 	ComponentResult err;
 
@@ -647,7 +643,7 @@ VdigGrabRef vdgAllocAndInit(const int grabber)
 	return (pVdg);
 }
 
- ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex)
+ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex)
 {
 	ComponentResult err;
 
@@ -666,7 +662,7 @@ endFunc:
 	return err;
 }
 
- VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
+VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
 {
 	VideoDigitizerError err;
 	Str255	vdName; // Pascal string (first byte is string length).
@@ -704,14 +700,14 @@ endFunc:
 	return err;
 }
 
- OSErr vdgSetDestination(  VdigGrab* pVdg,
+OSErr vdgSetDestination(  VdigGrab* pVdg,
 		CGrafPtr  dstPort )
 {
 	pVdg->dstPort = dstPort;
 	return noErr;
 }
 
- VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
+VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 {
 	/* from Steve Sisak (on quicktime-api list):
 	   A much more optimal case, if you're doing it yourself is:
@@ -836,7 +832,7 @@ endFunc:
 	return (err);
 }
 
- VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
+VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
 		long*		pMilliSecPerFrame,
 		Fixed*      pFramesPerSecond,
 		long*       pBytesPerSecond)
@@ -855,7 +851,7 @@ endFunc:
 	return (err);
 }
 
- VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
+VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
 		ImageDescriptionHandle vdImageDesc )
 {
 	VideoDigitizerError err;
@@ -870,7 +866,7 @@ endFunc:
 	return err;
 }
 
- OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
+OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
 		CGrafPtr dstPort, 
 		Rect* pDstRect,
 		MatrixRecord* pDstScaleMatrix )
@@ -918,7 +914,7 @@ endFunc:
 	return err;
 }
 
- OSErr vdgDecompressionSequenceWhen(   VdigGrab* pVdg,
+OSErr vdgDecompressionSequenceWhen(   VdigGrab* pVdg,
 		Ptr theData,
 		long dataSize)
 {
@@ -941,7 +937,7 @@ endFunc:
 	return err;
 }
 
- OSErr vdgDecompressionSequenceEnd( VdigGrab* pVdg )
+OSErr vdgDecompressionSequenceEnd( VdigGrab* pVdg )
 {
 	OSErr err;
 
@@ -964,7 +960,7 @@ endFunc:
 	return err;
 }
 
- VideoDigitizerError vdgStartGrabbing(VdigGrab*   pVdg, MatrixRecord* pDstScaleMatrix)
+VideoDigitizerError vdgStartGrabbing(VdigGrab*   pVdg, MatrixRecord* pDstScaleMatrix)
 {
 	VideoDigitizerError err;
 
@@ -993,7 +989,7 @@ endFunc:
 	return err;
 }
 
- VideoDigitizerError vdgStopGrabbing(VdigGrab* pVdg)
+VideoDigitizerError vdgStopGrabbing(VdigGrab* pVdg)
 {
 	VideoDigitizerError err;
 
@@ -1015,12 +1011,12 @@ endFunc:
 	return err;
 }
 
- bool vdgIsGrabbing(VdigGrab* pVdg)
+bool vdgIsGrabbing(VdigGrab* pVdg)
 {
 	return pVdg->isGrabbing;
 }
 
- VideoDigitizerError vdgPoll(	VdigGrab*   pVdg,
+VideoDigitizerError vdgPoll(	VdigGrab*   pVdg,
 		UInt8*		pQueuedFrameCount,
 		Ptr*		pTheData,
 		long*		pDataSize,
@@ -1061,7 +1057,7 @@ endFunc:
 	return err;
 }
 
- VideoDigitizerError vdgReleaseBuffer(VdigGrab*   pVdg, Ptr theData)
+VideoDigitizerError vdgReleaseBuffer(VdigGrab*   pVdg, Ptr theData)
 {
 	VideoDigitizerError err;
 
@@ -1075,7 +1071,7 @@ endFunc:
 	return err;
 }
 
- VideoDigitizerError vdgIdle(VdigGrab* pVdg, int*  pIsUpdated)
+VideoDigitizerError vdgIdle(VdigGrab* pVdg, int*  pIsUpdated)
 {
 	VideoDigitizerError err;
 
@@ -1125,7 +1121,7 @@ endFunc:
 	return err;
 }
 
- ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg)
+ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg)
 {
 	ComponentResult err = noErr;		
 
@@ -1194,7 +1190,7 @@ char unsigned* arVideoGetImage(void)
 	if( gVid == NULL )
 	{
 		message("");
-		 return NULL;
+		return NULL;
 	}
 
 	return ar2VideoGetImage( gVid );
@@ -1250,7 +1246,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 }
 #endif
 
- int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
+int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
 {
 	int err;
 
@@ -1262,7 +1258,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 	return (1);
 }
 
- void ar2VideoInternalThreadCleanup(void *arg)
+void ar2VideoInternalThreadCleanup(void *arg)
 {
 	AR2VideoParamT *vid;
 
@@ -1489,35 +1485,35 @@ unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
 	// the OpenGL frame rate to the camera frame rate. Now, if no frame is 
 	// currently available then we won't wait around for one. So, do we have 
 	// a new frame from the sequence grabber?	
-//	if ( vid->status & AR_VIDEO_STATUS_BIT_READY )
-//	{
-		// Prior Mac versions of ar2VideoInternal added 1 to the pixmap base address
-		// returned to the caller to cope with the fact that neither
-		// arDetectMarker() or argDispImage() knew how to cope with
-		// pixel data with ARGB (Apple) or ABGR (SGI) byte ordering.
-		// Adding 1 had the effect of passing a pointer to the first byte
-		// of non-alpha data. This was an awful hack which caused all sorts
-		// of problems and which can now be avoided after rewriting the
-		// various bits of the toolkit to cope.
+	//	if ( vid->status & AR_VIDEO_STATUS_BIT_READY )
+	//	{
+	// Prior Mac versions of ar2VideoInternal added 1 to the pixmap base address
+	// returned to the caller to cope with the fact that neither
+	// arDetectMarker() or argDispImage() knew how to cope with
+	// pixel data with ARGB (Apple) or ABGR (SGI) byte ordering.
+	// Adding 1 had the effect of passing a pointer to the first byte
+	// of non-alpha data. This was an awful hack which caused all sorts
+	// of problems and which can now be avoided after rewriting the
+	// various bits of the toolkit to cope.
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
-		if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER)
-		{
-			memcpy((void *)(vid->bufPixelsCopy2), (void *)(vid->bufPixels), vid->bufSize);
-			pix = vid->bufPixelsCopy2;
-			vid->status &= ~AR_VIDEO_STATUS_BIT_BUFFER; // Clear buffer bit.
-		}
-		else
-		{
-			memcpy((void *)(vid->bufPixelsCopy1), (void *)(vid->bufPixels), vid->bufSize);
-			pix = vid->bufPixelsCopy1;
-			vid->status |= AR_VIDEO_STATUS_BIT_BUFFER; // Set buffer bit.
-		}
+	if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER)
+	{
+		memcpy((void *)(vid->bufPixelsCopy2), (void *)(vid->bufPixels), vid->bufSize);
+		pix = vid->bufPixelsCopy2;
+		vid->status &= ~AR_VIDEO_STATUS_BIT_BUFFER; // Clear buffer bit.
+	}
+	else
+	{
+		memcpy((void *)(vid->bufPixelsCopy1), (void *)(vid->bufPixels), vid->bufSize);
+		pix = vid->bufPixelsCopy1;
+		vid->status |= AR_VIDEO_STATUS_BIT_BUFFER; // Set buffer bit.
+	}
 #else
-		pix = vid->bufPixels;
+	pix = vid->bufPixels;
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
 
-		vid->status &= ~AR_VIDEO_STATUS_BIT_READY; // Clear ready bit.
-//	}
+	vid->status &= ~AR_VIDEO_STATUS_BIT_READY; // Clear ready bit.
+	//	}
 
 	// attempt to release the lock on the camera.	
 	if ( !ar2VideoInternalUnlock( &( vid->bufMutex ) ) )
