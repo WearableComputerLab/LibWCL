@@ -43,14 +43,14 @@ unsigned char* OSXIEEE1394Cam::getFrame()
 
 	while( ( this->image_buffer = ar2VideoGetImage( this->artk_params ) ) == NULL )
 		;
-
+/*
 	unsigned char*  temp = image_buffer;
 	for( int i = 0; i < 640 * 480; i++ )
 	{
 		*temp = 255 - *temp;
 		temp++;
 	}
-
+*/
 	return this->image_buffer;
 }
 
