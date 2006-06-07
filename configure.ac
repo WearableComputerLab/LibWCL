@@ -1,9 +1,5 @@
 # 
-<<<<<<< configure.ac
 # $Id$
-=======
-# $Id$
->>>>>>> 1.11
 #
 # This configure build file indicates what libraries and includes
 # exist on the system and generates the required code for to
