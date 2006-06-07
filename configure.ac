@@ -159,9 +159,9 @@ WCL_PLATFORM_SETUP
 #############################
 if test "x$enable_video_1394" == "xyes"; then
     if test "x$platform_linux" == "xyes"; then
-	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.2.0)
-    else if test "x$platform_osx" == "xyes"; then
-	   :
+	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
+    elif test "x$platform_osx" == "xyes"; then
+	   echo "test"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
