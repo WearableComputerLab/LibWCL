@@ -6,6 +6,5 @@ includedir=@includedir@
 Name: libwcl
 Description: Wearable Computer Lab Common Library
 Version: @VERSION@
-Libs: -L${libdir} -lwcl 
-Libs.private: @PKGCONFIG_OTHERLIBS@
+Libs: -L${libdir} -lwcl @PKGCONFIG_OTHERLIBS@
 Cflags: -I${includedir} @PKGCONFIG_OTHERINCLUDES@
