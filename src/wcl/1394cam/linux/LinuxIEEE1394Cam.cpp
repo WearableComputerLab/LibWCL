@@ -10,7 +10,7 @@ LinuxIEEE1394Cam::LinuxIEEE1394Cam()
 	// just put this in as a hack (default values) need to be passed in 
 	// somehow.
 	
-	char* mode = "640x480_YUV411";
+	char* mode = "640x480_RGB";
 	float rate = 7.5;
 	int card = 0;
 	int node = 0;
