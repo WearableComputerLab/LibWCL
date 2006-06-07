@@ -169,7 +169,7 @@ if test "x$enable_video_1394" == "xyes"; then
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
     elif test "x$platform_osx" == "xyes"; then
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -framework Carbon"
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
