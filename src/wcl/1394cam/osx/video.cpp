@@ -197,8 +197,8 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	//	pixFormat = k24RGBPixelFormat;
 	//	bytesPerPixel = 3l;
 
-	pixFormat = k8IndexedGrayPixelFormat;
-	bytesPerPixel = 1l;
+//	pixFormat = k8IndexedGrayPixelFormat;
+//	bytesPerPixel = 1l;
 
 	/*	
 		fprintf( stderr, "%s:%d k2vuyPixelFormat = %s\n", __FILE__, __LINE__, k2vuyPixelFormat );
