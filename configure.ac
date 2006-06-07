@@ -1,5 +1,9 @@
 # 
+<<<<<<< configure.ac
 # $Id$
+=======
+# $Id$
+>>>>>>> 1.11
 #
 # This configure build file indicates what libraries and includes
 # exist on the system and generates the required code for to
@@ -160,8 +164,10 @@ WCL_PLATFORM_SETUP
 if test "x$enable_video_1394" == "xyes"; then
     if test "x$platform_linux" == "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
     elif test "x$platform_osx" == "xyes"; then
-	   echo "test"
+	:
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
@@ -197,12 +203,20 @@ echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "-----------------------------"
 
 #
+# Tell automake to substitute the values for 
+# package config
+#
+AC_SUBST(PKGCONFIG_OTHERLIBS)
+AC_SUBST(PKGCONFIG_OTHERINCLUDES)
+
+#
 # Files to create
 #
 ##############################
 AC_CONFIG_FILES([Makefile
 		 src/Makefile
                  src/wcl/Makefile
+		 libwcl.pc
 		])
 
 #

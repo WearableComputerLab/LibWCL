@@ -5,6 +5,10 @@ that have happened to the libwcl library
 
 ===========
 
+2006-06-07
+o Fix up pkg-config setup for libraw1394
+o Add libwcl pkg-config support viw libwcl.pc
+
 2006-06-06
 o Fix up platform defines. 
 o Check for correct version of autotools

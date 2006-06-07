@@ -14,3 +14,11 @@ ACLOCAL_AMFLAGS=-I cfg
 # Indicate which directories to process
 #
 SUBDIRS=src
+
+#
+# Package config information
+#
+pkgconfigdir = @libdir@/pkgconfig
+pkgconfig_DATA=libwcl.pc
+
+EXTRA_DIST=libwcl.pc
