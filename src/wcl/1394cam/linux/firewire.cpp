@@ -628,6 +628,7 @@ uint8_t *videoGetImage( VideoParams *vid )
 		case MODE_640x480_RGB:
 			return (uint8_t *)vid->camera.capture_buffer;
 		case MODE_640x480_MONO:
+		{
 			// We only currently support Bayer image decoding from 
 			// Point Grey cameras
 			if (ar2Video_dragonfly < 0)
@@ -702,6 +703,7 @@ uint8_t *videoGetImage( VideoParams *vid )
 
 			// Image is done, we can now return it!
 			return vid->image;		
+		}
 		case MODE_640x480_YUV411:
 			buf  = vid->image;
 			buf2 = (uint8_t *)vid->camera.capture_buffer;
