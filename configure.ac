@@ -128,6 +128,8 @@ WCL_FRIDGE_CHECK
 #
 #######################################
 
+AC_CHECK_PROG(SED,sed,sed,AC_MSG_ERROR([You Must install sed]))
+
 #
 # Test for Package Config
 # We need this for a lot of packages
@@ -136,6 +138,10 @@ AC_PATH_PROG(PKG_CONFIG, pkg-config)
 if test "x$PKG_CONFIG" = "x"; then
 	AC_MSG_ERROR([You need to install pkg-config])
 fi
+
+AC_MSG_CHECKING([for pkg-config library dir])
+PKGCONFIG_LIBDIR="`echo $PKG_CONFIG | $SED -e 's~/bin/pkg-config$~~'`/lib/pkgconfig"
+AC_MSG_RESULT($PKGCONFIG_LIBDIR)
 
 #
 # Need the C++ Compiler, Installer and ranlib to strip libraries
@@ -201,9 +207,10 @@ echo "-----------------------------"
 #
 # Tell automake to substitute the values for 
 # package config
-#
+
 AC_SUBST(PKGCONFIG_OTHERLIBS)
 AC_SUBST(PKGCONFIG_OTHERINCLUDES)
+AC_SUBST(PKGCONFIG_LIBDIR)
 
 #
 # Files to create

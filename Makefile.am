@@ -18,7 +18,7 @@ SUBDIRS=src
 #
 # Package config information
 #
-pkgconfigdir = @libdir@/pkgconfig
+pkgconfigdir = @PKGCONFIG_LIBDIR@/
 pkgconfig_DATA=libwcl.pc
 
 EXTRA_DIST=libwcl.pc
