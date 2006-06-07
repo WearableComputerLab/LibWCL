@@ -4,7 +4,7 @@
 OSXIEEE1394Cam::OSXIEEE1394Cam()
 {
 	// the string that we are going to pass to artoolkit
-	char init_string [] = "-nodialog -width=640 -height=480 -pixelformat=24";
+	char init_string [] = "-nodialog -width=640 -height=480 -pixelformat=24 -fps";
 	//char init_string [] = "-nodialog -width=320 -height=240 -pixelformat=24";
 
 	// attempt to open the camera
@@ -28,7 +28,6 @@ OSXIEEE1394Cam::OSXIEEE1394Cam()
 	message( "create an OSXIEEE1394 object" );
 }
 
-
 // constructor that enables the user to enter the 
 // width and height of the image. The default colour
 // space is RGB
@@ -40,7 +39,6 @@ OSXIEEE1394Cam::OSXIEEE1394Cam( int width, int height )
 // returns a frame from the camera.
 unsigned char* OSXIEEE1394Cam::getFrame()
 {
-
 	while( ( this->image_buffer = ar2VideoGetImage( this->artk_params ) ) == NULL )
 		;
 /*
@@ -54,4 +52,14 @@ unsigned char* OSXIEEE1394Cam::getFrame()
 	return this->image_buffer;
 }
 
-OSXIEEE1394Cam::~OSXIEEE1394Cam() {}
+OSXIEEE1394Cam::~OSXIEEE1394Cam()
+{
+	// close the image grabber
+	int stopped = ar2VideoCapStop( this->artk_params );
+
+	// check that capturing was stopped okay
+	if( stopped == -1 )
+	{
+		gen_fatal( "camera capturing could not be stopped cleanly" );
+	}
+}
