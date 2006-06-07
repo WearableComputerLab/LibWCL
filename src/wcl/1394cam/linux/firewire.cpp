@@ -623,79 +623,85 @@ uint8_t *videoGetImage( VideoParams *vid )
 	vid->status = 2;
 
 
-	switch( vid->int_mode ) {
+	switch( vid->int_mode )
+	{
 		case MODE_640x480_RGB:
 			return (uint8_t *)vid->camera.capture_buffer;
-
-
 		case MODE_640x480_MONO:
+			// We only currently support Bayer image decoding from 
+			// Point Grey cameras
+			if (ar2Video_dragonfly < 0)
 			{
-				/* We only currently support Bayer image decoding from Point Grey cameras */
-				if (ar2Video_dragonfly < 0)
-				{
-					message ("It is not possible to be in mono mode without the dragonfly flag being set previously\n");
-					exit (1);
-				}
-
-				/* If the image data is NULL then we should immediately return to avoid doing an image conversion which probably won't work! */
-				if (vid->camera.capture_buffer == NULL)
-					return ((uint8_t *)vid->camera.capture_buffer);
-
-				/* This Bayer code was copied from LGPL'd code by Don Murray <donm@ptgrey.com>, and I then modified it to fix up a few things */
-
-				/* Query the camera to detect the Bayer pattern type */
-				quadlet_t qValue;
-				GetCameraControlRegister (V1394.handle, vid->node, 0x1040, &qValue);
-				bayer_pattern_t pattern = BAYER_PATTERN_BGGR;
-				static bayer_pattern_t prev_pattern = (bayer_pattern_t)-1;
-				switch( qValue )
-				{
-					case 0x42474752:  /* BGGR */
-						pattern = BAYER_PATTERN_BGGR;
-						break;
-					case 0x47524247:  /* GRBG */
-						pattern = BAYER_PATTERN_GRBG;
-						break;
-					case 0x52474742:  /* RGGB */
-						pattern = BAYER_PATTERN_RGGB;
-						break;
-					case 0x47425247:  /* GBRG */
-						pattern = BAYER_PATTERN_GBRG;
-						break;
-					case 0x59595959:  /* YYYY = BW */
-						message ("Camera is black and white, Bayer conversion is not possible\n");
-						exit (1);
-					default:
-						if (prev_pattern == -1)
-						{
-							message ("Camera BAYER_TILE_MAPPING register has an unexpected value 0x%x on initial startup, which should not occur\n", qValue);
-							exit (1);
-						}
-						else
-						{
-							/* This is a wierd bug where occasionally you get an invalid register value and I have no idea why this is */
-							message ("WARNING! The BAYER_TILE_MAPPING register has an unexpected value 0x%x, but I was able to use the previous stored result\n", qValue);
-							pattern = prev_pattern;
-						}
-				}
-
-				/* Store the previous Bayer pattern value */
-				prev_pattern = pattern;
-
-				/* Do the Bayer image conversion now */
-				unsigned char *dest  = vid->image;
-				unsigned char *src = (uint8_t *)vid->camera.capture_buffer;
-				BayerNearestNeighbor( src, 
-						dest,
-						vid->camera.frame_width,
-						vid->camera.frame_height,
-						pattern );
-
-				/* Image is done, we can now return it! */
-				return (vid->image);		
+				gen_fatal ("It is not possible to be in mono mode without the dragonfly flag being set previously\n");
 			}
 
+			// If the image data is NULL then we should immediately 
+			// return to avoid doing an image conversion which 
+			// probably won't work!
+			if (vid->camera.capture_buffer == NULL)
+			{
+				return ((uint8_t *)vid->camera.capture_buffer);
+			}
 
+			// This Bayer code was copied from LGPL'd code by Don 
+			// Murray <donm@ptgrey.com>, and I then modified it to 
+			// fix up a few things
+
+			// Query the camera to detect the Bayer pattern type
+			quadlet_t qValue;
+			GetCameraControlRegister (V1394.handle, vid->node, 0x1040, &qValue);
+			bayer_pattern_t pattern = BAYER_PATTERN_BGGR;
+			static bayer_pattern_t prev_pattern = (bayer_pattern_t)-1;
+			switch( qValue )
+			{
+				case 0x42474752:  /* BGGR */
+					pattern = BAYER_PATTERN_BGGR;
+					break;
+				case 0x47524247:  /* GRBG */
+					pattern = BAYER_PATTERN_GRBG;
+					break;
+				case 0x52474742:  /* RGGB */
+					pattern = BAYER_PATTERN_RGGB;
+					break;
+				case 0x47425247:  /* GBRG */
+					pattern = BAYER_PATTERN_GBRG;
+					break;
+				case 0x59595959:  /* YYYY = BW */
+					gen_fatal( "Camera is black and white, Bayer conversion is not possible" );
+				default:
+					if (prev_pattern == -1)
+					{
+						gen_fatal( "Camera BAYER_TILE_MAPPING register has an unexpected value 0x%x on initial startup, which should not occur", qValue );
+					}
+					else
+					{
+						// This is a wierd bug 
+						// where occasionally 
+						// you get an invalid 
+						// register value and I 
+						// have no idea why this 
+						// is
+						message( "WARNING! The BAYER_TILE_MAPPING register has an unexpected value 0x%x, but I was able to use the previous stored result", qValue );
+						pattern = prev_pattern;
+					}
+			}
+
+			// Store the previous Bayer pattern value
+			prev_pattern = pattern;
+
+			// grab a pointer to the start of the image data.
+			unsigned char *dest  = vid->image;
+			unsigned char *src = (uint8_t *)vid->camera.capture_buffer;
+
+			// Do the Bayer image conversion now
+			BayerNearestNeighbor( src, 
+					dest,
+					vid->camera.frame_width,
+					vid->camera.frame_height,
+					pattern );
+
+			// Image is done, we can now return it!
+			return vid->image;		
 		case MODE_640x480_YUV411:
 			buf  = vid->image;
 			buf2 = (uint8_t *)vid->camera.capture_buffer;
