@@ -120,6 +120,8 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	GDHandle		theSavedDevice;
 	Rect			sourceRect = {0, 0};
 
+	message( "Input string: %s", config );
+
 	// Process configuration options.
 	a = config;
 	if (a) {
@@ -154,9 +156,13 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 						return (NULL);
 					}
 				}
-			} else if (strncmp(a, "-fps", 4) == 0) {
+			}
+			else if (strncmp(a, "-fps", 4) == 0)
+			{
 				showFPS = 1;
-			} else if (strncmp(a, "-nodialog", 9) == 0) {
+				
+			} 
+			else if (strncmp(a, "-nodialog", 9) == 0) {
 				showDialog = 0;
 			} else {
 				ar2VideoDispOption();
@@ -193,25 +199,10 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 			break;			
 	}
 
-	// start of Aarons hack
-	//	pixFormat = k24RGBPixelFormat;
-	//	bytesPerPixel = 3l;
-
 //	pixFormat = k8IndexedGrayPixelFormat;
 //	bytesPerPixel = 1l;
 
-	/*	
-		fprintf( stderr, "%s:%d k2vuyPixelFormat = %s\n", __FILE__, __LINE__, k2vuyPixelFormat );
-		fprintf( stderr, "%s:%d kYUVSPixelFormat = %s\n", __FILE__, __LINE__, kYUVSPixelFormat);
-		fprintf( stderr, "%s:%d k24RGBPixelFormat = %s\n", __FILE__, __LINE__, k24RGBPixelFormat );
-		fprintf( stderr, "%s:%d k24BGRPixelFormat = %s\n", __FILE__, __LINE__, k24BGRPixelFormat );
-		fprintf( stderr, "%s:%d k32ARGBPixelFormat = %s\n", __FILE__, __LINE__, k32ARGBPixelFormat );
-		fprintf( stderr, "%s:%d k32BGRAPixelFormat = %s\n", __FILE__, __LINE__, k32BGRAPixelFormat );
-		fprintf( stderr, "%s:%d k32ABGRPixelFormat = %s\n", __FILE__, __LINE__, k32ABGRPixelFormat );
-		fprintf( stderr, "%s:%d k32RGBAPixelFormat = %s\n", __FILE__, __LINE__, k32RGBAPixelFormat );
-	 */
 	fprintf( stderr, "%s:%d Aarons hack ********", __FILE__, __LINE__ );	
-
 
 	// Once only, initialize for Carbon.
 	if(initF == 0) {
@@ -1171,19 +1162,17 @@ int arVideoClose(void)
 	return (result);
 }  
 
-int arVideoInqSize(int *x, int *y)
-{
-	if (gVid == NULL) return (-1);
-
-	return (ar2VideoInqSize(gVid, x, y));
-}       
-
 //ARUint8 *arVideoGetImage(void)
 char unsigned* arVideoGetImage(void)
 {   
-	if (gVid == NULL) return (NULL);
+	message("");
+	if( gVid == NULL )
+	{
+		message("");
+		 return NULL;
+	}
 
-	return (ar2VideoGetImage(gVid));
+	return ar2VideoGetImage( gVid );
 }
 
 int arVideoCapStart(void)
@@ -1207,17 +1196,18 @@ int arVideoCapNext(void)
 	return (ar2VideoCapNext(gVid)); 
 }
 
-#pragma mark -
- int ar2VideoInternalLock(pthread_mutex_t *mutex)
-{
-	int err;
 
-	// Ready to access data, so lock access to the data.
-	if ((err = pthread_mutex_lock(mutex)) != 0) {
-		perror("ar2VideoInternalLock(): Error locking mutex");
-		return (0);
+// function to lock the camera for our own uses.
+int ar2VideoInternalLock(pthread_mutex_t *mutex)
+{
+	// attempt to lock the image device for our use.
+	if ( pthread_mutex_lock( mutex ) != 0 )
+	{
+		message( "ar2VideoInternalLock(): Error locking mutex" );
+		return 0;
 	}
-	return (1);
+
+	return 1;
 }
 
 #if 0
@@ -1336,7 +1326,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 				   vid->frameCount = 0;
 				   }
 				 */
-				vid->frameCount++;
+//				vid->frameCount++;
 				// If first time here, get the time scale.
 				/*
 				   if (vid->timeScale == 0) {
@@ -1345,6 +1335,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 				   }
 				   }
 				 */
+/*
 				GetGWorld(&theSavedPort, &theSavedDevice);
 				SetGWorld(vid->pGWorld, NULL);
 				TextSize(12);
@@ -1358,6 +1349,7 @@ static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
 				DrawString(theString);
 				SetGWorld(theSavedPort, theSavedDevice);
 				//vid->lastTime = time;
+				*/
 			}
 
 			// Mark status to indicate we have a frame available.
@@ -1485,42 +1477,29 @@ int ar2VideoCapStop(AR2VideoParamT *vid)
 	return (err_i);
 }
 
-int ar2VideoInqSize(AR2VideoParamT *vid, int *x,int *y)
-{
-	// Need lock to guarantee exclusive access to vid.
-	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
-		fprintf(stderr, "ar2VideoInqSize(): Unable to lock mutex.\n");
-		return (1);
-	}
-
-	*x = vid->width;
-	*y = vid->height;
-
-	if (!ar2VideoInternalUnlock(&(vid->bufMutex))) {
-		fprintf(stderr, "ar2VideoInqSize(): Unable to unlock mutex.\n");
-		return (1);
-	}
-	return (0);
-}
-
 unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
 {
 	unsigned char *pix = NULL;
 
-	// Need lock to guarantee this thread exclusive access to vid.
-	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
-		fprintf(stderr, "ar2VideoGetImage(): Unable to lock mutex.\n");
-		return (NULL);
+	// do some error checking
+	if( vid == NULL )
+	{
+		gen_fatal( "vid was NULL - I don't know why it just is" );
 	}
 
-	// ar2VideoGetImage() used to block waiting for a frame.
-	// This locked the OpenGL frame rate to the camera frame rate.
-	// Now, if no frame is currently available then we won't wait around for one.
-	// So, do we have a new frame from the sequence grabber?	
-	if (vid->status & AR_VIDEO_STATUS_BIT_READY) {
+	// Need lock to guarantee this thread exclusive access to vid.
+	if ( !ar2VideoInternalLock( &( vid->bufMutex ) ) )
+	{
+		message( "ar2VideoGetImage(): Unable to lock mutex." );
+		return NULL;
+	}
 
-		//fprintf(stderr, "For vid @ %p got frame %ld.\n", vid, vid->frameCount);
-
+	// ar2VideoGetImage() used to block waiting for a frame. This locked 
+	// the OpenGL frame rate to the camera frame rate. Now, if no frame is 
+	// currently available then we won't wait around for one. So, do we have 
+	// a new frame from the sequence grabber?	
+//	if ( vid->status & AR_VIDEO_STATUS_BIT_READY )
+//	{
 		// Prior Mac versions of ar2VideoInternal added 1 to the pixmap base address
 		// returned to the caller to cope with the fact that neither
 		// arDetectMarker() or argDispImage() knew how to cope with
@@ -1530,11 +1509,14 @@ unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
 		// of problems and which can now be avoided after rewriting the
 		// various bits of the toolkit to cope.
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
-		if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER) {
+		if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER)
+		{
 			memcpy((void *)(vid->bufPixelsCopy2), (void *)(vid->bufPixels), vid->bufSize);
 			pix = vid->bufPixelsCopy2;
 			vid->status &= ~AR_VIDEO_STATUS_BIT_BUFFER; // Clear buffer bit.
-		} else {
+		}
+		else
+		{
 			memcpy((void *)(vid->bufPixelsCopy1), (void *)(vid->bufPixels), vid->bufSize);
 			pix = vid->bufPixelsCopy1;
 			vid->status |= AR_VIDEO_STATUS_BIT_BUFFER; // Set buffer bit.
@@ -1544,11 +1526,14 @@ unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
 
 		vid->status &= ~AR_VIDEO_STATUS_BIT_READY; // Clear ready bit.
-	}
+//	}
 
-	if (!ar2VideoInternalUnlock(&(vid->bufMutex))) {
-		fprintf(stderr, "ar2VideoGetImage(): Unable to unlock mutex.\n");
+	// attempt to release the lock on the camera.	
+	if ( !ar2VideoInternalUnlock( &( vid->bufMutex ) ) )
+	{
+		message( "ar2VideoGetImage(): Unable to unlock mutex." );
 		return (NULL);
 	}
+
 	return (pix);
 }

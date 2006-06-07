@@ -5,6 +5,7 @@
 #include <QuickTime/QuickTime.h>
 #include <pthread.h>
 #include <sys/time.h>
+#include "../debug.h"
 //#include "ARVideoSettingsController.h"
 
 #define arMalloc(V,T,S)  \
@@ -96,7 +97,6 @@ VdigGrabRef vdgAllocAndInit(const int grabber);
  VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
  OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
  ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg);
-int ar2VideoInqSize(AR2VideoParamT *vid, int *x,int *y);
 unsigned char *ar2VideoGetImage(AR2VideoParamT *vid);
 int ar2VideoCapStart(AR2VideoParamT *vid);
 int ar2VideoCapStop(AR2VideoParamT *vid);
