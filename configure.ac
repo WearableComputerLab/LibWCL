@@ -132,10 +132,10 @@ WCL_FRIDGE_CHECK
 # Test for Package Config
 # We need this for a lot of packages
 #
-#AC_PATH_PROG(PKG_CONFIG, pkg-config)
-#if test "x$PKG_CONFIG" = "x"; then
-#	AC_MSG_ERROR([You need to install pkg-config])
-#fi
+AC_PATH_PROG(PKG_CONFIG, pkg-config)
+if test "x$PKG_CONFIG" = "x"; then
+	AC_MSG_ERROR([You need to install pkg-config])
+fi
 
 #
 # Need the C++ Compiler, Installer and ranlib to strip libraries
@@ -157,6 +157,15 @@ WCL_PLATFORM_SETUP
 # Check for libraries
 #
 #############################
+if test "x$enable_video_1394" == "xyes"; then
+    if test "x$platform_linux" == "xyes"; then
+	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.2.0)
+    else if test "x$platform_osx" == "xyes"; then
+	   :
+    else
+	AC_MSG_ERROR([Video Support Is Not Available on your platform])
+    fi
+fi
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
