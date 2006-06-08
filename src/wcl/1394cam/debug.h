@@ -3,15 +3,20 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
-#define failedToAllocateMemory() __failed_to_allocate_memory( __FILE__, __LINE__ )
-void __failed_to_allocate_memory( char *file, int line );
+void failed_to_allocate_memory_handler( char *file, int line );
+#define failed_to_allocate_memory() failed_to_allocate_memory( __FILE__, __LINE__ )
 
-void gen_fatal_handler_hog (const char *source_file, int line_num, const char *function, char *format, ...) __attribute__ ((format (printf, 4, 5)));
-#define gen_fatal(format, args...) gen_fatal_handler_hog (__FILE__, __LINE__, __FUNCTION__, format, ## args), exit (-1)
+void gen_fatal_handler (const char *source_file, int line_num, const char *function, char *format, ...) __attribute__ ((format (printf, 4, 5)));
+#define gen_fatal(format, args...) gen_fatal_handler (__FILE__, __LINE__, __FUNCTION__, format, ## args), exit (-1)
 
-void message_handler_hog (const char *source_file, int line_num, const char *function, char *format, ...) __attribute__ ((format (printf, 4, 5)));
-#define message(format, args...) message_handler_hog (__FILE__, __LINE__, __FUNCTION__, format, ## args)
+void message_handler (const char *source_file, int line_num, const char *function, char *format, ...) __attribute__ ((format (printf, 4, 5)));
+#define message(format, args...) message_handler (__FILE__, __LINE__, __FUNCTION__, format, ## args)
+
+void errno_message_handler( const char* source_file, int line_num, const char *function );
+#define errno_message() errno_message_handler( __FILE__, __LINE__, __FUNCTION__ );
 
 #define STANDARD_MALLOC
 #ifdef STANDARD_MALLOC
