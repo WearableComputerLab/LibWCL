@@ -528,14 +528,13 @@ int ar2VideoClose(AR2VideoParamT *vid)
 
 	return (0);
 }
-// ============================================================================
-//	Private functions
-// ============================================================================
 
-// --------------------
-// MakeSequenceGrabber  (adapted from Apple mung sample)
-//
-SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
+/**
+ * MakeSequenceGrabber - creates an instance of the component on the node
+ * specified by grabber
+ **/
+//SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
+SeqGrabComponent MakeSequenceGrabber( const int grabber )
 {
 	// A ComponentInstance is a pointer to a ComponentInstanceRecord, which is turn 
 	// basically has one field "data" that is a pointer to a long
@@ -610,22 +609,17 @@ SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 	}
 
 	// specify the destination data reference for a record operation
-	// tell it we're not making a movie
-	// if the flag seqGrabDontMakeMovie is used, the sequence grabber still calls
-	// your data function, but does not write any data to the movie file
-	// writeType will always be set to seqGrabWriteAppend
-	if ((err = SGSetDataRef(seqGrab, 0, 0, seqGrabDontMakeMovie))) {
-		fprintf(stderr, "MakeSequenceGrabber(): SGSetDataRef err=%ld\n", err);
-		goto endFunc;
+	// tell it we're not making a movie if the flag seqGrabDontMakeMovie 
+	// is used, the sequence grabber still calls your data function, but 
+	// does not write any data to the movie file writeType will always be 
+	// set to seqGrabWriteAppend
+	if( ( err = SGSetDataRef( seqGrab, 0, 0, seqGrabDontMakeMovie ) ) )
+	{
+		gen_fatal( "SGSetDataRef err=%ld", err );
 	}
 
-endFunc:	
-	if (err && (seqGrab != NULL)) { // clean up on failure
-		CloseComponent(seqGrab);
-		seqGrab = NULL;
-	}
-
-	return (seqGrab);
+	// return the sequence grabber.
+	return seqGrab;
 }
 
 
@@ -704,7 +698,7 @@ VdigGrabRef vdgAllocAndInit(const int grabber)
 	memset( pVdg, 0, sizeof( VdigGrab ) );	
 
 	// attempt to make a sequence grabber.
-	if( !( pVdg->seqGrab = MakeSequenceGrabber( NULL, grabber ) ) )
+	if( !( pVdg->seqGrab = MakeSequenceGrabber( grabber ) ) )
 	{
 		gen_fatal( "Couldn't make a sequence grabber"); 
 	}
