@@ -310,15 +310,28 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	{
 		gen_fatal( "Unable to Initialize the grabber: err=%ld", err );
 	}
-
-	if (err = vdgRequestSettings(vid->pVdg, showDialog, gVidCount)) {
-		fprintf(stderr, "ar2VideoOpen(): vdgRequestSettings err=%ld\n", err);
-		goto out2;
+	else
+	{
+		message( "allocated memory for the grabber and initialized it" );
 	}
 
-	if (err = vdgPreflightGrabbing(vid->pVdg)) {
-		fprintf(stderr, "ar2VideoOpen(): vdgPreflightGrabbing err=%ld\n", err);
-		goto out2;
+	// show the dialog if it has been requested.
+	if( err = vdgRequestSettings( vid->pVdg, showDialog, gVidCount ) )
+	{
+		gen_fatal( "vdgRequestSettings err=%ld", err);
+	}
+	else
+	{
+		message( "Settings received okay" );
+	}
+
+	if( err = vdgPreflightGrabbing( vid->pVdg ) )
+	{
+		gen_fatal( "vdgPreflightGrabbing err=%ld", err);
+	}
+	else
+	{
+		message( "preflight grabbing returned okay" );
 	}
 
 	// Set the timer frequency from the Vdig's Data Rate
@@ -436,8 +449,29 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 
 	// Initialise per-vid pthread variables.
 	// Create a mutex to protect access to data structures.
-	if ((err_i = pthread_mutex_init(&(vid->bufMutex), NULL)) != 0) {
-		fprintf(stderr, "ar2VideoOpen(): Error %d creating mutex.\n", err_i);
+	if( ( err_i = pthread_mutex_init( &( vid->bufMutex ), NULL ) ) != 0 )
+	{
+		// check the error value
+		if( err_i == EINVAL )
+		{
+			gen_fatal( "NULL is not a valid value for pthread_mutex_init" );
+		}
+		else if( err_i == ENOMEM )
+		{
+			gen_fatal( "The process cannot allocate enough memory to create another mutex" );
+		}
+		else if( err_i == EAGAIN )
+		{
+			gen_fatal( "This system temporarily lacks the resources to create another mutex" );
+		}
+		else
+		{
+			gen_fatal( "Unspecified error - cannot initialize mutex" );
+		}
+	}
+	else
+	{
+		message( "Successfully created a new mutex with default attributes" );
 	}
 	// Create condition variable.
 	if (err_i == 0) {
@@ -646,36 +680,6 @@ void MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
 	}
 }
 
-ComponentResult vdgGetSettings(VdigGrab* pVdg)
-{	
-	ComponentResult err;
-
-	// Extract information from the SG
-	if (err = SGGetVideoCompressor (pVdg->sgchanVideo, 
-				&pVdg->cpDepth,
-				&pVdg->cpCompressor,
-				&pVdg->cpSpatialQuality, 
-				&pVdg->cpTemporalQuality, 
-				&pVdg->cpKeyFrameRate)) {
-		fprintf(stderr, "SGGetVideoCompressor err=%ld\n", err);
-		goto endFunc;
-	}
-
-	if (err = SGGetFrameRate(pVdg->sgchanVideo, &pVdg->cpFrameRate)) {
-		fprintf(stderr, "SGGetFrameRate err=%ld\n", err);
-		goto endFunc;
-	}
-
-	// Get the selected vdig from the SG
-	if (!(pVdg->vdCompInst = SGGetVideoDigitizerComponent(pVdg->sgchanVideo))) {
-		fprintf(stderr, "SGGetVideoDigitizerComponent error\n");
-		goto endFunc;
-	}
-
-endFunc:
-	return (err);
-}
-
 /**
  * create a sequence grabbing device, create the channel and define it's 
  * properties
@@ -707,19 +711,25 @@ ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const i
 {
 	ComponentResult err;
 
-	// Use the SG Dialog to allow the user to select device and compression settings
-	if (err = RequestSGSettings(inputIndex, pVdg->seqGrab, pVdg->sgchanVideo, showDialog)) {
-		fprintf(stderr, "RequestSGSettings err=%ld\n", err); 
-		goto endFunc;
+	// Use the SG Dialog to allow the user to select device and compression 
+	// settings, this calls the objective c code.
+	if( err = RequestSGSettings( inputIndex, pVdg->seqGrab, pVdg->sgchanVideo, showDialog ) )
+	{
+		gen_fatal( "RequestSGSettings err=%ld", err );
 	}	
 
-	if (err = vdgGetSettings(pVdg)) {
-		fprintf(stderr, "vdgGetSettings err=%ld\n", err); 
-		goto endFunc;
-	}
+	// get the component instance that identifies the connection between 
+	// the video channel component and its video digitizer component.
+	// SGGetVideoDigitizerComponent allows the sequence grabber component 
+	// to determine the video digitizer component that is providing source 
+	// video to the video channel component
+	pVdg->vdCompInst = SGGetVideoDigitizerComponent( pVdg->sgchanVideo );
 
-endFunc:
-	return err;
+	// make sure something was returned.
+	if( pVdg->vdCompInst == NULL )
+	{
+		gen_fatal( "SGGetVideoDigitizerComponent error" );
+	}
 }
 
 VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
@@ -795,7 +805,8 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 	DigitizerInfo info;
 
 	// make sure this is a compressed source only
-	if ((err = VDGetDigitizerInfo(pVdg->vdCompInst, &info))) {
+	if( ( err = VDGetDigitizerInfo( pVdg->vdCompInst, &info ) ) )
+	{
 		fprintf(stderr, "vdgPreflightGrabbing(): VDGetDigitizerInfo err=%ld\n", err);
 		goto endFunc;
 	} else {
@@ -1277,34 +1288,31 @@ int arVideoCapNext(void)
 	return (ar2VideoCapNext(gVid)); 
 }
 
-
 // function to lock the camera for our own uses.
-int ar2VideoInternalLock(pthread_mutex_t *mutex)
+int ar2VideoInternalLock( pthread_mutex_t *mutex )
 {
-	// attempt to lock the image device for our use.
-	if ( pthread_mutex_lock( mutex ) != 0 )
+	int return_val = pthread_mutex_lock( mutex );
+
+	// check that we obtained the lock okay
+	if( return_val != 0 )
 	{
-		message( "ar2VideoInternalLock(): Error locking mutex" );
-		return 0;
+		// check what the return value means
+		if( return_val == EINVAL )
+		{
+			gen_fatal( "The value specified by mutex is invalid" );
+		}
+		else if( return_val == EINVAL )
+		{
+			gen_fatal( "A deadlock would occur if the thread blocked waiting for mutex" );
+		}
+		else
+		{
+			gen_fatal( "unspecified error - unable to lock mutex" );
+		}
 	}
 
-	return 1;
+	return return_val;
 }
-
-#if 0
-static int ar2VideoInternalTryLock(pthread_mutex_t *mutex)
-{
-	int err;
-
-	// Ready to access data, so lock access to the data.
-	if ((err = pthread_mutex_trylock(mutex)) != 0) {
-		if (err == EBUSY) return (-1);
-		perror("ar2VideoInternalTryLock(): Error locking mutex");
-		return (0);
-	}
-	return (1);
-}
-#endif
 
 int ar2VideoInternalUnlock(pthread_mutex_t *mutex)
 {
@@ -1363,8 +1371,9 @@ void *ar2VideoInternalThread(void *arg)
 	// The lock is released while we are blocked inside pthread_cond_timedwait(),
 	// and during that time ar2VideoGetImage() (and therefore OpenGL) can access
 	// *vid exclusively.
-	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
-		fprintf(stderr, "ar2VideoInternalThread(): Unable to lock mutex, exiting.\n");
+	if( ar2VideoInternalLock( &( vid->bufMutex ) ) != 0 )
+	{
+//	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
 		keepAlive = 0;
 	}
 
@@ -1535,9 +1544,8 @@ unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
 	}
 
 	// Need lock to guarantee this thread exclusive access to vid.
-	if ( !ar2VideoInternalLock( &( vid->bufMutex ) ) )
+	if( ar2VideoInternalLock( &( vid->bufMutex ) ) != 0 )
 	{
-		message( "ar2VideoGetImage(): Unable to lock mutex." );
 		return NULL;
 	}
 
