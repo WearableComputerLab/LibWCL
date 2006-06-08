@@ -24,8 +24,6 @@ OSXIEEE1394Cam::OSXIEEE1394Cam()
 	{
 		gen_fatal( "camera capturing could not be started" );
 	}
-	
-	message( "create an OSXIEEE1394 object" );
 }
 
 // constructor that enables the user to enter the 

@@ -11,11 +11,13 @@ IEEE1394Cam::IEEE1394Cam()
 {
 // check if we are on a mac
 #ifdef MACOSX
+	message( "attempting to create an OSXIEEE1394Cam" );
 	this->camera = new OSXIEEE1394Cam();
-	message( "creating an OSXIEEE1394Cam" );
+	message( "finished creating an OSXIEEE1394Cam" );
 #elif defined(LINUX)
+	message( "attempting to create a LinuxIEEE1394Cam" );
 	this->camera = new LinuxIEEE1394Cam();	
-	message( "creating a LinuxIEEE1394Cam" );
+	message( "finished creating a LinuxIEEE1394Cam" );
 #endif
 }
 
@@ -24,11 +26,13 @@ IEEE1394Cam::IEEE1394Cam( int width, int height )
 {
 // check if we are on a mac
 #ifdef MACOSX
+	message( "attempting to create an OSXIEEE1394Cam" );
 	this->camera = new OSXIEEE1394Cam( width, height );
-	message( "creating an OSXIEEE1394Cam" );
+	message( "finished creating an OSXIEEE1394Cam" );
 #elif defined(LINUX)
+	message( "attempting to create a LinuxIEEE1394Cam" );
 	this->camera = new LinuxIEEE1394Cam( width, height );	
-	message( "creating a LinuxIEEE1394Cam" );
+	message( "finished creating a LinuxIEEE1394Cam" );
 #endif
 }
 
