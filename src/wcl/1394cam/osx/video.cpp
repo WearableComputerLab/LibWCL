@@ -332,22 +332,26 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 
 	// Set the timer frequency from the Vdig's Data Rate
 	// ASC soft vdig fails this call
-	if (err = vdgGetDataRate(   vid->pVdg, 
-				&vid->milliSecPerFrame,
-				&vid->frameRate,
-				&vid->bytesPerSecond)) {
-		fprintf(stderr, "ar2VideoOpen(): vdgGetDataRate err=%ld\n", err);
-		//goto out2; 
-	}
-	if (err == noErr) {
-		// Some vdigs do return the frameRate but not the milliSecPerFrame
-		if ((vid->milliSecPerFrame == 0) && (vid->frameRate != 0)) {
-			vid->milliSecPerFrame = (1000L << 16) / vid->frameRate;
-		} 
-	}
+	vdgGetDataRate( vid->pVdg, &vid->milliSecPerFrame, &vid->frameRate, &vid->bytesPerSecond);
+
+	message( "milliseconds per frame is now = %ld", vid->milliSecPerFrame );
+	message( "framerate is now = %f", FixedToFloat( vid->frameRate ) );
+
+	// Some vdigs do return the frameRate but not the milliSecPerFrame
+	if( ( vid->milliSecPerFrame == 0 ) && ( vid->frameRate != 0 ) )
+	{
+		message( "adjusting the the milliSecPerFrame" );
+		vid->milliSecPerFrame = (1000L << 16) / vid->frameRate;
+	} 
+
+	message( "milliseconds per frame is now = %ld", vid->milliSecPerFrame );
+	message( "framerate is now = %f", FixedToFloat( vid->frameRate ) );
 
 	// Poll the vdig at twice the frame rate or between sensible limits
 	vid->milliSecPerTimer = vid->milliSecPerFrame / 2;
+
+	message( "vid->milliSecPerTimer  = %ld", vid->milliSecPerTimer );
+
 	if (vid->milliSecPerTimer <= 0) {
 		fprintf(stderr, "vid->milliSecPerFrame: %ld ", vid->milliSecPerFrame);
 		vid->milliSecPerTimer = AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MIN;
@@ -584,14 +588,14 @@ SeqGrabComponent MakeSequenceGrabber( const int grabber )
 	// DV and other cameras.), but we are not interested in restricting to
 	// subtypes at this point.
 	cDesc.componentSubType = 0L; 
-	
+
 	// can use this field to select devices based on manufacturer. TODO - 
 	// use thid field to check if it is a ptgrey camera.
 	cDesc.componentManufacturer = 0L;
 
 	// used to indicate a components features
 	cDesc.componentFlags = 0L;
-	
+
 	// ignore all flags.
 	cDesc.componentFlagsMask = 0L;
 
@@ -620,7 +624,7 @@ SeqGrabComponent MakeSequenceGrabber( const int grabber )
 			message( "component manufacturer: %x", cDesc.componentManufacturer );
 			message( "component flags: %x", cDesc.componentFlags );
 			message( "component flags mask: %x", cDesc.componentFlagsMask );
-		
+
 			// create an instance of the component.
 			seqGrab = OpenComponent(c);
 		}
@@ -661,7 +665,7 @@ void MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
 {
 	// return code
 	ComponentResult err = noErr;
-	
+
 	// set up a video type channel (as opposed to a sound channel) puts the
 	// value into psgchanVideo
 	if( ( err = SGNewChannel( seqGrab, VideoMediaType, psgchanVideo ) ) )
@@ -782,28 +786,11 @@ OSErr vdgSetDestination(  VdigGrab* pVdg,
 	return noErr;
 }
 
+/**
+ * set a bunch of properties to do with compression and image properties.
+ **/
 void vdgPreflightGrabbing(VdigGrab* pVdg)
 {
-	/* from Steve Sisak (on quicktime-api list):
-	   A much more optimal case, if you're doing it yourself is:
-
-	   VDGetDigitizerInfo() // make sure this is a compressed source only
-	   VDGetCompressTypes() // tells you the supported types
-	   VDGetMaxSourceRect() // returns full-size rectangle (sensor size)
-	   VDSetDigitizerRect() // determines cropping
-
-	   VDSetCompressionOnOff(true)
-
-	   VDSetFrameRate()         // set to 0 for default
-	   VDSetCompression()       // compresstype=0 means default
-	   VDGetImageDescription()  // find out image format
-	   VDGetDigitizerRect()     // find out if vdig is cropping for you
-	   VDResetCompressSequence()
-
-	   (grab frames here)
-
-	   VDSetCompressionOnOff(false)
-	 */
 	VideoDigitizerError err;
 	Rect maxRect;
 
@@ -983,7 +970,7 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	for( int i = 0; i < numOfTypes; i++ )
 	{
 		VDCompressionList cl = ( VDCompressionList )*h[ i ];
-	
+
 		message( "cType: %x", cl.cType );
 		message( "Compressor name: %s", cl.name );
 		message( "Compression algorithm: %s", cl.typeName );
@@ -1022,7 +1009,7 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	{
 		gen_fatal( "couldn't set max rectangle" );
 	}
-	
+
 	// make sure we are using compression, this should be on by default
 	err = VDSetCompressionOnOff( pVdg->vdCompInst, true );
 
@@ -1049,12 +1036,12 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	// we'll get 640x480 frames returned instead (which use 4:1:1 encoding on
 	// the wire rather than 4:2:2)
 	err = VDSetCompression(pVdg->vdCompInst,
-				0, //kComponentVideoCodecType, //0, //'yuv2'
-				0,	
-				&maxRect, 
-				0, //codecNormalQuality,
-				0, //codecNormalQuality,
-				0);
+			0, //kComponentVideoCodecType, //0, //'yuv2'
+			0,	
+			&maxRect, 
+			0, //codecNormalQuality,
+			0, //codecNormalQuality,
+			0);
 	// check for an error
 	if( err != noErr )
 	{
@@ -1089,7 +1076,7 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	{
 		gen_fatal( "couldn't grab image description" );
 	}
-	
+
 	message( "obtained image description" );
 	message( "image idSize = %dl", ( **( pVdg->vdImageDesc ) ).idSize );
 	message( "version = %d", ( ** ( pVdg->vdImageDesc ) ).version );
@@ -1098,7 +1085,7 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 
 	// From Steve Sisak: find out if Digitizer is cropping for you.
 	err = VDGetDigitizerRect( pVdg->vdCompInst, &pVdg->vdDigitizerRect );
-	
+
 	if( err != noErr )
 	{
 		gen_fatal( "couldn't determine if the digitizer was cropping for us" );
@@ -1107,23 +1094,27 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	pVdg->isPreflighted = 1;
 }
 
-VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
-		long*		pMilliSecPerFrame,
-		Fixed*      pFramesPerSecond,
-		long*       pBytesPerSecond)
+void vdgGetDataRate(	VdigGrab* pVdg, 
+			long* pMilliSecPerFrame,
+			Fixed* pFramesPerSecond,
+			long* pBytesPerSecond )
 {
-	VideoDigitizerError err;
+	// Retrieves information that describes the performance capabilities 
+	// of a video digitizer.
+	VideoDigitizerError err = VDGetDataRate( pVdg->vdCompInst, 
+			pMilliSecPerFrame,
+			pFramesPerSecond,
+			pBytesPerSecond );
 
-	if (err = VDGetDataRate( pVdg->vdCompInst, 
-				pMilliSecPerFrame,
-				pFramesPerSecond,
-				pBytesPerSecond)) {
-		fprintf(stderr, "vdgGetDataRate(): VDGetDataRate err=%ld\n", err);
-		goto endFunc;		
+	// check for an error
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't get the data rate" );
 	}
 
-endFunc:	
-	return (err);
+	message( "milliseconds per frame = %ld", *pMilliSecPerFrame );
+	message( "framerate is = %f", FixedToFloat( *pFramesPerSecond ) );
+	message( "expected bytes per second = %ld", *pBytesPerSecond );
 }
 
 VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
@@ -1577,7 +1568,7 @@ void *ar2VideoInternalThread(void *arg)
 	// *vid exclusively.
 	if( ar2VideoInternalLock( &( vid->bufMutex ) ) != 0 )
 	{
-//	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
+		//	if (!ar2VideoInternalLock(&(vid->bufMutex))) {
 		keepAlive = 0;
 	}
 
@@ -1627,173 +1618,173 @@ void *ar2VideoInternalThread(void *arg)
 
 	pthread_cleanup_pop(1);
 	return (NULL);
-}
+	}
 
 #pragma mark -
 
-int ar2VideoDispOption(void)
-{
-	//     0         1         2         3         4         5         6         7
-	//     0123456789012345678901234567890123456789012345678901234567890123456789012
-	printf("ARVideo may be configured using one or more of the following options,\n");
-	printf("separated by a space:\n\n");
-	printf(" -nodialog\n");
-	printf("    Don't display video settings dialog.\n");
-	printf(" -width=w\n");
-	printf("    Scale camera native image to width w.\n");
-	printf(" -height=h\n");
-	printf("    Scale camera native image to height h.\n");
-	printf(" -fps\n");
-	printf("    Overlay camera frame counter on image.\n");
-	printf(" -grabber=n\n");
-	printf("    With multiple QuickTime video grabber components installed,\n");
-	printf("    use component n (default n=1).\n");
-	printf("    N.B. It is NOT necessary to use this option if you have installed\n");
-	printf("    more than one video input device (e.g. two cameras) as the default\n");
-	printf("    QuickTime grabber can manage multiple video channels.\n");
-	printf(" -pixelformat=cccc\n");
-	printf("    Return images with pixels in format cccc, where cccc is either a\n");
-	printf("    numeric pixel format number or a valid 4-character-code for a\n");
-	printf("    pixel format. The following values are supported: \n");
-	printf("    32, BGRA, RGBA, ABGR, 24, 24BG, 2vuy, yuvs.\n");
-	printf("    (See http://developer.apple.com/quicktime/icefloe/dispatch020.html.)\n");
-	printf("\n");
-
-	return (0);
-}
-
-
-
-int ar2VideoCapStart(AR2VideoParamT *vid)
-{
-	ComponentResult err;
-	int err_i = 0;
-
-	vid->status = 0;
-
-	// check that the digitizer has been preflighted.
-	if( !vid->pVdg->isPreflighted )
+	int ar2VideoDispOption(void)
 	{
-		// initialise the camera.
-		vdgPreflightGrabbing(vid->pVdg);
+		//     0         1         2         3         4         5         6         7
+		//     0123456789012345678901234567890123456789012345678901234567890123456789012
+		printf("ARVideo may be configured using one or more of the following options,\n");
+		printf("separated by a space:\n\n");
+		printf(" -nodialog\n");
+		printf("    Don't display video settings dialog.\n");
+		printf(" -width=w\n");
+		printf("    Scale camera native image to width w.\n");
+		printf(" -height=h\n");
+		printf("    Scale camera native image to height h.\n");
+		printf(" -fps\n");
+		printf("    Overlay camera frame counter on image.\n");
+		printf(" -grabber=n\n");
+		printf("    With multiple QuickTime video grabber components installed,\n");
+		printf("    use component n (default n=1).\n");
+		printf("    N.B. It is NOT necessary to use this option if you have installed\n");
+		printf("    more than one video input device (e.g. two cameras) as the default\n");
+		printf("    QuickTime grabber can manage multiple video channels.\n");
+		printf(" -pixelformat=cccc\n");
+		printf("    Return images with pixels in format cccc, where cccc is either a\n");
+		printf("    numeric pixel format number or a valid 4-character-code for a\n");
+		printf("    pixel format. The following values are supported: \n");
+		printf("    32, BGRA, RGBA, ABGR, 24, 24BG, 2vuy, yuvs.\n");
+		printf("    (See http://developer.apple.com/quicktime/icefloe/dispatch020.html.)\n");
+		printf("\n");
+
+		return (0);
 	}
 
-	if (err_i == 0) {
-		if (err = vdgStartGrabbing(vid->pVdg, vid->scaleMatrixPtr)) {
-			fprintf(stderr, "ar2VideoCapStart(): vdgStartGrabbing err=%ld\n", err);
-			err_i = (int)err;
-		}
-	}
 
-	if (err_i == 0) {
-		// Create the new thread - no attr, vid as user data.
-		vid->threadRunning = 1;
-		if ((err_i = pthread_create(&(vid->thread), NULL, ar2VideoInternalThread, (void *)vid)) != 0) {
-			vid->threadRunning = 0;
-			fprintf(stderr, "ar2VideoCapStart(): Error %d detaching thread.\n", err_i);
-		}
-	}
 
-	return (err_i);
-}
+	int ar2VideoCapStart(AR2VideoParamT *vid)
+	{
+		ComponentResult err;
+		int err_i = 0;
 
-int ar2VideoCapNext(AR2VideoParamT *vid)
-{
-	return (0);
-}
-
-int ar2VideoCapStop(AR2VideoParamT *vid)
-{
-	int err_i = 0;
-	void *exit_status_p; // Pointer to return value from thread, will be filled in by pthread_join().
-	ComponentResult err = noErr;
-
-	if (vid->threadRunning) {
-		// Cancel thread.
-		if ((err_i = pthread_cancel(vid->thread)) != 0) {
-			fprintf(stderr, "ar2VideoCapStop(): Error %d cancelling ar2VideoInternalThread().\n", err_i);
-			return (err_i);
-		}
-
-		// Wait for join.
-		if ((err_i = pthread_join(vid->thread, &exit_status_p)) != 0) {
-			fprintf(stderr, "ar2VideoCapStop(): Error %d waiting for ar2VideoInternalThread() to finish.\n", err_i);
-			return (err_i);
-		}
-		vid->threadRunning = 0;
-		vid->thread = NULL;
-
-		// Exit status is ((exit_status_p == AR_PTHREAD_CANCELLED) ? 0 : *(ERROR_t *)(exit_status_p))
-	}
-
-	if (vid->pVdg) {
-		if ((err = vdgStopGrabbing(vid->pVdg)) != noErr) {
-			fprintf(stderr, "vdgStopGrabbing err=%ld\n", err);
-			err_i = (int)err;
-		}
 		vid->status = 0;
-		vid->pVdg->isPreflighted = 0;
+
+		// check that the digitizer has been preflighted.
+		if( !vid->pVdg->isPreflighted )
+		{
+			// initialise the camera.
+			vdgPreflightGrabbing(vid->pVdg);
+		}
+
+		if (err_i == 0) {
+			if (err = vdgStartGrabbing(vid->pVdg, vid->scaleMatrixPtr)) {
+				fprintf(stderr, "ar2VideoCapStart(): vdgStartGrabbing err=%ld\n", err);
+				err_i = (int)err;
+			}
+		}
+
+		if (err_i == 0) {
+			// Create the new thread - no attr, vid as user data.
+			vid->threadRunning = 1;
+			if ((err_i = pthread_create(&(vid->thread), NULL, ar2VideoInternalThread, (void *)vid)) != 0) {
+				vid->threadRunning = 0;
+				fprintf(stderr, "ar2VideoCapStart(): Error %d detaching thread.\n", err_i);
+			}
+		}
+
+		return (err_i);
 	}
 
-	return (err_i);
-}
-
-unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
-{
-	unsigned char *pix = NULL;
-
-	// do some error checking
-	if( vid == NULL )
+	int ar2VideoCapNext(AR2VideoParamT *vid)
 	{
-		gen_fatal( "vid was NULL - I don't know why it just is" );
+		return (0);
 	}
 
-	// Need lock to guarantee this thread exclusive access to vid.
-	if( ar2VideoInternalLock( &( vid->bufMutex ) ) != 0 )
+	int ar2VideoCapStop(AR2VideoParamT *vid)
 	{
-		return NULL;
+		int err_i = 0;
+		void *exit_status_p; // Pointer to return value from thread, will be filled in by pthread_join().
+		ComponentResult err = noErr;
+
+		if (vid->threadRunning) {
+			// Cancel thread.
+			if ((err_i = pthread_cancel(vid->thread)) != 0) {
+				fprintf(stderr, "ar2VideoCapStop(): Error %d cancelling ar2VideoInternalThread().\n", err_i);
+				return (err_i);
+			}
+
+			// Wait for join.
+			if ((err_i = pthread_join(vid->thread, &exit_status_p)) != 0) {
+				fprintf(stderr, "ar2VideoCapStop(): Error %d waiting for ar2VideoInternalThread() to finish.\n", err_i);
+				return (err_i);
+			}
+			vid->threadRunning = 0;
+			vid->thread = NULL;
+
+			// Exit status is ((exit_status_p == AR_PTHREAD_CANCELLED) ? 0 : *(ERROR_t *)(exit_status_p))
+		}
+
+		if (vid->pVdg) {
+			if ((err = vdgStopGrabbing(vid->pVdg)) != noErr) {
+				fprintf(stderr, "vdgStopGrabbing err=%ld\n", err);
+				err_i = (int)err;
+			}
+			vid->status = 0;
+			vid->pVdg->isPreflighted = 0;
+		}
+
+		return (err_i);
 	}
 
-	// ar2VideoGetImage() used to block waiting for a frame. This locked 
-	// the OpenGL frame rate to the camera frame rate. Now, if no frame is 
-	// currently available then we won't wait around for one. So, do we have 
-	// a new frame from the sequence grabber?	
-	//	if ( vid->status & AR_VIDEO_STATUS_BIT_READY )
-	//	{
-	// Prior Mac versions of ar2VideoInternal added 1 to the pixmap base address
-	// returned to the caller to cope with the fact that neither
-	// arDetectMarker() or argDispImage() knew how to cope with
-	// pixel data with ARGB (Apple) or ABGR (SGI) byte ordering.
-	// Adding 1 had the effect of passing a pointer to the first byte
-	// of non-alpha data. This was an awful hack which caused all sorts
-	// of problems and which can now be avoided after rewriting the
-	// various bits of the toolkit to cope.
+	unsigned char *ar2VideoGetImage(AR2VideoParamT *vid)
+	{
+		unsigned char *pix = NULL;
+
+		// do some error checking
+		if( vid == NULL )
+		{
+			gen_fatal( "vid was NULL - I don't know why it just is" );
+		}
+
+		// Need lock to guarantee this thread exclusive access to vid.
+		if( ar2VideoInternalLock( &( vid->bufMutex ) ) != 0 )
+		{
+			return NULL;
+		}
+
+		// ar2VideoGetImage() used to block waiting for a frame. This locked 
+		// the OpenGL frame rate to the camera frame rate. Now, if no frame is 
+		// currently available then we won't wait around for one. So, do we have 
+		// a new frame from the sequence grabber?	
+		//	if ( vid->status & AR_VIDEO_STATUS_BIT_READY )
+		//	{
+		// Prior Mac versions of ar2VideoInternal added 1 to the pixmap base address
+		// returned to the caller to cope with the fact that neither
+		// arDetectMarker() or argDispImage() knew how to cope with
+		// pixel data with ARGB (Apple) or ABGR (SGI) byte ordering.
+		// Adding 1 had the effect of passing a pointer to the first byte
+		// of non-alpha data. This was an awful hack which caused all sorts
+		// of problems and which can now be avoided after rewriting the
+		// various bits of the toolkit to cope.
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
-	if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER)
-	{
-		memcpy((void *)(vid->bufPixelsCopy2), (void *)(vid->bufPixels), vid->bufSize);
-		pix = vid->bufPixelsCopy2;
-		vid->status &= ~AR_VIDEO_STATUS_BIT_BUFFER; // Clear buffer bit.
-	}
-	else
-	{
-		memcpy((void *)(vid->bufPixelsCopy1), (void *)(vid->bufPixels), vid->bufSize);
-		pix = vid->bufPixelsCopy1;
-		vid->status |= AR_VIDEO_STATUS_BIT_BUFFER; // Set buffer bit.
-	}
+		if (vid->status & AR_VIDEO_STATUS_BIT_BUFFER)
+		{
+			memcpy((void *)(vid->bufPixelsCopy2), (void *)(vid->bufPixels), vid->bufSize);
+			pix = vid->bufPixelsCopy2;
+			vid->status &= ~AR_VIDEO_STATUS_BIT_BUFFER; // Clear buffer bit.
+		}
+		else
+		{
+			memcpy((void *)(vid->bufPixelsCopy1), (void *)(vid->bufPixels), vid->bufSize);
+			pix = vid->bufPixelsCopy1;
+			vid->status |= AR_VIDEO_STATUS_BIT_BUFFER; // Set buffer bit.
+		}
 #else
-	pix = vid->bufPixels;
+		pix = vid->bufPixels;
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
 
-	vid->status &= ~AR_VIDEO_STATUS_BIT_READY; // Clear ready bit.
-	//	}
+		vid->status &= ~AR_VIDEO_STATUS_BIT_READY; // Clear ready bit.
+		//	}
 
-	// attempt to release the lock on the camera.	
-	if ( !ar2VideoInternalUnlock( &( vid->bufMutex ) ) )
-	{
-		message( "ar2VideoGetImage(): Unable to unlock mutex." );
-		return (NULL);
+		// attempt to release the lock on the camera.	
+		if ( !ar2VideoInternalUnlock( &( vid->bufMutex ) ) )
+		{
+			message( "ar2VideoGetImage(): Unable to unlock mutex." );
+			return (NULL);
+		}
+
+		return (pix);
 	}
-
-	return (pix);
-}
