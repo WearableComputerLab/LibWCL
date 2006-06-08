@@ -328,16 +328,7 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	}
 
 	// attemp to preflight the grabbing?
-	err = vdgPreflightGrabbing( vid->pVdg );
-
-	if( err != 0 )
-	{
-		gen_fatal( "vdgPreflightGrabbing err=%ld", err);
-	}
-	else
-	{
-		message( "preflight grabbing returned okay" );
-	}
+	vdgPreflightGrabbing( vid->pVdg );
 
 	// Set the timer frequency from the Vdig's Data Rate
 	// ASC soft vdig fails this call
@@ -791,7 +782,7 @@ OSErr vdgSetDestination(  VdigGrab* pVdg,
 	return noErr;
 }
 
-VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
+void vdgPreflightGrabbing(VdigGrab* pVdg)
 {
 	/* from Steve Sisak (on quicktime-api list):
 	   A much more optimal case, if you're doing it yourself is:
@@ -985,8 +976,10 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 	// find out how many codec we have.
 	int numOfTypes = sizeof( **h ) / sizeof( VDCompressionList );
 
+	// display the number of codecs that we found.
 	message( "Found %d codec(s)", numOfTypes );
 
+	// go through the list of codecs supported and display infor about them
 	for( int i = 0; i < numOfTypes; i++ )
 	{
 		VDCompressionList cl = ( VDCompressionList )*h[ i ];
@@ -998,34 +991,54 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 
 	// Tell the vDig we're starting to change several settings.
 	// Apple's SoftVDig doesn't seem to like these calls.
-	if ((err = VDCaptureStateChanging(pVdg->vdCompInst, vdFlagCaptureSetSettingsBegin))) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDCaptureStateChanging err=%ld (Ignored.)\n", err);
-		//goto endFunc;
+	err = VDCaptureStateChanging( pVdg->vdCompInst, vdFlagCaptureSetSettingsBegin );
+
+	// check that the VDIG knows what we are on about.
+	if( err != noErr ) 
+	{
+		gen_fatal( "Cannot change the state." );
 	}
 
-	if ((err = VDGetMaxSrcRect(pVdg->vdCompInst, currentIn, &maxRect))) {
-		fprintf(stderr, "vdgPreflightGrabbing(): VDGetMaxSrcRect err=%ld (Ignored.)\n", err);
-		//goto endFunc;
+	// find out the maximum source rectangle
+	err = VDGetMaxSrcRect( pVdg->vdCompInst, currentIn, &maxRect );
+
+	if( err != noErr )
+	{
+		gen_fatal( "There was a problem grabbing the maximum source rectangle" );
+	}
+	else
+	{
+		message( "Maximum source rectangle is { ( %d, %d ), ( %d, %d ) }", maxRect.left, maxRect.top, maxRect.right, maxRect.bottom );
 	}
 
 	// Try to set maximum capture size ... is this necessary as we're setting the 
 	// rectangle in the VDSetCompression call later?  I suppose that it is, as
 	// we're setting digitization size rather than compression size here...
 	// Apple vdigs don't like this call	
-	if (err = VDSetDigitizerRect( pVdg->vdCompInst, &maxRect)) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDSetDigitizerRect err=%ld (Ignored.)\n", err);
-		//goto endFunc;		
+	err = VDSetDigitizerRect( pVdg->vdCompInst, &maxRect);
+
+	// check for errors.
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't set max rectangle" );
+	}
+	
+	// make sure we are using compression, this should be on by default
+	err = VDSetCompressionOnOff( pVdg->vdCompInst, true );
+
+	// check for errors.
+	if( err != noErr )
+	{
+		gen_fatal( "Couldn't tell the VDIG to use compression" );
 	}
 
-	if (err = VDSetCompressionOnOff( pVdg->vdCompInst, 1)) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDSetCompressionOnOff err=%ld (Ignored.)\n", err);
-		//goto endFunc;		
-	}
+	// attempt to set the framerate, setting it to zero is supposed to 
+	// use the digitizers default framerate
+	err = VDSetFrameRate( pVdg->vdCompInst, 0 );
 
-	// We could try to force the frame rate here... necessary for ASC softvdig
-	if (err = VDSetFrameRate(pVdg->vdCompInst, 0)) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDSetFrameRate err=%ld (Ignored.)\n", err);
-		//goto endFunc;		
+	if( err != noErr )
+	{
+		gen_fatal( "Couldn't set framerate" );
 	}
 
 	// try to set a format that matches our target
@@ -1035,49 +1048,63 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 	// we'll get 320x240 frames returned but if we leave codecType as 0
 	// we'll get 640x480 frames returned instead (which use 4:1:1 encoding on
 	// the wire rather than 4:2:2)
-	if (err = VDSetCompression(pVdg->vdCompInst,
-				0, //'yuv2'
+	err = VDSetCompression(pVdg->vdCompInst,
+				0, //kComponentVideoCodecType, //0, //'yuv2'
 				0,	
 				&maxRect, 
 				0, //codecNormalQuality,
 				0, //codecNormalQuality,
-				0)) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDSetCompression err=%ld (Ignored.)\n", err);
-		//goto endFunc;			
+				0);
+	// check for an error
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't set compression type" );
 	}
 
-	if (err = VDCaptureStateChanging(pVdg->vdCompInst, vdFlagCaptureLowLatency)) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDCaptureStateChanging err=%ld (Ignored.)\n", err);
-		//goto endFunc;	   
+	// tell the camera not to use old frames.
+	err = VDCaptureStateChanging( pVdg->vdCompInst, vdFlagCaptureLowLatency );
+
+	// check for an error
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't tell the digitizer to only use the freshest frames" );
 	}
 
 	// Tell the vDig we've finished changing settings.
-	if ((err = VDCaptureStateChanging(pVdg->vdCompInst, vdFlagCaptureSetSettingsEnd))) {
-		if (err != digiUnimpErr)  fprintf(stderr, "vdgPreflightGrabbing(): VDCaptureStateChanging err=%ld (Ignored.)\n", err);
-		//goto endFunc;	   
-	}
+	err = VDCaptureStateChanging( pVdg->vdCompInst, vdFlagCaptureSetSettingsEnd );
 
-	if ((err = VDResetCompressSequence( pVdg->vdCompInst))) {
-		if (err != digiUnimpErr) fprintf(stderr, "vdgPreflightGrabbing(): VDResetCompressSequence err=%ld (Ignored.)\n", err);
-		//goto endFunc;	   
+	// check for an error
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't tell the digitizer that we have finished applying our settings" );
 	}
 
 	pVdg->vdImageDesc = (ImageDescriptionHandle)NewHandle(0);
-	if ((err = VDGetImageDescription(pVdg->vdCompInst, pVdg->vdImageDesc))) {
-		fprintf(stderr, "vdgPreflightGrabbing(): VDGetImageDescription err=%ld (Ignored.)\n", err);
-		//goto endFunc;	   
+
+	// grab a description of the image
+	err = VDGetImageDescription( pVdg->vdCompInst, pVdg->vdImageDesc );
+
+	// check for an error
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't grab image description" );
 	}
+	
+	message( "obtained image description" );
+	message( "image idSize = %dl", ( **( pVdg->vdImageDesc ) ).idSize );
+	message( "version = %d", ( ** ( pVdg->vdImageDesc ) ).version );
+	message( "width = %d", ( ** ( pVdg->vdImageDesc ) ).width );
+	message( "height = %d", ( ** ( pVdg->vdImageDesc ) ).height );
 
 	// From Steve Sisak: find out if Digitizer is cropping for you.
-	if ((err = VDGetDigitizerRect(pVdg->vdCompInst, &pVdg->vdDigitizerRect))) {
-		fprintf(stderr, "vdgPreflightGrabbing(): VDGetDigitizerRect err=%ld (Ignored.)\n", err);
-		//goto endFunc;
+	err = VDGetDigitizerRect( pVdg->vdCompInst, &pVdg->vdDigitizerRect );
+	
+	if( err != noErr )
+	{
+		gen_fatal( "couldn't determine if the digitizer was cropping for us" );
 	}
 
 	pVdg->isPreflighted = 1;
-
-endFunc:
-	return (err);
 }
 
 VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, 
@@ -1643,11 +1670,12 @@ int ar2VideoCapStart(AR2VideoParamT *vid)
 	int err_i = 0;
 
 	vid->status = 0;
-	if (!vid->pVdg->isPreflighted) {
-		if (err = vdgPreflightGrabbing(vid->pVdg)) {
-			fprintf(stderr, "ar2VideoCapStart(): vdgPreflightGrabbing err=%ld\n", err);
-			err_i = (int)err;
-		}		
+
+	// check that the digitizer has been preflighted.
+	if( !vid->pVdg->isPreflighted )
+	{
+		// initialise the camera.
+		vdgPreflightGrabbing(vid->pVdg);
 	}
 
 	if (err_i == 0) {
