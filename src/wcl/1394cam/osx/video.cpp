@@ -327,7 +327,10 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 		message( "Settings received okay" );
 	}
 
-	if( err = vdgPreflightGrabbing( vid->pVdg ) )
+	// attemp to preflight the grabbing?
+	err = vdgPreflightGrabbing( vid->pVdg );
+
+	if( err != 0 )
 	{
 		gen_fatal( "vdgPreflightGrabbing err=%ld", err);
 	}
@@ -815,12 +818,150 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 
 	DigitizerInfo info;
 
-	// make sure this is a compressed source only
-	if( ( err = VDGetDigitizerInfo( pVdg->vdCompInst, &info ) ) )
+	// Returns capability and status information about a specified video 
+	// digitizer component.
+	err = VDGetDigitizerInfo( pVdg->vdCompInst, &info );
+
+	// check the return value to see if there was an error.
+	if( err !=  noErr )
 	{
-		fprintf(stderr, "vdgPreflightGrabbing(): VDGetDigitizerInfo err=%ld\n", err);
-		goto endFunc;
-	} else {
+		gen_fatal( "VDGetDigitizerInfo err=%ld", err);
+	}
+	else 
+	{
+		message( "got digitizer information" );
+
+		//check what type of video digitizer component we got.
+		if( info.vdigType == vdTypeBasic )
+		{
+			message( "Basic Video digitizer; does not support any clipping" );
+		}
+		else if( info.vdigType == vdTypeAlpha )
+		{
+			message( "Supports clipping by means of an alpha channel" );
+		}
+		else if( info.vdigType == vdTypeMask )
+		{
+			message( "Supports clipping by means of a mask plane" );
+		}
+		else if( info.vdigType == vdTypeKey )
+		{
+			message( "Supports clipping by means of key colours" );
+		}
+
+		if( info.outputCapabilityFlags & digiOutDoes1 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 1-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoes2 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 2-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoes4 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 4-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoes8 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 8-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoes16 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 16-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoes32 )
+		{
+			message( "the video digitizer component can work with pixel maps that contain 32-bit pixels" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesDither )
+		{
+			message( "the video digitizer component supports dithering" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesStretch )
+		{
+			message( "the video digitizer component can stretch images to arbitrary sizes" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesShrink )
+		{
+			message( "the video digitizer component can shrink images to arbitrary sizes" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesMask )
+		{
+			message( "the video digitizer component can handle clipping regions" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesDouble )
+		{
+			message( "the video digitizer component supports stretching to quadruple size when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesQuad )
+		{
+			message( "the video digitizer component supports stretching an image to 16 times its original size when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesQuarter )
+		{
+			message( "the video digitizer component can shrink an image to one-quarter of its original size when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesSixteenth )
+		{
+			message( "the video digitizer component can shrink an image to 1/16 of its original size when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesRotate )
+		{
+			message( "the video digitizer component can rotate an image when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesHorizFlip )
+		{
+			message( "the video digitizer component can flip an image horizontally when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesVertFlip )
+		{
+			message( "the video digitizer component can flip an image vertically when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesSkew )
+		{
+			message( "the video digitizer component can skew an image when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesBlend )
+		{
+			message( "the video digitizer component can blend the resulting image with a matte when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesWarp )
+		{
+			message( "the video digitizer component can warp an image when displaying the output video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesHWPlayThru )
+		{
+			message( "the video digitizer component does not need idle time in order to display its video" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesILUT )
+		{
+			message( "the video digitizer component supports inverse lookup tables for indexed color modes" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesKeyColor )
+		{
+			message( "the video digitizer component supports clipping by means of key colors" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesAsyncGrabs )
+		{
+			message( "the video digitizer component can operate asynchronously" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesUnreadableScreenBits )
+		{
+			message( "the video digitizer may place pixels on the screen that cannot be used when compressing images" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesCompress )
+		{
+			message( "the video digitizer component supports compressed source devices" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesCompressOnly )
+		{
+			message( "the video digitizer component only provides compressed image data" );
+		}
+		if( info.outputCapabilityFlags & digiOutDoesPlayThruDuringCompress )
+		{
+			message( "the video digitizer component can draw images on the screen at the same time that it is delivering compressed image data" );
+		}
+
 		if (!(info.outputCapabilityFlags & digiOutDoesCompress)) {
 			fprintf(stderr, "vdgPreflightGrabbing(): VDGetDigitizerInfo reports device is not a compressed source.\n");
 			err = digiUnimpErr; // We don't support non-compressed sources.
