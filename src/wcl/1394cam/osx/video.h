@@ -92,7 +92,7 @@ AR2VideoParamT* ar2VideoOpen(char *config);
 int ar2VideoDispOption(void);
 VdigGrabRef vdgAllocAndInit(const int grabber);
  ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex);
- VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg);
+void vdgPreflightGrabbing(VdigGrab* pVdg);
  VideoDigitizerError vdgGetDataRate( VdigGrab*   pVdg, long*           pMilliSecPerFrame, Fixed*      pFramesPerSecond, long*       pBytesPerSecond); 
  VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
  OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
