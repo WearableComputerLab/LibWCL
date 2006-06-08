@@ -32,31 +32,31 @@
 - (id)initInput:(int)inInputIndex withSeqGrabComponent:(SeqGrabComponent)inSeqGrab withSGChannel:(SGChannel)inSgchanVideo
 {
 	ComponentResult err;
-	
+
 	self = [super init];
 
 	// initialize NSApplication, using an entry point that is specific to bundles
-    // this is a no-op for Cocoa apps, but is required by Carbon apps
+	// this is a no-op for Cocoa apps, but is required by Carbon apps
 	NSApplicationLoad();
-	
+
 	inputIndex = inInputIndex;
 	seqGrab = inSeqGrab;
 	sgchanVideo = inSgchanVideo;
-	
+
 	// Grab the defaults.
 	NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-	
+
 	// Try to load the version key, used to see if we have any saved settings.
 	mVersion = [defaults floatForKey:@"version"];
 	if (!mVersion) {
 		// No previous defaults so define new.
 		mVersion = 1;
-		
+
 		// Write out the defaults.
 		[defaults setInteger:mVersion forKey:@"version"];
 		[defaults synchronize];
 	}
-	
+
 	// Load defaults, first time though mUserData may be 0 which is fine.
 	[self loadUserData:&mUserData fromDefaults:defaults forKey:[NSString stringWithFormat:@"sgVideoSettings%03i", inputIndex]];
 	if (mUserData) {
@@ -64,9 +64,9 @@
 			fprintf(stderr, "-sgConfigurationDialog: error %ld in SGSetChannelSettings().\n", err);
 		}
 	}
-	
+
 	return self;
-	
+
 }
 
 - (void)dealloc
@@ -79,21 +79,24 @@
 // Settings Dialog pops up in random locations...sigh...
 - (IBAction) sgConfigurationDialog:(id)sender
 {
-	ComponentResult			err;
-	Component				*PanelListPtr = NULL;
-	long					PanelCount;	
-	
+	ComponentResult	err;
+	Component* PanelListPtr = NULL;
+	long PanelCount;	
+
 	// Set up the settings panel list removing the "Compression" panel.
-	ComponentDescription	cDesc;
-	Component				c;
-	long					cCount;
-	Component				*cPtr;
-	
+	ComponentDescription cDesc;
+	Component c;
+	long cCount;
+	Component* cPtr;
+
 	cDesc.componentType = SeqGrabPanelType;
 	cDesc.componentSubType = VideoMediaType;
 	cDesc.componentManufacturer = cDesc.componentFlags = cDesc.componentFlagsMask = 0L;
+
 	cCount = CountComponents(&cDesc);
-	if (cCount == 0) {
+
+	if( cCount == 0 )
+	{
 		fprintf(stderr, "-sgConfigurationDialog: error in CountComponents().\n");
 		goto bail;
 	}
@@ -103,7 +106,7 @@
 		fprintf(stderr, "-sgConfigurationDialog: error in NewPtr().\n");
 		goto bail;
 	}
-	
+
 	PanelCount = 0;
 	cPtr = PanelListPtr;
 	c = 0L;
@@ -116,7 +119,7 @@
 				fprintf(stderr, "-sgConfigurationDialog: error in NewHandle().\n");
 				goto bail;
 			}
-			
+
 			GetComponentInfo(c, &compInfo, hName, NULL, NULL);
 			if (PLstrcmp(*(unsigned char **)hName, "\pCompression") != 0) {
 				*cPtr++ = c;
@@ -125,7 +128,7 @@
 			DisposeHandle(hName);
 		}
 	} while (c);
-	
+
 	// Bring up the dialog and if the user didn't cancel
 	// save the new channel settings for later.
 	err = SGSettingsDialog(seqGrab, sgchanVideo, PanelCount, PanelListPtr, 0, NULL, 0L);
@@ -135,18 +138,18 @@
 		if ((err = SGGetChannelSettings(seqGrab, sgchanVideo, &mUserData, 0)) != noErr) {
 			fprintf(stderr, "-sgConfigurationDialog: error %ld in SGGetChannelSettings().\n", err);
 		}
-		
+
 		// Grab the defaults.
 		NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-		
+
 		// Write the defaults.
 		[self saveUserData:mUserData toDefaults:defaults withKey:[NSString stringWithFormat:@"sgVideoSettings%03i", inputIndex]];
 		[defaults synchronize];
-		
+
 	} else if (err != userCanceledErr) {
 		fprintf(stderr, "-sgConfigurationDialog: error %ld in SGSettingsDialog().\n", err);
 	}
-	
+
 bail:
 	DisposePtr((Ptr)PanelListPtr);
 }
@@ -158,13 +161,13 @@ bail:
 	Handle   theHandle = NULL;
 	UserData theUserData = NULL;
 	OSErr    err = paramErr;
-	
+
 	// read the new setttings from our preferences
 	theSettings = [inDefaults objectForKey:inKey];
-	
+
 	if (theSettings) {
 		err = PtrToHand([theSettings bytes], &theHandle, [theSettings length]);
-		
+
 		if (theHandle) {
 			err = NewUserDataFromHandle(theHandle, &theUserData);
 			if (theUserData) {
@@ -173,7 +176,7 @@ bail:
 			DisposeHandle(theHandle);
 		}
 	}
-	
+
 	return err;
 }
 
@@ -183,29 +186,29 @@ bail:
 	NSData *theSettings;
 	Handle hSettings;
 	OSErr  err;
-	
+
 	if (NULL == inUserData) return paramErr;
-	
+
 	hSettings = NewHandle(0);
 	err = MemError();
-	
+
 	if (noErr == err) {
 		err = PutUserDataIntoHandle(inUserData, hSettings); 
-		
+
 		if (noErr == err) {
 			HLock(hSettings);
 			theSettings = [NSData dataWithBytes:(UInt8 *)*hSettings length:GetHandleSize(hSettings)];
-			
+
 			// save the new setttings to our preferences
 			if (theSettings) {
 				[inDefaults setObject:theSettings forKey:outKey];
 				[inDefaults synchronize];
 			}
 		}
-		
+
 		DisposeHandle(hSettings);
 	}
-	
+
 	return err;
 }
 
@@ -213,19 +216,28 @@ bail:
 
 OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog)
 {
-    NSAutoreleasePool *localPool;
-        ARVideoSettingsController *localController;
+	NSAutoreleasePool *localPool;
+	ARVideoSettingsController *localController;
 
-        // Sanity check.
-        if (inputIndex < 0 || !seqGrab || !sgchanVideo) return (paramErr);
+	// Sanity check.
+	if( inputIndex < 0 || !seqGrab || !sgchanVideo )
+	{
+		return paramErr;
+	}
 
-    // Calling Objective-C from C necessitates an autorelease pool.
-        localPool = [[NSAutoreleasePool alloc] init];
+	// Calling Objective-C from C necessitates an autorelease pool.
+	localPool = [[NSAutoreleasePool alloc] init];
 
-    localController = [[ARVideoSettingsController alloc] initInput:inputIndex withSeqGrabComponent:seqGrab withSGChannel:sgchanVideo];
-        if (showDialog) [localController sgConfigurationDialog:NULL];
-        [localController release];
+	localController = [[ARVideoSettingsController alloc] initInput:inputIndex withSeqGrabComponent:seqGrab withSGChannel:sgchanVideo];
 
-    [localPool release];
-    return (noErr);
+	if( showDialog )
+	{
+		[localController sgConfigurationDialog:NULL];
+	}
+
+	[localController release];
+
+	[localPool release];
+
+	return noErr;
 }
