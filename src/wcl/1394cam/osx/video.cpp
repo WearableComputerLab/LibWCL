@@ -357,7 +357,7 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	}
 
 	// Report video size and compression type.
-	fprintf(stdout, "Video cType is %c%c%c%c, size is %dx%d.\n",
+	message( "Video cType is %c%c%c%c, size is %dx%d",
 			(char)(((*(vid->vdImageDesc))->cType >> 24) & 0xFF),
 			(char)(((*(vid->vdImageDesc))->cType >> 16) & 0xFF),
 			(char)(((*(vid->vdImageDesc))->cType >>  8) & 0xFF),
@@ -537,7 +537,9 @@ int ar2VideoClose(AR2VideoParamT *vid)
 //
 SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 {
-	SeqGrabComponent seqGrab = NULL;
+	// A ComponentInstance is a pointer to a ComponentInstanceRecord, which is turn 
+	// basically has one field "data" that is a pointer to a long
+	ComponentInstance seqGrab = NULL;
 	ComponentResult	err = noErr;
 
 	ComponentDescription cDesc;
@@ -574,27 +576,37 @@ SeqGrabComponent MakeSequenceGrabber(WindowRef pWindow, const int grabber)
 	// attempt to find the grabber that we are interested in.
 	for( int i = 1; (c = FindNextComponent(c, &cDesc)) != 0; i++ )
 	{
-		// Could call GetComponentInfo() here to get more info on this SeqGrabComponentType component.
-		// Is this the grabber requested?
-		if (i == grabber) {
+		// Could call GetComponentInfo() here to get more info on this 
+		// SeqGrabComponentType component. Is this the grabber 
+		// requested?
+		if (i == grabber)
+		{
+			// this doesn't appear to do anything useful, it does 
+			// get me the manufacturer, but both cameras I have
+			// tried return the same manufacturer type ie = 'appl'
+			GetComponentInfo( c, &cDesc, NULL, NULL, NULL );
+
+			message( "component type: %x", cDesc.componentType );
+			message( "component sub type: %x", cDesc.componentSubType );
+			message( "component manufacturer: %x", cDesc.componentManufacturer );
+			message( "component flags: %x", cDesc.componentFlags );
+			message( "component flags mask: %x", cDesc.componentFlagsMask );
+		
+			// create an instance of the component.
 			seqGrab = OpenComponent(c);
 		}
 	}
-	if (!seqGrab) {
-		fprintf(stderr, "MakeSequenceGrabber(): Failed to open a sequence grabber component.\n");
-		goto endFunc;
+
+	// check if a sequence grabber was obtained.
+	if( !seqGrab )
+	{
+		gen_fatal( "Failed to open a sequence grabber component." );
 	}
 
 	// initialize the default sequence grabber component
-	if ((err = SGInitialize(seqGrab))) {
-		fprintf(stderr, "MakeSequenceGrabber(): SGInitialize err=%ld\n", err);
-		goto endFunc;
-	}
-
-	// This should be defaulted to the current port according to QT doco
-	if ((err = SGSetGWorld(seqGrab, GetWindowPort(pWindow), NULL))) {
-		fprintf(stderr, "MakeSequenceGrabber(): SGSetGWorld err=%ld\n", err);
-		goto endFunc;
+	if( ( err = SGInitialize( seqGrab ) ) )
+	{
+		gen_fatal( "SGInitialize err=%ld", err);
 	}
 
 	// specify the destination data reference for a record operation
