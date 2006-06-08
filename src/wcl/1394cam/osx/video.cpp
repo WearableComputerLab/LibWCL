@@ -962,14 +962,39 @@ VideoDigitizerError vdgPreflightGrabbing(VdigGrab* pVdg)
 			message( "the video digitizer component can draw images on the screen at the same time that it is delivering compressed image data" );
 		}
 
-		if (!(info.outputCapabilityFlags & digiOutDoesCompress)) {
-			fprintf(stderr, "vdgPreflightGrabbing(): VDGetDigitizerInfo reports device is not a compressed source.\n");
-			err = digiUnimpErr; // We don't support non-compressed sources.
-			goto endFunc;
+		// we only want to work with compressed types so check if the
+		// camera supports compressed types.
+		if( !( info.outputCapabilityFlags & digiOutDoesCompress ) )
+		{
+			gen_fatal( "camera does not support compressed types. This code only works with compressed types at the moment" );
 		}
 	}
 
-	//  VDGetCompressTypes() // tells you the supported types
+	// create a new list handle
+	VDCompressionListHandle h = (VDCompressionListHandle)NewHandle(0);
+
+	// get the compression types that this camera supports
+	long result = VDGetCompressionTypes( pVdg->vdCompInst, h );
+
+	// check that we got the list okay.
+	if( result != noErr )
+	{
+		gen_fatal( "couldn't get the compression types. Error no: %dl", result );
+	}
+
+	// find out how many codec we have.
+	int numOfTypes = sizeof( **h ) / sizeof( VDCompressionList );
+
+	message( "Found %d codec(s)", numOfTypes );
+
+	for( int i = 0; i < numOfTypes; i++ )
+	{
+		VDCompressionList cl = ( VDCompressionList )*h[ i ];
+	
+		message( "cType: %x", cl.cType );
+		message( "Compressor name: %s", cl.name );
+		message( "Compression algorithm: %s", cl.typeName );
+	}
 
 	// Tell the vDig we're starting to change several settings.
 	// Apple's SoftVDig doesn't seem to like these calls.
