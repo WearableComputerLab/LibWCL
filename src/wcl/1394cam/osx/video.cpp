@@ -316,7 +316,9 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	}
 
 	// show the dialog if it has been requested.
-	if( err = vdgRequestSettings( vid->pVdg, showDialog, gVidCount ) )
+	err = vdgRequestSettings( vid->pVdg, showDialog, gVidCount );
+
+	if( err != 0 )
 	{
 		gen_fatal( "vdgRequestSettings err=%ld", err);
 	}
@@ -713,10 +715,17 @@ ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const i
 
 	// Use the SG Dialog to allow the user to select device and compression 
 	// settings, this calls the objective c code.
-	if( err = RequestSGSettings( inputIndex, pVdg->seqGrab, pVdg->sgchanVideo, showDialog ) )
+	err = RequestSGSettings( inputIndex, pVdg->seqGrab, pVdg->sgchanVideo, showDialog );
+
+	// check the return value
+	if( err != 0 )
 	{
 		gen_fatal( "RequestSGSettings err=%ld", err );
-	}	
+	}
+	else
+	{
+		message( "Settings requested okay" );
+	}
 
 	// get the component instance that identifies the connection between 
 	// the video channel component and its video digitizer component.
@@ -730,6 +739,8 @@ ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const i
 	{
 		gen_fatal( "SGGetVideoDigitizerComponent error" );
 	}
+
+	return err;
 }
 
 VideoDigitizerError vdgGetDeviceNameAndFlags(VdigGrab* pVdg, char* szName, long* pBuffSize, UInt32* pVdFlags)
