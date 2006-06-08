@@ -622,36 +622,28 @@ SeqGrabComponent MakeSequenceGrabber( const int grabber )
 	return seqGrab;
 }
 
-
-// --------------------
-// MakeSequenceGrabChannel (adapted from Apple mung sample)
-//
-ComponentResult MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
+/**
+ * create a channel and define the usage such that the camera only every returns
+ * the freshest image available, this way we aren't dealing with out of date 
+ * images and we don't get any lag.
+ **/
+void MakeSequenceGrabChannel(SeqGrabComponent seqGrab, SGChannel* psgchanVideo)
 {
-	long  flags = 0;
+	// return code
 	ComponentResult err = noErr;
-
-	if ((err = SGNewChannel(seqGrab, VideoMediaType, psgchanVideo))) {
-		fprintf(stderr, "MakeSequenceGrabChannel(): SGNewChannel err=%ld\n", err);
-		goto endFunc;
+	
+	// set up a video type channel (as opposed to a sound channel) puts the
+	// value into psgchanVideo
+	if( ( err = SGNewChannel( seqGrab, VideoMediaType, psgchanVideo ) ) )
+	{
+		gen_fatal( "SGNewChannel err=%ld", err );
 	}
 
-	//err = SGSetChannelBounds(*sgchanVideo, rect);
-	// set usage for new video channel to avoid playthrough
-	// note we don't set seqGrabPlayDuringRecord
-	if ((err = SGSetChannelUsage(*psgchanVideo, flags | seqGrabRecord))) {
-		fprintf(stderr, "MakeSequenceGrabChannel(): SGSetChannelUsage err=%ld\n", err);
-		goto endFunc;
+	// set up the channel so that it always returns the freshest frame.
+	if( ( err = SGSetChannelUsage( *psgchanVideo, seqGrabLowLatencyCapture ) ) )
+	{
+		gen_fatal( "SGSetChannelUsage err=%ld", err );
 	}
-
-endFunc:
-	if ((err != noErr) && psgchanVideo) {
-		// clean up on failure
-		SGDisposeChannel(seqGrab, *psgchanVideo);
-		*psgchanVideo = NULL;
-	}
-
-	return err;
 }
 
 ComponentResult vdgGetSettings(VdigGrab* pVdg)
@@ -684,8 +676,10 @@ endFunc:
 	return (err);
 }
 
-#pragma mark -
-
+/**
+ * create a sequence grabbing device, create the channel and define it's 
+ * properties
+ **/
 VdigGrabRef vdgAllocAndInit(const int grabber)
 {
 	VdigGrabRef pVdg = NULL;
@@ -700,16 +694,13 @@ VdigGrabRef vdgAllocAndInit(const int grabber)
 	// attempt to make a sequence grabber.
 	if( !( pVdg->seqGrab = MakeSequenceGrabber( grabber ) ) )
 	{
-		gen_fatal( "Couldn't make a sequence grabber"); 
+		gen_fatal( "Couldn't make a sequence grabber" ); 
 	}
 
-	if ((err = MakeSequenceGrabChannel(pVdg->seqGrab, &pVdg->sgchanVideo))) {
-		fprintf(stderr, "MakeSequenceGrabChannel err=%d.\n", err); 
-		free(pVdg);
-		return (NULL);
-	}
+	// set up the sequence channel and define its properties.
+	MakeSequenceGrabChannel( pVdg->seqGrab, &pVdg->sgchanVideo );
 
-	return (pVdg);
+	return pVdg;
 }
 
 ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex)
