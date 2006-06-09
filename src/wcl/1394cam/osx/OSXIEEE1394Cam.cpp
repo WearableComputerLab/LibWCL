@@ -4,7 +4,7 @@
 OSXIEEE1394Cam::OSXIEEE1394Cam()
 {
 	// the string that we are going to pass to artoolkit
-	char init_string [] = "-nodialog -width=640 -height=480 -pixelformat=24 -fps";
+	char init_string [] = "-nodialog -width=640 -height=480 -pixelformat=24";
 	//char init_string [] = "-nodialog -width=320 -height=240 -pixelformat=24";
 
 	// attempt to open the camera
