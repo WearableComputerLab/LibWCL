@@ -17,63 +17,63 @@
 struct _VdigGrab
 {
         // State
-        int                                     isPreflighted;
-        int                                     isGrabbing;
-        int                                     isRecording;
+        int			isPreflighted;
+        int			isGrabbing;
+        int			isRecording;
 
         // QT Components
-        SeqGrabComponent        seqGrab;
-        SGChannel                       sgchanVideo;
-        ComponentInstance   vdCompInst;
+        SeqGrabComponent	seqGrab;
+        SGChannel		sgchanVideo;
+        ComponentInstance	vdCompInst;
 
         // Device settings
-        ImageDescriptionHandle  vdImageDesc;
-        Rect                                    vdDigitizerRect;
+        ImageDescriptionHandle	vdImageDesc;
+        Rect			vdDigitizerRect;
 
         // Destination Settings
-        CGrafPtr                                dstPort;
-        ImageSequence                   dstImageSeq;
+        CGrafPtr		dstPort;
+        ImageSequence		dstImageSeq;
 
         // Compression settings
-        short                           cpDepth;
-        CompressorComponent cpCompressor;
-        CodecQ                          cpSpatialQuality;
-        CodecQ                          cpTemporalQuality;
-        long                            cpKeyFrameRate;
-        Fixed                           cpFrameRate;
+        short			cpDepth;
+        CompressorComponent	cpCompressor;
+        CodecQ			cpSpatialQuality;
+        CodecQ			cpTemporalQuality;
+        long			cpKeyFrameRate;
+        Fixed			cpFrameRate;
 };
 typedef struct _VdigGrab VdigGrab;
 typedef struct _VdigGrab *VdigGrabRef;
 
 struct _AR2VideoParamT {
-    int                                         width;
-    int                                         height;
-    Rect                                        theRect;
-    GWorldPtr                           pGWorld;
-    int                                         status;
-        int                                             showFPS;
-        TimeValue                               lastTime;
-        long                                    frameCount;
-        TimeScale                               timeScale;
-        pthread_t                               thread;                 // PRL.
-        pthread_mutex_t                 bufMutex;               // PRL.
-        pthread_cond_t                  condition;              // PRL.
-        int                                             threadRunning;  // PRL.
-        long                                    rowBytes;               // PRL.
-        long                                    bufSize;                // PRL.
-        unsigned char*                          bufPixels;              // PRL.
+	int 			width;
+	int			height;
+	Rect			theRect;
+	GWorldPtr		pGWorld;
+	int			status;
+	int			showFPS;
+	TimeValue		lastTime;
+	long			frameCount;
+	TimeScale		timeScale;
+	pthread_t		thread;                 // PRL.
+	pthread_mutex_t		bufMutex;               // PRL.
+	pthread_cond_t		condition;              // PRL.
+	int			threadRunning;  // PRL.
+	long			rowBytes;               // PRL.
+	long			bufSize;                // PRL.
+	unsigned char*		bufPixels;              // PRL.
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
-        unsigned char*                          bufPixelsCopy1; // PRL.
-        unsigned char*                          bufPixelsCopy2; // PRL.
+	unsigned char*		bufPixelsCopy1; // PRL.
+	unsigned char*		bufPixelsCopy2; // PRL.
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
-        int                                             grabber;
-        MatrixRecordPtr                 scaleMatrixPtr; // PRL.
-        VdigGrabRef                             pVdg;                   // DH (see
-        long                                    milliSecPerTimer; // DH (seeSaw).
-        long                                    milliSecPerFrame; // DH (seeSaw).
-        Fixed                                   frameRate;              // DH (see
-        long                                    bytesPerSecond; // DH (seeSaw).
-        ImageDescriptionHandle  vdImageDesc;    // DH (seeSaw).
+	int			grabber;
+	MatrixRecordPtr		scaleMatrixPtr; // PRL.
+	VdigGrabRef		pVdg;                   // DH (see
+	long			milliSecPerTimer; // DH (seeSaw).
+	long			milliSecPerFrame; // DH (seeSaw).
+	Fixed			frameRate;              // DH (see
+	long			bytesPerSecond; // DH (seeSaw).
+	ImageDescriptionHandle	vdImageDesc;    // DH (seeSaw).
 };
 typedef struct _AR2VideoParamT* AR2VideoParamTRef;
 typedef struct _AR2VideoParamT AR2VideoParamT;
@@ -82,7 +82,7 @@ typedef struct _AR2VideoParamT AR2VideoParamT;
 extern "C" {
 #endif
 
-OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
+	OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGChannel sgchanVideo, const int showDialog);
 
 #ifdef __cplusplus
 }
@@ -91,12 +91,12 @@ OSStatus RequestSGSettings(const int inputIndex, SeqGrabComponent seqGrab, SGCha
 AR2VideoParamT* ar2VideoOpen(char *config);
 int ar2VideoDispOption(void);
 VdigGrabRef vdgAllocAndInit(const int grabber);
- ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex);
+ComponentResult vdgRequestSettings(VdigGrab* pVdg, const int showDialog, const int inputIndex);
 void vdgPreflightGrabbing(VdigGrab* pVdg);
 void vdgGetDataRate( VdigGrab* pVdg, long* pMilliSecPerFrame, Fixed* pFramesPerSecond, long* pBytesPerSecond); 
- VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
- OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
- ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg);
+void vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc );
+OSErr vdgSetDestination( VdigGrab* pVdg, CGrafPtr  dstPort );
+ComponentResult vdgReleaseAndDealloc(VdigGrab* pVdg);
 unsigned char *ar2VideoGetImage(AR2VideoParamT *vid);
 int ar2VideoCapStart(AR2VideoParamT *vid);
 int ar2VideoCapStop(AR2VideoParamT *vid);
