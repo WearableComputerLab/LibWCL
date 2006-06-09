@@ -130,9 +130,9 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 			// skip over the whitspaces
 			while( *a == ' ' || *a == '\t' )
 			{
-				 a++; // Skip whitespace.
+				a++; // Skip whitespace.
 			}
-		
+
 			// check if we have reached the end of the line.	
 			if( *a == '\0' )
 			{
@@ -203,7 +203,7 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 			else if (strncmp(a, "-fps", 4) == 0)
 			{
 				showFPS = 1;
-				
+
 			} 
 			else if (strncmp(a, "-nodialog", 9) == 0) {
 				showDialog = 0;
@@ -242,8 +242,8 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 			break;			
 	}
 
-//	pixFormat = k8IndexedGrayPixelFormat;
-//	bytesPerPixel = 1l;
+	pixFormat = k8IndexedGrayPixelFormat;
+	bytesPerPixel = 1l;
 
 	message( "checking that quicktime is installed..." );
 
@@ -289,7 +289,7 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 
 	// set the status
 	vid->status = 0;
-	
+
 	// copy the FPS that was defined previously
 	vid->showFPS = showFPS;
 
@@ -352,45 +352,65 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 
 	message( "vid->milliSecPerTimer  = %ld", vid->milliSecPerTimer );
 
-	if (vid->milliSecPerTimer <= 0) {
-		fprintf(stderr, "vid->milliSecPerFrame: %ld ", vid->milliSecPerFrame);
+	// check that the timer value isn't too small
+	if( vid->milliSecPerTimer <= AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MIN )
+	{
+		message( "milliSecPerTime value is not sane, adjusting..." );
 		vid->milliSecPerTimer = AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MIN;
-		fprintf(stderr, "forcing timer period to %ldms\n", vid->milliSecPerTimer);
-	}
-	if (vid->milliSecPerTimer >= AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MAX) {
-		fprintf(stderr, "vid->milliSecPerFrame: %ld ", vid->milliSecPerFrame);
-		vid->milliSecPerFrame = AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MAX;
-		fprintf(stderr, "forcing timer period to %ldms\n", vid->milliSecPerTimer);
+		message( "forcing timer period to %ldms", vid->milliSecPerTimer );
 	}
 
-	vid->vdImageDesc = (ImageDescriptionHandle)NewHandle(0);
-	if (err = vdgGetImageDescription(vid->pVdg, vid->vdImageDesc)) {
-		fprintf(stderr, "ar2VideoOpen(): vdgGetImageDescription err=%ld\n", err);
-		goto out3;
+	// check that the time value isn't too large
+	if( vid->milliSecPerTimer >= AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MAX )
+	{
+		message( "milliSecPerTime value is not sane, adjusting..." );
+		vid->milliSecPerFrame = AR_VIDEO_IDLE_INTERVAL_MILLISECONDS_MAX;
+		message( "forcing timer period to %ldms", vid->milliSecPerTimer );
 	}
+
+	// create some memory to hold the description of the image description
+	vid->vdImageDesc = (ImageDescriptionHandle)NewHandle(0);
+
+	// grab the image description
+	vdgGetImageDescription( vid->pVdg, vid->vdImageDesc );
 
 	// Report video size and compression type.
 	message( "Video cType is %c%c%c%c, size is %dx%d",
-			(char)(((*(vid->vdImageDesc))->cType >> 24) & 0xFF),
-			(char)(((*(vid->vdImageDesc))->cType >> 16) & 0xFF),
-			(char)(((*(vid->vdImageDesc))->cType >>  8) & 0xFF),
-			(char)(((*(vid->vdImageDesc))->cType >>  0) & 0xFF),
-			((*vid->vdImageDesc)->width), ((*vid->vdImageDesc)->height));
+			( char )( ( ( *( vid->vdImageDesc ) )->cType >> 24 ) & 0xFF ),
+			( char )( ( ( *( vid->vdImageDesc ) )->cType >> 16 ) & 0xFF ),
+			( char )( ( ( *( vid->vdImageDesc ) )->cType >>  8 ) & 0xFF ),
+			( char )( ( ( *( vid->vdImageDesc ) )->cType >>  0 ) & 0xFF ),
+			( *vid->vdImageDesc )->width,
+			( *vid->vdImageDesc )->height );
 
 	// If a particular size was requested, set the size of the GWorld to
 	// the request, otherwise set it to the size of the incoming video.
 	vid->width = (width ? width : (int)((*vid->vdImageDesc)->width));
 	vid->height = (height ? height : (int)((*vid->vdImageDesc)->height));
+
+	message( "final image dimensions: { %d, %d }", vid->width, vid->height );
+
+	// set the values of vid->theRect 
 	SetRect(&(vid->theRect), 0, 0, (short)vid->width, (short)vid->height);
 
-	// Make a scaling matrix for the sequence if size of incoming video differs from GWorld dimensions.
-	if (vid->width != (int)((*vid->vdImageDesc)->width) || vid->height != (int)((*vid->vdImageDesc)->height)) {
+	// Make a scaling matrix for the sequence if size of incoming video 
+	// differs from GWorld dimensions.
+	if( vid->width != ( int )( ( *vid->vdImageDesc )->width ) || vid->height != ( int )( ( *vid->vdImageDesc )->height ) )
+	{
 		sourceRect.right = (*vid->vdImageDesc)->width;
 		sourceRect.bottom = (*vid->vdImageDesc)->height;
-		arMalloc(vid->scaleMatrixPtr, MatrixRecord, 1);
-		RectMatrix(vid->scaleMatrixPtr, &sourceRect, &(vid->theRect));
-		fprintf(stdout, "Video will be scaled to size %dx%d.\n", vid->width, vid->height);
-	} else {
+
+		// allocate some memory for a scalling matrix
+		arMalloc( vid->scaleMatrixPtr, MatrixRecord, 1 );
+
+		// define the scalling matrix
+		RectMatrix( vid->scaleMatrixPtr, &sourceRect, &( vid->theRect ) );
+		message( "Video will be scaled to size %dx%d", vid->width, vid->height );
+	}
+	else
+	{
+		// otherwise there is nothing to scall so just set the scalling
+		// matrix to null.
 		vid->scaleMatrixPtr = NULL;
 	}
 
@@ -400,27 +420,41 @@ AR2VideoParamT* ar2VideoOpen(char *config)
 	// to guarantee that we don't get padding bytes at the end of rows.
 	vid->rowBytes = vid->width * bytesPerPixel;
 	vid->bufSize = vid->height * vid->rowBytes;
-	//	if (!(vid->bufPixels = (ARUint8 *)valloc(vid->bufSize * sizeof(ARUint8)))) exit (1);
-	if (!(vid->bufPixels = ( unsigned char* )valloc(vid->bufSize * sizeof( unsigned char )))) exit (1);
+
+	// attempt to allocate some memory for the image.
+	vid->bufPixels = ( unsigned char* )valloc( vid->bufSize * sizeof( unsigned char ) );
+
+	// check if the memory could be allocated okay.
+	if( vid->bufPixels == NULL )
+	{
+		gen_fatal( "Memory for the image couldn't be allocated." );
+	}
+	else
+	{
+		message( "bytes per pixel: %d", bytesPerPixel );
+	}
+
 #ifdef AR_VIDEO_DEBUG_BUFFERCOPY
 	// And another two buffers for OpenGL to read out of.
 	if (!(vid->bufPixelsCopy1 = ( unsigned char* )valloc(vid->bufSize * sizeof( unsigned char )))) exit (1);
-	//	if (!(vid->bufPixelsCopy1 = (ARUint8 *)valloc(vid->bufSize * sizeof(ARUint8)))) exit (1);
-	//	if (!(vid->bufPixelsCopy2 = (ARUint8 *)valloc(vid->bufSize * sizeof(ARUint8)))) exit (1);
 	if (!(vid->bufPixelsCopy2 = ( unsigned char* )valloc(vid->bufSize * sizeof( unsigned char )))) exit (1);
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
-	// Wrap a GWorld around the pixel buffer.
-	err_s = QTNewGWorldFromPtr(&(vid->pGWorld),			// returned GWorld
-			pixFormat,				// format of pixels
-			&(vid->theRect),			// bounds
-			0,						// color table
-			NULL,					// GDHandle
-			0,						// flags
-			(void *)(vid->bufPixels), // pixel base addr
-			vid->rowBytes);			// bytes per row
-	if (err_s != noErr) {
-		fprintf(stderr,"ar2VideoOpen(): Unable to create offscreen buffer for sequence grabbing (%d).\n", err_s);
-		goto out5;
+
+	// Wrap a graphics world and pixel structure around the memory 
+	// containing the image.
+	err_s = QTNewGWorldFromPtr( &( vid->pGWorld ),	// returned GWorld
+			pixFormat,			// format of pixels
+			&( vid->theRect ),		// bounds
+			0,				// color table
+			NULL,				// GDHandle
+			0,				// flags
+			( void* )( vid->bufPixels ), 	// pixel base addr
+			vid->rowBytes );		// bytes per row
+
+	// check that the graphics world was created okay.
+	if( err_s != noErr )
+	{
+		gen_fatal( "unable to create the graphics world" );
 	}
 
 	// Lock the pixmap and make sure it's locked because
@@ -496,8 +530,6 @@ out5:
 #endif // AR_VIDEO_DEBUG_BUFFERCOPY
 	free(vid->bufPixels);
 	if (vid->scaleMatrixPtr) free(vid->scaleMatrixPtr);
-out3:
-	DisposeHandle((Handle)vid->vdImageDesc);
 out2:	
 	vdgReleaseAndDealloc(vid->pVdg);
 out:
@@ -1066,6 +1098,12 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 		gen_fatal( "couldn't tell the digitizer that we have finished applying our settings" );
 	}
 
+	// ******** TODO ***********
+	// look into this VDGetImageDescription is being called twice, once
+	// for each of the cvImageDesc in the two data structures, surely
+	// this only needs to be done once.
+	
+	// allocate some memory for the image.
 	pVdg->vdImageDesc = (ImageDescriptionHandle)NewHandle(0);
 
 	// grab a description of the image
@@ -1076,12 +1114,6 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 	{
 		gen_fatal( "couldn't grab image description" );
 	}
-
-	message( "obtained image description" );
-	message( "image idSize = %dl", ( **( pVdg->vdImageDesc ) ).idSize );
-	message( "version = %d", ( ** ( pVdg->vdImageDesc ) ).version );
-	message( "width = %d", ( ** ( pVdg->vdImageDesc ) ).width );
-	message( "height = %d", ( ** ( pVdg->vdImageDesc ) ).height );
 
 	// From Steve Sisak: find out if Digitizer is cropping for you.
 	err = VDGetDigitizerRect( pVdg->vdCompInst, &pVdg->vdDigitizerRect );
@@ -1095,9 +1127,9 @@ void vdgPreflightGrabbing(VdigGrab* pVdg)
 }
 
 void vdgGetDataRate(	VdigGrab* pVdg, 
-			long* pMilliSecPerFrame,
-			Fixed* pFramesPerSecond,
-			long* pBytesPerSecond )
+		long* pMilliSecPerFrame,
+		Fixed* pFramesPerSecond,
+		long* pBytesPerSecond )
 {
 	// Retrieves information that describes the performance capabilities 
 	// of a video digitizer.
@@ -1117,19 +1149,19 @@ void vdgGetDataRate(	VdigGrab* pVdg,
 	message( "expected bytes per second = %ld", *pBytesPerSecond );
 }
 
-VideoDigitizerError vdgGetImageDescription( VdigGrab* pVdg,
-		ImageDescriptionHandle vdImageDesc )
+/**
+ * function to get the image description
+ **/
+void vdgGetImageDescription( VdigGrab* pVdg, ImageDescriptionHandle vdImageDesc )
 {
-	VideoDigitizerError err;
+	// attempt to grab an image description
+	VideoDigitizerError err = VDGetImageDescription( pVdg->vdCompInst, vdImageDesc );
 
-	if (err = VDGetImageDescription( pVdg->vdCompInst, vdImageDesc))
+	// check that we got the description okay
+	if( err != noErr )
 	{
-		fprintf(stderr, "VDGetImageDescription err=%ld\n", err);
-		goto endFunc;		
+		gen_fatal( "unable to grab an image description, errocode: %ld", err );
 	}
-
-endFunc:	
-	return err;
 }
 
 OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
@@ -1139,18 +1171,10 @@ OSErr vdgDecompressionSequenceBegin(  VdigGrab* pVdg,
 {
 	OSErr err;
 
-	// 	Rect				   sourceRect = pMungData->bounds;
-	//	MatrixRecord		   scaleMatrix;	
-
 	// !HACK! Different conversions are used for these two equivalent types
 	// so we force the cType so that the more efficient path is used
 	if ((*pVdg->vdImageDesc)->cType == FOUR_CHAR_CODE('yuv2'))
 		(*pVdg->vdImageDesc)->cType = FOUR_CHAR_CODE('yuvu'); // kYUVUPixelFormat
-
-	// make a scaling matrix for the sequence
-	//	sourceRect.right = (*pVdg->vdImageDesc)->width;
-	//	sourceRect.bottom = (*pVdg->vdImageDesc)->height;
-	//	RectMatrix(&scaleMatrix, &sourceRect, &pMungData->bounds);
 
 	// begin the process of decompressing a sequence of frames
 	// this is a set-up call and is only called once for the sequence - the ICM will interrogate different codecs
@@ -1620,7 +1644,6 @@ void *ar2VideoInternalThread(void *arg)
 	return (NULL);
 	}
 
-#pragma mark -
 
 	int ar2VideoDispOption(void)
 	{
