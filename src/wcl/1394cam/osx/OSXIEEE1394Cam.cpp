@@ -3,27 +3,23 @@
 // constructor
 OSXIEEE1394Cam::OSXIEEE1394Cam()
 {
-	// the string that we are going to pass to artoolkit
-	char init_string [] = "-nodialog -width=640 -height=480 -pixelformat=24";
-	//char init_string [] = "-nodialog -width=320 -height=240 -pixelformat=24";
+       // create the camera object
+        this->camera = new cfox::Camera( cfox::Mode_640x480_Mono8, cfox::FPS_15, 0, cfox::BasicCamera );
 
-	// attempt to open the camera
-	this->artk_params = ar2VideoOpen( init_string );
+        // check that memory was allocated
+        if( this->camera == NULL )
+        {
+                gen_fatal( "memory couldn't be obtained for the camera object" );
+        }
 
-	// check to see if the camera was opened okay
-	if( this->artk_params == NULL )
-	{
-		gen_fatal( "Couldn't open camera. Is it plugged in?" );
-	}
+        // initialize the camera caputuring stuff.
+        IOReturn result = this->camera->start();
 
-	// start the capturing.
-	int started = ar2VideoCapStart( this->artk_params );
-
-	// check that capturing was started okay
-	if( started == -1 )
-	{
-		gen_fatal( "camera capturing could not be started" );
-	}
+        // check that the camera could be initialized okay.
+        if( result != noErr )
+        {
+                gen_fatal( "Camera could not be started, is it plugged in?" );
+        }
 }
 
 // constructor that enables the user to enter the 
@@ -37,27 +33,15 @@ OSXIEEE1394Cam::OSXIEEE1394Cam( int width, int height )
 // returns a frame from the camera.
 unsigned char* OSXIEEE1394Cam::getFrame()
 {
-	while( ( this->image_buffer = ar2VideoGetImage( this->artk_params ) ) == NULL )
-		;
-/*
-	unsigned char*  temp = image_buffer;
-	for( int i = 0; i < 640 * 480; i++ )
-	{
-		*temp = 255 - *temp;
-		temp++;
-	}
-*/
-	return this->image_buffer;
+        // don't know what this does but it was in the example code.
+        CFRunLoopRunInMode( kCFRunLoopDefaultMode, 1, true );
+        
+        // return a frame from the camera.
+        return this->camera->getFrame( cfox::MODE_FRAME, 0, 0 );
 }
 
+// destructor, doesn't do anything, i'm sure there is stuff that it can do
+// though
 OSXIEEE1394Cam::~OSXIEEE1394Cam()
 {
-	// close the image grabber
-	int stopped = ar2VideoCapStop( this->artk_params );
-
-	// check that capturing was stopped okay
-	if( stopped == -1 )
-	{
-		gen_fatal( "camera capturing could not be stopped cleanly" );
-	}
 }
