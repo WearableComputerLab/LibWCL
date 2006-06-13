@@ -58,11 +58,10 @@ video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
 # Platform Specific Sources
 #
 if PLATFORM_OSX
-video_1394_sources+=1394cam/osx/video.cpp\
-		    1394cam/osx/OSXIEEE1394Cam.cpp\
-		    1394cam/osx/ARVideoSettingsController.m
-
-AM_OBJCFLAGS=-fpascal-strings
+video_1394_sources+=1394cam/osx/Camera.cpp\
+		    1394cam/osx/Control.cpp\
+		    1394cam/osx/FWController.cpp\
+		    1394cam/osx/OSXIEEE1394Cam.cpp
 
 endif
 
