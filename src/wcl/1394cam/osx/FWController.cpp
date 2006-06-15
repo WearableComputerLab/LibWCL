@@ -224,6 +224,44 @@ void FWController::getUnitInfo( size_t idx, UInt32& adress )
 	if( ud   )  (*ud)->Release(ud);
 }
 
+int FWController::getCameras( CFMutableDictionaryRef dict, mach_port_t masterPort )
+{
+	// check that the search criteria is all good.
+	if( dict )
+	{
+		// ----------------------------------------------------------
+		// Iterates through services and add them to master list
+		// ----------------------------------------------------------    
+		io_service_t    service;
+		FWDevice        device;
+		io_iterator_t   iterator;
+
+		// search the I/O registry for any units that match out criteria
+		if( kIOReturnSuccess == IOServiceGetMatchingServices( masterPort, dict, &iterator ) )
+		{
+			message( "extracting services out of the iterator" );
+			service = IOIteratorNext( iterator );
+
+			while( service != NULL )
+			{
+				device.service = service;
+				mDevices.push_back(device);
+				service = IOIteratorNext( iterator );
+			}
+		}
+		else
+		{
+			gen_fatal( "failed to perform the match services" );
+		}
+	}
+	else
+	{
+		gen_fatal( "dictionary was not valid" );
+	}
+
+	return mDevices.size();
+}
+
 /************************************************************************/
 /*!
   @method     findUnit
@@ -252,49 +290,15 @@ void FWController::findUnit( mach_port_t masterPort )
 	CFDictionaryAddValue( dict, CFSTR( "Vendor_ID" ), cfValue );
 	CFRelease( cfValue );
 
-	// check that the search criteria is all good.
-	if( dict )
+	int numOfCameras = getCameras( dict, masterPort );
+
+	if( numOfCameras == 0 )
 	{
-		// ----------------------------------------------------------
-		// Iterates through services and add them to master list
-		// ----------------------------------------------------------    
-		io_service_t    service;
-		FWDevice        device;
-		io_iterator_t   iterator;
-
-		// search the I/O registry for any units that match out criteria.
-		if( kIOReturnSuccess == IOServiceGetMatchingServices( masterPort, dict, &iterator ) )
-		{
-			message( "extracting services out of the iterator" );
-			service = IOIteratorNext( iterator );
-
-			while( service != NULL )
-			{
-				device.service = service;
-				mDevices.push_back(device);
-				service = IOIteratorNext( iterator );
-			}
-
-			// check if there were any devices connected to the machine
-			message( "checking to make sure there are dragonfly cameras connected to the machine" );
-
-			if( mDevices.size() == 0 )
-			{
-				gen_fatal( "There are no dragonfly cameras attached to this machine" );
-			}
-			else
-			{
-				message( "Found %d dragonFly cameras", ( int )mDevices.size() );
-			}
-		}
-		else
-		{
-			gen_fatal( "No services found" );
-		}
+		gen_fatal( "There are no dragonfly cameras attached to the machine" );
 	}
 	else
 	{
-		throw InvalidServiceDictionary();
+		message( "found %d dragonfly cameras", numOfCameras );
 	}
 }
 

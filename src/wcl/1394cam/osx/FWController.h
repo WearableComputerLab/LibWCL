@@ -105,6 +105,7 @@ namespace cfox
 
     private:
     void findUnit( mach_port_t masterPort );
+    int getCameras( CFMutableDictionaryRef dict, mach_port_t masterPort );
     void prepareDCL( size_t idx,  IOFireWireLibDCLCommandPoolRef& dcl, DCLCommandStruct**& udcl );
   };
 }
