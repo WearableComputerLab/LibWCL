@@ -197,6 +197,7 @@ void FWController::getUnitInfo( size_t idx, UInt32& adress )
 	FWAddress                       baseAddress;
 	CFStringRef                     text;
 
+	message( "get the config directory from the firewire camera" );
 	// create a config directory object and return an interface to it.
 	ud = ( *mDevices[idx].interface )->GetConfigDirectory( mDevices[idx].interface, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ) );
 
@@ -207,22 +208,13 @@ void FWController::getUnitInfo( size_t idx, UInt32& adress )
 	}
 	else
 	{
-		
-		( *ud )->GetKeyValue_ConfigDirectory( ud, kConfigUnitDependentInfoKey, &udid, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ), nil );
-		(*udid)->GetKeyOffset_FWAddress(udid, 0x00, &baseAddress, &text);
-
 		CFDataRef dataRef;
 		CFStringRef stringRef;
-		IOReturn returnVal = ( *udid )->GetKeyValue_Data( udid, kConfigTextualDescriptorKey, &dataRef, &stringRef );
 
-		if( returnVal != noErr )
-		{
-			gen_fatal( "couldn't get the textual descriptor: %d", returnVal );
-		}
-		else
-		{
-			message( "textual descriptor: " );
-		}
+		message( "checking the type of all the config keys" );
+
+		( *ud )->GetKeyValue_ConfigDirectory( ud, kConfigUnitDependentInfoKey, &udid, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ), nil );
+		(*udid)->GetKeyOffset_FWAddress(udid, 0x00, &baseAddress, &text);
 
 		mDevices[idx].address = baseAddress.addressLo;
 		adress = mDevices[idx].address;
@@ -250,17 +242,15 @@ void FWController::findUnit( mach_port_t masterPort )
 	// create a dictionary that defines the type of units that we want
 	// to grab off the bus
 	CFMutableDictionaryRef  dict = IOServiceMatching( "IOFireWireUnit" );
-	UInt32                  value ;
+	UInt32                  value = 45213;
 	CFNumberRef             cfValue ;
 
-//	value    = kFWCCMSpecID;
-//
-//	cfValue  = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value) ;
+	cfValue  = CFNumberCreate( kCFAllocatorDefault, kCFNumberSInt32Type, &value );
 
 	// narrow down the search criteria and only grab units that have the 
-	// specified unit spec id.
-//	CFDictionaryAddValue(dict, CFSTR("Unit_Spec_ID"), cfValue) ;
-//	CFRelease(cfValue) ;
+	// specified vendor id
+	CFDictionaryAddValue( dict, CFSTR( "Vendor_ID" ), cfValue );
+	CFRelease( cfValue );
 
 	// check that the search criteria is all good.
 	if( dict )
@@ -284,17 +274,17 @@ void FWController::findUnit( mach_port_t masterPort )
 				mDevices.push_back(device);
 				service = IOIteratorNext( iterator );
 			}
-	
+
 			// check if there were any devices connected to the machine
-			message( "checking to make sure there are firewire devices connected to the machine" );
+			message( "checking to make sure there are dragonfly cameras connected to the machine" );
 
 			if( mDevices.size() == 0 )
 			{
-				gen_fatal( "There are no firewire devices connected this machine" );
+				gen_fatal( "There are no dragonfly cameras attached to this machine" );
 			}
 			else
 			{
-				message( "Found %d firewire devices", ( int )mDevices.size() );
+				message( "Found %d dragonFly cameras", ( int )mDevices.size() );
 			}
 		}
 		else
