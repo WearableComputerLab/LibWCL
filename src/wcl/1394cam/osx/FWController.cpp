@@ -54,16 +54,21 @@ using namespace cfox;
 /************************************************************************/
 FWController::FWController()
 {
-    mach_port_t  masterPort;
-    
-    if( kIOReturnSuccess == IOMasterPort( MACH_PORT_NULL, &masterPort ) )
-    {
-        findUnit(masterPort);
-    }
-    else
-    {
-        throw InvalidIOMasterPort();
-    }
+	// all user-level access of a device begins with a Mach port to
+	// communicate with the I/O Kit.
+	mach_port_t  masterPort;
+
+	
+	// attempt to get a Mach port and then check to see if there were
+	// any problems getting it.
+	if( kIOReturnSuccess == IOMasterPort( MACH_PORT_NULL, &masterPort ) )
+	{
+		findUnit(masterPort);
+	}
+	else
+	{
+		throw InvalidIOMasterPort();
+	}
 }
 
 /************************************************************************/
@@ -105,24 +110,32 @@ FWDevice::device_ref_t FWController::acquireService( size_t idx, IOFireWireLibDC
 	SInt32                  score;
 	IOFireWireLibDeviceRef  resultInterface = 0;
 	ComponentResult         result = noErr;
-
-	message( "create plugin Interface for service" );
+	
+	// get the IOCFPlugInInterface
 	result = IOCreatePlugInInterfaceForService( mDevices[idx].service, kIOFireWireLibTypeID, 
 			kIOCFPlugInInterfaceID, &mCFPlugInInterface, &score);
 
 	message( "check if the plugin was created sucessfully" );
 	if( result == kIOReturnSuccess )
 	{
-		message( "query the interface" );
+		// get the specific device interface that we want
 		HRESULT err = (*mCFPlugInInterface)->QueryInterface(mCFPlugInInterface,
 				CFUUIDGetUUIDBytes(kIOFireWireDeviceInterfaceID_v2),(void**) &resultInterface);
 
-		if( S_OK == err )
+		// check if the interface was queried okay.
+		if( err == S_OK )
 		{
 			mDevices[idx].interface = resultInterface;
 			prepareDCL(idx,dcl,udcl);
 
-			(*resultInterface)->Open(resultInterface);
+			// connect the device for exclusive access
+			IOReturn returnStatus = (*resultInterface)->Open(resultInterface);
+
+			// check to make sure that the device was connected to
+			if( returnStatus != noErr )
+			{
+				gen_fatal( "Failed to connect to firewire device" );
+			}
 		}
 		else
 		{
@@ -184,16 +197,32 @@ void FWController::getUnitInfo( size_t idx, UInt32& adress )
 	FWAddress                       baseAddress;
 	CFStringRef                     text;
 
-	ud = (*mDevices[idx].interface)->GetConfigDirectory(mDevices[idx].interface,CFUUIDGetUUIDBytes(kIOFireWireConfigDirectoryInterfaceID));
+	// create a config directory object and return an interface to it.
+	ud = ( *mDevices[idx].interface )->GetConfigDirectory( mDevices[idx].interface, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ) );
 
+	// check if the interface was returned.
 	if( !ud )
 	{
 		throw NotEnoughMemory();
 	}
 	else
 	{
-		(*ud)->GetKeyValue_ConfigDirectory(ud, kConfigUnitDependentInfoKey, &udid, CFUUIDGetUUIDBytes(kIOFireWireConfigDirectoryInterfaceID), nil);
+		
+		( *ud )->GetKeyValue_ConfigDirectory( ud, kConfigUnitDependentInfoKey, &udid, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ), nil );
 		(*udid)->GetKeyOffset_FWAddress(udid, 0x00, &baseAddress, &text);
+
+		CFDataRef dataRef;
+		CFStringRef stringRef;
+		IOReturn returnVal = ( *udid )->GetKeyValue_Data( udid, kConfigTextualDescriptorKey, &dataRef, &stringRef );
+
+		if( returnVal != noErr )
+		{
+			gen_fatal( "couldn't get the textual descriptor: %d", returnVal );
+		}
+		else
+		{
+			message( "textual descriptor: " );
+		}
 
 		mDevices[idx].address = baseAddress.addressLo;
 		adress = mDevices[idx].address;
@@ -217,24 +246,33 @@ void FWController::findUnit( mach_port_t masterPort )
 	// ----------------------------------------------------------
 	// Build Matching Dictionary
 	// ----------------------------------------------------------
+
+	// create a dictionary that defines the type of units that we want
+	// to grab off the bus
 	CFMutableDictionaryRef  dict = IOServiceMatching( "IOFireWireUnit" );
 	UInt32                  value ;
 	CFNumberRef             cfValue ;
 
-	value    = kFWCCMSpecID;
-	cfValue  = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value) ;
-	CFDictionaryAddValue(dict, CFSTR("Unit_Spec_ID"), cfValue) ;
-	CFRelease(cfValue) ;
+//	value    = kFWCCMSpecID;
+//
+//	cfValue  = CFNumberCreate(kCFAllocatorDefault, kCFNumberSInt32Type, &value) ;
 
+	// narrow down the search criteria and only grab units that have the 
+	// specified unit spec id.
+//	CFDictionaryAddValue(dict, CFSTR("Unit_Spec_ID"), cfValue) ;
+//	CFRelease(cfValue) ;
+
+	// check that the search criteria is all good.
 	if( dict )
 	{
 		// ----------------------------------------------------------
-		// Iterates trough services and add them to master list
+		// Iterates through services and add them to master list
 		// ----------------------------------------------------------    
 		io_service_t    service;
 		FWDevice        device;
 		io_iterator_t   iterator;
 
+		// search the I/O registry for any units that match out criteria.
 		if( kIOReturnSuccess == IOServiceGetMatchingServices( masterPort, dict, &iterator ) )
 		{
 			message( "extracting services out of the iterator" );
@@ -262,7 +300,6 @@ void FWController::findUnit( mach_port_t masterPort )
 		else
 		{
 			gen_fatal( "No services found" );
-			throw NoServicesFound();
 		}
 	}
 	else

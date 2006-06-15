@@ -71,10 +71,11 @@
   usleep(100000); \
   result = (*mAsyncReadCommandObjectRef)->Submit( (IOFireWireLibCommandRef)mAsyncReadCommandObjectRef)
 
-#define WriteFWReg(register) address = FWAddress(0xFFFF, register) ; \
-  (*mAsyncWriteCommandObjectRef)->SetTarget( (IOFireWireLibCommandRef) mAsyncWriteCommandObjectRef, & address); \
+#define WriteFWReg(register) address = FWAddress( 0xFFFF, register ); \
+  ( *mAsyncWriteCommandObjectRef )->SetTarget( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef, &address ); \
+  ( *mAsyncWriteCommandObjectRef )->SetFlags( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef, kFWCommandInterfaceSyncExecute ); \
   usleep(100000); \
-  result = (*mAsyncWriteCommandObjectRef)->Submit( (IOFireWireLibCommandRef)mAsyncWriteCommandObjectRef)
+  result = ( *mAsyncWriteCommandObjectRef )->Submit( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef )
 
 /************************************************************************/
 /*

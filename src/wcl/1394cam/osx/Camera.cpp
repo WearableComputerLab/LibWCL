@@ -79,6 +79,8 @@ Camera::Camera( const Settings& opt )
 
 Camera::Camera( const Mode& m, const FPS& f, size_t channel, const Spec& sp)
 {
+CFMutableDictionaryRef  matchingDictionary = IOServiceMatching( "IOFireWireDevice" );
+
     curFrame = NULL;
     curBuffer = 0;
 
@@ -114,9 +116,14 @@ IOReturn Camera::start()
 	message( "Initializing camera" );
 	int  result = noErr;
 
-	if(camControl)
+	// check that camControl is valid
+	if( camControl )
 	{
 		message( "attempting to set video format" );
+
+		message( "fps = %d", options.getFPS() );
+
+		// basically copy the values to the control object
 		camControl->setVideoFormat( options.getMode(), options.getFormat(), options.getFPS() );
 
 		message( "attempting to initialize camera control" );
@@ -134,6 +141,10 @@ IOReturn Camera::start()
 		curFrame = new UInt8[ Width[options.getMode()][options.getFormat()]*
 			Height[options.getMode()][options.getFormat()]*
 			VideoModeSize[options.getMode()][options.getFormat()] ];
+	}
+	else
+	{
+		gen_fatal( "camControl has not been initialize or has been destroyed" );
 	}
 
 	camControl->toggleCapture();

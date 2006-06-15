@@ -190,17 +190,65 @@ int Control::setupFWCamera()
     FWAddress  address;
     int result = noErr;
     
-    if(mTalker)
-    {
+    if( mTalker )
+    {	
+	message( "About to tell the firewire camera what video mode to use" );
         mFWCCMReg = mVideoMode << 29;
         WriteFWReg(mRegBaseAddress + 0x0608);
+
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "couldn't set video mode" );
+	}
+	
+	// check the status of the last write
+	result = ( *mAsyncWriteCommandObjectRef )->GetStatus( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef );
+
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "the status was not good" );
+	}
         
+	message( "About to tell the firewire camera what video format to use" );
+	message( "mVideoFormat = %d", mVideoFormat );
         mFWCCMReg = mVideoFormat << 29;
         WriteFWReg(mRegBaseAddress + 0x0604);
         
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "couldn't set video format" );
+	}
+
+	// check the status of the last write
+	result = ( *mAsyncWriteCommandObjectRef )->GetStatus( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef );
+
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "the status was not good" );
+	}
+
         mFWCCMReg = mVideoFrameRate << 29;
         WriteFWReg(mRegBaseAddress + 0x0600);
-        
+       
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "couldn't set frame rate" );
+	}
+
+	// check the status of the last write
+	result = ( *mAsyncWriteCommandObjectRef )->GetStatus( ( IOFireWireLibCommandRef )mAsyncWriteCommandObjectRef );
+
+	// check that the write went okay
+	if( result != noErr )
+	{
+		gen_fatal( "the status was not good" );
+	}
+
         mFWCCMReg = 0;
         WriteFWReg(mRegBaseAddress + 0x0830);
     }
@@ -229,7 +277,7 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	// ----------------------------------------------------------
 	// Acquire FW interface for a given camera on the channel
 	// ----------------------------------------------------------
-	message( "attempting to acquire firewire interface" );
+	// check to make sure that fwc objects was instantiated.
 	if( fwc == NULL )
 	{
 		gen_fatal( "firewire controller is NULL, is the camera plugged in?" );
@@ -238,7 +286,7 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	mInterface = fwc->acquireService(mChannel,mDCLCommandPool,mUpdateDCLList);
 
 	message( "attempting to get unit info" );
-	fwc->getUnitInfo(mChannel,mRegBaseAddress);
+	fwc->getUnitInfo( mChannel, mRegBaseAddress );
 
 	// ----------------------------------------------------------
 	// Prepare asynchronous transmition
@@ -284,7 +332,10 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	mPacketSize         = mMaxPacketSize;
 	mNumPacketsPerFrame = (mRoiWidth*mRoiHeight*VideoModeSize[mVideoMode][mVideoFormat]+mPacketSize-1) / mPacketSize;
 
-	if( mNumPacketsPerFrame > size_t(kMaxPacketsPerFrame) ) throw InvalidPacketsPerFrame();
+	if( mNumPacketsPerFrame > size_t(kMaxPacketsPerFrame) )
+	{
+		throw InvalidPacketsPerFrame();
+	}
 
 	if (mVideoMode != 7) 
 	{
@@ -524,8 +575,15 @@ int Control::getFrame( int mode, int frame_no, long time, unsigned char* pixels 
 {
 	int lenQueue = ( Q_nextIn - Q_nextGrab + QUEUE_MAX ) % QUEUE_MAX;
 
-	if( lenQueue == QUEUE_MAX-1 ) return 1;
-	if( pixels   == NULL        ) return 2;
+	if( lenQueue == QUEUE_MAX-1 ) 
+	{
+		return 1;
+	}
+
+	if( pixels == NULL ) 
+	{
+		return 2;
+	}
 
 	QBuffer[Q_nextIn]      = pixels;
 	QFrameWanted[Q_nextIn] = frame_no;
@@ -537,13 +595,20 @@ int Control::getFrame( int mode, int frame_no, long time, unsigned char* pixels 
 	return 0;
 }
 
-void Control::initAsynchron(IOFireWireLibDeviceRef mInterface )
+void Control::initAsynchron( IOFireWireLibDeviceRef mInterface )
 {
+
+	message( "initializing asynchronized" );
+	
+	// attempt to make a block write command object. (returns a
+	// mca IOFireWireLibCommandRef
 	mAsyncWriteCommandObjectRef = 
 		(IOFireWireLibWriteCommandRef)((*mInterface)->CreateWriteCommand(
 										 mInterface, (*mInterface)->GetDevice(mInterface),
 										 nil, nil, 0, nil, kFWDontFailOnReset, 0, this, 
 										 CFUUIDGetUUIDBytes(kIOFireWireWriteCommandInterfaceID)));
+
+	// set the buffer where the read data should be stored.
 	(*mAsyncWriteCommandObjectRef)->SetBuffer( (IOFireWireLibCommandRef)mAsyncWriteCommandObjectRef, sizeof(mFWCCMReg), &mFWCCMReg );
 
 	mStartAsyncCommandObjectRef = 
@@ -558,9 +623,7 @@ void Control::initAsynchron(IOFireWireLibDeviceRef mInterface )
 										 mInterface, (*mInterface)->GetDevice(mInterface),
 										 nil, nil, 0, nil, kFWDontFailOnReset, 0, this, 
 										 CFUUIDGetUUIDBytes(kIOFireWireWriteCommandInterfaceID))) ;
-	(*mStopAsyncCommandObjectRef)->SetBuffer( 
-						 (IOFireWireLibCommandRef) mStopAsyncCommandObjectRef, 
-						 sizeof( mFWCCMReg ), &mFWCCMReg ) ;
+	(*mStopAsyncCommandObjectRef)->SetBuffer( (IOFireWireLibCommandRef) mStopAsyncCommandObjectRef, sizeof( mFWCCMReg ), &mFWCCMReg ) ;
 
 	mAsyncReadCommandObjectRef = 
 		(IOFireWireLibReadCommandRef)((*mInterface)->CreateReadCommand(
@@ -568,8 +631,7 @@ void Control::initAsynchron(IOFireWireLibDeviceRef mInterface )
 									       nil, nil, 0, nil, kFWDontFailOnReset, 0, this, 
 									       CFUUIDGetUUIDBytes(kIOFireWireReadCommandInterfaceID))) ;
 	(*mAsyncReadCommandObjectRef)->SetBuffer( 
-						 (IOFireWireLibCommandRef) mAsyncReadCommandObjectRef, 
-						 sizeof( mFWCCMReg ), &mFWCCMReg ) ;
+						 (IOFireWireLibCommandRef) mAsyncReadCommandObjectRef, sizeof( mFWCCMReg ), &mFWCCMReg ) ;
 
 }
 
