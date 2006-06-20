@@ -294,7 +294,22 @@ void FWController::findUnit( mach_port_t masterPort )
 
 	if( numOfCameras == 0 )
 	{
-		gen_fatal( "There are no dragonfly cameras attached to the machine" );
+		message( "There are no dragonfly cameras attached to this machine, now looking for others" );
+
+		// reinitialize the dictionary
+		dict = IOServiceMatching( "IOFireWireUnit" );
+
+		// find any other cameras on the firewire bus
+		numOfCameras = getCameras( dict, masterPort );
+
+		if( numOfCameras == 0 )
+		{
+			gen_fatal( "There are no cameras attached to this machine" );
+		}
+		else
+		{
+			message( "Found %d camera(s)", numOfCameras );
+		}
 	}
 	else
 	{
