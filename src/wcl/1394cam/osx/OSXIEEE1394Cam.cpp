@@ -5,7 +5,6 @@ OSXIEEE1394Cam::OSXIEEE1394Cam()
 {
        // create the camera object
         this->camera = new cfox::Camera( cfox::Mode_640x480_Mono8, cfox::FPS_30, 0, cfox::BasicCamera );
-//        this->camera = new cfox::Camera( cfox::Mode_640x480_RGB, cfox::FPS_30, 0, cfox::BasicCamera );
 
         // check that memory was allocated
         if( this->camera == NULL )
@@ -25,7 +24,7 @@ OSXIEEE1394Cam::OSXIEEE1394Cam()
 
 // constructor that enables the user to enter the 
 // width and height of the image. The default colour
-// space is RGB
+// space is mono
 OSXIEEE1394Cam::OSXIEEE1394Cam( int width, int height )
 {
 	message( "not implemented yet" );
