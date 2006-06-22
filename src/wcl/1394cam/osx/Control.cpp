@@ -146,6 +146,11 @@ void Control::writeFWRegister(int reg, UInt32 value)
     int result = noErr;
     mFWCCMReg  = value;
     WriteFWReg(mRegBaseAddress + reg);
+
+	if( result != noErr )
+	{
+		gen_fatal( "writeFWRegister failed" );
+	}
 }
 
 /************************************************************************/
@@ -190,6 +195,8 @@ int Control::setupFWCamera()
     FWAddress  address;
     int result = noErr;
     
+	message( "in setupFWCamera" );
+
     if( mTalker )
     {	
 	message( "About to tell the firewire camera what video mode to use" );
@@ -334,7 +341,8 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 
 	if( mNumPacketsPerFrame > size_t(kMaxPacketsPerFrame) )
 	{
-		throw InvalidPacketsPerFrame();
+		gen_fatal( "Invalid number of packets per frame" );
+		//throw InvalidPacketsPerFrame();
 	}
 
 	if (mVideoMode != 7) 
@@ -366,11 +374,13 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	if (result == memFullErr)
 	{
 		result = vm_deallocate(mach_task_self(), mVMFrameBuf, totalFrameBufferSize);
-		throw NotEnoughMemory();
+		gen_fatal( "not enough memory" );
+		//throw NotEnoughMemory();
 	} 
 	else if (result != noErr) 
 	{
-		throw FrameBufferAllocationFailure();
+		gen_fatal( "Frame buffer allocation failure" );
+		//throw FrameBufferAllocationFailure();
 	}
 
 	// ----------------------------------
@@ -378,8 +388,11 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	// ----------------------------------
 	message( "allocate buffer for timestamps" );
 	mBufferTime = new UInt64[kNumFrameBufs]; 
-	if( mBufferTime == nil ) throw NotEnoughMemory();
-
+	if( mBufferTime == nil )
+	{
+		gen_fatal( "Not enough memory" );
+		// throw NotEnoughMemory();
+	}
 	// ----------------------------------
 	// Write general-purpose DCL program.
 	// ----------------------------------
@@ -393,11 +406,17 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	mIsochChannelRef = (*mInterface)->CreateIsochChannel( mInterface,isTalking,mMaxMaxPacketSize,
 			kFWSpeed400MBit, CFUUIDGetUUIDBytes(kIOFireWireIsochChannelInterfaceID) );
 
-	if (nil == mIsochChannelRef) throw IsochChannelFailed();
-
+	if (nil == mIsochChannelRef)
+	{
+		gen_fatal( "Isoch channel failed." );
+		 //throw IsochChannelFailed();
+	}
 	mTalkerPortRef = (*mInterface)->CreateRemoteIsochPort(mInterface, true, CFUUIDGetUUIDBytes(kIOFireWireRemoteIsochPortInterfaceID));
-	if (!mTalkerPortRef) throw NotEnoughMemory();
-
+	if (!mTalkerPortRef)
+	{
+		gen_fatal( "not enough memory" );
+	 	//throw NotEnoughMemory();
+	}
 	(*mTalkerPortRef)->SetRefCon( (IOFireWireLibIsochPortRef) mTalkerPortRef, this ) ;
 
 	if( isTalking )
@@ -417,7 +436,11 @@ int Control::init( bool isTalking, bool isConformant, size_t idx )
 	// -----------------------------------
 	message( "Add local node as listening client" );
 	mIsochPortRef = (*mInterface)->CreateLocalIsochPort(mInterface, false /*inTalking*/, mDCLList, 0, 0, 0, nil, 0, nil, 0, CFUUIDGetUUIDBytes(kIOFireWireLocalIsochPortInterfaceID));
-	if (!mIsochPortRef) throw NotEnoughMemory();
+	if (!mIsochPortRef)
+	{
+		gen_fatal( "not enough memory" );
+		//throw NotEnoughMemory();
+	}
 
 	result = (*mIsochChannelRef)->AddListener(mIsochChannelRef, (IOFireWireLibIsochPortRef) mIsochPortRef);
 
@@ -573,15 +596,18 @@ void Control::writeDCLProgram()
 /************************************************************************/
 int Control::getFrame( int mode, int frame_no, long time, unsigned char* pixels )
 {
+	message( "in getFrame" );
 	int lenQueue = ( Q_nextIn - Q_nextGrab + QUEUE_MAX ) % QUEUE_MAX;
 
 	if( lenQueue == QUEUE_MAX-1 ) 
 	{
+		gen_fatal( "lenQueue == QUEUE_MAX" );
 		return 1;
 	}
 
 	if( pixels == NULL ) 
 	{
+		gen_fatal( "pixels == NULL" );
 		return 2;
 	}
 
@@ -591,6 +617,8 @@ int Control::getFrame( int mode, int frame_no, long time, unsigned char* pixels 
 	QMode[Q_nextIn]        = mode;
 
 	Q_nextIn = (Q_nextIn+1) % QUEUE_MAX;
+
+	message( " end of get frame" );
 
 	return 0;
 }
@@ -646,14 +674,22 @@ void Control::enableMode7()
 	ReadFWReg(mRegBaseAddress+0x02e0);
 	mReg70BaseAddress = 0xf0000000 | (mFWCCMReg << 2);
 
-	if( result != noErr ) throw ModeSevenFailure();
+	if( result != noErr )
+	{
+		gen_fatal( "Mode seven failure" );
+		//throw ModeSevenFailure();
+	}
 
 	mFWCCMReg = 7 << 29;
 	WriteFWReg(mRegBaseAddress + 0x0608);
 	mFWCCMReg = 0;
 	WriteFWReg(mRegBaseAddress + 0x0604) ;
 
-	if(result != noErr) throw ModeSevenFailure();
+	if(result != noErr)
+	{
+		gen_fatal( "mode seven failure" );
+		//throw ModeSevenFailure();
+	}
 
 	// ----------------------------------------------------------
 	// Get video format 7 width and height
@@ -669,7 +705,8 @@ void Control::enableMode7()
 			( (mRoiLeft+mRoiWidth) > mMaxWidth)   || ( (mRoiTop+mRoiHeight) > mMaxHeight )
 	  ) 
 	{
-		throw InvalidROI();
+		gen_fatal( "invalid ROI" );
+		//throw InvalidROI();
 	}
 
 	// Here we assume a 8bpp depth.
@@ -950,6 +987,7 @@ IOReturn Control::InitIsochPort( IOFireWireLibIsochPortRef interface, IOFWSpeed 
 	usleep(100000);
 	status = (*me->mAsyncWriteCommandObjectRef)->Submit( (IOFireWireLibCommandRef)me->mAsyncWriteCommandObjectRef);
 
+	message( "about to setup the firewire camera" );
 	me->setupFWCamera();
 
 	return status;
