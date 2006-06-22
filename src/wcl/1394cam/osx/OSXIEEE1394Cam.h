@@ -16,9 +16,13 @@ class OSXIEEE1394Cam : public AbstractIEEE1394Cam
 		// width and height of the image. The default colour
 		// space is mono
 		OSXIEEE1394Cam( int width, int height );
-		
+	
 		unsigned char* getFrame();
 		~OSXIEEE1394Cam(); 
+	private:
+		// a method that can common code for both the constructors,
+		// it initializes the camera object.
+		void initialize();
 	private:
 		cfox::Camera* camera;
 		unsigned char* image_buffer;
