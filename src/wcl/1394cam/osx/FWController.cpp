@@ -208,16 +208,21 @@ void FWController::getUnitInfo( size_t idx, UInt32& adress )
 	}
 	else
 	{
-		CFDataRef dataRef;
-		CFStringRef stringRef;
-
-		message( "checking the type of all the config keys" );
-
 		( *ud )->GetKeyValue_ConfigDirectory( ud, kConfigUnitDependentInfoKey, &udid, CFUUIDGetUUIDBytes( kIOFireWireConfigDirectoryInterfaceID ), nil );
+
+		message( "determining the base address of the firewire camera command registers." );
 		(*udid)->GetKeyOffset_FWAddress(udid, 0x00, &baseAddress, &text);
 
 		mDevices[idx].address = baseAddress.addressLo;
 		adress = mDevices[idx].address;
+
+		message( "base address of camera: %x", adress );
+
+		CFShowStr( text );
+
+		const char *theText = CFStringGetCStringPtr( text, kCFStringEncodingASCII );
+
+		message( "the text that I got: %s", theText );
 	}
 
 	if( udid )  (*udid)->Release(udid);
