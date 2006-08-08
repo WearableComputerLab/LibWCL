@@ -18,6 +18,7 @@
 #else					  /* Unix Includes */
 	#include <sys/types.h>
 	#include <netinet/in.h>
+	#include <signal.h>
 #endif
 
 class Socket

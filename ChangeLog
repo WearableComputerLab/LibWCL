@@ -5,6 +5,12 @@ that have happened to the libwcl library
 
 ===========
 
+2006-08-01
+o Added missing signal.h header to Socket.cpp, SIGPIPE handling to the read call was added
+but not documented
+o Fix the UDP code when using UDP in packet mode there was a bug that...
+o Fix autogen to correctly check the version of automake (linux uses regex in grep)
+
 2006-06-07
 o Fix up pkg-config setup for libraw1394
 o Add libwcl pkg-config support viw libwcl.pc
