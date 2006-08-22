@@ -1,14 +1,13 @@
-# !/bin/sh
+#!/bin/sh
 # $ClearChain: projects/clearchain/autogen.sh,v 1.1 2006/03/17 05:33:23 benjsc Exp $
 # 
 # Simple little script to build all the makefiles
 #
 #
 #
-ACLOCALMINVERSION="1\.9"
-AUTOMAKEMINVERSION="1\.9"
-AUTOHEADERMINVERSION="2\.5"
-AUTOCONFMINVERSION="2\.5"
+ACLOCALMINVERSION="1.9"
+AUTOHEADERMINVERSION="2.5"
+AUTOCONFMINVERSION="2.5"
 
 ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
@@ -26,7 +25,7 @@ fi
 
 $ACLOCAL --version | grep $ACLOCALMINVERSION > /dev/null
 if test $? -ne 0; then
-	echo "You version of aclocal is too old, you need at least $ACLOCALMINVERSION";
+	echo "You version of aclocal is too old, you  at least $ACLOCALMINVERSION";
 	exit 1
 fi
 
@@ -43,7 +42,7 @@ fi
 
 $AUTOCONF --version |grep $AUTOCONFMINVERSION > /dev/null
 if test $? -ne 0; then
-	echo "You version of autoconf is too old, you need at least $AUTOCONFMINVERSION";
+	echo "You version of autoconf is too old, you  at least $AUTOCONFMINVERSION";
 	exit 1;
 fi
 
@@ -59,7 +58,7 @@ fi
 
 $AUTOHEADER --version |grep $AUTOHEADERMINVERSION > /dev/null
 if test $? -ne 0; then
-	echo "You version of autoconf is too old, you need at least $AUTOHEADERMINVERSION";
+	echo "You version of autoconf is too old, you  at least $AUTOHEADERMINVERSION";
 	exit 1;
 fi
 
@@ -68,15 +67,25 @@ $AUTOHEADER
 #
 # AUTOMAKE
 #
-if test "x$AUTOMAKE" = "x"; then
-	echo "You must install automake (at least version $AUTOMAKEMINVERSION)";
-	exit 1
+AUTOMAKEMINVERSION="1.9"
+am_version=`${AUTOMAKE:-automake} --version 2>/dev/null|head -n 1| sed -e 's/^.* \([0-9]\)/\1/' -e 's/[a-z]* *$//' -e 's/\(.*\)\(-p.*\)/\1/'`	
+if test -z "$am_version"; then	
+  echo "buildconf: automake not found."	
+  echo "            You  automake version $AUTOMAKEMINVERSION or newer installed."	
+  exit 1	
+fi	
+IFS=.; set $am_version; IFS=' '	
+if test "$1" = "1" -a "$2" -lt "9" || test "$1" -lt "1"; then	
+  echo "buildconf: automake version $am_version found."	
+  echo "            You  automake version $AUTOMAKEMINVERSION or newer installed."	
+  echo "            If you have a sufficient automake installed, but it"	
+  echo "            is not named 'automake', then try setting the"	
+  echo "            AUTOMAKE environment variable."	
+  exit 1	
 fi
-
-$AUTOMAKE --version |grep $AUTOMAKEMINVERSION > /dev/null
-if test $? -ne 0; then
-	echo "You version of automake is too old, you need at least $AUTOMAKEMINVERSION";
-	exit 1;
+if test "x$AUTOMAKE" = "x"; then
+    echo "You must install automake (at least version $AUTOMAKEMINVERSION)";
+    exit 1
 fi
 
 $AUTOMAKE -a

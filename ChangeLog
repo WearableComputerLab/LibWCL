@@ -5,6 +5,9 @@ that have happened to the libwcl library
 
 ===========
 
+2006-08-22
+o Add better checking for automake (Thanks Peter)
+
 2006-08-01
 o Added missing signal.h header to Socket.cpp, SIGPIPE handling to the read call was added
 but not documented
