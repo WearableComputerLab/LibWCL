@@ -5,6 +5,9 @@ that have happened to the libwcl library
 
 ===========
 
+2006-09-05
+o Add some base debugging functions
+
 2006-08-22
 o Add better checking for automake (Thanks Peter)
 
