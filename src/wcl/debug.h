@@ -1,3 +1,18 @@
+/*
+ *
+ * TODO:
+ *   * Ability to turn on/off messages on a class/file/method basis
+ *   * config file for the above
+ *   * Stack trace support
+ *   * ability to email on error
+ *   * callback support for messages/debugging
+ *   * autocatch evil signals
+ *   * ability to define the error output format
+ *   * colour support
+ *   * unit test support
+ *   * memory checking 
+ *   * namespace for libwcl
+ */
 #ifndef DEBUG_H
 #define DEBUG_H
 
