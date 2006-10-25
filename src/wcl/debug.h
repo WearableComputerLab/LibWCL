@@ -49,7 +49,7 @@
 #define debug(level,fmt, args...) \
         { \
                 if(DEBUG && (level & DBG_LEVEL))\
-                         fprintf( stderr, __FILE__ "(%d):%#x: " fmt "\n", __LINE__ , type ,##args ); \
+                         fprintf( stderr, __FILE__ "(%d):%#x: " fmt "\n", __LINE__ , level ,##args ); \
         }
 
 /**
