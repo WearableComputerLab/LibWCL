@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef TCPSOCKET_H
-#define TCPSOCKET_H
+#ifndef WCL_TCPSOCKET_H
+#define WCL_TCPSOCKET_H
 
 #include <string>
 

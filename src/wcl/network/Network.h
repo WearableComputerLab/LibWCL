@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef WCL_NETWORK_H
+#define WCL_NETWORK_H
 
 #include <sys/types.h>
 #include <net/ethernet.h>

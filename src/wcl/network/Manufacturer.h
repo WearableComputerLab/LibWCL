@@ -8,8 +8,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef MANUFACTURER_H
-#define MANUFACTURER_H
+#ifndef WCL_MANUFACTURER_H
+#define WCL_MANUFACTURER_H
 
 #include <wcl/network/Network.h>
 

@@ -17,6 +17,13 @@ libwcl_win32_a_includedir=$(includedir)/wcl
 LIBFLAGS=ws2_32.lib
 CLEANFILES=
 
+#
+# Common Headers
+# 
+common_headers=\
+	      debug.h 	
+    
+
 # 
 # Networking Support
 # 
@@ -80,12 +87,12 @@ endif
 #
 if !ENABLE_MSVC
 lib_LIBRARIES=libwcl.a
-nobase_libwcl_a_include_HEADERS=$(network_headers) $(video_1394_headers)
+nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers)
 libwcl_a_SOURCES=$(network_sources) $(video_1394_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
-nobase_libwcl_win32_a_include_HEADERS=$(network_headers) $(video_1394_headers)
+nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers)
 libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources)
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib

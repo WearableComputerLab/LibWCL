@@ -13,8 +13,8 @@
  *   * memory checking 
  *   * namespace for libwcl
  */
-#ifndef DEBUG_H
-#define DEBUG_H
+#ifndef WCL_DEBUG_H
+#define WCL_DEBUG_H
 
 #include <stdio.h>
 #include <stdlib.h>

@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef SOCKET_H
-#define SOCKET_H
+#ifndef WCL_SOCKET_H
+#define WCL_SOCKET_H
 
 #include <string>
 

@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef UDPSOCKET_H
-#define UDPSOCKET_H
+#ifndef WCL_UDPSOCKET_H
+#define WCL_UDPSOCKET_H
 
 #include <string>
 #include <wcl/network/Socket.h>

@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef TCPSERVERSOCKET_H
-#define TCPSERVERSOCKET_H
+#ifndef WCL_TCPSERVERSOCKET_H
+#define WCL_TCPSERVERSOCKET_H
 
 #include <wcl/network/TCPSocket.h>
 

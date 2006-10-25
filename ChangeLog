@@ -5,6 +5,10 @@ that have happened to the libwcl library
 
 ===========
 
+2006-10-56
+o Linked debug.h into the build/install script
+o Prefix all .h files with WCL_ with the include tests
+
 2006-09-05
 o Add some base debugging functions
 

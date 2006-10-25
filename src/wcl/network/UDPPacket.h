@@ -1,5 +1,5 @@
-#ifndef UDPPACKET_H
-#define UDPPACKET_H
+#ifndef WCL_UDPPACKET_H
+#define WCL_UDPPACKET_H
 
 #ifndef WIN32
 #include <sys/types.h>

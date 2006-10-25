@@ -6,8 +6,8 @@
  * Copyright (C) 2005 Benjamin Close <Benjamin.Close@clearchain.com>
  */
 
-#ifndef UDPSERVER_H
-#define UDPSERVER_H
+#ifndef WCL_UDPSERVER_H
+#define WCL_UDPSERVER_H
 
 #include <wcl/network/UDPSocket.h>
 #include <wcl/network/UDPPacket.h>
