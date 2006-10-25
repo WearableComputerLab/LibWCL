@@ -34,6 +34,10 @@
 #define DEBUG 1
 #endif
 
+#ifndef DBG_LEVEL
+#define DBG_LEVEL DBG_ALL
+#endif
+
 /**
  * Display a debug message in the specified level. This can
  * be conditionally compiled out by defining NDEBUG
@@ -44,7 +48,7 @@
  */ 
 #define debug(level,fmt, args...) \
         { \
-                if(NDEBUG && (level & DBG_LEVEL))\
+                if(DEBUG && (level & DBG_LEVEL))\
                          fprintf( stderr, __FILE__ "(%d):%#x: " fmt "\n", __LINE__ , type ,##args ); \
         }
 
