@@ -3,6 +3,7 @@
 
 int main(void)
 {
+try{
     UDPServer s(55555);
     UDPPacket p(5);
     s.setBlockingMode( Socket::NONBLOCKING);
@@ -15,6 +16,11 @@ int main(void)
 	printf("No packet received, sleeping\n");
 	sleep(1);
     }
+}
+    catch( SocketException *e )
+	{
+		printf("%s\n", e->getReason().c_str());
+	}
 
     return 0;
 }
