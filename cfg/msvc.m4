@@ -63,7 +63,7 @@ AC_DEFUN([WCL_AC_MSVC_SETUP], [
 	wcl_ac_wrapmsvc=`cd $ac_aux_dir; pwd`/wrapmsvc.exe
 	echo "$as_me:$LINENO: wcl_ac_wrapmsvc=$wcl_ac_wrapmsvc" >&AS_MESSAGE_LOG_FD
 	AC_MSG_CHECKING([setup for wrapmsvc.exe])
-	if $wcl_ac_wrapmsvc >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; then
+	if test $wcl_ac_wrapmsvc >&AS_MESSAGE_LOG_FD 2>&AS_MESSAGE_LOG_FD; then
 	   m4_ifdef([$0_VISITED], [AC_FATAL([Macro $0 invoked multiple times])])
 		    m4_define([$0_VISITED], 1)
 		    CC=$wcl_ac_wrapmsvc
