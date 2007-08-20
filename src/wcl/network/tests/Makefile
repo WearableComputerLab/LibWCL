@@ -2,17 +2,21 @@
 # OS independent cpp flags
 CXX			= g++ -Wall -g -O2
 
-SOURCES	= serial.cpp tcpclient.cpp
+
+SOURCES	= tcpclient.cpp tcpserver.cpp
 OFILES = $(SOURCES:.cpp=.o)
 
 ALL_OFILES = $(OFILES) 
 
-BUILD_ALL += Driver #name of exe
+TARGETS = tcpserver tcpclient
 
-all: $(BUILD_ALL)
+all:  $(OFILES) $(TARGETS)
 
-Driver: $(OFILES)
-	$(CXX) -o Driver $(ALL_OFILES) -lwcl
+tcpserver:
+	$(CXX) -o tcpserver tcpserver.o -lwcl
+
+tcpclient:
+	$(CXX) -o tcpclient tcpclient.o -lwcl
 
 # rule that calulates the prerequisites for any .cpp file
 %.d: %.cpp
@@ -24,9 +28,4 @@ Driver: $(OFILES)
 include $(SOURCES:.cpp=.d) 
 
 clean:
-	rm -f Driver *~ *.o
-
-clean_all:
-	make clean
-
-
+	rm -f $(TARGETS) *~ *.o
