@@ -14,3 +14,6 @@ sh autogen.sh
 ./configure --enable-option1 --enable-option2
 make
 make install
+
+=Networking examples=
+Networking examples can be found in the src/wcl/network/tests
