@@ -3,12 +3,12 @@
 CXX			= g++ -Wall -g -O2
 
 
-SOURCES	= tcpclient.cpp tcpserver.cpp
+SOURCES	= tcpclient.cpp tcpserver.cpp udpclient.cpp udpserver.cpp
 OFILES = $(SOURCES:.cpp=.o)
 
 ALL_OFILES = $(OFILES) 
 
-TARGETS = tcpserver tcpclient
+TARGETS = tcpserver tcpclient udpclient udpserver
 
 all:  $(OFILES) $(TARGETS)
 
@@ -17,6 +17,12 @@ tcpserver:
 
 tcpclient:
 	$(CXX) -o tcpclient tcpclient.o -lwcl
+
+udpserver:
+	$(CXX) -o udpserver udpserver.o -lwcl
+
+udpclient:
+	$(CXX) -o udpclient udpclient.o -lwcl
 
 # rule that calulates the prerequisites for any .cpp file
 %.d: %.cpp
