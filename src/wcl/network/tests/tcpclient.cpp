@@ -3,12 +3,18 @@
 
 int main(void)
 {
-    char buffer[4096];
+	char buffer[4096];
 
-    TCPSocket s("localhost", 55555);
-    s.read((char *)buffer, 4096);
-    printf("Client: Server Said: %s\n", buffer);
-    s.close();
+	try{
+		TCPSocket s("10.220.99.84", 55555);
+		s.read((char *)buffer, 4096);
+		printf("Client: Server Said: %s\n", buffer);
+		s.close();
+	}
+	catch( SocketException* e )
+	{
+		fprintf( stderr, e->getReason().c_str() );
+	}
 
-    return 0;
+	return 0;
 }
