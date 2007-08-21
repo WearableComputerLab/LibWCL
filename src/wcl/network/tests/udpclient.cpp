@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../UDPSocket.h"
+#include "wcl/network/UDPSocket.h"
 
 int main(void)
 {

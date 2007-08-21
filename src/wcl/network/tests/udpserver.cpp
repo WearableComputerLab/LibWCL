@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include "../UDPServer.h"
+#include "wcl/network/UDPServer.h"
 
 int main(void)
 {
