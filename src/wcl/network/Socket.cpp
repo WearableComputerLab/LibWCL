@@ -301,6 +301,11 @@ SocketException::SocketException( const Socket *s )
 SocketException::~SocketException()
 {}
 
+int SocketException::getCause() const
+{
+	return this->errornumber;
+}
+
 /**
  * Obtain the reason why the socket exception was
  * thrown
