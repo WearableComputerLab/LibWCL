@@ -128,7 +128,7 @@ bool Socket::bind( const unsigned port )
  * If the remote socket is closed a SocketException is thrown.
  *
  * @param buffer The buffer to read into
- * @param size How much to read, the buffer must be at least this size
+ * @param size The size of the buffer
  * @return The amount of data read if all ok, -1 on a read error, not caused
  *         by the close of a socket, 0 on a graceful close Note, the amount
  *        of data actually read may not match what you requested. This function
