@@ -28,9 +28,9 @@ class Socket
 		enum BlockingMode { BLOCKING, NONBLOCKING };
 
 		virtual ~Socket();
-		virtual int read ( void *buffer, size_t size );
-		virtual int write( const void *buffer, size_t size );
-		virtual int write( const std::string & );
+		virtual ssize_t read ( void *buffer, size_t size );
+		virtual ssize_t write( const void *buffer, size_t size );
+		virtual ssize_t write( const std::string & );
 		virtual void close();
 		virtual bool isValid() const;
 		virtual bool setBlockingMode( const BlockingMode );

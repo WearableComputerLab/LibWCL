@@ -132,7 +132,7 @@ bool Socket::bind( const unsigned port )
  *         by the close of a socket, 0 on a graceful close
  * @throws SocketException if the remote end has forcable closed the * socket 
  */
-int Socket::read ( void *buffer, size_t size )
+ssize_t Socket::read ( void *buffer, size_t size )
 {
 
     if ( !isValid()){
@@ -140,13 +140,13 @@ int Socket::read ( void *buffer, size_t size )
     }
 
 #ifdef WIN32
-    int retval = ::recv(this->sockfd, (char*)buffer, size, 0x0);
+    ssize_t retval = ::recv(this->sockfd, (char*)buffer, size, 0x0);
     if( retval == SOCKET_ERROR ){
 	throw new SocketException(this);	
     }
     return retval;
 #else
-    int retval = ::read(this->sockfd, buffer, size );
+    ssize_t retval = ::read(this->sockfd, buffer, size );
     if ( retval == -1 ){
 	throw new SocketException(this);
     }
@@ -164,20 +164,20 @@ int Socket::read ( void *buffer, size_t size )
  * @return The amount of charaters written
  * @throws SockcetException if the remote peer has forced the socket * closed
  */
-int Socket::write( const void *buffer, size_t size )
+ssize_t Socket::write( const void *buffer, size_t size )
 {
     if ( !isValid()){
 	return -1;
     }
 
 #ifdef WIN32
-    int retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
+    ssize_t retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
     if ( retval == SOCKET_ERROR ){
 	throw new SocketException(this);
     }
     return retval;
 #else
-    int retval =  ::write( this->sockfd, buffer, size );
+    ssize_t retval =  ::write( this->sockfd, buffer, size );
     if ( retval == -1 ){
 	throw new SocketException(this);
     }
@@ -191,7 +191,7 @@ int Socket::write( const void *buffer, size_t size )
  * @param string The string to write
  * @return -1 on failure, or the number of bytes written otherwise 
  */ 
-int Socket::write( const std::string &string )
+ssize_t Socket::write( const std::string &string )
 {
     return this->write( string.c_str(), string.size());
 }
