@@ -17,12 +17,12 @@ class UDPSocket: public Socket
 {
     public:
 	UDPSocket ( const std::string hostname, const unsigned port );
-	int write(const void* buffer, int size);
-	int read(void *buffer, int size);
+	ssize_t write(const void* buffer, size_t size);
+	ssize_t read(void *buffer, size_t size);
 
 	// UDP Packet interface
-	int write( const UDPPacket * );
-	int read( UDPPacket * );
+	ssize_t write( const UDPPacket * );
+	ssize_t read( UDPPacket * );
 
     protected:
 	UDPSocket();

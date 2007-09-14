@@ -100,12 +100,12 @@ bool UDPSocket::create()
     return true; 
 }
 
-int UDPSocket::read(void *buffer, int size)
+ssize_t UDPSocket::read(void *buffer, size_t size)
 {
 #ifdef WIN32
-    int retval = recv(this->sockfd, (char *)buffer, size, 0x0);
+    ssize_t retval = recv(this->sockfd, (char *)buffer, size, 0x0);
 #else 
-    int retval = recv(this->sockfd, buffer, size, 0x0);
+    ssize_t retval = recv(this->sockfd, buffer, size, 0x0);
 #endif
     if ( retval == -1 ){
 	throw new SocketException(this);
@@ -113,12 +113,12 @@ int UDPSocket::read(void *buffer, int size)
     return retval;
 }
 	
-int UDPSocket::write(const void *buffer, int size)
+ssize_t UDPSocket::write(const void *buffer, size_t size)
 {
 #ifdef WIN32
-    int retval = sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+    ssize_t retval = sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
 #else
-    int retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+    ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
 
 #endif
     if (retval == -1 ){
@@ -134,21 +134,21 @@ int UDPSocket::write(const void *buffer, int size)
  * @param The packet to send to the remote host
  * @return -1 on error, or the amount of data written
  */
-int UDPSocket::write( const UDPPacket *packet )
+ssize_t UDPSocket::write( const UDPPacket *packet )
 {
     assert ( packet != NULL && packet->getData() != NULL  );
 
     raddress = packet->getRecipient();
 
 #ifdef WIN32
-    int retval = sendto( this->sockfd, 
+    ssize_t retval = sendto( this->sockfd, 
 		    (const char *)packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
 #else
-    int retval = sendto( this->sockfd, 
+    ssize_t retval = sendto( this->sockfd, 
 		    packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
@@ -167,22 +167,22 @@ int UDPSocket::write( const UDPPacket *packet )
  * @param packet the Packet to read into
  * @return -1 on error, 0 on read with nothing waiting, or the amount read
  */
-int UDPSocket::read( UDPPacket *packet )
+ssize_t UDPSocket::read( UDPPacket *packet )
 {
     assert( packet != NULL && packet->getData() != NULL);
 
     struct sockaddr_in clientAddress;
-    int clientAddressLen = sizeof(clientAddress);
+    size_t clientAddressLen = sizeof(clientAddress);
 
 #ifdef WIN32
-    int result =  recvfrom( this->sockfd, 
+    ssize_t result =  recvfrom( this->sockfd, 
 			(char *)packet->getData(), 
 			packet->getSize(), 
 			0x0,
 			(struct sockaddr *)&clientAddress, 
 			(socklen_t*)&clientAddressLen);
 #else /* UNIX */
-    int result =  recvfrom( this->sockfd, 
+    ssize_t result =  recvfrom( this->sockfd, 
 			packet->getData(), 
 			packet->getSize(), 
 			0x0,
