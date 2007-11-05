@@ -1,0 +1,6 @@
+Socket.o
+TCPServer.o
+TCPSocket.o
+UDPServer.o
+UDPSocket.o
+libwcl.a

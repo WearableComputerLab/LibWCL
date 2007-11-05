@@ -5,9 +5,9 @@
 #
 #
 #
-ACLOCALMINVERSION="1.9"
-AUTOHEADERMINVERSION="2.5"
-AUTOCONFMINVERSION="2.5"
+ACLOCALMINVERSION="1.10"
+AUTOHEADERMINVERSION="2.61"
+AUTOCONFMINVERSION="2.61"
 
 ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
@@ -58,7 +58,7 @@ fi
 
 $AUTOHEADER --version |grep $AUTOHEADERMINVERSION > /dev/null
 if test $? -ne 0; then
-	echo "You version of autoconf is too old, you  at least $AUTOHEADERMINVERSION";
+	echo "You version of autohead is too old, you  at least $AUTOHEADERMINVERSION";
 	exit 1;
 fi
 
