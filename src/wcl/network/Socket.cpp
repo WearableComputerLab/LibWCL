@@ -43,7 +43,7 @@ Socket::Socket()
 	}
 #endif
 
-#ifdef __linux
+#if defined(__linux) || defined(MACOSX)
 	/* Block the SIGPIPE signal to avoid it being sent when a read on a closed socket happens */
 	sigset_t mask;
 
@@ -56,8 +56,6 @@ Socket::Socket()
 	/* Set the new signal to be blocked */
 	sigprocmask(SIG_BLOCK, &mask, NULL);
 #endif
-
-
 }
 
 /**
