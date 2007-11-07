@@ -67,6 +67,13 @@ TCPSocket::TCPSocket( const std::string server, const unsigned port )
     }
 #endif
 
+}
+
+/**
+ * Actually attempt to perform the connection
+ **/
+void TCPSocket::connect()
+{
     // Perform the connection
     if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
 	this->close();
