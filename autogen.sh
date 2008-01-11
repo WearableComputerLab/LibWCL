@@ -9,7 +9,6 @@ ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
 AUTOHEADER=`which autoheader`
 AUTOMAKE=`which automake`
-
 #
 #  ACLOCAL
 #
@@ -34,7 +33,6 @@ fi
 
 $ACLOCAL  -I cfg
 
-exit 0
 
 #
 # AUTOCONF
