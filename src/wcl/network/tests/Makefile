@@ -1,6 +1,5 @@
-
 # OS independent cpp flags
-CXX			= g++ -Wall -g -O2
+CXX			= g++ -Wall -g3 -I../../.. -L../../
 
 
 SOURCES	= tcpclient.cpp tcpserver.cpp udpclient.cpp udpserver.cpp
@@ -12,26 +11,17 @@ TARGETS = tcpserver tcpclient udpclient udpserver
 
 all:  $(OFILES) $(TARGETS)
 
-tcpserver:
+tcpserver: tcpserver.cpp
 	$(CXX) -o tcpserver tcpserver.o -lwcl
 
-tcpclient:
+tcpclient: tcpclient.cpp 
 	$(CXX) -o tcpclient tcpclient.o -lwcl
 
-udpserver:
+udpserver: udpserver.cpp
 	$(CXX) -o udpserver udpserver.o -lwcl
 
-udpclient:
+udpclient: udpclient.cpp
 	$(CXX) -o udpclient udpclient.o -lwcl
-
-# rule that calulates the prerequisites for any .cpp file
-%.d: %.cpp
-	rm -f $@; \
-	$(CXX) -MM $(CPPFLAGS) $(CXXFLAGS) $< > $@.$$$$; \
-	sed 's,\($*\)\.o[ :]*, \1.o $@ : ,g' < $@.$$$$ > $@; \
-	rm -f $@.$$$$
-
-include $(SOURCES:.cpp=.d) 
 
 clean:
 	rm -f $(TARGETS) *~ *.o
