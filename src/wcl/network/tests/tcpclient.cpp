@@ -6,7 +6,7 @@ int main(void)
 	char buffer[4096];
 
 	try{
-		TCPSocket s("10.220.99.84", 55555);
+		TCPSocket s("127.0.0.1", 55555);
 		s.read((char *)buffer, 4096);
 		printf("Client: Server Said: %s\n", buffer);
 		s.close();
