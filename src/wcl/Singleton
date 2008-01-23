@@ -1,0 +1,6 @@
+#ifndef __WCL_SINGLETON__
+#define __WCL_SINGLETON__
+
+
+#endif // __WCL_SINGLETON__
+
