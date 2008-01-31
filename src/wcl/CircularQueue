@@ -1,7 +1,157 @@
+//=====================================================================================================
+//                                           CircularQueue
+//                                           -------------
+// Author:		Wynand Marais
+// Date:        23/01/2008
+// Email:		wynand.marais@gmail.com
+// Version:     1.0.0
+// Purpose:     This class is a templated CircularQueue class which allow the user to create a circular
+//              queue of any data type or class.
+// TODO:		Add thread safety
+//=====================================================================================================
+
 #ifndef __WCL_CIRCULARQUEUE__
 #define __WCL_CIRCULARQUEUE__
 
+extern "C++"
+{
+	namespace wcl
+	{
+		template <typename T> class CircularQueue
+		{	
+		public:
+			CircularQueue(unsigned int maxElements = 32);
+			~CircularQueue(void);
+		
+			//Return true if the queue is valid / usable
+			bool				isValid(void) const;
+			//Return true if the queue is full
+			bool				isFull(void) const;
+			//Return true if the queue is empty
+			bool				isEmpty(void) const;
+			//Return the current number of elements in the queue
+			unsigned int		numElements(void) const;
+			//Return the maximum number of elements in the queue
+			unsigned int		maxElements(void) const;
+			//Add an element to the back of the queue
+			bool				pushBack(T& srcElement);
+			//Removed and element from the front of the queue
+			bool				popFront(T& dstElement);
+			
+		protected:
+			//The array of elemnts of size _maxElements
+			T*					_elements;
+			//The maximum number of elements to be stored in the queue
+			unsigned int		_maxElements;
+			//The current number of elements stored in the queue
+			unsigned int		_numElements;
+			//The position of the head element in the queue
+			unsigned int		_headPos;
+			//The position of the tail element in the queue
+			unsigned int		_tailPos;
+		
+		private:
+			CircularQueue(const CircularQueue &);
+			CircularQueue operator = (const CircularQueue &);
+			
+		};
+		
+		template <typename T> CircularQueue<T>::CircularQueue(unsigned int maxElements): 
+		_elements(NULL), _maxElements(maxElements), _numElements(0), _headPos(0), _tailPos(0)
+		{
+			//Allocate the space required for the elements
+			_elements = new T[_maxElements];
+		}
+		
+		template <typename T> CircularQueue<T>::~CircularQueue(void)
+		{
+			//Check if the space was allocated sucessfully in the first place. If it was
+			//then delete it and set the pointer back to NULL.
+			if(isValid() == true)
+				delete [] _elements;
+			_elements = NULL;
+		}
+		
+		template <typename T> bool CircularQueue<T>::isValid(void) const
+		{
+			//Check if the required space was sucessfully allocated for the queue.
+			if(_elements != NULL)
+				return true;
+		}
+		
+		template <typename T> bool CircularQueue<T>::isFull(void) const 
+		{
+			//Check if the number of elements is equal to the maximum number of elemenets
+			//as this will indicate that is queue is full.
+			if(_numElements == _maxElements)
+				return true;
+			return false;
+		}
+							
+		template <typename T> bool CircularQueue<T>::isEmpty(void) const
+		{
+			//Check that the number of elements is equal to 0 to indiacte and empty queue.
+			if(_numElements == 0)
+				return true;
+			return false;
+		}
 
+		template <typename T> unsigned int CircularQueue<T>::numElements(void) const
+		{
+			//Return the current number of elemenets in the in the queue
+			return _numElements;
+		}
+
+		template <typename T> unsigned int CircularQueue<T>::maxElements(void) const
+		{
+			//Return the maximum number of elements possible in the queue
+			return _maxElements;
+		}
+
+		template <typename T> bool CircularQueue<T>::pushBack(T& srcElement)
+		{
+			//Check if the queue is full or invalid
+			if(isFull() == true || isValid() == false)
+				return false;
+	
+			//If it's not insert the current element at the tail position
+			_elements[_tailPos] = srcElement;
+	
+			//Increment the element counter
+			_numElements++;
+	
+			//Increment the tail pos and check if it has to wrap around
+			_tailPos++;
+	
+			if(_tailPos == _maxElements)
+				_tailPos = 0;
+	
+			//Return true to indicate sucessful operation
+			return true;
+		}
+
+		template <typename T> bool CircularQueue<T>::popFront(T& dstElement)
+		{
+			//Check if the queue is empty or invalid
+			if(isEmpty() == true || isValid() == false)
+				return false;
+	
+			//if not return the element at the head of the queue
+			dstElement = _elements[_headPos];
+	
+			//Decrement the number of elements in the queue
+			_numElements--;
+	
+			//Increment the head element position and check if it have to wrap around.
+			_headPos++;
+	
+			if(_headPos == _maxElements)
+				_headPos = 0;
+	
+			return true;		
+		}
+	}
+}
 
 #endif // __WCL_CRICULARQUEUE__
 

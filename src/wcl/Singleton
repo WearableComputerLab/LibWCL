@@ -1,6 +1,106 @@
+//=====================================================================================================
+//                                             Singleton
+//                                             ---------
+// Author:		Wynand Marais (Class design obtained form gamedev.net)
+// Date:        23/01/2008
+// Email:		wynand.marais@gmail.com
+// Version:     1.0.0
+// Purpose:     Provides a templated singleton class general purpose use.
+// TODO:		Add thread safety
+//=====================================================================================================
+
 #ifndef __WCL_SINGLETON__
 #define __WCL_SINGLETON__
 
-
+extern "C++"
+{
+	namespace wcl
+	{
+		template <typename T> class Singleton
+		{
+		public:
+			//Create an instsance of the singleton, return true if sucessful.
+			bool		create(void);
+			//Return true if the instance is valid.
+			bool		isValid(void) const;
+			//Destroy the instance of the object, return true if the object is deleted.
+			bool		destroy(void);
+			//Return a reference to the object.
+			T&			getRef(void) const;
+			//Return a pointer to the object.
+			const T*	getPtr(void) const;
+			
+		protected:
+			Singleton(void);
+			~Singleton(void);
+			
+		private:
+			static T*	_instance;
+			Singleton(const Singleton&);
+			Singleton operator = (const Singleton);
+		};
+		
+		//Initialise the static instance to NULL
+		template <typename T> T* Singleton<T>::_instance = NULL;
+		
+		//There is nothing to be done in the constructor
+		template <typename T> Singleton<T>::Singleton(void)
+		{
+		}
+		
+		//There is nothing to be done in the destructor
+		template <typename T> Singleton<T>::~Singleton(void)
+		{
+		}
+		
+		template <typename T> bool Singleton<T>::create(void)
+		{
+			//Check if the instance was allready created
+			if(_instance != NULL)
+				return true;
+			
+			//Create the new instance
+			_instance = new T();
+			
+			//Check if the object is valid or not
+			return isValid();	
+		}
+		
+		template <typename T> bool Singleton<T>::isValid(void) const
+		{
+			//Check if the object was sucessfully created or not
+			if(_instance != NULL)
+				return true;
+			
+			return false; 
+		}
+		
+		template <typename T> bool Singleton<T>::destroy(void)
+		{
+			//Check if the object is allready destroyed
+			if(isValid() == false)
+				return true;
+			
+			//Delete the instance of the object
+			delete _instance;
+			//Reset the pointer to NULL
+			_instance = NULL;
+			
+			return true;
+		}
+		
+		//Return a reference to the object
+		template <typename T> T& Singleton<T>::getRef(void) const 
+		{
+			return *_instance;
+		}
+		
+		//Return a pointer to the object
+		template <typename T> const T* Singleton<T>::getPtr(void) const
+		{
+			return _instance;
+		}		
+	}
+}
 #endif // __WCL_SINGLETON__
 

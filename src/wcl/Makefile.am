@@ -21,7 +21,9 @@ CLEANFILES=
 # Common Headers
 # 
 common_headers=\
-	      debug.h 	
+	      debug.h\
+		  CircularQueue\
+		  Singleton
     
 
 # 
