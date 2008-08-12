@@ -1,0 +1,28 @@
+**********************************************************
+*               Gesture Recognition Example              *
+**********************************************************
+
+
+Written by Michael Marner (marnermr@cs.unisa.edu.au)
+
+
+This is a simple example demo for the gesture recognition code.
+It allows you record gestures, and then have them recognised.
+
+Future versions will allow you to save gesture templates to
+disk, but this is not implemented yet.
+
+
+== REQUIREMENTS ==
+
+libwcl (built with at least gestures enabled)
+qt4-dev
+
+
+== BUILDING ==
+qmake
+make
+
+
+== RUNNING ==
+./gestures

@@ -17,3 +17,7 @@ make install
 
 =Networking examples=
 Networking examples can be found in the src/wcl/network/tests
+
+=Gesture Example=
+Can be found in examples/gestures
+
