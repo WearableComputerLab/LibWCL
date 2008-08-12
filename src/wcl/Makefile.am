@@ -49,6 +49,24 @@ network_sources+=\
               network/UDPSocket.cpp
 endif
 
+
+#
+# Gesture Recognition
+#
+gestures_headers=
+gestures_sources=
+if ENABLE_GESTURES
+gestures_headers+=\
+			gestures/Gestures.h\
+			gestures/Point.h
+
+gestures_sources+=\
+			gestures/Gestures.cpp\
+			gestures/Point.cpp
+
+endif
+
+
 #
 # 1394 Camera Support
 #
@@ -62,7 +80,6 @@ video_1394_headers+=1394cam/IEEE1394Cam.h\
 video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
 		    1394cam/IEEE1394Cam.cpp\
 		    1394cam/debug.cpp
-
 #
 # Platform Specific Sources
 #
@@ -89,13 +106,13 @@ endif
 #
 if !ENABLE_MSVC
 lib_LIBRARIES=libwcl.a
-nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers)
-libwcl_a_SOURCES=$(network_sources) $(video_1394_sources)
+nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers)
+libwcl_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
-nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers)
-libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources)
+nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers)
+libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_headers)
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib
 

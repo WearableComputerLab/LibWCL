@@ -64,13 +64,21 @@ AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib &
 #
 AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
+
+#
+# Gesture recognition support
+#
+AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), enable_gestures="yes" , enable_gestures="no")
+
+
 # 
 #  Enable All Options
 # 	This simply enables each option
 AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
 	     enable_network="yes";
 	     enable_serial="yes";
-	     enable_video_1394="yes")
+	     enable_video_1394="yes";
+		 enable_gestures="yes")
 
 #
 #  Check to see if anything is configured
@@ -93,6 +101,7 @@ AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
 AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 
 
 #
@@ -202,6 +211,7 @@ echo "Microsoft (msvc) support: $enable_msvc"
 echo "network support         : $enable_network"
 #echo "serial (rs232) support  : $enable_serial"
 echo "1394 (Firewire) Video   : $enable_video_1394"
+echo "Gesture recognition     : $enable_gestures"
 echo "-----------------------------"
 
 #
