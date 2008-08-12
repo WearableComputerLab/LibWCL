@@ -66,7 +66,7 @@ namespace gestures
 		 *                  will be resampled to.
 		 *                  By default this is 64.
 		 */
-		Gestures(int numPoints);
+		Gestures(int numPoints = 64);
 
 		/**
 		 * Destructor.
@@ -85,6 +85,7 @@ namespace gestures
 		 *
 		 * @param points A list of points containing the gesture to recognise.
 		 * @return The name of the string it recognised.
+		 * @throw Throws a std::string if points is empty.
 		 */
 		std::string recognise(PointList points);
 
@@ -103,6 +104,7 @@ namespace gestures
 		 *
 		 *  @param points The list of points to prepare
 		 *  @return A new list of points suitable for recognition.
+		 *  @throw Throws a std::string if points is empty
 		 */
 		PointList prepare(PointList &points);
 
