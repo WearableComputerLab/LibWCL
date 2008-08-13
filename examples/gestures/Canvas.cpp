@@ -33,6 +33,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
 	qDebug("mouseReleased");
 	tracking = false;
 	
+	//prepare the pointlist that we just recorded
 	PointList points = gEngine.prepare(lineList);
 	qDebug("have prepared the points");
 	if (recording)
@@ -48,17 +49,20 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
 	}
 	else
 	{
+		//recognise gesture
 		std::string gesture = gEngine.recognise(points);
 		emit gestureRecognised(QString(gesture.c_str()));
 		qDebug(gesture.c_str());
-		//recognise gesture
 	}
+	//clear our line list and repaint
 	lineList.clear();
 	this->repaint();
 }
 
 void Canvas::mouseMoveEvent(QMouseEvent *event)
 {
+	//if we are currently tracking, push the current mouse location onto
+	//our linelist
 	if (tracking)
 	{
 		lineList.push_back(Point(event->x(), event->y()));
@@ -68,6 +72,9 @@ void Canvas::mouseMoveEvent(QMouseEvent *event)
 
 void Canvas::paintEvent(QPaintEvent *event)
 {
+	/*
+	 * Draw each line that we currently have
+	 */
 	if (lineList.size() > 0)
 	{
 		QPainter p(this);
@@ -86,6 +93,8 @@ void Canvas::paintEvent(QPaintEvent *event)
 void Canvas::startRecording()
 {
 	this->recording = true;
+	//This is a hack to get the status bar to display when we are
+	//recording. Really this should be a different signal.
 	emit gestureRecognised("RECORDING");
 }
 

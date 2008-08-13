@@ -23,6 +23,9 @@
 using namespace std;
 using namespace gestures;
 
+/**
+ * A canvas that allows recording and recognising widgets
+ */
 class Canvas : public QWidget
 {
 
@@ -32,15 +35,33 @@ class Canvas : public QWidget
 		Canvas();
 
 	public slots:
+		/*
+		 * Mouse Events.
+		 */
 		void mousePressEvent(QMouseEvent *event);
 		void mouseReleaseEvent(QMouseEvent *event);
 		void mouseMoveEvent(QMouseEvent *event);
+
+		/**
+		 * We are overriding the paint function so we can do our drawing.
+		 */
 		void paintEvent(QPaintEvent *event);
 
+		/**
+		 * Start recording a gesture
+		 */
 		void startRecording();
+
+		/**
+		 * Update the name of the gesture we are about to record
+		 */
 		void setGestureName(QString name);
 
 	signals:
+		/**
+		 * Emitted when a gesture is recognised.
+		 * Emits the name of the gesture.
+		 */
 		void gestureRecognised(QString name);
 
 	private:

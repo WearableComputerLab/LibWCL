@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	QWidget window;
 	window.resize(600,600);
 
-	//Top container will contain the text field and recod button.
+	//Top container will contain the text field and record button.
 	QWidget *topContainer = new QWidget;
 	QHBoxLayout *topLayout = new QHBoxLayout;
 	QPushButton *record = new QPushButton("Record Gesture");
@@ -48,9 +48,11 @@ int main(int argc, char** argv)
 
 	window.setLayout(mainLayout);
 
-	//connections
+	//When the record button is pressed, tell the canvas to start recording
 	app.connect(record, SIGNAL(clicked(bool)), canvas, SLOT(startRecording()));
+	//When the user enters a name for a gesture, update canvas
 	app.connect(name, SIGNAL(textChanged(QString)), canvas, SLOT(setGestureName(QString)));
+	//get canvas to put gesture names into the status bar
 	app.connect(canvas, SIGNAL(gestureRecognised(QString)), label, SLOT(setText(QString)));
 
 	//fire everything up.

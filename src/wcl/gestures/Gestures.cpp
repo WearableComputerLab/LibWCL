@@ -11,7 +11,6 @@
  */
 
 #include <iostream>
-
 #include <float.h>
 #include <math.h>
 
@@ -45,7 +44,6 @@ std::string Gestures::recognise(PointList points)
 	for (it = templates.begin(); it < templates.end(); it++)
 	{
 		double d = distanceAtBestAngle(points, *it, -THETA, THETA, DEVIATION);
-		std::cout << "evaluated " << (*it).name << " and d was: " << d << std::endl;
 		if (d < b)
 		{
 			b = d;
@@ -80,8 +78,6 @@ PointList Gestures::resample(PointList& points)
 	double D = 0;
 	PointList newPoints;
 	newPoints.push_back(points[0]);
-	std::cout << "I = " << I << std::endl;
-	std::cout << "about to resample, number of points: " << points.size() << std::endl;
 	for (unsigned int i=1; i < points.size(); i++)
 	{
 		double d = distance(points[i-1], points[i]);
