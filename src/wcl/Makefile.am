@@ -68,6 +68,28 @@ endif
 
 
 #
+# Vicon MoCap
+#
+vicon_headers=
+vicon_sources=
+
+if ENABLE_VICON
+vicon_headers+=\
+			vicon/Marker.h\
+			vicon/SixDofObject.h\
+			vicon/TrackedObject.h\
+			vicon/ViconClient.h
+
+vicon_sources+=\
+			vicon/Marker.cpp\
+			vicon/SixDofObject.cpp\
+			vicon/TrackedObject.cpp\
+			vicon/ViconClient.cpp
+
+endif
+
+
+#
 # 1394 Camera Support
 #
 video_1394_headers=
@@ -106,13 +128,13 @@ endif
 #
 if !ENABLE_MSVC
 lib_LIBRARIES=libwcl.a
-nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers)
-libwcl_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_sources)
+nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers) $(vicon_headers)
+libwcl_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_sources) $(vicon_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
-nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers)
-libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_headers)
+nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers) $(vicon_headers)
+libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_headers) $(vicon_sources)
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib
 
