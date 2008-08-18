@@ -2,6 +2,9 @@
 
 #include "TrackedObject.h"
 
+
+using namespace vicon;
+
 TrackedObject::TrackedObject(std::string name)
 {
 	this->name = name;

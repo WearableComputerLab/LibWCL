@@ -8,14 +8,15 @@
 #include <iostream>
 
 using namespace std;
+using namespace vicon;
 
 
-ViconClient::ViconClient(std::string hostname, int port = 800)
+ViconClient::ViconClient(std::string hostname, int port)
 {
 	this->socket = new TCPSocket(hostname, port);
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
-	getData();
+	update();
 }
 
 ViconClient::~ViconClient()
