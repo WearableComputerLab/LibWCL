@@ -75,14 +75,10 @@ vicon_sources=
 
 if ENABLE_VICON
 vicon_headers+=\
-			vicon/Marker.h\
-			vicon/SixDofObject.h\
 			vicon/TrackedObject.h\
 			vicon/ViconClient.h
 
 vicon_sources+=\
-			vicon/Marker.cpp\
-			vicon/SixDofObject.cpp\
 			vicon/TrackedObject.cpp\
 			vicon/ViconClient.cpp
 

@@ -12,8 +12,6 @@
 #include <wcl/network/TCPSocket.h>
 
 #include "TrackedObject.h"
-#include "Marker.h"
-#include "SixDofObject.h"
 
 namespace vicon
 {

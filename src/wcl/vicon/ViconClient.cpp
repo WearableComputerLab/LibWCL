@@ -107,11 +107,11 @@ void ViconClient::loadTrackedObjects()
 				}
 				else {
 					if (channelPerNameCount == 4) {
-						Marker * m = new Marker(prevName);
+						TrackedObject * m = new TrackedObject(prevName, MARKER);
 						objects.push_back(m);
 					}
 					else if (channelPerNameCount == 6) {
-						SixDofObject * sdo = new SixDofObject(prevName);
+						TrackedObject * sdo = new TrackedObject(prevName, SIX_DOF);
 						objects.push_back(sdo);
 					}
 					else {
@@ -124,11 +124,11 @@ void ViconClient::loadTrackedObjects()
 		}
 		//add the last one...
 		if (channelPerNameCount == 4) {
-			Marker * m = new Marker(prevName);
+			TrackedObject * m = new TrackedObject(prevName, MARKER);
 			objects.push_back(m);
 		}
 		else if (channelPerNameCount == 6) {
-			SixDofObject * sdo = new SixDofObject(prevName);
+			TrackedObject* sdo = new TrackedObject(prevName, SIX_DOF);
 			objects.push_back(sdo);
 		}
 		else {
