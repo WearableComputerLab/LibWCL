@@ -1,0 +1,17 @@
+/*! \mainpage LibWCL Documentation
+ *
+ * \section intro_sec Introduction
+ *
+ * LibWCL is a library for making life easier for WCL members.
+ *
+ * It provides:
+ * o Network Abstracton
+ * o Video Abstraction
+ * o Gesture Recognition
+ * o Vicon motion capture support
+ *
+ * \section install_sec Installation
+ *
+ * Please read README for building and installation instructions.
+ * 
+ */
