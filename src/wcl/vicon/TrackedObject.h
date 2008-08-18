@@ -15,15 +15,20 @@ namespace vicon
 	 */
 	enum ObjectType
 	{
+		/**
+		 * A 3DOF Marker
+		 */
 		MARKER,
+
+		/**
+		 * A 6DOF object
+		 */
 		SIX_DOF
 	};
 
 	/**
 	 * Represents an object that can be tracked by the Vicon system.
 	 * 
-	 * This is an abstract class, the concrete subclasses Marker and SixDofOjbect
-	 * will be used.
 	 */
 	class TrackedObject
 	{
@@ -32,6 +37,7 @@ namespace vicon
 			/**
 			 * Constructor.
 			 * @param name The name of the channel.
+			 * @param type The type of tracked object.
 			 */
 			TrackedObject(std::string name, ObjectType type);
 
@@ -45,7 +51,8 @@ namespace vicon
 			 * 
 			 * @param array The array of data to read from
 			 * @param offset The location in the array to start reading from. Note that
-			 *               the object should increment this!
+			 *               the object will increment this based on how many values
+			 *               it reads. 6 for 6DOF objects, 4 for markers.
 			 */
 			void updateData(double* array, int & offset);
 
@@ -57,7 +64,7 @@ namespace vicon
 			/**
 			 * Returns the name of the object.
 			 */
-			virtual std::string getName();
+			std::string getName();
 
 			/**
 			 * Returns this object's type.
@@ -67,6 +74,9 @@ namespace vicon
 
 		protected:
 
+			/**
+			 * The name of this object.
+			 */
 			std::string name;
 
 			/**
@@ -88,9 +98,17 @@ namespace vicon
 			double ry;
 			double rz;
 
+			/**
+			 * Whether the object is visible or not.
+			 * This only applies to Markers, 6DOF objects do not
+			 * receive this information from the server.
+			 */
 			bool occluded;
 		
 		private:
+			/**
+			 * The type of object.
+			 */
 			ObjectType type;
 
 	};

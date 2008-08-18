@@ -1,5 +1,5 @@
 /**
- * A Gesture Recognition system in C++
+ * A $1 Gesture Recognition system.
  * This library is based on the following paper:
  *
  * Wobbrock, J, Wilson, A, Li, Y 2007

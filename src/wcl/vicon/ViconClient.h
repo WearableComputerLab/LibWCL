@@ -13,9 +13,29 @@
 
 #include "TrackedObject.h"
 
+
+/**
+ * Interface to the Vicon Motion Capture System. 
+ * Provides access to motion capture data from the mocap system.
+ *
+ * @author Michael Marner (marnermr@cs.unisa.edu.au)
+ */
 namespace vicon
 {
 
+	/**
+	 * Provides a connection to the Vicon system.
+	 *
+	 * To talk to the MoCap system you create an object of this class.
+	 * You then call update() to get the latest data from the system,
+	 * so update() will probabaly be called inside your render loop.
+	 *
+	 * To get data from the system you can just hold a reference to one
+	 * of the TrackedObjects. For example, using OpenSceneGraph you
+	 * would create a Callback node that stores a TrackedObject and then
+	 * in the update loop you would get the data from the TrackedObject
+	 * and update any scene graph nodes.
+	 */
 	class ViconClient
 	{
 		public: 
@@ -68,6 +88,9 @@ namespace vicon
 
 			/**
 			 * Fills the tracked objects with the latest frame of data from the server.
+			 *
+			 * @throw Throws a std::string if the connection fails or invalid data is received
+			 *        from the server.
 			 */
 			void update();
 
@@ -116,7 +139,6 @@ namespace vicon
 			 * The list of objects.
 			 */
 			std::vector<TrackedObject*> objects;
-
 
 	};
 
