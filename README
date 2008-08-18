@@ -6,6 +6,10 @@
 This CVS module contains libwcl, a library that has been 
 developed to aid in the building of applications or other libraries.
 
+
+* BUILDING
+********************
+
 In order to build and install libwcl do:
 
 sh autogen.sh
@@ -14,6 +18,19 @@ sh autogen.sh
 ./configure --enable-option1 --enable-option2
 make
 make install
+
+
+* DOCUMENTATION
+********************
+
+Most of the code is documented with Doxygen comments. There is a doxygen config file
+preconfigured to generate nice html documentation. Generating the doc is easy:
+
+doxygen libwcl.dox
+
+
+* EXAMPLES
+********************
 
 =Networking examples=
 Networking examples can be found in the src/wcl/network/tests
