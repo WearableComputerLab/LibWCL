@@ -55,6 +55,21 @@ namespace gestures
 
 	/**
 	 * A Class for solving gesture recognition.
+	 *
+	 * To use this class you would instantiate an object.
+	 * You would then load in a set of gesture templates from the filesystem using 
+	 * prepare(), followed by addTemplate().
+	 *
+	 *
+	 * To do recognition, you would record a set of points. This would typically come from a
+	 * mouse or other input device.
+	 *
+	 * Once the list of points is recorded, you would pass these to prepare() so the gesture
+	 * is resampled, rotated, translated and scaled appropriately.
+	 *
+	 * Finally, the prepared list of points should be passed to recognised(), the name of the
+	 * gesture is then returned.
+	 *
 	 */
 	class Gestures
 	{

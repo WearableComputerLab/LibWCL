@@ -93,30 +93,45 @@ void ViconClient::loadTrackedObjects()
 		int channelPerNameCount = 0;
 		for (int i=0;i<numChannels;i++)
 		{
+			/*
+			 * This is a real pain.
+			 * Because Vicon gives each DOF its own channel name, we need
+			 * to do some processing to work out how many markers and 6Dofs
+			 * we actually have.
+			 */
 			std::string channel = readChannel();
+
+			//The real name is the first part of the name, so we can leave anything beyond the space
 			channel = channel.substr(0, channel.find(" "));
 			
 			if (channel != "Time") {
-				
+
+				//This covers the first run through, where we have no previous channel name
 				if (prevName.length() == 0) {
 					prevName = channel;
 					channelPerNameCount++;
 				}
+
+				// If this name is the same as the last one, just increment the count.
+				// We need the count so we can decide if we are adding a marker or a 6dof.
 				else if (prevName == channel) {
 					channelPerNameCount++;
 				}
+				// The channel name has changed! this means we need to add something
 				else {
+					//Decide on whether it was a marker or a 6dof
 					if (channelPerNameCount == 4) {
-						TrackedObject * m = new TrackedObject(prevName, MARKER);
+						TrackedObject m(prevName, MARKER);
 						objects.push_back(m);
 					}
 					else if (channelPerNameCount == 6) {
-						TrackedObject * sdo = new TrackedObject(prevName, SIX_DOF);
+						TrackedObject sdo(prevName, SIX_DOF);
 						objects.push_back(sdo);
 					}
 					else {
 						throw std::string("Unexpected number of DOF");
 					}
+					//reset for the next run through the loop
 					prevName = channel;
 					channelPerNameCount = 1;
 				}
@@ -124,11 +139,11 @@ void ViconClient::loadTrackedObjects()
 		}
 		//add the last one...
 		if (channelPerNameCount == 4) {
-			TrackedObject * m = new TrackedObject(prevName, MARKER);
+			TrackedObject m(prevName, MARKER);
 			objects.push_back(m);
 		}
 		else if (channelPerNameCount == 6) {
-			TrackedObject* sdo = new TrackedObject(prevName, SIX_DOF);
+			TrackedObject sdo(prevName, SIX_DOF);
 			objects.push_back(sdo);
 		}
 		else {
@@ -140,8 +155,8 @@ void ViconClient::loadTrackedObjects()
 TrackedObject* ViconClient::getObject(std::string name) {
 	
 	for (unsigned int i=0;i<objects.size();i++) {
-		if (objects[i]->getName() == name) {
-			return objects[i];
+		if (objects[i].getName() == name) {
+			return &objects[i];
 		}
 	}
 	return 0;
@@ -154,6 +169,7 @@ void ViconClient::update()
 	int data = ViconClient::DATA;
 	int request = ViconClient::REQUEST;
 	
+	//Send a data request to the server.
 	socket->write(&data, 4);
 	socket->write(&request, 4);
 	
@@ -176,7 +192,7 @@ void ViconClient::update()
 		time = values[0];
 		int offset = 1;
 		for (unsigned int i=0;i<objects.size();i++) {
-			objects[i]->updateData(values, offset);
+			objects[i].updateData(values, offset);
 		}
 	}
 	else {

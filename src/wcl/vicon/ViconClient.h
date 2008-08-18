@@ -138,7 +138,7 @@ namespace vicon
 			/**
 			 * The list of objects.
 			 */
-			std::vector<TrackedObject*> objects;
+			std::vector<TrackedObject> objects;
 
 	};
 
