@@ -3,8 +3,8 @@
 ENVIRONMENT="env LANG=C"
 PROGRAM=gphoto2
 DEBUG="--debug --debug-logfile=MI_capture_canon_debug.txt"
-CAMERA=--camera="Canon Digital IXUS 400 (PTP mode)"
-PORT=--port="usb:"
+CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
+PORT=--port\ "usb:"
 
 CAMERA_ARGS="$ENVIRONMENT $PROGRAM $DEBUG $CAMERA $PORT"
 
@@ -35,4 +35,4 @@ $CAMERA_ARGS --set-config shutterspeed="0"
 $CAMERA_ARGS --set-config afdistance="2"
 
 # capture image and download to computer hard drive.
-$CAMERA_ARGS --capture-image-and-download
+$CAMERA_ARGS --filename %Y_%m_%d_%H%M.jpg --capture-image-and-download
