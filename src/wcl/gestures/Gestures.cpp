@@ -18,7 +18,7 @@
 
 using namespace gestures;
 
-Gestures::Gestures(int numPoints = 64) 
+Gestures::Gestures(int numPoints)
 {
 	this->numPoints = numPoints;
 }
