@@ -7,9 +7,12 @@ CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
 PORT=--port\ "usb:"
 DATE=`date +%Y_%m_%d_%H%M`
 
-IMG_FILENAME="$DATE.jpg"
+IMG_FILENAME="$HOME/MI_photos/$DATE.jpg"
 
 CAMERA_ARGS="$ENVIRONMENT $PROGRAM $DEBUG $CAMERA $PORT"
+
+# turn on capture mode... otherwise the set-config calls wont work
+$CAMERA_ARGS --set-config capture="on"
 
 # set the image quality
 $CAMERA_ARGS --set-config canonimgquality="2"
