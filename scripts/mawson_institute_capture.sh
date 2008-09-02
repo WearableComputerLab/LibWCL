@@ -1,11 +1,12 @@
 #!/bin/bash
 
+DATE=`date +%Y_%m_%d_%H%M`
 ENVIRONMENT="env LANG=C"
 PROGRAM=gphoto2
-DEBUG="--debug --debug-logfile=MI_capture_canon_debug.txt"
+DEBUG_FILE="$HOME/MI_debug/MI_capture_canon_debug_$DATE.txt"
+DEBUG="--debug --debug-logfile=$DEBUG_FILE"
 CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
 PORT=--port\ "usb:"
-DATE=`date +%Y_%m_%d_%H%M`
 
 IMG_FILENAME="$HOME/MI_photos/$DATE.jpg"
 
@@ -56,3 +57,6 @@ fi
 echo "put $IMG_FILENAME" | sftp snappybackup@wcl.ml.unisa.edu.au
 
 echo "return value was $?"
+
+# compress the debug info
+gzip $DEBUG_FILE
