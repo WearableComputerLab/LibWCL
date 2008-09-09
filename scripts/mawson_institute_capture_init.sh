@@ -18,7 +18,7 @@ echo "PROGRAM = $PROGRAM"
 DEBUG_FILE="$HOME/MI_debug/MI_capture_canon_debug_$DATE.txt"
 echo "DEBUG_FILE = $DEBUG_FILE"
 
-DEBUG="--debug --debug-logfile=$DEBUG_FILE"
+#DEBUG="--debug --debug-logfile=$DEBUG_FILE"
 echo "DEBUG = $DEBUG"
 
 CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
