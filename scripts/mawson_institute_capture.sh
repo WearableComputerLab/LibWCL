@@ -48,6 +48,8 @@ else
 	exit
 fi
 
+chmod og+r $IMG_FILENAME
+
 echo "attempting to backup the image to the wcl."
 
 # attempt to send the file to the wcl.
