@@ -35,7 +35,7 @@ echo "CAMERA = $CAMERA"
 PORT=--port\ "usb:"
 echo "PORT = $PORT"
 
-FILEPATH=$YEAR/$MONTH/$DAY
+FILEPATH=images/$YEAR/$MONTH/$DAY
 FILENAME=$TIME.jpg
 
 #Print the expected path and filename out
@@ -68,12 +68,12 @@ else
 fi
 
 #Create the dirs on wcl starting with year.
-echo "mkdir $YEAR" | sftp snappybackup@wcl.ml.unisa.edu.au
+echo "mkdir images/$YEAR" | sftp snappybackup@wcl.ml.unisa.edu.au
 #Create the Month dir, this will fail after it has run once!! but that is expected 
-echo "mkdir $YEAR/$MONTH" | sftp snappybackup@wcl.ml.unisa.edu.au
+echo "mkdir images/$YEAR/$MONTH" | sftp snappybackup@wcl.ml.unisa.edu.au
 
 #Create the Day dir
-echo "mkdir $YEAR/$MONTH/$DAY" | sftp snappybackup@wcl.ml.unisa.edu.au
+echo "mkdir images/$YEAR/$MONTH/$DAY" | sftp snappybackup@wcl.ml.unisa.edu.au
 
 #Make sure everyone can read it when it is copied to wcl
 chmod og+r $IMG_FILENAME
