@@ -29,11 +29,13 @@
 
 #include <wcl/network/TCPSocket.h>
 
+namespace wcl {
+
 #define  DEFAULT_SERVER_QUEUE_LENGTH 100
 
 /**
- * This class represents a TCPServer. 
- * You define the server as listening on a particular port, 
+ * This class represents a TCPServer.
+ * You define the server as listening on a particular port,
  * Indicate if you want the server to be blocking or non blocking then
  * Call accept each time you wish to process a new connection.
  */
@@ -48,5 +50,8 @@ class TCPServer: private TCPSocket
 		TCPSocket::getBlockingMode;
 		TCPSocket::operator *;
 };
+
+
+}; // namespace wcl
 
 #endif

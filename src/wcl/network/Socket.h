@@ -39,6 +39,8 @@
 	#include <signal.h>
 #endif
 
+namespace wcl {
+
 /**
  * Classes and defines for creating and maintaining networking
  */
@@ -83,5 +85,8 @@ private:
     int sockid;
     int errornumber;
 };
+
+
+}; // namespace wcl
 
 #endif

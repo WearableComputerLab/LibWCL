@@ -36,6 +36,8 @@
 	#include <fcntl.h>
 #endif
 
+namespace wcl {
+
 /**
  * Called by subclasses. No initialisation is done
  * as we don't know the intent of the subclass.
@@ -222,3 +224,5 @@ ssize_t UDPSocket::read( UDPPacket *packet )
     return result;
 }
 
+
+}; // namespace wcl

@@ -31,6 +31,8 @@
 #include <wcl/network/Socket.h>
 #include <wcl/network/UDPPacket.h>
 
+namespace wcl {
+
 /**
  * A UDPSocket creates the perception of an end to end connection
  * like a TCP connection. 
@@ -53,5 +55,8 @@ class UDPSocket: public Socket
     private:
 	sockaddr_in raddress;
 };
+
+
+}; // namespace wcl
 
 #endif

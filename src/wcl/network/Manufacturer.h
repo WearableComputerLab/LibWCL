@@ -29,6 +29,8 @@
 
 #include <wcl/network/Network.h>
 
+namespace wcl {
+
 /**
  * The Manufacturer class represents contains 
  * a list of MAC->Manufacturer names tuples.
@@ -49,5 +51,7 @@ private:
 	static char *manufacturerlist[];
 
 };
+
+}; //namespace wcl
 
 #endif

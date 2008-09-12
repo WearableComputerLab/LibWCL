@@ -31,7 +31,9 @@
 	#include <netinet/in.h>
 #endif
 
-/** 
+namespace wcl {
+
+/**
  * Create a UDP Server that listens on the given port
  *
  * @param port The port to listen on
@@ -48,3 +50,6 @@ UDPServer::UDPServer( const unsigned port )
 	throw new SocketException(this);
     }
 }
+
+
+}; // namespace wcl

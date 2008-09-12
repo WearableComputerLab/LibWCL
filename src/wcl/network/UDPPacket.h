@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #endif
 
+namespace wcl {
+
 // Forward Declaration
 class UDPSocket;
 
@@ -133,4 +135,6 @@ inline void UDPPacket::setRecipient( const sockaddr_in recipient )
     this->address = recipient;
 }
 
+
+}; // namespace wcl
 #endif

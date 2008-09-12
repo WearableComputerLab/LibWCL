@@ -35,6 +35,8 @@
 	#include <arpa/inet.h>
 #endif
 
+namespace wcl {
+
 /**
  * Default Constructor, this constructor should only be used by
  * clients wanting to use a TCPServer. Hence no initialisation is
@@ -147,3 +149,6 @@ void TCPSocket::setRemoteAddress( sockaddr_in address)
 {
     this->address = address;
 }
+
+
+}; // namespace wcl

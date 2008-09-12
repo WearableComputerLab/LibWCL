@@ -30,6 +30,8 @@
 
 #include <wcl/network/Socket.h>
 
+namespace wcl {
+
 /**
  * A TCP Socket can be created to connect to a remote TCP port.
  */
@@ -45,5 +47,8 @@ class TCPSocket: public Socket
 	protected: 
 		virtual bool create();
 };
+
+
+};  // namespace wcl
 
 #endif

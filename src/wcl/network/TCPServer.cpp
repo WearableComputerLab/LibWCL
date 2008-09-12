@@ -33,6 +33,8 @@
 	#include <netinet/in.h>
 #endif
 
+namespace wcl {
+
 /**
  * Construct a TCP server to listen on the given port of the localhost.
  * The server will queue at most queuelength connections
@@ -84,3 +86,6 @@ bool TCPServer::accept( TCPSocket *socket )
 
     return socket->isValid();
 }
+
+
+}; // namespace wcl

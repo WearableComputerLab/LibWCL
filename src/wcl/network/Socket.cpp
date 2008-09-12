@@ -38,6 +38,8 @@
 
 #include "Socket.h"
 
+namespace wcl {
+
 
 /**
  * For Win32 winsock needs to be initialised before
@@ -375,3 +377,5 @@ const std::string SocketException::getReason() const
 #endif
 }
 
+
+} // namespace wcl
