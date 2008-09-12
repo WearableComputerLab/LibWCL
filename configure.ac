@@ -231,6 +231,7 @@ echo "network support         : $enable_network"
 echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "Gesture recognition     : $enable_gestures"
 echo "Vicon MoCap Support     : $enable_vicon"
+echo "Maths Support           : Enabled (default)"
 echo "-----------------------------"
 
 #

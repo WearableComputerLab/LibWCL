@@ -119,18 +119,51 @@ endif
 
 endif
 
+
+#
+# Math Libraries
+# 
+maths_headers=maths/Matrix.h\
+	      maths/SMatrix.h\
+	      maths/Vector.h
+
+maths_sources=maths/Matrix.cpp\
+	      maths/SMatrix.h\
+	      maths/Vector.cpp
+
 #
 # What to build and what to install
 #
 if !ENABLE_MSVC
 lib_LIBRARIES=libwcl.a
-nobase_libwcl_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers) $(vicon_headers)
-libwcl_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_sources) $(vicon_sources)
+nobase_libwcl_a_include_HEADERS=$(common_headers)\
+			        $(network_headers)\
+				$(video_1394_headers)\
+				$(gestures_headers)\
+				$(vicon_headers)\
+				$(maths_headers)
+
+libwcl_a_SOURCES=$(network_sources)\
+		 $(video_1394_sources)\
+		 $(gestures_sources)\
+		 $(vicon_sources)\
+		 $(maths_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
-nobase_libwcl_win32_a_include_HEADERS=$(common_headers) $(network_headers) $(video_1394_headers) $(gestures_headers) $(vicon_headers)
-libwcl_win32_a_SOURCES=$(network_sources) $(video_1394_sources) $(gestures_headers) $(vicon_sources)
+nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
+				      $(network_headers)\
+				      $(video_1394_headers)\
+				      $(gestures_headers)\
+				      $(vicon_headers)\
+				      $(maths_header)
+
+libwcl_win32_a_SOURCES=$(network_sources)\
+		       $(video_1394_sources)\
+		       $(gestures_headers)\
+		       $(vicon_sources)\
+		       $(maths_sources)
+
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib
 
