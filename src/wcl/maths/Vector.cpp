@@ -26,8 +26,9 @@
 
 #include <assert.h>
 #include <math.h>
-
 #include "Vector.h"
+
+namespace wcl {
 
 /**
  * DefaultConstructor:
@@ -265,6 +266,7 @@ Vector Vector::unit() const
     return v / v.normal();
 }
 
+
 //
 // Global Operators
 //
@@ -275,7 +277,7 @@ Vector Vector::unit() const
  * @param value The value to multiply the vector by
  * @param v The vector to multpliy
  */
-Vector MathLib::operator *(const T &value, const Vector &v )
+Vector operator *(const T &value, const Vector &v )
 {
     Vector myvec ( v );
     myvec *= value;
@@ -290,7 +292,7 @@ Vector MathLib::operator *(const T &value, const Vector &v )
  * @param m The matrix to multiply the vector by
  * @param v The vector to multiply;
  */
-Vector MathLib::operator *(const Matrix &m, const Vector &v )
+Vector operator *(const Matrix &m, const Vector &v )
 {
     Vector temp ( m.getRows());
 
@@ -298,3 +300,5 @@ Vector MathLib::operator *(const Matrix &m, const Vector &v )
 
     return temp;
 }
+
+}; //namespace wcl

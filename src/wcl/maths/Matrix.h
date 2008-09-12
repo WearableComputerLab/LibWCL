@@ -24,10 +24,12 @@
  * SUCH DAMAGE.
  *
  * NOTE: Parts of this class are based on the unlicense AptMatrix class by
- * Aaron Toney <Aaron.Toney@hhhh.org>
+ * created & provided by Aaron Toney <Aaron.Toney@hhhh.org>
  */
 #ifndef MATRIX_H
 #define MATRIX_H
+
+namespace wcl {
 
 /**
  * T defines the type for all matrix operations. If you alter T
@@ -93,5 +95,7 @@ Matrix operator *( const T &, const Matrix & );
 
 // Helper functions
 Matrix transpose ( const Matrix & );
+
+}; //namespace wcl
 
 #endif

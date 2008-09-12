@@ -27,8 +27,13 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
-#include <wcl/math/Matrix.h>
+#include <wcl/maths/Matrix.h>
 
+namespace wcl {
+
+/**
+ * A Class representing a vector (aka a 1D matrix)
+ */
 class Vector : public Matrix
 {
 public:
@@ -69,5 +74,7 @@ private:
 // Global Operators
 Vector operator *(const T &, const Vector & );
 Vector operator *(const Matrix &, const Vector & );
+
+}; //namespace wcl
 
 #endif

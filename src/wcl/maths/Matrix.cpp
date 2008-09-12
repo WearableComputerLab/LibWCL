@@ -23,9 +23,13 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include "Matrix.h"
+
+namespace wcl {
+
 
 /**
  * Constructor:
@@ -480,7 +484,7 @@ void Matrix::storeZeros()
  * @param v value to multiply by
  * @param im The matrix to multiply
  */
-Matrix MathLib::operator *( const T &v, const Matrix &im )
+Matrix operator *( const T &v, const Matrix &im )
 {
     return im * v;
 }
@@ -490,7 +494,7 @@ Matrix MathLib::operator *( const T &v, const Matrix &im )
  *
  * @param im Matrix to transpose
  */
-Matrix MathLib::transpose ( const Matrix &im )
+Matrix transpose ( const Matrix &im )
 {
     Matrix m( im.getCols(), im.getRows());
 
@@ -498,3 +502,5 @@ Matrix MathLib::transpose ( const Matrix &im )
 
     return m;
 }
+
+}; //namespace wcl
