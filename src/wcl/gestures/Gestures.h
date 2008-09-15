@@ -40,7 +40,7 @@
 #include "Point.h"
 
 
-namespace gestures
+namespace wcl 
 {
 
 	/**

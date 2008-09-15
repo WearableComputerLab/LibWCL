@@ -37,7 +37,7 @@
  *
  * @author Michael Marner (marnermr@cs.unisa.edu.au)
  */
-namespace vicon
+namespace wcl 
 {
 
 	/**

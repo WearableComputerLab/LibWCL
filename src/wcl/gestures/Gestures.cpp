@@ -33,7 +33,7 @@
 
 #include "Gestures.h"
 
-using namespace gestures;
+using namespace wcl;
 
 Gestures::Gestures(int numPoints)
 {

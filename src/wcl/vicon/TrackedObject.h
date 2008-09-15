@@ -22,7 +22,7 @@
 
 #include <wcl/network/TCPSocket.h>
 
-namespace vicon
+namespace wcl 
 {
 
 	/**

@@ -21,7 +21,7 @@
 #include "TrackedObject.h"
 
 
-using namespace vicon;
+using namespace wcl;
 
 TrackedObject::TrackedObject(std::string name, ObjectType type)
 {

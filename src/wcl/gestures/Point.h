@@ -32,7 +32,7 @@
 #ifndef POINT_H
 #define POINT_H
 
-namespace gestures
+namespace wcl 
 {
 
 	/**

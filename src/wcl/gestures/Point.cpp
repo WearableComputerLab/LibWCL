@@ -30,7 +30,7 @@
 
 #include "Point.h"
 
-using namespace gestures;
+using namespace wcl;
 
 Point::Point(double x, double y)
 {

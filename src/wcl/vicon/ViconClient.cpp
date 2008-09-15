@@ -27,7 +27,7 @@
 #include <iostream>
 
 using namespace std;
-using namespace vicon;
+using namespace wcl;
 
 
 ViconClient::ViconClient(std::string hostname, int port)
