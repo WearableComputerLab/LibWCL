@@ -26,6 +26,15 @@
 #ifndef WCL_PARALLEL_PARALLEL_H
 #define WCL_PARALLEL_PARALLEL_H
 
+#warning "*******************************************"
+#warning "Note: The parallel coded is currently untested, if you find a bug"
+#warning "Please fix it or let Ben know"
+#warning "*******************************************"
+
+#ifndef LINUX
+#error "Only Linux Support for the Parallel Port currently exists"
+#endif
+
 namespace wcl {
 
 /**

@@ -35,16 +35,6 @@
 
 #include "Parallel.h"
 
-#warning "*******************************************"
-#warning "Note: The parallel coded is currently untested, if you find a bug"
-#warning "Please fix it or let Ben know"
-#warning "*******************************************"
-
-#ifndef LINUX
-#error "Only Linux Support for the Parallel Port currently exists"
-#endif
-
-
 
 /* Offsets to the port registers */
 #define DATA_OFFSET    0x0
