@@ -172,7 +172,7 @@ nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 				      $(video_1394_headers)\
 				      $(gestures_headers)\
 				      $(vicon_headers)\
-				      $(maths_header)\
+				      $(maths_headers)\
 				      $(rawports_headers)
 
 libwcl_win32_a_SOURCES=$(network_sources)\
