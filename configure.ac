@@ -74,6 +74,10 @@ AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System suppo
 #
 AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial/parallel]), enable_rawports="yes" , enable_rawports="no")
 
+# Support for OpenSceneGraph helper functions
+#
+AC_ARG_ENABLE(osg, AC_HELP_STRING([--enable-osg], [Enable OpenSceneGraph helper functions]), enable_osg="yes" , enable_osg="no")
+
 # 
 #  Enable All Options
 # 	This simply enables each option
@@ -83,6 +87,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_1394="yes";
 	     enable_gestures="yes";
 	     enable_vicon="yes";
+	     enable_osg="yes";
 	     enable_rawports="yes" ;)
 
 #
@@ -93,6 +98,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_video_1394" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_gestures" = "xno" && \
+   test "x$enable_osg" == "xno" && \
    test "x$enable_rawports" = "xno" ; then
    AC_MSG_RESULT([Note: ONLY Building Math support, try --help for more options about what to build])
 fi
@@ -118,6 +124,7 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
+AM_CONDITIONAL(ENABLE_OSG, test "x$enable_osg" = "xyes")
 
 
 #
@@ -200,6 +207,13 @@ if test "x$enable_video_1394" = "xyes"; then
     fi
 fi
 
+if test "x$enable_osg" == "xyes"; then
+	PKG_CHECK_MODULES(OPENSCENEGRAPH, openscenegraph >= 2.0.0)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $OPENSCENEGRAPH_LIBS"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $OPENSCENEGRAPH_CFLAGS"
+fi
+
+
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #
@@ -229,6 +243,7 @@ echo "1394 (Firewire) Video    : $enable_video_1394"
 echo "Gesture recognition      : $enable_gestures"
 echo "Vicon MoCap Support      : $enable_vicon"
 echo "Rawports Support(com/lpt): $enable_rawports"
+echo "OpenSceneGraph Helper    : $enable_osg"
 echo "Maths Support            : Enabled (default)"
 echo "-----------------------------"
 

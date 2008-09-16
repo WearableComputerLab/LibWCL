@@ -24,80 +24,47 @@
  * SUCH DAMAGE.
  */
 
-#include <math.h>
-#include <sstream>
 
-#include "TrackedObject.h"
+#ifndef OSG_HELPER_H
+#define OSG_HELPER_H
 
-
-using namespace wcl;
-
-TrackedObject::TrackedObject(std::string name, ObjectType type)
+namespace wcl
 {
-	this->name = name;
-	this->type = type;
-	
-	x = 0;
-	y = 0;
-	z = 0;
-	rx = 0;
-	ry = 0;
-	rz = 0;
-	
-}
 
-TrackedObject::~TrackedObject()
-{
-}
-
-std::string TrackedObject::getName()
-{
-	return name;
-}
-
-std::string TrackedObject::toString() {
-	std::stringstream s;
-	s << name;
-	s << ": (" ;
-	s << x ;
-	s << ", "; 
-	s << y; 
-	s << ", ";
-	s << z;
-	s << ") (";
-	s << rx << ", " << ry << ", " << rz << ")";
-	return s.str(); 	
-	
-}
-
-void TrackedObject::updateData(double* array, int &offset)
-{
-	//Translation is common to both types
-	x = array[offset++];
-	y = array[offset++];
-	z = array[offset++];
-
-	//The marker has an occluded value
-	if (this->type == MARKER)
+	/**
+	 * Class contains helpful functions for dealing with OpenSceneGraph 2.
+	 * Common things that should be provided for you, but arent.
+	 *
+	 * @author Michael Marner (michael@20papercups.net)
+	 */
+	class OSGHelper
 	{
-		double o = array[offset++];
-		if (o > 0)
-			occluded = true;
-		else
-			occluded = false;
-	}
 
-	//Six dof objects also have rotation
-	else if (this->type == SIX_DOF)
-	{
-		x = array[offset++];
-		y = array[offset++];
-		z = array[offset++];
+		public:
 
-		rx = array[offset++];
-		ry = array[offset++];
-		rz = array[offset++];
-	}
-}
+		/**
+		 * Returns the number of screens available to openscenegraph.
+		 *
+		 * On Linux, this number is the total number of screens defined
+		 * in xorg.conf. Note that if you are using Xinerama or TwinView
+		 * with two monitors, this appears to openscenegraph as a single
+		 * screen.
+		 *
+		 * On Windows, this should simply be the number of monitors you
+		 * have connected.
+		 *
+		 * BIG DISCLAIMER: OpenSceneGraph must be initialised before this
+		 * function is called. Creating an osgViewer should be enough, but
+		 * this requires further testing (sorry!).
+		 *
+		 * @return The number of screens on this system.
+		 */
+		int getNumScreens();
 
+
+	};
+
+};
+
+#endif
 

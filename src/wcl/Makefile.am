@@ -84,6 +84,19 @@ vicon_sources+=\
 
 endif
 
+# 
+# OpenSceneGraph Helper Functions
+# 
+osg_headers=
+osg_sources=
+
+if ENABLE_OSG
+osg_headers+=\
+			  osg/OSGHelper.h
+
+osg_sources+=\
+              osg/OSGHelper.cpp
+endif
 
 #
 # 1394 Camera Support
@@ -156,14 +169,16 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(gestures_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
-				$(rawports_headers)
+				$(rawports_headers)\
+				$(osg_headers)
 
 libwcl_a_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
 		 $(gestures_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
-		 $(rawports_sources)
+		 $(rawports_sources)\
+		 $(osg_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
@@ -174,13 +189,16 @@ nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 				      $(vicon_headers)\
 				      $(maths_headers)\
 				      $(rawports_headers)
+				      $(maths_header)\
+				      $(osg_headers)
 
 libwcl_win32_a_SOURCES=$(network_sources)\
 		       $(video_1394_sources)\
 		       $(gestures_headers)\
 		       $(vicon_sources)\
 		       $(maths_sources)\
-		       $(rawports_sources)
+		       $(rawports_sources)\
+		       $(osg_sources)
 
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib
