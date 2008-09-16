@@ -58,9 +58,9 @@ static WSADATA wsaData;
  * allocated to it. This can only be called by subclasses to its the sub classes
  * responsibility to create the socket.
  */
-Socket::Socket()
+Socket::Socket():
+    sockfd(-1),blocking(BLOCKING)
 {
-    this->sockfd = -1;
     memset( &this->address, 0, sizeof( this->address ));
 
 #ifdef WIN32
