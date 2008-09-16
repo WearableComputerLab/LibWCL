@@ -58,15 +58,14 @@ std::vector<std::string> ViconClient::getChannelNames()
 	std::vector<std::string> list;
 	
 	//This is taken from the example source...
-	int info = ViconClient::INFO;
-	int request = ViconClient::REQUEST;
 	if (!socket->isValid())
 	{
 		throw std::string("Error: Trying to get channel names, but socket is not valid");
 	}
 	//send it an info request...
-	socket->write(&info, 4);
-	socket->write(&request, 4);
+	int request[] = {ViconClient::INFO, ViconClient::REQUEST};
+
+	socket->write(request, 8);
 
 	int packet;
 	int type;
