@@ -53,12 +53,6 @@ AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP 
 AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib & .dll library]), , enable_msvc="no")
 
 #
-# Serial Port / RS232 Code
-# 	When enabled: enable_serial is defined to 'yes' or 'no'
-#
-#AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
-
-#
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
@@ -75,6 +69,10 @@ AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Reco
 #
 AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
 
+#
+# Support for Raw ports
+#
+AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial/parallel]), enable_rawports="yes" , enable_rawports="no")
 
 # 
 #  Enable All Options
@@ -83,20 +81,20 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_network="yes";
 	     enable_serial="yes";
 	     enable_video_1394="yes";
-		 enable_gestures="yes";
-		 enable_vicon="yes")
+	     enable_gestures="yes";
+	     enable_vicon="yes";
+	     enable_rawports="yes" ;)
 
 #
 #  Check to see if anything is configured
 #
 AC_MSG_CHECKING([Checking we need to build something]);
-if test "x$enable_network" == "xno" && \
-# test "x$enable_serial" == "xno" && \
-   test "x$enable_video_1394" == "xno" && \
-   test "x$enable_vicon" == "xno" && \
-   test "x$enable_gestures" == "xno"; then
-   AC_MSG_RESULT([nup])
-   AC_MSG_ERROR([You must select something to build!, use --help for details])
+if test "x$enable_network" = "xno" && \
+   test "x$enable_video_1394" = "xno" && \
+   test "x$enable_vicon" = "xno" && \
+   test "x$enable_gestures" = "xno" && \
+   test "x$enable_rawports" = "xno" ; then
+   AC_MSG_RESULT([Note: ONLY Building Math support, try --help for more options about what to build])
 fi
 AC_MSG_RESULT([yes])
 
@@ -104,7 +102,7 @@ AC_MSG_RESULT([yes])
 #
 # Automatically turn on network if we are building the vicon module.
 #
-if test "x$enable_vicon" == "xyes"; then
+if test "x$enable_vicon" = "xyes"; then
 	enable_network="yes";
 	echo "*** Vicon Module selected, automatically enabling Network ***";
 fi
@@ -116,10 +114,10 @@ fi
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
-AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 
 
 #
@@ -190,12 +188,12 @@ WCL_PLATFORM_SETUP
 # Check for libraries
 #
 #############################
-if test "x$enable_video_1394" == "xyes"; then
-    if test "x$platform_linux" == "xyes"; then
+if test "x$enable_video_1394" = "xyes"; then
+    if test "x$platform_linux" = "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
-    elif test "x$platform_osx" == "xyes"; then
+    elif test "x$platform_osx" = "xyes"; then
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
@@ -225,13 +223,13 @@ AC_CHECK_FUNCS([memset])
 echo "-----------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "Microsoft (msvc) support: $enable_msvc"
-echo "network support         : $enable_network"
-#echo "serial (rs232) support  : $enable_serial"
-echo "1394 (Firewire) Video   : $enable_video_1394"
-echo "Gesture recognition     : $enable_gestures"
-echo "Vicon MoCap Support     : $enable_vicon"
-echo "Maths Support           : Enabled (default)"
+echo "Microsoft (msvc) support : $enable_msvc"
+echo "network support          : $enable_network"
+echo "1394 (Firewire) Video    : $enable_video_1394"
+echo "Gesture recognition      : $enable_gestures"
+echo "Vicon MoCap Support      : $enable_vicon"
+echo "Rawports Support(com/lpt): $enable_rawports"
+echo "Maths Support            : Enabled (default)"
 echo "-----------------------------"
 
 #
