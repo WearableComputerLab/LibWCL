@@ -117,7 +117,7 @@ public:
     /* The various input only signal lines */
     /* These are based on PORT + 1 (status register) */
     enum Signal {
-	ACK     =0x20, // Pin 10
+	ACK     =0x40, // Pin 10
 	BUSY    =0x80, // Pin 11
 	PAPEROUT=0x10, // Pin 12
 	SELECT  =0x08, // Pin 13
