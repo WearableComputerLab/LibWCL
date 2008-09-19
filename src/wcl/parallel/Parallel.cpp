@@ -30,7 +30,8 @@
 #include <unistd.h>
 
 #ifdef LINUX
-#include <asm/io.h>
+#include <sys/types.h>
+#include <sys/io.h>
 #endif
 
 #include "Parallel.h"
@@ -101,7 +102,7 @@ void Parallel::close()
 #ifdef LINUX
 	// We force the close and don't care about the result
 	ioperm(this->base, 3, 0);
-	this->base = Parallel::PORT::NONE;
+	this->base = Parallel::NONE;
 #endif
     }
 }
@@ -118,7 +119,7 @@ bool Parallel::setDataLine( const DataLine line, bool state )
 	this->data  = ~(this->data & line );
 	if( state ) this->data |= line;
 
-	return outb( this->data, this->base + DATA_OFFSET);
+	outb( this->data, this->base + DATA_OFFSET);
     }
     return false;
 }
@@ -129,7 +130,7 @@ bool Parallel::setDataLine( const DataLine line, bool state )
  *
  * @param line The line to find the status for
  */
-bool Parallel::getDataLine( const DataLine line) const
+bool Parallel::getDataLine( const DataLine line)
 {
     // Since we are quering the port, we take the opertunity
     // to update our internal representation at the same time
@@ -152,7 +153,8 @@ bool Parallel::setControl( const Control line, bool state)
 	this->control  = ~(this->control & line );
 	if( state ) this->control |= line;
 
-	return outb( this->data, this->base + CONTROL_OFFSET);
+	outb( this->data, this->base + CONTROL_OFFSET);
+	return true;
     }
     return false;
 }
@@ -162,7 +164,7 @@ bool Parallel::setControl( const Control line, bool state)
  *
  * return true if the line is high, false if it is low
  */
-bool Parallel::getControl( const Control ) const
+bool Parallel::getControl( const Control line)
 {
     // Since we are quering the port, we take the opertunity
     // to update our internal representation at the same time
@@ -178,7 +180,7 @@ bool Parallel::getControl( const Control ) const
  *
  * @param line The line to find the status for
  */
-bool Parallel::getSignal( const Signal line) const
+bool Parallel::getSignal( const Signal line)
 {
 
     // Since we are quering the port, we take the opertunity
@@ -197,8 +199,10 @@ bool Parallel::getSignal( const Signal line) const
  */
 bool Parallel::write( const char ch)
 {
-    if ( this-> base )
-	return outb( ch, this->base + DATA_OFFSET );
+    if ( this-> base ){
+	outb( ch, this->base + DATA_OFFSET );
+	return true;
+    }
 
     return false;
 }

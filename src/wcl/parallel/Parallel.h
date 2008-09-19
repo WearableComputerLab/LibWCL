@@ -146,10 +146,10 @@ public:
     bool open( const Port );
     void close();
     bool setDataLine( const DataLine, bool state );
-    bool getDataLine( const DataLine ) const;
+    bool getDataLine( const DataLine );
     bool setControl( const Control, bool state);
-    bool getControl( const Control ) const;
-    bool getSignal( const Signal ) const;
+    bool getControl( const Control );
+    bool getSignal( const Signal );
     bool write( const char );
 
     /* XXX/TODO Not Yet Implemented, needs bidirectional support  - benjsc
