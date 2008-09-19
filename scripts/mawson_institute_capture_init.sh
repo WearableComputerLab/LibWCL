@@ -30,6 +30,9 @@ echo "PORT = $PORT"
 CAMERA_ARGS="$ENVIRONMENT $PROGRAM $DEBUG $CAMERA $PORT"
 echo "CAMERA_ARGS = $CAMERA_ARGS"
 
+#echo "Setting read / write to usb port"
+#chmod -R a+rw /dev/bus/usb
+
 echo "setting capture mode to on"
 # turn on capture mode... otherwise the set-config calls wont work
 $CAMERA_ARGS --set-config capture="on"

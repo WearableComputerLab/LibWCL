@@ -4,3 +4,4 @@ ifconfig > ip.txt
 
 echo "put ip.txt" | sftp snappybackup@wcl.ml.unisa.edu.au
 
+rm ip.txt

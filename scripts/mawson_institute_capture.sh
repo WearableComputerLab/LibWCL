@@ -64,7 +64,10 @@ then
 	echo "Image successfully downloaded from camera."
 else
 	echo "ERROR: failed to download image from camera."
-	exit
+  echo "Attempting to reset the Camera with the parallel port hack"
+#  parReset > resetRun
+#  date >> resetRun
+  sleep 1
 fi
 
 #Create the dirs on wcl starting with year.
