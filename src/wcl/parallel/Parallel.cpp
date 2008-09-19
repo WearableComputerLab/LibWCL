@@ -116,10 +116,11 @@ void Parallel::close()
 bool Parallel::setDataLine( const DataLine line, bool state )
 {
     if( this->base ){
-	this->data  = ~(this->data & line );
 	if( state ) this->data |= line;
+	else this->data &= 0xFF^line;
 
 	outb( this->data, this->base + DATA_OFFSET);
+	return true;
     }
     return false;
 }
@@ -150,10 +151,10 @@ bool Parallel::getDataLine( const DataLine line)
 bool Parallel::setControl( const Control line, bool state)
 {
     if( this->base ){
-	this->control  = ~(this->control & line );
 	if( state ) this->control |= line;
+	else this->control &= 0xFF^line;
 
-	outb( this->data, this->base + CONTROL_OFFSET);
+	outb( this->control, this->base + CONTROL_OFFSET);
 	return true;
     }
     return false;
