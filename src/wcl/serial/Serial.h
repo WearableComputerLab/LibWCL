@@ -138,11 +138,11 @@ public:
 		   };
 
     enum Signal {
-		    DCD = 1, // IN  Signal (Data Carrier Detect) D25 pin 8
-		    RXD = 2, // IN  Signal (Received data) D25 pin 3
-		    DSR = 6, // IN  Signal (Data Send Ready) D25 pin 6
-		    CTS = 8, // IN  Signal (Clear To Send) D25 pin 5
-		    RI  = 9, // IN  Signal (Ring Indicator) D25 pin 22
+		    DCD = 1,  // IN  Signal (Data Carrier Detect) D25 pin 8
+		    RXD = 2,  // IN  Signal (Received data) D25 pin 3
+		    DSR = 4,  // IN  Signal (Data Send Ready) D25 pin 6
+		    CTS = 8,  // IN  Signal (Clear To Send) D25 pin 5
+		    RI  = 16, // IN  Signal (Ring Indicator) D25 pin 22 };
     };
 
 
@@ -157,7 +157,7 @@ public:
 	       const InputMode = RAW,
 	       const FlowControl = DISABLED,
 	       const BlockingMode = BLOCKING,
-	       const Signal = 0 );  // Set this to DCD to NOT ignore the DCD signal
+	       const Signal= (const Signal)0 );  // Set this to DCD to NOT ignore the DCD signal
 
     bool flush( const Flush = BOTH  );	// Clear fifos, don't write it
     bool drain();			// Wait for data to be written
@@ -198,13 +198,14 @@ public:
     bool getSignal ( const Signal );
 
     // Attempt to determine the baud rate automatically
-    bool scanBaudRate( const char = '\n', const BaudRate =
+    bool scanBaudRate( const char = '\n', const BaudRate = (const BaudRate)(
 		       BAUD_4800
 		       | BAUD_9600
 		       | BAUD_38400
-#ifndef _POSIX_SOURCE _
+#ifndef _POSIX_SOURCE_
 		       | BAUD_115200
 #endif
+		       )
 		     );
 
     // Get the actual file descriptor

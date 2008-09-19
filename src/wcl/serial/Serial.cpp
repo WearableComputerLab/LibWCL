@@ -24,10 +24,13 @@
  * SUCH DAMAGE.
  */
 
+#include <unistd.h>
+#include <fcntl.h>
+#include <string.h>
 #include <wcl/serial/Serial.h>
 
 Serial::Serial():
-    fd(-1), mode(BLOCKING),parity(NONE),parityCheckEnabled(false)
+    fd(-1), parity(NONE),parityCheckEnabled(false),blocking(BLOCKING)
 {
     memset( &this->currstate, 0x0, sizeof( struct termios ));
 }
@@ -64,9 +67,9 @@ bool Serial::isValid() const
  *
  * @returns if the port is in blocking or non blocking mode.
  */
-BlockingMode Serial::getBlockingMode() const
+Serial::BlockingMode Serial::getBlockingMode() const
 {
-    return this->mode;
+    return this->blocking;
 }
 
 /**
@@ -80,20 +83,22 @@ BlockingMode Serial::getBlockingMode() const
  */
 bool Serial::setBlockingMode( const BlockingMode mode )
 {
+    int flags;
+
     if ( !this->isValid()){
 	return false;
     }
 
     // Don't bother setting the mode if it's the default
-    if ( this->mode == mode )
+    if ( this->blocking == blocking )
 	return true;
 
     // In order to set the blocking flag, we must be careful not
     // to stop on any other flags that have been set. Hence
     // we obtain all the flags and adjust the blocking flag only
-    flags = ::fcntl(this->sockfd, F_GETFL, 0 /* ALLFLAGS */);
+    flags = ::fcntl(this->fd, F_GETFL, 0 /* ALLFLAGS */);
 
-    switch( mode ) {
+    switch( blocking ) {
         case BLOCKING:
             flags &=~O_NONBLOCK;
             if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
@@ -190,13 +195,13 @@ Serial::open( const char *device,
     cfsetospeed( &this->currstate, baud );
 
     // Set data bits
-    this->currstate.c_cflags &= ~CSIZE;
-    this->currstate.c_cflags |= databits;
+    this->currstate.c_cflag &= ~CSIZE;
+    this->currstate.c_cflag |= databits;
 
     // Set stop bits
-    switch ( stopbits ){
-	case ONE: this->currstate.c_cflags &= ~CSTOPB; break;
-	case TWO: this->currstate.c_cflags |= CSTOPB; break;
+    switch ( stops ){
+	case ONE: this->currstate.c_cflag &= ~CSTOPB; break;
+	case TWO: this->currstate.c_cflag |= CSTOPB; break;
     }
 
     // Set parity / Parity Check
@@ -204,7 +209,7 @@ Serial::open( const char *device,
     // distinguish between odd and space parity when reporting parity / databits
     // to the user
     this->parity = parity;
-    this->currstate.c_cflags &= ~PARENB;
+    this->currstate.c_cflag &= ~PARENB;
 
     switch( parity ){
 	case 'N':
@@ -212,17 +217,17 @@ Serial::open( const char *device,
 	case 'S':
 	    // Increase databits by one needed by space parity
 	    // The way we do this seems - // benjsc 20070118
-	    this->currstate.c_cflags &= ~CSIZE;
-	    this->currstate.c_cflags |= (databits + CS6 );
+	    this->currstate.c_cflag &= ~CSIZE;
+	    this->currstate.c_cflag |= (databits + CS6 );
 	    /* fallthrough */
 	case 'O':
-	    this->currstate.c_cflags |= PARODD;
+	    this->currstate.c_cflag |= PARODD;
 	    this->currstate.c_iflag |= (INPCK | ISTRIP );
 	    this->parityCheckEnabled = true;
 	    break;
 	case 'E':
-	    this->currstate.c_cflags |= PARENB;
-	    this->currstate.c_cflags &= ~PARODD;
+	    this->currstate.c_cflag |= PARENB;
+	    this->currstate.c_cflag &= ~PARODD;
 	    this->currstate.c_iflag |= (INPCK | ISTRIP );
 	    this->parityCheckEnabled = true;
 	    break;
@@ -230,25 +235,25 @@ Serial::open( const char *device,
 
 
     // Setup the input mode correctly
-    this->inputmode = inputmode;
+    this->input = input;
     switch ( inputmode ){
-	case RAW: this->currstate.c_lflags |= ( ICANON | ECHO | ECHOE ); break;
-	case LINE: this->currstate.c_lflags &= ~(  ICANON | ECHO |ECHOE | SIG ); break;
+	case RAW: this->currstate.c_lflag |= ( ICANON | ECHO | ECHOE ); break;
+	case LINE: this->currstate.c_lflag &= ~(  ICANON | ECHO |ECHOE /*| XXXSIG*/ ); break;
     }
 
     // Setup hw/sw flow control
     this->flow = flow;
     switch ( flow ){
 	case NONE:
-	    this->currstate.c_cflags &= ~CRTSCTS;
+	    this->currstate.c_cflag &= ~CRTSCTS;
 	    this->currstate.c_iflag &= ~(IXON | IXOFF | IXANY);
 	    break;
-	case HARDWARE:
-	    this->currstate.c_cflags |= CRTSCTS;
+	case RTSCTS:
+	    this->currstate.c_cflag |= CRTSCTS;
 	    this->currstate.c_iflag &= ~(IXON | IXOFF | IXANY);
 	    break;
-	case SOFTWARE:
-	    this->currstate.c_cflags &= ~CRTSCTS;
+	case XONXOFF:
+	    this->currstate.c_cflag &= ~CRTSCTS;
 	    this->currstate.c_iflag |= (IXON | IXOFF | IXANY);
 	    break;
     }
@@ -256,10 +261,13 @@ Serial::open( const char *device,
     // Enable the receiver & set local (detached from console mode)
     this->currstate.c_cflag |= ( CLOCAL | CREAD );
 
+    /*
+     * XXX
     if( this->applySettings( this->currstate ) == false ){
 	this->close( true );
 	return false;
     }
+    */
 
     return true;
 }
@@ -305,14 +313,14 @@ Serial::drain()
  * Close the serial port if it is open.
  * This sets the DTR signal low, (ie modems will hang up). Optionally restore
  * the original state of the port before closing. Note: this function will
- * return false if the state cannot be restored. It will still close the port 
+ * return false if the state cannot be restored. It will still close the port
  * regardless of the restore state.
  *
  * @param restore True indicates the original state of the port should be restored
  * @return true if the close was successful, false otherwise (check errno)
  */
 bool
-Serial::close()
+Serial::close(bool restore)
 {
     if ( !this->isValid())
 	return false;
@@ -342,7 +350,7 @@ Serial::close()
 ssize_t
 Serial::read ( void *buffer, size_t size )
 {
-    if( this->valid())
+    if( this->isValid())
 	return ::read( this->fd, buffer, size );
 
     return 0;
@@ -358,10 +366,10 @@ Serial::read ( void *buffer, size_t size )
  * @param size The size of the buffer to write
  */
 ssize_t
-write( const void *buffer, size_t size )
+Serial::write( const void *buffer, size_t size )
 {
-    if ( this->valid())
-	return ::read( this->fd, buffer, size );
+    if ( this->isValid())
+	return ::write( this->fd, buffer, size );
 
     return 0;
 }
@@ -373,7 +381,7 @@ write( const void *buffer, size_t size )
  * @param str The string to write
  */
 ssize_t
-write( const std::string &str )
+Serial::write( const std::string &str )
 {
     return this->write( str.c_str(), str.size());
 }
@@ -390,17 +398,6 @@ Serial::getBaudRate() const
 }
 
 /**
- * Obtain what blocking mode the serial port is currently in
- *
- * @return The blocking mode
- */
-Serial::BlockingMode
-Serial::getBlockingMode() const
-{
-    return this->mode;
-}
-
-/**
  * Return the amount of stop bits currently in use
  *
  * @return The stopbits in use
@@ -408,10 +405,10 @@ Serial::getBlockingMode() const
 Serial::StopBits
 Serial::getStopBits() const
 {
-    if ( this->currstate.c_cflags & CSTOPB )
-	return StopBits::TWO;
+    if ( this->currstate.c_cflag & CSTOPB )
+	return Serial::TWO;
 
-    return StopBits::ONE;
+    return Serial::ONE;
 }
 
 /**
@@ -436,8 +433,10 @@ Serial::getParity() const
 Serial::DataBits
 Serial::getDataBits() const
 {
-    unsigned int db = this->currstate.c_cflags & CSIZE;
-    return this->parity == 'S' ? db - CS6 : db;
+    unsigned int db = this->currstate.c_cflag & CSIZE;
+    //FIXME/XXX:
+    //return this->parity == 'S' ? db - CS6 : db;
+    return Serial::DB_FIVE;
 }
 
 /**
@@ -456,15 +455,6 @@ Serial::InputMode
 Serial::getInputMode() const
 {
     return this->input;
-}
-
-bool
-Serial::setBlockingMode( const BlockingMode mode)
-{
-    if( !this->isValid())
-	return false;
-
-
 }
 
 bool
@@ -498,6 +488,7 @@ Serial::setParityCheck( const bool state)
 {
 }
 
+#if 0 //XXX
 /**
  * Obtain the current state of the parity checking. Parity checking is
  * automatically enabled when a parity type that supports checking is enabled.
@@ -561,3 +552,4 @@ Serial::applyParams( const struct termios &settings)
 
     //XXXXXX
 }
+#endif
