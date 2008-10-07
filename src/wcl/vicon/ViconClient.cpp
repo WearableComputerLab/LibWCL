@@ -63,12 +63,12 @@ std::vector<std::string> ViconClient::getChannelNames()
 		throw std::string("Error: Trying to get channel names, but socket is not valid");
 	}
 	//send it an info request...
-	int request[] = {ViconClient::INFO, ViconClient::REQUEST};
+	int32_t request[] = {ViconClient::INFO, ViconClient::REQUEST};
 
 	socket->write(request, 8);
 
-	int packet;
-	int type;
+	int32_t packet;
+	int32_t type;
 	
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
@@ -76,7 +76,7 @@ std::vector<std::string> ViconClient::getChannelNames()
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
 	{
-		int numChannels;
+		int32_t numChannels;
 		socket->read(&numChannels, 4);
 
 		for (int i=0;i<numChannels;i++)
@@ -93,8 +93,8 @@ std::vector<std::string> ViconClient::getChannelNames()
 void ViconClient::loadTrackedObjects()
 {
 	// Make a request for info...
-	int info = ViconClient::INFO;
-	int request = ViconClient::REQUEST;
+	int32_t info = ViconClient::INFO;
+	int32_t request = ViconClient::REQUEST;
 	if (!socket->isValid())
 	{
 		throw std::string("Socket is not open!");
@@ -104,8 +104,8 @@ void ViconClient::loadTrackedObjects()
 	socket->write(&info, 4);
 	socket->write(&request, 4);
 	
-	int packet;
-	int type;
+	int32_t packet;
+	int32_t type;
 	
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
@@ -114,7 +114,7 @@ void ViconClient::loadTrackedObjects()
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
 	{
 		
-		int numChannels;
+		int32_t numChannels;
 		socket->read(&numChannels, 4);
 		std::string prevName;
 		int channelPerNameCount = 0;
@@ -193,22 +193,22 @@ TrackedObject* ViconClient::getObject(std::string name) {
 
 void ViconClient::update()
 {
-	int data = ViconClient::DATA;
-	int request = ViconClient::REQUEST;
+	int32_t data = ViconClient::DATA;
+	int32_t request = ViconClient::REQUEST;
 	
 	//Send a data request to the server.
 	socket->write(&data, 4);
 	socket->write(&request, 4);
 	
-	int packet;
-	int type;
+	int32_t packet;
+	int32_t type;
 	
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
 	
 	if (packet == ViconClient::DATA && type == ViconClient::REPLY) {
 		
-		int count;
+		int32_t count;
 		socket->read(&count, 4);
 		
 		double values[count];
@@ -231,7 +231,7 @@ std::string ViconClient::readChannel()
 {
 	if (socket->isValid())
 	{
-		int letterCount;
+		int32_t letterCount;
 		socket->read(&letterCount, 4);
 
 		char name[letterCount+1];
