@@ -268,6 +268,9 @@ Serial::open( const char *device,
 	return false;
     }
     */
+    if( tcsetattr( this->fd, TCSANOW | TCSAFLUSH, &this->currstate ) < 0 ){
+	return false;
+    }
 
     return true;
 }
