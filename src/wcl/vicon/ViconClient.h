@@ -36,6 +36,7 @@
 
 #include <string>
 #include <vector>
+#include <stdint.h>
 #include <wcl/network/TCPSocket.h>
 
 #include "TrackedObject.h"
@@ -70,17 +71,17 @@ namespace wcl
 			/*
 			 * Vicon Packets
 			 */
-			static const int CLOSE = 0;
-			static const int INFO = 1;
-			static const int DATA = 2;
-			static const int STREAMING_ON = 3;
-			static const int STREAMING_OFF = 4;
+			static const int32_t CLOSE = 0;
+			static const int32_t INFO = 1;
+			static const int32_t DATA = 2;
+			static const int32_t STREAMING_ON = 3;
+			static const int32_t STREAMING_OFF = 4;
 
 			/*
 			 * Packet Types
 			 */
-			static const int REQUEST = 0;
-			static const int REPLY = 1;
+			static const int32_t REQUEST = 0;
+			static const int32_t REPLY = 1;
 
 
 			/**
