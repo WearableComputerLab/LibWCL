@@ -29,6 +29,9 @@
 #include <string.h>
 #include <wcl/serial/Serial.h>
 
+using namespace wcl;
+
+
 Serial::Serial():
     fd(-1), parity(NONE),parityCheckEnabled(false),blocking(BLOCKING)
 {
@@ -329,10 +332,13 @@ Serial::close(bool restore)
 	return false;
 
     bool retval = true;
+    //XXXX
+    /*
     if ( restore ){
 	if ( !this->applyParams( this->origstate ))
 	    retval = false;
     }
+    */
 
     if ( ::close( this->fd ) == -1 )
 	retval = false;

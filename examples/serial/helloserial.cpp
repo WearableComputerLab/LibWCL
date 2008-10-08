@@ -31,12 +31,12 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <wcl/serial.h>
+#include <wcl/serial/Serial.h>
 
 #define DEVICE "/dev/ttyS0"
 #define BUFSIZE 4096
 
-use namespace wcl;
+using namespace wcl;
 
 int main( int argc, char **args )
 {
@@ -45,7 +45,7 @@ int main( int argc, char **args )
     Serial s;
 
     // Open the serial port, checking that it opened
-    if ( s.open( DEVICE, BAUD_115200, /* Use default for all other arguments */) == false ){
+    if ( s.open( DEVICE, Serial::BAUD_115200 /* Use default for all other arguments */) == false ){
 	printf("Failed to open serial port\n");
 	exit(EXIT_FAILURE);
     }
@@ -62,10 +62,10 @@ int main( int argc, char **args )
 	exit(EXIT_FAILURE);
     }
 
-    printf("You got a message: %*s\n",  buffer )
+    printf("You got a message: %*s\n",  buffer );
 
     // Close the serial port and restore the previous state of the port
-    s.close()
+    s.close();
 
     return 0;
 }

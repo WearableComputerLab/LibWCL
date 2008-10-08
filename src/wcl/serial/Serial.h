@@ -30,6 +30,8 @@
 #include <termios.h>
 #include <string>
 
+namespace wcl {
+
 /**
  * This class implements RS232 processing under unix using POSIX standards,
  * with support for a few non compliant posix features. If you need strict POSIX
@@ -243,6 +245,9 @@ private:
     Serial(const Serial &);
     Serial operator = (const Serial &);
 };
+
+
+}; //namespace wcl
 
 #endif
 
