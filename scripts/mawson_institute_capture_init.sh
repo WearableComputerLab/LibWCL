@@ -21,10 +21,10 @@ echo "DEBUG_FILE = $DEBUG_FILE"
 #DEBUG="--debug --debug-logfile=$DEBUG_FILE"
 echo "DEBUG = $DEBUG"
 
-CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
+#CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
 echo "CAMERA = $CAMERA"
 
-PORT=--port\ "usb:"
+#PORT=--port\ "usb:"
 echo "PORT = $PORT"
 
 CAMERA_ARGS="$ENVIRONMENT $PROGRAM $DEBUG $CAMERA $PORT"
@@ -32,6 +32,10 @@ echo "CAMERA_ARGS = $CAMERA_ARGS"
 
 #echo "Setting read / write to usb port"
 #chmod -R a+rw /dev/bus/usb
+
+echo "auto detecting the camera"
+$CAMERA_ARGS --auto-detect
+echo "auto detect returned $?"
 
 echo "setting capture mode to on"
 # turn on capture mode... otherwise the set-config calls wont work
@@ -76,4 +80,8 @@ echo "setting the shutter speed returned $?"
 echo "setting long distance to long distance"
 # set AF distance to "Long Distance"
 $CAMERA_ARGS --set-config afdistance="2"
-echo "setting long distance returned $?"
+
+RESULT=$?
+echo "setting long distance returned $RESULT"
+
+exit $RESULT
