@@ -141,6 +141,15 @@ AM_CONDITIONAL(ENABLE_OSG, test "x$enable_osg" = "xyes")
 # Aaron put this in as a quick hack to test something, shouldn't really be here though
 _AM_DEPENDENCIES([OBJC])
 
+
+#
+# The vicon system ignorantly assumes that data is in Intel format (little endian)
+# meaning we can't use network byte order. Therefore, we treat things differently
+# if we're on PowerPC
+#
+AC_C_BIGENDIAN
+
+
 #
 # Add required hacks to make automake work
 # (defined in cfg/other.m4)
