@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# make sure that the camera isn't reseting.
+LOCKFILE=snappy_reset.lock
+
+if [ -f $LOCKFILE ] ; then
+  echo "camera is resetting. therefore I am not going to do anything"
+
+  #If there are still problems we might want to implement this...
+
+  #Increment error count (store a count in /tmp/snappyError.log
+   
+  #If error count is >  threshold (perhpas 5 tries)
+  #reboot snappy to try and sort things out 
+  # shutdown -r now
+  
+  #If not up to threshold, just exit for now and see if it sorts it self out
+  exit
+
+fi
+
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 echo "PATH = $PATH"
 
@@ -29,10 +48,10 @@ echo "DEBUG_FILE = $DEBUG_FILE"
 #DEBUG="--debug --debug-logfile=$DEBUG_FILE"
 echo "DEBUG = $DEBUG"
 
-CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
+#CAMERA=--camera\ "Canon Digital IXUS 400 (PTP mode)"
 echo "CAMERA = $CAMERA"
 
-PORT=--port\ "usb:"
+#PORT=--port\ "usb:"
 echo "PORT = $PORT"
 
 FILEPATH=images/$YEAR/$MONTH/$DAY
@@ -44,7 +63,10 @@ echo "Creating File: $FILEPATH/$FILENAME"
 #Create the directory structur for the day, this works the first time it is run
 # for the day. It will not cause error when if the dirs already exist
 /bin/mkdir -p $HOME/MI_photos/$FILEPATH
+
+echo "List of all photos taken today:"
 /bin/ls $HOME/MI_photos/$FILEPATH 
+echo
 
 #IMG_FILENAME="$HOME/MI_photos/$DATE.jpg"
 IMG_FILENAME="$HOME/MI_photos/$FILEPATH/$FILENAME"
@@ -58,16 +80,22 @@ echo "attempting the capture and download"
 $CAMERA_ARGS --filename "$IMG_FILENAME" --capture-image-and-download
 echo "capture and download returned $?"
 echo "checking that the file exists"
+#sleep 4
+
 #check that the file was downloaded from the camera
 if [ -f $IMG_FILENAME ]
 then
 	echo "Image successfully downloaded from camera."
 else
 	echo "ERROR: failed to download image from camera."
-  echo "Attempting to reset the Camera with the parallel port hack"
-#  parReset > resetRun
-#  date >> resetRun
-  sleep 1
+  echo "Sleeping for 2 seconds before attempting a repair"
+  #sleep 2
+  echo "Attempting to reset the Camera with the power cycle hack!!"
+  date > /home/user/logs/dynamicReset.log
+  echo "Warning, if this file exists something bad has happened and we neede to turn the camera off / on and init it during the day..." >> /home/user/logs/dynamicReset.log
+  /bin/sh /home/user/libwcl/scripts/cameraReset.sh >> /home/user/logs/dynamicReset.log
+#  sleep 1
+  exit 1
 fi
 
 #Create the dirs on wcl starting with year.
