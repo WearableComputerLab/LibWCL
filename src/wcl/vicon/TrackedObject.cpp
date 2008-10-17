@@ -26,11 +26,12 @@
 
 #include <math.h>
 #include <sstream>
-
+#include <iostream>
 #include "TrackedObject.h"
 
 
 using namespace wcl;
+using namespace std;
 
 TrackedObject::TrackedObject(std::string name, ObjectType type)
 {
@@ -55,6 +56,12 @@ std::string TrackedObject::getName()
 	return name;
 }
 
+ObjectType TrackedObject::getType()
+{
+	return type;
+}
+
+
 std::string TrackedObject::toString() {
 	std::stringstream s;
 	s << name;
@@ -72,10 +79,19 @@ std::string TrackedObject::toString() {
 
 void TrackedObject::updateData(double* array, int &offset)
 {
+	//Six dof objects also have rotation
+	if (this->type == SIX_DOF)
+	{
+		rx = array[offset++];
+		ry = array[offset++];
+		rz = array[offset++];
+	}
+	
 	//Translation is common to both types
 	x = array[offset++];
 	y = array[offset++];
 	z = array[offset++];
+
 
 	//The marker has an occluded value
 	if (this->type == MARKER)
@@ -87,17 +103,5 @@ void TrackedObject::updateData(double* array, int &offset)
 			occluded = false;
 	}
 
-	//Six dof objects also have rotation
-	else if (this->type == SIX_DOF)
-	{
-		x = array[offset++];
-		y = array[offset++];
-		z = array[offset++];
-
-		rx = array[offset++];
-		ry = array[offset++];
-		rz = array[offset++];
-	}
 }
-
 

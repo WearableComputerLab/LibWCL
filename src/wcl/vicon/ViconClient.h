@@ -42,12 +42,6 @@
 #include "TrackedObject.h"
 
 
-/**
- * Interface to the Vicon Motion Capture System. 
- * Provides access to motion capture data from the mocap system.
- *
- * @author Michael Marner (marnermr@cs.unisa.edu.au)
- */
 namespace wcl 
 {
 
@@ -130,6 +124,11 @@ namespace wcl
 			 */
 			TrackedObject* getObject(std::string name);
 
+			/**
+			 * The list of objects.
+			 */
+			std::vector<TrackedObject> objects;
+
 		private:
 			/**
 			 * The socket handling the connection to the server.
@@ -163,10 +162,6 @@ namespace wcl
 			 */
 			void loadTrackedObjects();
 
-			/**
-			 * The list of objects.
-			 */
-			std::vector<TrackedObject> objects;
 
 	};
 

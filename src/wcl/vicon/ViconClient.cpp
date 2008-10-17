@@ -1,4 +1,4 @@
-/*-
+/*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
@@ -29,6 +29,8 @@
 /*
  * Vicon Interface.
  *
+ * \todo The Vicon interface does not work on PPC
+ *
  * Michael Marner (michael.marner@unisa.edu.au)
  */
 
@@ -44,7 +46,7 @@ ViconClient::ViconClient(std::string hostname, int port)
 	this->socket = new TCPSocket(hostname, port);
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
-	update();
+	//update();
 }
 
 ViconClient::~ViconClient()
@@ -205,18 +207,23 @@ void ViconClient::update()
 	
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
+
+	std::cout << "packet: " << packet << " type: " << type << endl;
 	
 	if (packet == ViconClient::DATA && type == ViconClient::REPLY) {
 		
 		int32_t count;
 		socket->read(&count, 4);
-		
+
 		double values[count];
-		
+
 		// read all values in one big block
-		socket->read(values, sizeof((*values)*count));
+		int numBytesRead = socket->read(values, 8*count);
+
+		cout << "read all the values:" << numBytesRead << " bytes" << endl;
 		
 		time = values[0];
+
 		int offset = 1;
 		for (unsigned int i=0;i<objects.size();i++) {
 			objects[i].updateData(values, offset);
