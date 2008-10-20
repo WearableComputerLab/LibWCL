@@ -65,17 +65,17 @@ namespace wcl
 			/*
 			 * Vicon Packets
 			 */
-			static const int32_t CLOSE = 0;
-			static const int32_t INFO = 1;
-			static const int32_t DATA = 2;
-			static const int32_t STREAMING_ON = 3;
-			static const int32_t STREAMING_OFF = 4;
+			static int32_t CLOSE;
+			static int32_t INFO;
+			static int32_t DATA;
+			static int32_t STREAMING_ON;
+			static int32_t STREAMING_OFF;
 
 			/*
 			 * Packet Types
 			 */
-			static const int32_t REQUEST = 0;
-			static const int32_t REPLY = 1;
+			static int32_t REQUEST;
+			static int32_t REPLY;
 
 
 			/**

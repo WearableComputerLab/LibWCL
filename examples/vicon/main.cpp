@@ -87,50 +87,51 @@ int main(int argc, char** argv)
 	// register the signal handler
 	signal(SIGINT, termHandler);
 
-	// Use the supplied port
-	if (argc == 3)
-	{
-		client = new ViconClient(argv[1], atoi(argv[2]));
-	}
-
-	// Use the default port
-	else if (argc == 2)
-	{
-		client = new ViconClient(argv[1]);
-	}
-
-	// display usage and exit
-	else
-	{
-		printUsage();
-		return 1;
-	}
-
-
-	// lets print out the list of objects
-	vector<TrackedObject> &objects = client->objects;
-
-	cout << endl << "*** Available Tracked Objects ***" << endl << endl;
-
-	for (unsigned i=0;i<objects.size();i++)
-	{
-		if (objects[i].getType() == MARKER)
-		{
-			cout << "Marker: ";
-		}
-		else
-		{
-			cout << "6DOF:   ";
-		}
-		cout << objects[i].getName() << endl;
-	}
-
-	// now lets just loop, printing out the current positions/rotation of each object.
-	
-	cout << endl << "*** Entering update loop ***" << endl << endl;
-
 	try
 	{
+
+		// Use the supplied port
+		if (argc == 3)
+		{
+			client = new ViconClient(argv[1], atoi(argv[2]));
+		}
+
+		// Use the default port
+		else if (argc == 2)
+		{
+			client = new ViconClient(argv[1]);
+		}
+
+		// display usage and exit
+		else
+		{
+			printUsage();
+			return 1;
+		}
+
+
+		// lets print out the list of objects
+		vector<TrackedObject> &objects = client->objects;
+
+		cout << endl << "*** Available Tracked Objects ***" << endl << endl;
+
+		for (unsigned i=0;i<objects.size();i++)
+		{
+			if (objects[i].getType() == MARKER)
+			{
+				cout << "Marker: ";
+			}
+			else
+			{
+				cout << "6DOF:   ";
+			}
+			cout << objects[i].getName() << endl;
+		}
+
+		// now lets just loop, printing out the current positions/rotation of each object.
+		
+		cout << endl << "*** Entering update loop ***" << endl << endl;
+
 		while (true)
 		{
 			client->update();
