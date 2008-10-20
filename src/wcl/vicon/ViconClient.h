@@ -129,6 +129,25 @@ namespace wcl
 			 */
 			std::vector<TrackedObject> objects;
 
+
+			/**
+			 * Reverses the byte order of a 32 bit int.
+			 * Needed for PowerPC.
+			 *
+			 * @param n The int32 to reverse.
+			 * @return The int with the byte order reversed.
+			 */
+			static int32_t reverseByteOrder(int32_t n);
+
+			/**
+			 * Reverses the byte order of a double.
+			 * Needed for PowerPC.
+			 *
+			 * @param n The double to reverse.
+			 * @return The double with the byte order reversed.
+			 */
+			static double reverseBytesDouble(double n);
+
 		private:
 			/**
 			 * The socket handling the connection to the server.

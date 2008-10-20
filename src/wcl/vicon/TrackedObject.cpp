@@ -28,6 +28,7 @@
 #include <sstream>
 #include <iostream>
 #include "TrackedObject.h"
+#include "ViconClient.h"
 
 
 using namespace wcl;
@@ -82,22 +83,34 @@ void TrackedObject::updateData(double* array, int &offset)
 	//Six dof objects also have rotation
 	if (this->type == SIX_DOF)
 	{
+		#ifdef WORDS_BIGENDIAN
+		rx = ViconClient::reverseBytesDouble(array[offset++]);
+		ry = ViconClient::reverseBytesDouble(array[offset++]);
+		rz = array[offset++];
+		#else
 		rx = array[offset++];
 		ry = array[offset++];
 		rz = array[offset++];
+		#endif
+
 	}
 	
 	//Translation is common to both types
+	#ifdef WORDS_BIGENDIAN
+	x = ViconClient::reverseBytesDouble(array[offset++]);
+	y = ViconClient::reverseBytesDouble(array[offset++]);
+	z = array[offset++];
+	#else
 	x = array[offset++];
 	y = array[offset++];
 	z = array[offset++];
-
+	#endif
 
 	//The marker has an occluded value
 	if (this->type == MARKER)
 	{
 		double o = array[offset++];
-		if (o > 0)
+		if (o != 0)
 			occluded = true;
 		else
 			occluded = false;

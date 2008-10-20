@@ -46,7 +46,7 @@ using namespace wcl;
  * Reverses the order of bytes in an int.
  * Needed for Power PC
  */
-int32_t reverseByteOrder(int32_t n)
+int32_t ViconClient::reverseByteOrder(int32_t n)
 {
 	unsigned char c1,c2,c3,c4;
 	c1 = n & 255;
@@ -61,7 +61,7 @@ int32_t reverseByteOrder(int32_t n)
  * Reverses the byte order of a double
  * Needed for PowerPC
  */
-double reverseBytesDouble(double n)
+double ViconClient::reverseBytesDouble(double n)
 {
 	union
 	{
@@ -105,10 +105,8 @@ ViconClient::ViconClient(std::string hostname, int port)
 {
 
 	this->socket = new TCPSocket(hostname, port);
-	cout << "connected" << endl;
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
-	cout << "Have tracked objects" << endl;
 	//update();
 }
 
@@ -138,7 +136,6 @@ std::vector<std::string> ViconClient::getChannelNames()
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
 
-	cout << "packet: " << packet << " type: " << type << endl;
 
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
@@ -150,7 +147,6 @@ std::vector<std::string> ViconClient::getChannelNames()
 		numChannels = reverseByteOrder(numChannels);
 		#endif
 
-		cout << "There are " << numChannels << " to read" << endl;
 		for (int i=0;i<numChannels;i++)
 		{
 			list.push_back(readChannel());
@@ -182,7 +178,6 @@ void ViconClient::loadTrackedObjects()
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
 
-	cout << "Packet: " << packet << " Type: " << type << endl;
 	
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
@@ -195,7 +190,6 @@ void ViconClient::loadTrackedObjects()
 		numChannels = reverseByteOrder(numChannels);
 		#endif
 
-		cout << "NumChannels: " << numChannels;
 
 		std::string prevName;
 		int channelPerNameCount = 0;
@@ -291,7 +285,6 @@ void ViconClient::update()
 	socket->read(&packet, 4);
 	socket->read(&type, 4);
 
-	std::cout << "packet: " << packet << " type: " << type << endl;
 	
 	if (packet == ViconClient::DATA && type == ViconClient::REPLY) {
 		
@@ -306,18 +299,6 @@ void ViconClient::update()
 
 		// read all values in one big block
 		int numBytesRead = socket->read(values, 8*count);
-
-		cout << "read all the values:" << numBytesRead << " bytes" << endl;
-		
-		//reverse the byte order of all the doubles if we're on PowerPC
-		#ifdef WORDS_BIGENDIAN
-		for (unsigned j=0;j<count;j++)
-		{
-			values[j] = reverseBytesDouble(values[j]);
-		}
-		#endif
-
-		cout << "Time: " << time << endl;
 
 		int offset = 1;
 		for (unsigned int i=0;i<objects.size();i++) {
