@@ -37,6 +37,8 @@
 	#include <sys/types.h>
 	#include <netinet/in.h>
 	#include <signal.h>
+	#include <stdio.h>
+	#include <cstring>
 #endif
 
 namespace wcl {
