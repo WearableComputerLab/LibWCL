@@ -116,13 +116,11 @@ endif
 # 
 maths_headers=maths/Matrix.h\
 	      maths/SMatrix.h\
-	      maths/Vector.h\
-		  Calibration.h
+	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
 	      maths/SMatrix.h\
-	      maths/Vector.cpp \
-		  Calibration.cpp
+	      maths/Vector.cpp
 
 #
 # What to build and what to install
