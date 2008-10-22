@@ -105,31 +105,9 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=1394cam/IEEE1394Cam.h\
-		    1394cam/AbstractIEEE1394Cam.h
+video_1394_headers+=DC1394.h
 
-video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
-		    1394cam/IEEE1394Cam.cpp\
-		    1394cam/debug.cpp
-#
-# Platform Specific Sources
-#
-if PLATFORM_OSX
-video_1394_sources+=1394cam/osx/Camera.cpp\
-		    1394cam/osx/Control.cpp\
-		    1394cam/osx/FWController.cpp\
-		    1394cam/osx/OSXIEEE1394Cam.cpp
-
-endif
-
-if PLATFORM_LINUX
-video_1394_sources+=1394cam/linux/LinuxIEEE1394Cam.cpp\
-		    1394cam/linux/firewire.cpp\
-		    1394cam/linux/conversions.cpp
-
-endif
-
-
+video_1394_sources+=DC1394.cpp
 endif
 
 
