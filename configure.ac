@@ -209,10 +209,12 @@ WCL_PLATFORM_SETUP
 if test "x$enable_video_1394" == "xyes"; then
     if test "x$platform_linux" == "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS"
+	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS $LIBDC1394"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
     elif test "x$platform_osx" == "xyes"; then
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
+	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
