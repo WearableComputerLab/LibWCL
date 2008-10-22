@@ -105,9 +105,9 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=DC1394.h
+video_1394_headers+=1394cam/DC1394.h
 
-video_1394_sources+=DC1394.cpp
+video_1394_sources+=1394cam/DC1394.cpp
 endif
 
 
