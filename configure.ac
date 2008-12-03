@@ -64,6 +64,11 @@ AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib &
 #
 AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
+#
+# UVC Video Support 
+#
+AC_ARG_ENABLE(video-uvc, AC_HELP_STRING([--enable-video-uvc], [Enable UVC Video Support]), enable_video_uvc="yes" , enable_video_uvc="no")
+
 
 #
 # Gesture recognition support
@@ -87,6 +92,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_network="yes";
 	     enable_serial="yes";
 	     enable_video_1394="yes";
+	     enable_video_uvc="yes";
 		 enable_gestures="yes";
 		 enable_osg="yes";
 		 enable_vicon="yes")
@@ -98,6 +104,7 @@ AC_MSG_CHECKING([Checking we need to build something]);
 if test "x$enable_network" == "xno" && \
 # test "x$enable_serial" == "xno" && \
    test "x$enable_video_1394" == "xno" && \
+   test "x$enable_video_uvc" == "xno" && \
    test "x$enable_vicon" == "xno" && \
    test "x$enable_osg" == "xno" && \
    test "x$enable_gestures" == "xno"; then
@@ -124,6 +131,7 @@ AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
 AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_OSG, test "x$enable_osg" = "xyes")

@@ -110,6 +110,17 @@ video_1394_headers+=1394cam/DC1394.h
 video_1394_sources+=1394cam/DC1394.cpp
 endif
 
+#
+# UVC Camera Support
+#
+video_uvc_headers=
+video_uvc_sources=
+
+if ENABLE_VIDEO_UVC
+video_uvc_headers+=uvccam/UVCCamera.h
+
+video_uvc_sources+=uvccam/UVCCamera.cpp
+endif
 
 #
 # Math Libraries
@@ -130,6 +141,7 @@ lib_LIBRARIES=libwcl.a
 nobase_libwcl_a_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
 				$(video_1394_headers)\
+				$(video_uvc_headers)\
 				$(gestures_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
@@ -137,6 +149,7 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 
 libwcl_a_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
+		 $(video_uvc_sources)\
 		 $(gestures_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
@@ -147,6 +160,7 @@ lib_LIBRARIES=libwcl_win32.a
 nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 				      $(network_headers)\
 				      $(video_1394_headers)\
+				      $(video_uvc_headers)\
 				      $(gestures_headers)\
 				      $(vicon_headers)\
 				      $(maths_header)\
@@ -154,6 +168,7 @@ nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 
 libwcl_win32_a_SOURCES=$(network_sources)\
 		       $(video_1394_sources)\
+		       $(video_uvc_sources)\
 		       $(gestures_headers)\
 		       $(vicon_sources)\
 		       $(maths_sources)\
