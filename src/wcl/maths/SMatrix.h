@@ -27,6 +27,8 @@
 #define SMATRIX_H
 
 #include "Matrix.h"
+namespace wcl
+{
 
 class SMatrix : public Matrix
 {
@@ -71,5 +73,5 @@ SMatrix transpose ( const SMatrix & );
 SMatrix inv       ( const SMatrix & );
 T       det       ( const SMatrix & );
 
-
+}; //end wcl
 #endif

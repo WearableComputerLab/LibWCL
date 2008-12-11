@@ -130,7 +130,7 @@ maths_headers=maths/Matrix.h\
 	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
-	      maths/SMatrix.h\
+	      maths/SMatrix.cpp\
 	      maths/Vector.cpp
 
 #
