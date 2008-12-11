@@ -30,6 +30,8 @@
 #include <string>
 
 #include <wcl/network/TCPSocket.h>
+#include <wcl/maths/Matrix.h>
+#include <wcl/maths/SMatrix.h>
 
 namespace wcl 
 {
@@ -96,6 +98,9 @@ namespace wcl
 			 * Returns this object's type.
 			 */
 			ObjectType getType();
+
+
+			SMatrix getTransform();
 
 
 		protected:

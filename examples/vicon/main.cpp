@@ -36,6 +36,7 @@
 // include system headers
 #include <istream>
 #include <iostream>
+#include <stdlib.h>
 #include <vector>
 #include <signal.h>
 
@@ -75,7 +76,7 @@ void termHandler(int a)
 	//asdf
 	cout << "cleeaaaan shutdown" <<endl;
 	delete client;
-	exit(0);
+	//exit(0);
 }
 
 
@@ -85,7 +86,7 @@ void termHandler(int a)
 int main(int argc, char** argv)
 {
 	// register the signal handler
-	signal(SIGINT, termHandler);
+	//signal(SIGINT, termHandler);
 
 	try
 	{

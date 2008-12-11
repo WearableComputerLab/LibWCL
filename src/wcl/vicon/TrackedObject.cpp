@@ -62,6 +62,72 @@ ObjectType TrackedObject::getType()
 	return type;
 }
 
+SMatrix TrackedObject::getTransform()
+{
+	/*
+	 *
+	 * Construct Rotation Matrix
+	 *
+	 */
+	double theta;
+	double c, s, x, y, z;
+	SMatrix M(4);
+	theta = sqrt( rx*rx + ry*ry + rz*rz );
+
+	if (theta < 1e-15)
+	{
+		M[0][0] = M[1][1] = M[2][2] = M[3][3] = 1.0;
+		M[0][1] = M[0][2] = M[0][3] = M[1][0] = M[1][2] = M[1][3] = M[2][0] = M[2][1] = M[2][3] = M[3][0] = M[3][1] = M[3][2] = 0.0;
+	}
+	else
+	{
+		x = rx/theta;
+		y = ry/theta;
+		z = rz/theta;
+
+		c = cos(theta);
+		s = sin(theta);
+
+		M[0][0] = c + (1-c)*x*x;
+		M[0][1] =     (1-c)*x*y + s*(-z);
+		M[0][2] =     (1-c)*x*z + s*y;
+		M[1][0] =     (1-c)*y*x + s*z;
+		M[1][1] = c + (1-c)*y*y;
+		M[1][2] =     (1-c)*y*z + s*(-x);
+		M[2][0] =     (1-c)*z*x + s*(-y);
+		M[2][1] =     (1-c)*z*y + s*x;
+		M[2][2] = c + (1-c)*z*z;
+
+		//make it a 4x4 matrix
+		M[0][3] = 0;
+		M[1][3] = 0;
+		M[2][3] = 0;
+		M[3][0] = 0;
+		M[3][1] = 0;
+		M[3][2] = 0;
+		M[3][3] = 1;
+	}
+
+
+	/*
+	 *
+	 * Construct Translation Matrix
+	 *
+	 */
+	SMatrix T(4);
+	T[0][0] = 1;
+	T[1][1] = 1;
+	T[2][2] = 1;
+	T[3][3] = 1;
+
+	T[3][0] = this->x;
+	T[3][1] = this->y;
+	T[3][2] = this->z;
+
+
+	return M*T;
+}
+
 
 std::string TrackedObject::toString() {
 	std::stringstream s;
