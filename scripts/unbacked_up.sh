@@ -1,4 +1,5 @@
 UNBACKED_UP_FILES=unbacked_up_files.txt
+REMOTE_ACCOUNT=snappybackup@wcl.ml.unisa.edu.au
 
 # backup outstanding image files.
 function backupFiles {
@@ -12,7 +13,20 @@ function backupFiles {
     # backed up
     if [ -f $i ]
     then
-      echo "put $i" | sftp snappybackup@wcl.ml.unisa.edu.au:$BACKUP_DIRECTORY
+
+      # grab the date details from the directory structure
+      YEAR=`echo $BACKUP_DIRECTORY | awk -F'/' '{print $2}'`
+      MONTH=`echo $BACKUP_DIRECTORY | awk -F'/' '{print $3}'`
+      DAY=`echo $BACKUP_DIRECTORY | awk -F'/' '{print $4}'`
+
+      echo "year:$YEAR month:$MONTH day:$DAY"
+
+      # attempt to create the directories on WCL
+      echo "mkdir images/$YEAR" | sftp $REMOTE_ACCOUNT
+      echo "mkdir images/$YEAR/$MONTH" | sftp $REMOTE_ACCOUNT
+      echo "mkdir images/$YEAR/$MONTH/$DAY" | sftp $REMOTE_ACCOUNT
+
+      echo "put $i" | sftp $REMOTE_ACCOUNT:$BACKUP_DIRECTORY
 
       # find out how the sftp went.
       if [ $? = 1 ]
