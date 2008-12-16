@@ -203,6 +203,7 @@ void Socket::readUntil ( void *buffer, size_t size )
 	// pointing too. However, we know that ::read returns in bytes so we 
 	// cast to a type which can be validly incremented
 	buffer = amount + (uint8_t *)buffer; 
+	size-=amount;
     }
 }
 
