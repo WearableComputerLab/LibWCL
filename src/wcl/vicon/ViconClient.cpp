@@ -108,6 +108,12 @@ ViconClient::ViconClient(std::string hostname, int port)
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
 	//update();
+	
+	//turn on streaming yeah!
+	int32_t data = ViconClient::STREAMING_ON;
+	int32_t request = ViconClient::REQUEST;
+	socket->write(&data, 4);
+	socket->write(&request, 4);
 }
 
 ViconClient::~ViconClient()
@@ -272,24 +278,15 @@ TrackedObject* ViconClient::getObject(std::string name) {
 
 void ViconClient::update()
 {
-	int32_t data = ViconClient::DATA;
-	int32_t request = ViconClient::REQUEST;
-	
-	//Send a data request to the server.
-	socket->write(&data, 4);
-	socket->write(&request, 4);
-	
-	int32_t packet;
-	int32_t type;
-	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
 
+	int32_t packet[2];
+	socket->readUntil(packet, 8);
+
+	if (packet[0] == ViconClient::DATA && packet[1] == ViconClient::REPLY)
+	{
 	
-	if (packet == ViconClient::DATA && type == ViconClient::REPLY) {
-		
 		int32_t count;
-		socket->read(&count, 4);
+		socket->readUntil(&count, 4);
 
 		#ifdef WORDS_BIGENDIAN
 		count = reverseByteOrder(count);
@@ -298,15 +295,16 @@ void ViconClient::update()
 		double values[count];
 
 		// read all values in one big block
-		int numBytesRead = socket->read(values, 8*count);
+		socket->readUntil(values, 8*count);
 
 		int offset = 1;
 		for (unsigned int i=0;i<objects.size();i++) {
 			objects[i].updateData(values, offset);
 		}
 	}
-	else {
-		throw std::string("Broken Data packet");
+	else 
+	{
+		throw std::string ("Unexpected packet type");
 	}
 }
 
