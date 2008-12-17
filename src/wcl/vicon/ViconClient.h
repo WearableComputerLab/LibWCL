@@ -181,6 +181,8 @@ namespace wcl
 			 */
 			void loadTrackedObjects();
 
+			bool isStreaming;
+
 
 	};
 

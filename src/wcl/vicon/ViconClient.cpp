@@ -29,8 +29,6 @@
 /*
  * Vicon Interface.
  *
- * \todo The Vicon interface does not work on PPC
- *
  * Michael Marner (michael.marner@unisa.edu.au)
  */
 
@@ -45,6 +43,9 @@ using namespace wcl;
 /**
  * Reverses the order of bytes in an int.
  * Needed for Power PC
+ *
+ * @param The int to reverse.
+ * @return The int with the byte order reversed.
  */
 int32_t ViconClient::reverseByteOrder(int32_t n)
 {
@@ -58,8 +59,11 @@ int32_t ViconClient::reverseByteOrder(int32_t n)
 }
 
 /**
- * Reverses the byte order of a double
+ * Reverses the byte order of a double.
  * Needed for PowerPC
+ *
+ * @param n The double to reverse.
+ * @return The double with reveresed byte order.
  */
 double ViconClient::reverseBytesDouble(double n)
 {
@@ -107,14 +111,10 @@ ViconClient::ViconClient(std::string hostname, int port)
 	this->socket = new TCPSocket(hostname, port);
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
-	//update();
-	
-	//turn on streaming yeah!
-	int32_t data = ViconClient::STREAMING_ON;
-	int32_t request = ViconClient::REQUEST;
-	socket->write(&data, 4);
-	socket->write(&request, 4);
+
+	isStreaming = false;
 }
+
 
 ViconClient::~ViconClient()
 {
@@ -134,20 +134,20 @@ std::vector<std::string> ViconClient::getChannelNames()
 	//send it an info request...
 	int32_t request[] = {ViconClient::INFO, ViconClient::REQUEST};
 
-	socket->write(request, 8);
+	socket->writeUntil(request, 8);
 
 	int32_t packet;
 	int32_t type;
 	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
+	socket->readUntil(&packet, 4);
+	socket->readUntil(&type, 4);
 
 
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
 	{
 		int32_t numChannels;
-		socket->read(&numChannels, 4);
+		socket->readUntil(&numChannels, 4);
 
 		#ifdef WORDS_BIGENDIAN
 		numChannels = reverseByteOrder(numChannels);
@@ -175,14 +175,14 @@ void ViconClient::loadTrackedObjects()
 	}
 	
 	//send it an info request...
-	socket->write(&info, 4);
-	socket->write(&request, 4);
+	socket->writeUntil(&info, 4);
+	socket->writeUntil(&request, 4);
 	
 	int32_t packet;
 	int32_t type;
 	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
+	socket->readUntil(&packet, 4);
+	socket->readUntil(&type, 4);
 
 	
 	//make sure we're getting the right data back!
@@ -190,7 +190,7 @@ void ViconClient::loadTrackedObjects()
 	{
 		
 		int32_t numChannels;
-		socket->read(&numChannels, 4);
+		socket->readUntil(&numChannels, 4);
 
 		#ifdef WORDS_BIGENDIAN
 		numChannels = reverseByteOrder(numChannels);
@@ -278,6 +278,14 @@ TrackedObject* ViconClient::getObject(std::string name) {
 
 void ViconClient::update()
 {
+	if (!isStreaming)
+	{
+		//turn on streaming yeah!
+		int32_t data = ViconClient::STREAMING_ON;
+		int32_t request = ViconClient::REQUEST;
+		socket->writeUntil(&data, 4);
+		socket->writeUntil(&request, 4);
+	}
 
 	int32_t packet[2];
 	socket->readUntil(packet, 8);
@@ -313,7 +321,7 @@ std::string ViconClient::readChannel()
 	if (socket->isValid())
 	{
 		int32_t letterCount;
-		socket->read(&letterCount, 4);
+		socket->readUntil(&letterCount, 4);
 
 		#ifdef WORDS_BIGENDIAN
 		letterCount = reverseByteOrder(letterCount);
@@ -321,7 +329,7 @@ std::string ViconClient::readChannel()
 
 		char name[letterCount+1];
 
-		socket->read(name, letterCount);
+		socket->readUntil(name, letterCount);
 		name[letterCount] = '\0';
 		
 		return std::string(name);
