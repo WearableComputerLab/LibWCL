@@ -285,6 +285,7 @@ void ViconClient::update()
 		int32_t request = ViconClient::REQUEST;
 		socket->writeUntil(&data, 4);
 		socket->writeUntil(&request, 4);
+		isStreaming = true;
 	}
 
 	int32_t packet[2];
