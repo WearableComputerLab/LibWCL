@@ -32,6 +32,7 @@
 #include <wcl/network/TCPSocket.h>
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
+#include <wcl/maths/Vector.h>
 
 namespace wcl 
 {
@@ -101,6 +102,10 @@ namespace wcl
 
 
 			SMatrix getTransform();
+
+			Vector getTranslation();
+			
+			SMatrix getRotation();
 
 
 		protected:
