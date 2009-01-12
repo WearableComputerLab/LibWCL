@@ -119,9 +119,9 @@ SMatrix TrackedObject::getTransform()
 	T[2][2] = 1;
 	T[3][3] = 1;
 
-	T[3][0] = this->x;
-	T[3][1] = this->y;
-	T[3][2] = this->z;
+	T[0][3] = this->x;
+	T[1][3] = this->y;
+	T[2][3] = this->z;
 
 
 	return T*M;
