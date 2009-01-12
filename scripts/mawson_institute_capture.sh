@@ -2,6 +2,7 @@
 
 # make sure that the camera isn't reseting.
 LOCKFILE=snappy_reset.lock
+UNBACKED_UP_FILES=unbacked_up_files.txt
 
 if [ -f $LOCKFILE ] ; then
   echo "camera is resetting. therefore I am not going to do anything"
@@ -113,9 +114,21 @@ echo "attempting to backup the image to the wcl."
 
 # attempt to send the file to the wcl.
 echo "put $IMG_FILENAME" | sftp snappybackup@wcl.ml.unisa.edu.au:$FILEPATH
-echo "sftp returned $?"
+
+# check to see of the image was backuped up to the wcl, if it wasn't then add
+# it to the list of files that haven't been backed up
+if [ $? = 0 ] ; then
+  echo "$IMG_FILENAME was backed up to wcl"
+else
+  echo "$IMG_FILENAME" >> $UNBACKED_UP_FILES
+fi
 
 echo "attempting to compress the debug output"
 # compress the debug info
 gzip $DEBUG_FILE
 echo "debug compression returned $?"
+
+echo "remove all images off of the camera"
+$CAMERA_ARGS -D -R
+
+echo "Need to remove all unused folders!"
