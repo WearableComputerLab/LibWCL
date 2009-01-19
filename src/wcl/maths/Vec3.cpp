@@ -33,38 +33,38 @@ using namespace wcl;
 
 Vec3::Vec3(T x, T y, T z) : Vector(3)
 {
-	data[0] = x;
-	data[1] = y;
-	data[2] = z;
+	Vector::operator[] (0) = x;
+	Vector::operator[] (1) = y;
+	Vector::operator[] (2) = z;
 }
 
 
 T Vec3::x()
 {
-	return data[0];
+	return Vector::operator[] (0);
 }
 
 T Vec3::y()
 {
-	return data[1];
+	return Vector::operator[] (1);
 }
 
 T Vec3::z()
 {
-	return data[2];
+	return Vector::operator[] (2);
 }
 
 void Vec3::x(T x)
 {
-	data[0] = x;
+	Vector::operator[] (0) = x;
 }
 
 void Vec3::y(T y)
 {
-	data[1] = y;
+	Vector::operator[] (1) = y;
 }
 
 void Vec3::z(T z)
 {
-	data[2] = z;
+	Vector::operator[] (2) = z;
 }

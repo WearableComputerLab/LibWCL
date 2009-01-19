@@ -85,7 +85,6 @@ namespace wcl
 			 */
 			void z(T z);
 
-
 	};
 
 };
