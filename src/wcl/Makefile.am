@@ -127,11 +127,13 @@ endif
 # 
 maths_headers=maths/Matrix.h\
 	      maths/SMatrix.h\
-	      maths/Vector.h
+	      maths/Vector.h \
+		  maths/Vec3.h
 
 maths_sources=maths/Matrix.cpp\
 	      maths/SMatrix.cpp\
-	      maths/Vector.cpp
+	      maths/Vector.cpp\
+		  maths/Vec3.cpp
 
 #
 # What to build and what to install
