@@ -54,6 +54,7 @@ namespace wcl
 			 */
 			Vec3(T x, T y, T z);
 
+			Vec3();
 
 			/**
 			 * Returns the X value.

@@ -38,6 +38,12 @@ Vec3::Vec3(T x, T y, T z) : Vector(3)
 	Vector::operator[] (2) = z;
 }
 
+Vec3::Vec3() : Vector(3) 
+{
+	Vector::operator[] (0) = 0;
+	Vector::operator[] (1) = 0;
+	Vector::operator[] (2) = 0;
+}
 
 T Vec3::x()
 {
