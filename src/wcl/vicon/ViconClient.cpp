@@ -196,6 +196,7 @@ void ViconClient::loadTrackedObjects()
 		numChannels = reverseByteOrder(numChannels);
 		#endif
 
+		//cout << "We are expecting " << numChannels << " channels" << endl;
 
 		std::string prevName;
 		int channelPerNameCount = 0;
@@ -324,6 +325,8 @@ std::string ViconClient::readChannel()
 		int32_t letterCount;
 		socket->readUntil(&letterCount, 4);
 
+		//cout << "The length of this channel name is " << letterCount << " letters" << endl;
+
 		#ifdef WORDS_BIGENDIAN
 		letterCount = reverseByteOrder(letterCount);
 		#endif
@@ -333,6 +336,7 @@ std::string ViconClient::readChannel()
 		socket->readUntil(name, letterCount);
 		name[letterCount] = '\0';
 		
+		//cout << "New channel is " << std::string(name) << endl;
 		return std::string(name);
 	}
 	return 0;
