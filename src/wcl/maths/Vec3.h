@@ -54,6 +54,9 @@ namespace wcl
 			 */
 			Vec3(T x, T y, T z);
 
+			/**
+			 * Default constructor, initialises the x,y and z values to 0.
+			 */
 			Vec3();
 
 			/**
