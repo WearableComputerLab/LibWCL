@@ -84,20 +84,6 @@ vicon_sources+=\
 
 endif
 
-# 
-# OpenSceneGraph Helper Functions
-# 
-osg_headers=
-osg_sources=
-
-if ENABLE_OSG
-osg_headers+=\
-			  osg/OSGHelper.h
-
-osg_sources+=\
-              osg/OSGHelper.cpp
-endif
-
 #
 # 1394 Camera Support
 #
