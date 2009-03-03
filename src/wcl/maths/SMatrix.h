@@ -33,7 +33,6 @@ namespace wcl
 class SMatrix : public Matrix
 {
 public:
-    SMatrix();
     SMatrix( unsigned );
     SMatrix( const Matrix & );
     SMatrix( const SMatrix & );
@@ -62,6 +61,7 @@ public:
     void storeIdentity();
 
 private:
+    SMatrix();
     Matrix::setSize;
 };
 
