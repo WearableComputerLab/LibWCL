@@ -158,10 +158,12 @@ Vector Vector::operator * ( const T &value ) const
 }
 
 /**
- * Obtain the result of multiplying this vector
- * by the given vector;
+ * Returns the dot product of 2 vectors.
+ *
+ * Thats right! DOT Product
  *
  * @param v The vector to multiply this vector by
+ * \warning The dot function below uses this implementation to reduce code duplication.
  */
 T Vector::operator * ( const Vector & v) const
 {
@@ -300,5 +302,23 @@ Vector operator *(const Matrix &m, const Vector &v )
 
     return temp;
 }
+
+/**
+ * Obtain the dot product of two vectors.
+ * Calculates the dot product of this with v, such that
+ *
+ * return = this DOT v
+ *
+ * @return the dot product.
+ */
+T Vector::dot(const Vector& v)
+{
+	assert (this->getRows() == v.getRows() && "Vectors must have the same number of values for dot product");
+	return operator * (v);
+	
+}
+
+	
+
 
 }; //namespace wcl

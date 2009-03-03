@@ -66,6 +66,9 @@ public:
     T normal() const;
     Vector unit() const;
 
+	T dot(const Vector&);
+	Vector crossProduct(const Vector &);
+
 private:
     Matrix::setSize;
     Matrix::getCols;
