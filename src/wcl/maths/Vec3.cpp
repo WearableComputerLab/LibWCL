@@ -81,3 +81,53 @@ Vec3 Vec3::crossProduct(const Vec3& v)
 
 }
 
+/**
+ * Sum two vectors together
+ *
+ * @param v The vector to sum this vector with
+ */
+Vec3 Vec3::operator + ( const Vec3 &v ) const
+{
+    Vec3 myvec ( *this );
+
+    myvec += v;
+
+    return myvec;
+}
+
+/**
+ * Substract one vector from the other
+ *
+ * @param v The vector to subtract from the current
+ */
+Vec3 Vec3::operator - ( const Vec3 &v ) const
+{
+    Vec3 myvec ( *this );
+
+    myvec -= v;
+
+    return myvec;
+}
+
+
+/**
+ * Addition assignment
+ *
+ * @param v The vector to use for assignment
+ */
+Vec3 & Vec3::operator +=( const Vec3 &v)
+{
+    return (Vec3 &)Matrix::operator += ( v );
+}
+
+
+/**
+ * Subtractional Assignment
+ *
+ * @param v The vector to use for assignment
+ */
+Vec3 & Vec3::operator -=( const Vec3 &v )
+{
+    return (Vec3 &)Matrix::operator -= ( v );
+}
+

@@ -96,6 +96,12 @@ namespace wcl
 			 */
 			Vec3 crossProduct(const Vec3 &);
 
+			Vec3 operator + ( const Vec3 & ) const;
+			Vec3 operator - ( const Vec3 & ) const;
+			Vec3 & operator +=( const Vec3 & );
+			Vec3 & operator -=( const Vec3 & );
+
+
 	};
 
 };
