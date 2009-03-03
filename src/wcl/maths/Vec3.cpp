@@ -45,17 +45,17 @@ Vec3::Vec3() : Vector(3)
 	Vector::operator[] (2) = 0;
 }
 
-T Vec3::x()
+T Vec3::x() const 
 {
 	return Vector::operator[] (0);
 }
 
-T Vec3::y()
+T Vec3::y() const 
 {
 	return Vector::operator[] (1);
 }
 
-T Vec3::z()
+T Vec3::z() const 
 {
 	return Vector::operator[] (2);
 }
@@ -74,3 +74,10 @@ void Vec3::z(T z)
 {
 	Vector::operator[] (2) = z;
 }
+
+Vec3 Vec3::crossProduct(const Vec3& v)
+{
+	return Vec3(y() * v.z() - z() * v.y(), z() * v.x() - x() * v.z(), x() * v.y() - y() * v.x());
+
+}
+

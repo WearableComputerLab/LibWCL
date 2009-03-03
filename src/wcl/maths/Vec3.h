@@ -62,17 +62,17 @@ namespace wcl
 			/**
 			 * Returns the X value.
 			 */
-			T x();
+			T x() const;
 			
 			/**
 			 * Returns the Y value.
 			 */
-			T y();
+			T y() const;
 
 			/**
 			 * Returns the Z value.
 			 */
-			T z();
+			T z() const;
 
 			/**
 			 * Sets the X value.
@@ -88,6 +88,13 @@ namespace wcl
 			 * Sets the Z value.
 			 */
 			void z(T z);
+
+			/**
+			 * Returns the Cross Product of this vector with another.
+			 * Note: This exists in here instead of Vector, because
+			 * cross product only exists in 3 dimensional space.
+			 */
+			Vec3 crossProduct(const Vec3 &);
 
 	};
 
