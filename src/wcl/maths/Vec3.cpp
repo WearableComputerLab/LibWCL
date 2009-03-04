@@ -111,6 +111,18 @@ Vec3 Vec3::operator - ( const Vec3 &v ) const
 
 
 /**
+ * Negation of the vector
+ */
+Vec3 Vec3::operator - () const
+{
+    Vec3 myvec ( *this );
+
+    myvec *= -1.0;
+
+    return myvec;
+}
+
+/**
  * Addition assignment
  *
  * @param v The vector to use for assignment
@@ -131,3 +143,107 @@ Vec3 & Vec3::operator -=( const Vec3 &v )
     return (Vec3 &)Matrix::operator -= ( v );
 }
 
+/**
+ * Multiplication of the vector by the constant
+ *
+ * @param value The value to multiply the vector by
+ */
+Vec3 Vec3::operator * ( const T &value ) const
+{
+    Vec3 myvec ( *this );
+
+    myvec *= value;
+
+    return myvec;
+}
+
+/**
+ * Returns the dot product of 2 vectors.
+ *
+ * Thats right! DOT Product
+ *
+ * @param v The vector to multiply this vector by
+ * \warning The dot function below uses this implementation to reduce code duplication.
+ */
+T Vec3::operator * ( const Vec3 & v) const
+{
+    T result = 0.0;
+
+    for ( unsigned i = 0; i < this->getRows(); i++ ){
+	result += (*this)[i] * v[i];
+    }
+
+    return result;
+}
+
+/**
+ * Divide each element of this vector by the given value
+ *
+ * @param value The value to divide by
+ */
+Vec3 Vec3::operator / ( const T &value ) const
+{
+    Vec3 myvec ( *this );
+
+    myvec /= value;
+
+    return myvec;
+}
+
+/**
+ * Perform Assignment of one vector to another
+ *
+ * @param v The vector to assign too
+ */
+Vec3 & Vec3::operator = ( const Vec3 &v )
+{
+    if ( *this == v ){
+	return *this;
+    }
+
+    return (Vec3 &)Matrix::operator = (v);
+}
+
+/**
+ * Mulitiplication Assignment
+ *
+ * @param value The value to multiply the vector by
+ */
+Vec3 & Vec3::operator *=( const T & value )
+{
+    return (Vec3 &)Matrix::operator *= ( value );
+}
+
+/**
+ * Division Assingment
+ *
+ * @param value The value to divide by
+ */
+Vec3 & Vec3::operator /=( const T &v )
+{
+    return (Vec3 &)Matrix::operator /= ( v );
+}
+
+/**
+ * Multiplication of a vector and a constant
+ *
+ * @param value The value to multiply the vector by
+ * @param v The vector to multpliy
+ */
+Vec3 operator *(const T &value, const Vec3 &v )
+{
+    Vec3 myvec ( v );
+    myvec *= value;
+
+    return myvec;
+}
+
+/**
+ * Obtain the unit vector of this vector
+ */
+Vec3 Vec3::unit() const
+{
+    Vec3 v( *this );
+
+    return v / v.normal();
+}
