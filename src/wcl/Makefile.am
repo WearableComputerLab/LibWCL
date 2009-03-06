@@ -10,6 +10,8 @@
 INCLUDES= -I@top_srcdir@/src/
 libwcl_a_includedir=$(includedir)/wcl
 libwcl_win32_a_includedir=$(includedir)/wcl
+AM_CPPFLAGS=
+AM_LDFLAGS=
 
 #
 # Predefines, needed for the conditionals below
@@ -121,6 +123,21 @@ maths_sources=maths/Matrix.cpp\
 	      maths/Vector.cpp\
 		  maths/Vec3.cpp
 
+x11_headers=
+x11_sources=
+
+if ENABLE_X11
+#
+# X11 Specific 
+#
+x11_headers+=display/XDisplay.h
+x11_sources+=display/XDisplay.cpp
+AM_CPPFLAGS+=@X11_CFLAGS@
+AM_LDFLAGS+=@X11_LIBS@
+endif
+
+
+
 #
 # What to build and what to install
 #
@@ -133,7 +150,8 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(gestures_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
-				$(osg_headers)
+				$(osg_headers)\
+				$(x11_headers)
 
 libwcl_a_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
@@ -141,7 +159,8 @@ libwcl_a_SOURCES=$(network_sources)\
 		 $(gestures_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
-		 $(osg_sources)
+		 $(osg_sources)\
+		 $(x11_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a

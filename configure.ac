@@ -80,6 +80,11 @@ AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Reco
 #
 AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
 
+#
+# Support for X11
+#
+AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
+
 # 
 #  Enable All Options
 # 	This simply enables each option
@@ -89,19 +94,21 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_1394="yes";
 	     enable_video_uvc="yes";
 		 enable_gestures="yes";
-		 enable_vicon="yes")
+		 enable_vicon="yes";
+		 enable_x11="yes"; )
 
 #
 #  Check to see if anything is configured
 #
 AC_MSG_CHECKING([Checking we need to build something]);
-if test "x$enable_network" == "xno" && \
-# test "x$enable_serial" == "xno" && \
-   test "x$enable_video_1394" == "xno" && \
-   test "x$enable_video_uvc" == "xno" && \
-   test "x$enable_vicon" == "xno" && \
-   test "x$enable_osg" == "xno" && \
-   test "x$enable_gestures" == "xno"; then
+if test "x$enable_network" = "xno" && \
+# test "x$enable_serial" = "xno" && \
+   test "x$enable_video_1394" = "xno" && \
+   test "x$enable_video_uvc" = "xno" && \
+   test "x$enable_vicon" = "xno" && \
+   test "x$enable_osg" = "xno" && \
+   test "x$enable_gestures" = "xno" && \
+   test "x$enable_x11" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
 fi
@@ -111,7 +118,7 @@ AC_MSG_RESULT([yes])
 #
 # Automatically turn on network if we are building the vicon module.
 #
-if test "x$enable_vicon" == "xyes"; then
+if test "x$enable_vicon" = "xyes"; then
 	enable_network="yes";
 	echo "*** Vicon Module selected, automatically enabling Network ***";
 fi
@@ -128,6 +135,7 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 
 
 #
@@ -207,18 +215,24 @@ WCL_PLATFORM_SETUP
 # Check for libraries
 #
 #############################
-if test "x$enable_video_1394" == "xyes"; then
-    if test "x$platform_linux" == "xyes"; then
+if test "x$enable_video_1394" = "xyes"; then
+    if test "x$platform_linux" = "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
 	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS $LIBDC1394_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
-    elif test "x$platform_osx" == "xyes"; then
+    elif test "x$platform_osx" = "xyes"; then
 	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
+fi
+
+if test "x$enable_x11" = "xyes"; then
+    PKG_CHECK_MODULES(X11, x11 )
+    PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
+    PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi
 
 
@@ -251,6 +265,7 @@ echo "network support         : $enable_network"
 echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "Gesture recognition     : $enable_gestures"
 echo "Vicon MoCap Support     : $enable_vicon"
+echo "X11 Support             : $enable_x11"
 echo "Maths Support           : Enabled (default)"
 echo "-----------------------------"
 
