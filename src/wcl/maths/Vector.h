@@ -66,7 +66,7 @@ public:
     T normal() const;
     Vector unit() const;
 
-	T dot(const Vector&);
+	T dot(const Vector&) const;
 
 private:
     Matrix::setSize;

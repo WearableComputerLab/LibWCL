@@ -311,7 +311,7 @@ Vector operator *(const Matrix &m, const Vector &v )
  *
  * @return the dot product.
  */
-T Vector::dot(const Vector& v)
+T Vector::dot(const Vector& v) const
 {
 	assert (this->getRows() == v.getRows() && "Vectors must have the same number of values for dot product");
 	return operator * (v);
