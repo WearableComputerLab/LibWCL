@@ -46,6 +46,20 @@ Vector::Vector( unsigned size )
     this->setSize( size );
 }
 
+/**
+ * Convenience constructor for creating a 4 value vector.
+ * This can be used for storing x,y,z coordinates, colours, etc.
+ * The reason we have a W value is it makes it easier to do
+ * matrix operations on 4x4 matrices...
+ */
+Vector::Vector(T x, T y, T z)
+{
+	this->setSize(3);
+	Vector::operator[] (0) = x;
+	Vector::operator[] (1) = y;
+	Vector::operator[] (2) = z;
+}
+
 Vector::Vector( const Matrix &m ):
     Matrix( m)
 {
@@ -318,6 +332,13 @@ T Vector::dot(const Vector& v) const
 	
 }
 
+Vector Vector::crossProduct(const Vector& v)
+{
+	assert ((this->getRows() ==  3 && v.getRows() == 3) && "Vectors must have length 3 for cross product");
+	return Vector((*this)[1] * v[2] - (*this)[2] * v[1], 
+				  (*this)[2] * v[0] - (*this)[0] * v[2], 
+				  (*this)[0] * v[1] - (*this)[1] * v[0]);
+}
 	
 
 

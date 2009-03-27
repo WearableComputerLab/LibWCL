@@ -115,13 +115,11 @@ endif
 # 
 maths_headers=maths/Matrix.h\
 	      maths/SMatrix.h\
-	      maths/Vector.h \
-		  maths/Vec3.h
+	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
 	      maths/SMatrix.cpp\
-	      maths/Vector.cpp\
-		  maths/Vec3.cpp
+	      maths/Vector.cpp
 
 x11_headers=
 x11_sources=

@@ -41,6 +41,7 @@ public:
     Vector( const Matrix & );
     Vector( unsigned size );
     Vector( const Vector & );
+	Vector(T x, T y, T z);
 
     void setSize( unsigned );
 
@@ -65,6 +66,7 @@ public:
 
     T normal() const;
     Vector unit() const;
+	Vector crossProduct(const Vector& v);
 
 	T dot(const Vector&) const;
 
