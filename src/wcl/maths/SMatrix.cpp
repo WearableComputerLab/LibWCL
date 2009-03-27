@@ -131,7 +131,7 @@ SMatrix SMatrix::operator -() const
 SMatrix SMatrix::operator *( const T &v ) const
 {
     SMatrix m ( *this );
-    return  ((Matrix)m).operator *(v);
+    return  SMatrix(((Matrix)m).operator *(v));
 }
 
 /**

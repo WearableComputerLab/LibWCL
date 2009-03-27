@@ -34,7 +34,7 @@ class SMatrix : public Matrix
 {
 public:
     SMatrix( unsigned );
-    SMatrix( const Matrix & );
+    explicit SMatrix( const Matrix & );
     SMatrix( const SMatrix & );
     virtual ~SMatrix();
 
