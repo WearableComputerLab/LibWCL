@@ -88,22 +88,22 @@ SMatrix TrackedObject::getTransform()
 		s = sin(theta);
 
 		M[0][0] = c + (1-c)*x*x;
-		M[0][1] =     (1-c)*x*y + s*(-z);
-		M[0][2] =     (1-c)*x*z + s*y;
-		M[1][0] =     (1-c)*y*x + s*z;
+		M[1][0] =     (1-c)*x*y + s*(-z);
+		M[2][0] =     (1-c)*x*z + s*y;
+		M[0][1] =     (1-c)*y*x + s*z;
 		M[1][1] = c + (1-c)*y*y;
-		M[1][2] =     (1-c)*y*z + s*(-x);
-		M[2][0] =     (1-c)*z*x + s*(-y);
-		M[2][1] =     (1-c)*z*y + s*x;
+		M[2][1] =     (1-c)*y*z + s*(-x);
+		M[0][2] =     (1-c)*z*x + s*(-y);
+		M[1][2] =     (1-c)*z*y + s*x;
 		M[2][2] = c + (1-c)*z*z;
 
 		//make it a 4x4 matrix
-		M[0][3] = 0;
-		M[1][3] = 0;
-		M[2][3] = 0;
 		M[3][0] = 0;
 		M[3][1] = 0;
 		M[3][2] = 0;
+		M[0][3] = 0;
+		M[1][3] = 0;
+		M[2][3] = 0;
 		M[3][3] = 1;
 	}
 
@@ -119,12 +119,11 @@ SMatrix TrackedObject::getTransform()
 	T[2][2] = 1;
 	T[3][3] = 1;
 
-	T[3][0] = this->x;
-	T[3][1] = this->y;
-	T[3][2] = this->z;
+	T[0][3] = this->x;
+	T[1][3] = this->y;
+	T[2][3] = this->z;
 
-
-	return T*M;
+	return M*T;
 }
 
 
