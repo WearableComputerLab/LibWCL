@@ -38,7 +38,7 @@
 
 using namespace wcl;
 
-UVCCamera::UVCCamera(string filename)
+UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 {
 	// Camera to open
 	cam = open(filename.c_str(), O_RDWR);
