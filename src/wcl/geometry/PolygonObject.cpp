@@ -84,6 +84,9 @@ namespace wcl
 			delete f;
 		}
 
+		vertexList.clear();
+		faceList.clear();
+
 		std::vector<wcl::Vector*>::const_iterator io;
 		for (io = object.vertexList.begin(); io < object.vertexList.end(); ++io)
 		{
