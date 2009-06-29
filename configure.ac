@@ -81,6 +81,11 @@ AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Reco
 AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
 
 #
+# Support for Geometry 
+#
+AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), enable_geometry="yes" , enable_geometry="no")
+
+#
 # Support for X11
 #
 AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
@@ -95,6 +100,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_uvc="yes";
 		 enable_gestures="yes";
 		 enable_vicon="yes";
+		 enable_geometry="yes";
 		 enable_x11="yes"; )
 
 #
@@ -107,6 +113,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_video_uvc" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_osg" = "xno" && \
+   test "x$enable_geometry" = "xno" && \
    test "x$enable_gestures" = "xno" && \
    test "x$enable_x11" = "xno" ; then
    AC_MSG_RESULT([nup])
@@ -135,6 +142,7 @@ AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 
 
@@ -264,6 +272,7 @@ echo "network support         : $enable_network"
 #echo "serial (rs232) support  : $enable_serial"
 echo "1394 (Firewire) Video   : $enable_video_1394"
 echo "Gesture recognition     : $enable_gestures"
+echo "Geometry classes        : $enable_geometry"
 echo "Vicon MoCap Support     : $enable_vicon"
 echo "X11 Support             : $enable_x11"
 echo "Maths Support           : Enabled (default)"

@@ -68,6 +68,19 @@ gestures_sources+=\
 
 endif
 
+#
+# Geometry stuff 
+#
+geometry_headers=
+geometry_sources=
+if ENABLE_GEOMETRY
+geometry_headers+=\
+			geometry/PolygonObject.h
+
+geometry_sources+=\
+			geometry/PolygonObject.cpp
+
+endif
 
 #
 # Vicon MoCap
@@ -149,6 +162,7 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
 				$(osg_headers)\
+				$(geometry_headers)\
 				$(x11_headers)
 
 libwcl_a_SOURCES=$(network_sources)\
@@ -158,6 +172,7 @@ libwcl_a_SOURCES=$(network_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
 		 $(osg_sources)\
+		 $(geometry_sources)\
 		 $(x11_sources)
 
 else
