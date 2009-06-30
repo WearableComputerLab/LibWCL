@@ -33,9 +33,10 @@
 
 #include <wcl/maths/Vector.h>
 
+#include "BoundingBox.h"
+
 namespace wcl
 {
-
 	/**
 	 * The status of a polygon, used for CSG operations.
 	 */
@@ -72,6 +73,16 @@ namespace wcl
 	struct Face 
 	{
 		std::vector<Vertex*> verts;
+		BoundingBox getBoundingBox()
+		{
+			BoundingBox b;
+			std::vector<wcl::Vertex*>::const_iterator it;
+			for (it = verts.begin(); it < verts.end(); ++it)
+			{
+				b.addPoint((*it)->position);
+			}
+			return b;
+		}
 	};
 
 	/**
@@ -97,23 +108,22 @@ namespace wcl
 			 */
 			const PolygonObject& operator=(const PolygonObject& object);
 
+
+			/**
+			 * Returns the list of faces for this object.
+			 * Be a bit careful here.
+			 */
+			std::vector<Face*>& getFaces();
+
 			/**
 			 * Destructor.
 			 */
 			~PolygonObject();
 
-
 			/**
-			 * Returns the minimum x,y and z for this object's
-			 * bounding box.
+			 * Returns the axis aligned bounding box of this object.
 			 */
-			wcl::Vector getMinExtent() const;
-
-			/**
-			 * Returns the maximum x,y and z for this object's
-			 * bounding box.
-			 */
-			wcl::Vector getMaxExtent() const;
+			wcl::BoundingBox getBoundingBox() const;
 
 		private:
 			std::string id;

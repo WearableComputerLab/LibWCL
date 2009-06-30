@@ -126,44 +126,22 @@ namespace wcl
 		}
 	}
 
-	wcl::Vector PolygonObject::getMinExtent() const
-	{
-		double max = std::numeric_limits<double>::max();
-		wcl::Vector v(max,max,max);
 
+	wcl::BoundingBox PolygonObject::getBoundingBox() const
+	{
+		//create a bounding box
+		BoundingBox b;
+
+		//loop over all points
 		std::vector<wcl::Vector*>::const_iterator it;
 		for (it = vertexList.begin();it<vertexList.end();++it)
 		{
-			if ((*(*it))[0] < v[0])
-				v[0] = (*(*it))[0];
-					
-			if ((*(*it))[1] < v[1])
-				v[1] = (*(*it))[1];
-
-			if ((*(*it))[2] < v[2])
-				v[2] = (*(*it))[2];
+			//let the addPoint method handle the logic
+			b.addPoint(*(*it));
 		}
-		return v;
-	}
 
-	wcl::Vector PolygonObject::getMaxExtent() const
-	{
-		double min = std::numeric_limits<double>::min();
-		wcl::Vector v(min,min,min);
-
-		std::vector<wcl::Vector*>::const_iterator it;
-		for (it = vertexList.begin();it<vertexList.end();++it)
-		{
-			if ((*(*it))[0] > v[0])
-				v[0] = (*(*it))[0];
-					
-			if ((*(*it))[1] > v[1])
-				v[1] = (*(*it))[1];
-
-			if ((*(*it))[2] > v[2])
-				v[2] = (*(*it))[2];
-		}
-		return v;
+		//return the box
+		return b;
 	}
 
 };

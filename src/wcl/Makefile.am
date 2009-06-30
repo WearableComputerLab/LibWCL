@@ -73,10 +73,12 @@ geometry_headers=
 geometry_sources=
 if ENABLE_GEOMETRY
 geometry_headers+=\
+			geometry/BoundingBox.h \
 			geometry/PolygonObject.h \
 			geometry/CSGEngine.h
 
 geometry_sources+=\
+			geometry/BoundingBox.cpp \
 			geometry/PolygonObject.cpp \
 			geometry/CSGEngine.cpp
 
