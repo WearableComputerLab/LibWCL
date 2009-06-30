@@ -59,12 +59,10 @@ gestures_headers=
 gestures_sources=
 if ENABLE_GESTURES
 gestures_headers+=\
-			gestures/Gestures.h\
-			gestures/Point.h
+			gestures/Gestures.h
 
 gestures_sources+=\
-			gestures/Gestures.cpp\
-			gestures/Point.cpp
+			gestures/Gestures.cpp
 
 endif
 
@@ -75,10 +73,12 @@ geometry_headers=
 geometry_sources=
 if ENABLE_GEOMETRY
 geometry_headers+=\
-			geometry/PolygonObject.h
+			geometry/PolygonObject.h \
+			geometry/CSGEngine.h
 
 geometry_sources+=\
-			geometry/PolygonObject.cpp
+			geometry/PolygonObject.cpp \
+			geometry/CSGEngine.cpp
 
 endif
 

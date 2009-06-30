@@ -110,12 +110,12 @@ PointList Gestures::resample(PointList& points)
 		double d = distance(points[i-1], points[i]);
 		if (D + d >= I)
 		{
-			double qx = points[i-1].x + ((I-D)/d) * (points[i].x - points[i-1].x);
-			double qy = points[i-1].y + ((I-D)/d) * (points[i].y - points[i-1].y);
+			double qx = points[i-1][0] + ((I-D)/d) * (points[i][0] - points[i-1][0]);
+			double qy = points[i-1][1] + ((I-D)/d) * (points[i][1] - points[i-1][1]);
 
-			newPoints.push_back(Point(qx, qy));
+			newPoints.push_back(wcl::Vector(qx, qy));
 			PointList::iterator it = points.begin();
-			points.insert(it+i, Point(qx,qy));
+			points.insert(it+i, wcl::Vector(qx,qy));
 			D = 0;
 		}
 		else {
@@ -140,9 +140,9 @@ double Gestures::pathLength(PointList& a)
 
 PointList Gestures::rotateToZero(PointList & points)
 {
-	Point c = centroid(points);
+	wcl::Vector c = centroid(points);
 
-	double theta = atan2(c.y - points[0].y, c.x - points[0].x);
+	double theta = atan2(c[1] - points[0][1], c[0] - points[0][0]);
 
 	theta *= -1;
 
@@ -151,10 +151,10 @@ PointList Gestures::rotateToZero(PointList & points)
 
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		Point q;
-		q.x = (p.x - c.x) * cos(theta) - (p.y - c.y)*sin(theta) + c.x;
-		q.y = (p.x - c.x) * sin(theta) + (p.y - c.y)*cos(theta) + c.y;
+		wcl::Vector p = *it;
+		wcl::Vector q(2);
+		q[0] = (p[0] - c[0]) * cos(theta) - (p[1] - c[1])*sin(theta) + c[0];
+		q[1] = (p[0] - c[0]) * sin(theta) + (p[1] - c[1])*cos(theta) + c[1];
 
 		newPoints.push_back(q);
 	}
@@ -168,18 +168,18 @@ PointList Gestures::rotateToZero(PointList & points)
  */
 PointList Gestures::scaleToSquare(PointList &points, double size)
 {
-	BoundingBox b = getBoundingBox(points);
+	BoundingSquare b = getBoundingSquare(points);
 	
-	double width = abs(b.p1.x - b.p2.x);
-	double height= abs(b.p1.y - b.p2.y);
+	double width = abs(b.p1[0] - b.p2[0]);
+	double height= abs(b.p1[1] - b.p2[1]);
 	
 	PointList::iterator it;
 	PointList newPoints;
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		p.x = p.x * (size/width);
-		p.y = p.y * (size/height);
+		wcl::Vector p = *it;
+		p[0] = p[0] * (size/width);
+		p[1] = p[1] * (size/height);
 		newPoints.push_back(p);
 	}
 	return newPoints;
@@ -188,14 +188,14 @@ PointList Gestures::scaleToSquare(PointList &points, double size)
 
 PointList Gestures::translateToOrigin(PointList &points)
 {
-	Point c = centroid(points);
+	wcl::Vector c = centroid(points);
 	PointList::iterator it;
 	PointList newPoints;
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		p.x = p.x - c.x;
-		p.y = p.y - c.y;
+		wcl::Vector p = *it;
+		p[0] = p[0] - c[0];
+		p[1] = p[1] - c[1];
 		newPoints.push_back(p);
 	}
 	return newPoints;
@@ -257,28 +257,28 @@ double Gestures::pathDistance(PointList &a, PointList &b)
 
 PointList Gestures::rotateBy(PointList& points, double theta)
 {
-	Point c = centroid(points);
+	wcl::Vector c = centroid(points);
 	PointList::iterator it;
 	PointList newPoints;
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		double qx = (p.x - c.x)*cos(theta) - (p.y - c.y)*sin(theta) + c.x;
-		double qy = (p.x - c.x)*sin(theta) + (p.y - c.y)*cos(theta) + c.y;
-		newPoints.push_back(Point(qx,qy));
+		wcl::Vector p = *it;
+		double qx = (p[0] - c[0])*cos(theta) - (p[1] - c[1])*sin(theta) + c[0];
+		double qy = (p[0] - c[0])*sin(theta) + (p[1] - c[1])*cos(theta) + c[1];
+		newPoints.push_back(wcl::Vector(qx,qy));
 	}
 	return newPoints;
 }
 
 
-double Gestures::distance(Point a, Point b)
+double Gestures::distance(wcl::Vector a, wcl::Vector b)
 {
-	double deltaX = b.x - a.x;
-	double deltaY = b.y - a.y;
+	double deltaX = b[0] - a[0];
+	double deltaY = b[1] - a[1];
 	return sqrt(deltaX*deltaX + deltaY*deltaY);
 }
 
-Point Gestures::centroid(PointList & points)
+wcl::Vector Gestures::centroid(PointList & points)
 {
 	double maxX = DBL_MIN;
 	double minX = DBL_MAX;
@@ -288,20 +288,20 @@ Point Gestures::centroid(PointList & points)
 	PointList::iterator it;
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		if (p.x < minX)
-			minX = p.x;
-		if (p.x > maxX)
-			maxX = p.x;
-		if (p.y < minY)
-			minY = p.y;
-		if (p.y > maxY)
-			maxY = p.y;
+		wcl::Vector p = *it;
+		if (p[0] < minX)
+			minX = p[0];
+		if (p[0] > maxX)
+			maxX = p[0];
+		if (p[1] < minY)
+			minY = p[1];
+		if (p[1] > maxY)
+			maxY = p[1];
 	}
-	return Point((minX + maxX)/2, (minY + maxY)/2);
+	return wcl::Vector((minX + maxX)/2, (minY + maxY)/2);
 }
 
-BoundingBox Gestures::getBoundingBox(PointList &points)
+BoundingSquare Gestures::getBoundingSquare(PointList &points)
 {
 	double maxX = DBL_MIN;
 	double minX = DBL_MAX;
@@ -311,19 +311,19 @@ BoundingBox Gestures::getBoundingBox(PointList &points)
 	PointList::iterator it;
 	for (it = points.begin();it<points.end();it++)
 	{
-		Point p = *it;
-		if (p.x < minX)
-			minX = p.x;
-		if (p.x > maxX)
-			maxX = p.x;
-		if (p.y < minY)
-			minY = p.y;
-		if (p.y > maxY)
-			maxY = p.y;
+		wcl::Vector p = *it;
+		if (p[0] < minX)
+			minX = p[0];
+		if (p[0] > maxX)
+			maxX = p[0];
+		if (p[1] < minY)
+			minY = p[1];
+		if (p[1] > maxY)
+			maxY = p[1];
 	}
-	BoundingBox b;
-	b.p1 = Point(minX, minY);
-	b.p2 = Point(maxX, maxY);
+	BoundingSquare b;
+	b.p1 = wcl::Vector(minX, minY);
+	b.p2 = wcl::Vector(maxX, maxY);
 	return b;
 }
 

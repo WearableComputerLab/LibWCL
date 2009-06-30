@@ -46,8 +46,7 @@
 #include <string>
 #include <vector>
 
-#include "Point.h"
-
+#include <wcl/maths/Vector.h>
 
 namespace wcl 
 {
@@ -56,7 +55,7 @@ namespace wcl
 	 * Type used for storing a list of Points.
 	 * Is templated std::vector
 	 */
-	typedef std::vector<Point> PointList;
+	typedef std::vector<wcl::Vector> PointList;
 
 	/**
 	 * Internal format used for storing gesture templates.
@@ -72,10 +71,10 @@ namespace wcl
 	 * Struct representing the bounding box of a gesture.
 	 * This is used during scaling.
 	 */
-	struct BoundingBox
+	struct BoundingSquare
 	{
-		Point p1;
-		Point p2;
+		wcl::Vector p1;
+		wcl::Vector p2;
 	};
 
 
@@ -210,17 +209,17 @@ namespace wcl
 		/**
 		 * Calculates the distance between 2 points.
 		 */
-		double distance (Point a, Point b);
+		double distance (wcl::Vector a, wcl::Vector b);
 
 		/**
 		 * Finds the central point of a gesture.
 		 */
-		Point centroid(PointList &points);
+		wcl::Vector centroid(PointList &points);
 
 		/**
 		 * Calculates the bounding box of a gesture.
 		 */
-		BoundingBox getBoundingBox(PointList &points);
+		BoundingSquare getBoundingSquare(PointList &points);
 
 		/**
 		 * Rotates a gesture by a specific angle.
