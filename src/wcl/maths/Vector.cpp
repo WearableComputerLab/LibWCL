@@ -47,10 +47,19 @@ Vector::Vector( unsigned size )
 }
 
 /**
- * Convenience constructor for creating a 4 value vector.
+ * Convenience constructor for creating a 2 value vector.
+ * This can be used for storing x,y coordinates, etc.
+ */
+Vector::Vector(T x, T y)
+{
+	this->setSize(2);
+	Vector::operator[] (0) = x;
+	Vector::operator[] (1) = y;
+}
+
+/**
+ * Convenience constructor for creating a 3 value vector.
  * This can be used for storing x,y,z coordinates, colours, etc.
- * The reason we have a W value is it makes it easier to do
- * matrix operations on 4x4 matrices...
  */
 Vector::Vector(T x, T y, T z)
 {
@@ -58,6 +67,19 @@ Vector::Vector(T x, T y, T z)
 	Vector::operator[] (0) = x;
 	Vector::operator[] (1) = y;
 	Vector::operator[] (2) = z;
+}
+
+/**
+ * Convenience constructor for creating a 3 value vector.
+ * This can be used for storing x,y,z coordinates, colours, etc.
+ */
+Vector::Vector(T x, T y, T z, T w)
+{
+	this->setSize(4);
+	Vector::operator[] (0) = x;
+	Vector::operator[] (1) = y;
+	Vector::operator[] (2) = z;
+	Vector::operator[] (3) = w;
 }
 
 Vector::Vector( const Matrix &m ):

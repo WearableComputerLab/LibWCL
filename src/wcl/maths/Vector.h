@@ -41,7 +41,9 @@ public:
     Vector( const Matrix & );
     Vector( unsigned size );
     Vector( const Vector & );
+	Vector(T x, T y);
 	Vector(T x, T y, T z);
+	Vector(T x, T y, T z, T w);
 
     void setSize( unsigned );
 
