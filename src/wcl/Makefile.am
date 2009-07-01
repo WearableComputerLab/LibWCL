@@ -73,14 +73,19 @@ geometry_headers=
 geometry_sources=
 if ENABLE_GEOMETRY
 geometry_headers+=\
+			geometry/CSGEngine.h \
+			geometry/Face.h \
 			geometry/BoundingBox.h \
+			geometry/Plane.h \
 			geometry/PolygonObject.h \
-			geometry/CSGEngine.h
+			geometry/Vertex.h
 
 geometry_sources+=\
+			geometry/CSGEngine.cpp \
+			geometry/Face.h \
 			geometry/BoundingBox.cpp \
-			geometry/PolygonObject.cpp \
-			geometry/CSGEngine.cpp
+			geometry/Plane.cpp \
+			geometry/PolygonObject.cpp 
 
 endif
 

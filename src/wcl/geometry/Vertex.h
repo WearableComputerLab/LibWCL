@@ -25,66 +25,55 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
-
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-
-#include "BoundingBox.h"
-#include "Face.h"
-#include "Vertex.h"
+#ifndef VERTEX_H
+#define VERTEX_H
 
 namespace wcl
 {
 	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
+	 * The status of a polygon, used for CSG operations.
 	 */
-	class PolygonObject
+	enum VertexStatus 
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
-
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
-
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
-
-
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
-
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
-
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
-
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
+		INSIDE,
+		OUTSIDE,
+		BOUNDARY,
+		UNKNOWN
 	};
-};
+
+
+	/**
+	 * Structure of a single vertex.
+	 */
+	struct Vertex
+	{
+		/**
+		 * The position of the vertex in 3D space
+		 */
+		wcl::Vector position;
+
+		/**
+		 * The vertex normal
+		 */
+		wcl::Vector normal;
+
+		/**
+		 * The texture coordinate of the vertex 
+		 */
+		wcl::Vector texCoord;
+
+		/**
+		 * Vertices that are adjacent to this one.
+		 */
+		std::vector<Vertex*> adjacentVerts;
+		
+		/**
+		 * Status of the vertex, used during CSG operations
+		 */
+		VertexStatus status;
+	};
+
+}
 
 #endif
 

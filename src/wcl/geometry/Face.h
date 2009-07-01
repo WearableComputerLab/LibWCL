@@ -25,66 +25,57 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
+#ifndef FACE_H
+#define FACE_H
 
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-
-#include "BoundingBox.h"
-#include "Face.h"
+#include "Plane.h"
 #include "Vertex.h"
 
 namespace wcl
 {
 	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
+	 * A single face of a polygon.
 	 */
-	class PolygonObject
+	class Face 
 	{
 		public:
 			/**
-			 * Default Constructor. Creates an object with zero polygons
+			 * Returns the axis aligned bounding box of this Face.
 			 */
-			PolygonObject(std::string id="");
+			BoundingBox getBoundingBox();
 
 			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
+			 * Returns the surface normal of this face.
 			 */
-			PolygonObject(const PolygonObject& object);
+			wcl::Vector getNormal();
 
 			/**
-			 * Overloaded = operator, performs a deep copy of object.
+			 * Returns a plane representing this face.
+			 * Note that this only works with planar faces (so maybe not N-gons)
 			 */
-			const PolygonObject& operator=(const PolygonObject& object);
-
-
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+			Plane getPlane();
 
 			/**
-			 * Destructor.
+			 * Adds a vertex to the face.
+			 * THE FACE DOES NOT DELETE ANY VERTICES
+			 * because they could also be used in other faces.
 			 */
-			~PolygonObject();
-
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
+			void addVertex(Vertex* v);
 
 		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
+			/**
+			 * The list of vertices.
+			 */
+			std::vector<Vertex*> verts;
+
+			/**
+			 * Calculating a bounding box whenever it's needed is slow,
+			 * so we'll just maintain one and return a reference to it when needed.
+			 */
+			BoundingBox boundingBox;
 	};
 };
+
 
 #endif
 

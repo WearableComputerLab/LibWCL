@@ -24,67 +24,43 @@
  * SUCH DAMAGE.
  */
 
+#include <math.h>
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
-
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-
-#include "BoundingBox.h"
-#include "Face.h"
-#include "Vertex.h"
+#include "Plane.h"
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+
+	Plane::Plane(const wcl::Vector& v1, const wcl::Vector& v2, const wcl::Vector& v3)
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
+		p = v1;
+		normal = (v2 - v1).crossProduct(v3 - v1).unit();
 
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
+		d = -v1[0]*(v2[1]*v3[2] - v3[1]*v2[2]) 
+			- v2[0]*(v3[1]*v1[2] - v1[1]*v3[2]) 
+			- v3[0]*(v1[1]*v2[2] - v2[1]*v1[2]);
+	}
 
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+	double Plane::distanceFrom(const wcl::Vector& p)
+	{
+		return (normal[0]*p[0] + normal[1]*p[1] + normal[2]*p[2] + d) / 
+			   sqrt(normal[0]*normal[0] + normal[1]*normal[1] + normal[2]*normal[2]);
+	}
 
+	PlaneIntersection Plane::intersect(const Plane& p)
+	{
+		PlaneIntersection p;
+		//the direction is perpendicular to the two planes, or
+		//the cross product
+		p.dir = this->normal.crossProduct(p.normal);
+		
+		//make it a unit vector
+		p.dir = p.dir.unit();
 
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+		//TODO fixme
 
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
+		return p;
+	}
 
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
-
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
-	};
-};
-
-#endif
+}
 

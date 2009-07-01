@@ -25,66 +25,77 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
-
-#include <string>
-#include <vector>
+#ifndef PLANE_H
+#define PLANE_H
 
 #include <wcl/maths/Vector.h>
-
-#include "BoundingBox.h"
-#include "Face.h"
-#include "Vertex.h"
 
 namespace wcl
 {
 	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
+	 * Struct used to represent a Plane-Plane intersection.
 	 */
-	class PolygonObject
+	struct PlaneIntersection
+	{
+		/**
+		 * A point on the line of intersection.
+		 */
+		wcl::Vector p;
+
+		/**
+		 * The direction of the line of intersection./
+		 */
+		wcl::Vector dir;
+	};
+
+
+	/**
+	 * A 3 dimensional, infinite plane.
+	 */
+	class Plane
 	{
 		public:
 			/**
-			 * Default Constructor. Creates an object with zero polygons
+			 * Creates a plane object such that v1, v2, and v3 lie on the plane.
 			 */
-			PolygonObject(std::string id="");
-
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
-
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
-
-
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+			Plane(const wcl::Vector& v1, const wcl::Vector& v2, const wcl::Vector& v3);
 
 			/**
 			 * Destructor.
 			 */
-			~PolygonObject();
+			~Plane();
 
 			/**
-			 * Returns the axis aligned bounding box of this object.
+			 * Returns the minimum distance from p to the plane.
+			 * Note that this is signed depending on whether p is in
+			 * front or behind p.
 			 */
-			wcl::BoundingBox getBoundingBox() const;
+			double distanceFrom(const wcl::Vector& p);
+
+			/**
+			 * Intersects this plane with another.
+			 * Returns a PlaneIntersection, or NULL if the
+			 * planes are parallel to each other.
+			 */
+			PlaneIntersection intersect(const Plane& p);
 
 		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
+			/**
+			 * The surface normal of the plane (A,B,C).
+			 */
+			wcl::Vector normal;
+
+			/**
+			 * The D value from the plane equation.
+			 */
+			double d;
+
+			/**
+			 * A point that lies on the plane.
+			 */
+			wcl::Vector point;
 	};
-};
+}
 
 #endif
 

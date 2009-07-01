@@ -25,66 +25,41 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
+#include <assert.h>
 
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-
-#include "BoundingBox.h"
 #include "Face.h"
-#include "Vertex.h"
+#include "Plane.h"
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+
+	const BoundingBox& Face::getBoundingBox()
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
-
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
-
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+		return boundingBox;
+	}
 
 
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+	wcl::Vector Face::getNormal()
+	{
+		wcl::Vector& v1 = verts[0]->position;
+		wcl::Vector& v2 = verts[1]->position;
+		wcl::Vector& v3 = verts[2]->position;
 
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
+		return (v2 - v1).crossProduct(v3 - v1).unit();
+	}
 
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
+	Plane Face::getPlane()
+	{
+		return Plane(verts[0]->position,verts[0]->position,verts[0]->position);
+	}
 
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
-	};
-};
+	void Face::addVertex(Vertex* v)
+	{
+		assert(v != NULL);
 
-#endif
+		boundingBox.addPoint(*v->position);
+		verts.push_back(v);
+	}
+
+}
 
