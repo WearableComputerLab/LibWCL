@@ -33,7 +33,7 @@ namespace wcl
 
 	Plane::Plane(const wcl::Vector& v1, const wcl::Vector& v2, const wcl::Vector& v3)
 	{
-		p = v1;
+		point = v1;
 		normal = (v2 - v1).crossProduct(v3 - v1).unit();
 
 		d = -v1[0]*(v2[1]*v3[2] - v3[1]*v2[2]) 
@@ -49,17 +49,17 @@ namespace wcl
 
 	PlaneIntersection Plane::intersect(const Plane& p)
 	{
-		PlaneIntersection p;
+		PlaneIntersection i;
 		//the direction is perpendicular to the two planes, or
 		//the cross product
-		p.dir = this->normal.crossProduct(p.normal);
+		i.dir = this->normal.crossProduct(p.normal);
 		
 		//make it a unit vector
-		p.dir = p.dir.unit();
+		i.dir = i.dir.unit();
 
-		//TODO fixme
+		//find a point on the line..
 
-		return p;
+		return i;
 	}
 
 }

@@ -103,6 +103,79 @@ namespace wcl
 
 	CSGEngine::IntersectionType CSGEngine::intersect(Face& objectA, Face& objectB)
 	{
+		//find signed distance from each vertex in objectA to the plane of objectB
+		//if all distances are zero, coplanar
+		//if all positive or all negative, no intersection
+		bool allZero = true;
+		bool allPositive = true;
+		bool allNegative = true;
+
+		std::vector<wcl::Vertex*>::const_iterator it;
+
+		wcl::Plane bPlane = objectB.getPlane();
+
+		for (it = objectA.getFaces().begin(); it < objectA.getFaces().end(); ++it)
+		{
+			if (bPlane.distanceFrom(*it->position) < 0)
+			{
+				allPositive = false;
+				allZero = false;
+			}
+			else if (bPlane.distanceFrom(*it->position) > 0)
+			{
+				allNegative = false;
+				allZero = false;
+			}
+			else
+			{
+				allPositive = false;
+				allNegative = false;
+			}
+		}
+		if (allZero)
+		{
+			return COPLANAR;
+		}
+		if (allPositive || allNegative)
+		{
+			return NO_INTERSECT;
+		}
+
+		//find signed distance from each vertex in objectB to the plane of objectA
+		//if all distances are positive or all negative, no intersection
+		allPositive = true;
+		allNegative = true;
+
+		wcl::Plane aPlane = objectA.getPlane();
+
+		for (it = objectB.getFaces().begin(); it < objectB.getFaces().end(); ++it)
+		{
+			if (aPlane.distanceFrom(*it->position) < 0)
+			{
+				allPositive = false;
+				allZero = false;
+			}
+			else if (aPlane.distanceFrom(*it->position) > 0)
+			{
+				allNegative = false;
+				allZero = false;
+			}
+			else
+			{
+				allPositive = false;
+				allNegative = false;
+			}
+		}
+		if (allPositive || allNegative)
+		{
+			return NO_INTERSECT;
+		}
+
+		//else
+		//calculate line of intersection of the two planes
+
+		//calculate line segments that pass through objectA and objectB
+		//if they overlap, there is an intersection
 		return NO_INTERSECT;
 	}
 };

@@ -28,8 +28,8 @@
 #ifndef FACE_H
 #define FACE_H
 
-#include "Plane.h"
-#include "Vertex.h"
+#include <wcl/geometry/Plane.h>
+#include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
@@ -61,6 +61,8 @@ namespace wcl
 			 * because they could also be used in other faces.
 			 */
 			void addVertex(Vertex* v);
+
+			const std::vector<Vertex*>& getVerts();
 
 		private:
 			/**

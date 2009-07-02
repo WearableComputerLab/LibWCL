@@ -28,7 +28,7 @@
 #ifndef CSG_ENGINE_H
 #define CSG_ENGINE_H
 
-#include "PolygonObject.h"
+#include <wcl/geometry/PolygonObject.h>
 
 namespace wcl
 {

@@ -61,5 +61,10 @@ namespace wcl
 		verts.push_back(v);
 	}
 
+	const std::vector<Vertex*>& Face::getVerts()
+	{
+		return verts;
+	}
+
 }
 

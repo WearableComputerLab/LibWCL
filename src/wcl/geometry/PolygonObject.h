@@ -33,9 +33,9 @@
 
 #include <wcl/maths/Vector.h>
 
-#include "BoundingBox.h"
-#include "Face.h"
-#include "Vertex.h"
+#include <wcl/geometry/BoundingBox.h>
+#include <wcl/geometry/Face.h>
+#include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
