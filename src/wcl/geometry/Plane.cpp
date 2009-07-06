@@ -41,13 +41,13 @@ namespace wcl
 			- v3[0]*(v1[1]*v2[2] - v2[1]*v1[2]);
 	}
 
-	double Plane::distanceFrom(const wcl::Vector& p)
+	double Plane::distanceFrom(const wcl::Vector& p) const
 	{
 		return (normal[0]*p[0] + normal[1]*p[1] + normal[2]*p[2] + d) / 
 			   sqrt(normal[0]*normal[0] + normal[1]*normal[1] + normal[2]*normal[2]);
 	}
 
-	PlaneIntersection Plane::intersect(const Plane& p)
+	PlaneIntersection Plane::intersect(const Plane& p) const
 	{
 		PlaneIntersection i;
 		//the direction is perpendicular to the two planes, or

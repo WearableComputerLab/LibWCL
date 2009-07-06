@@ -75,14 +75,14 @@ namespace wcl
 			 * Note that this is signed depending on whether p is in
 			 * front or behind p.
 			 */
-			double distanceFrom(const wcl::Vector& p);
+			double distanceFrom(const wcl::Vector& p) const;
 
 			/**
 			 * Intersects this plane with another.
 			 * Returns a PlaneIntersection, or NULL if the
 			 * planes are parallel to each other.
 			 */
-			PlaneIntersection intersect(const Plane& p);
+			PlaneIntersection intersect(const Plane& p) const;
 
 			/**
 			 * Returns the Hessian Normal Form of this plane.
