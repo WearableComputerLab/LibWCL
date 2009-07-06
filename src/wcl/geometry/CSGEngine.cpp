@@ -170,9 +170,9 @@ namespace wcl
 		{
 			return NO_INTERSECT;
 		}
-
 		//else
 		//calculate line of intersection of the two planes
+		wcl::PlaneIntersection pi = aPlane.intersect(bPlane);
 
 		//calculate line segments that pass through objectA and objectB
 		//if they overlap, there is an intersection
