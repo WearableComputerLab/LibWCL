@@ -114,14 +114,14 @@ namespace wcl
 
 		wcl::Plane bPlane = objectB.getPlane();
 
-		for (it = objectA.getFaces().begin(); it < objectA.getFaces().end(); ++it)
+		for (it = objectA.getVerts().begin(); it < objectA.getVerts().end(); ++it)
 		{
-			if (bPlane.distanceFrom(*it->position) < 0)
+			if (bPlane.distanceFrom((*it)->position) < 0)
 			{
 				allPositive = false;
 				allZero = false;
 			}
-			else if (bPlane.distanceFrom(*it->position) > 0)
+			else if (bPlane.distanceFrom((*it)->position) > 0)
 			{
 				allNegative = false;
 				allZero = false;
@@ -148,14 +148,14 @@ namespace wcl
 
 		wcl::Plane aPlane = objectA.getPlane();
 
-		for (it = objectB.getFaces().begin(); it < objectB.getFaces().end(); ++it)
+		for (it = objectB.getVerts().begin(); it < objectB.getVerts().end(); ++it)
 		{
-			if (aPlane.distanceFrom(*it->position) < 0)
+			if (aPlane.distanceFrom((*it)->position) < 0)
 			{
 				allPositive = false;
 				allZero = false;
 			}
-			else if (aPlane.distanceFrom(*it->position) > 0)
+			else if (aPlane.distanceFrom((*it)->position) > 0)
 			{
 				allNegative = false;
 				allZero = false;

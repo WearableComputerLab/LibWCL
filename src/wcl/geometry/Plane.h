@@ -48,6 +48,11 @@ namespace wcl
 		wcl::Vector dir;
 	};
 
+	struct HNF
+	{
+		wcl::Vector n;
+		double p;
+	};
 
 	/**
 	 * A 3 dimensional, infinite plane.
@@ -78,6 +83,11 @@ namespace wcl
 			 * planes are parallel to each other.
 			 */
 			PlaneIntersection intersect(const Plane& p);
+
+			/**
+			 * Returns the Hessian Normal Form of this plane.
+			 */
+			HNF toHNF() const;
 
 		private:
 			/**
