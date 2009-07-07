@@ -62,12 +62,27 @@ namespace wcl
 		HNF plane1 = this->toHNF();
 		HNF plane2 = p.toHNF();
 
-		double y = (plane2.n[0]*plane1.p - plane2.p/plane1.n[0]) / 
-				   (plane2.n[1]*plane1.n[0] - plane1.n[1]*plane2.n[0]);
+		//this only works if the direction.z is not 0
+		if (i.dir[2] != 0)
+		{
+			double y = (plane2.n[0]*plane1.p - plane2.p/plane1.n[0]) / 
+				(plane2.n[1]*plane1.n[0] - plane1.n[1]*plane2.n[0]);
 
-		double x = (-plane1.p - plane1.n[1]*y) / plane1.n[0];
+			double x = (-plane1.p - plane1.n[1]*y) / plane1.n[0];
 
-		i.p = wcl::Vector(x,y,0);
+			i.p = wcl::Vector(x,y,0);
+		}
+
+		//otherwise, lets just swap with y
+		else
+		{
+			double z = (plane2.n[0]*plane1.p - plane2.p/plane1.n[0]) / 
+				(plane2.n[2]*plane1.n[0] - plane1.n[2]*plane2.n[0]);
+
+			double x = (-plane1.p - plane1.n[z]*z) / plane1.n[0];
+
+			i.p = wcl::Vector(x,0,z);
+		}
 
 		return i;
 	}
