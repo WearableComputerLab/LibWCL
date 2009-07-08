@@ -34,6 +34,11 @@ namespace wcl
 {
 	/**
 	 * A class that is able to perform CSG operations on polygon object.
+	 *
+	 * This is derived from:
+	 *
+	 * Laidlaw, DH and Hughes, JF 1986, Constructive Solid Geometry for Polyhedral
+	 * Objects, SIGGRAPH.
 	 */
 	class CSGEngine
 	{
@@ -46,6 +51,23 @@ namespace wcl
 				INTERSECT
 			};
 
+			enum IntersectDescriptor
+			{
+				VERTEX,
+				EDGE,
+				FACE
+			};
+
+			struct Segment
+			{
+				double startDfromB;
+				double endDfromB;
+				IntersectDescriptor start;
+				IntersectDescriptor middle;
+				IntersectDescriptor end;
+				Vertex* startV;
+				Vertex* endV;
+			};
 
 			/**
 			 * Default constructor.

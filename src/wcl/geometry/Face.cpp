@@ -33,6 +33,13 @@
 namespace wcl
 {
 
+	Face::Face(const Face& f)
+	{
+		//let std::vector do the copying for us
+		//since we are only storing pointers after all...
+		this->verts = f.verts;
+	}
+
 	const BoundingBox& Face::getBoundingBox()
 	{
 		return boundingBox;

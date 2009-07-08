@@ -40,6 +40,12 @@ namespace wcl
 	{
 		public:
 			/**
+			 * Copy Constructor.
+			 */
+			Face (const Face& f);
+
+
+			/**
 			 * Returns the axis aligned bounding box of this Face.
 			 */
 			BoundingBox getBoundingBox();

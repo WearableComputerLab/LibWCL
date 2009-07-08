@@ -55,8 +55,8 @@ namespace wcl
 		std::vector<Face*>::const_iterator j;
 		for (j = object.faceList.begin(); j < object.faceList.end(); ++j)
 		{
-			Face* f = new Face();
-			f->verts = (*j)->verts;
+			//use the brand new copy constructor 
+			Face* f = new Face(*(*j));
 			faceList.push_back(f);
 		}
 
@@ -101,8 +101,8 @@ namespace wcl
 		std::vector<Face*>::const_iterator jo;
 		for (jo = object.faceList.begin(); jo < object.faceList.end(); ++jo)
 		{
-			Face* f = new Face();
-			f->verts = (*jo)->verts;
+			//use the brand new copy constructor 
+			Face* f = new Face(*(*j));
 			faceList.push_back(f);
 		}
 
