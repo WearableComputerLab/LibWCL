@@ -66,38 +66,6 @@ namespace wcl
 
 	void CSGEngine::split(PolygonObject& objectA, PolygonObject& objectB)
 	{
-		//if extent of objectA overlaps extent of objectB
-		if (objectA.getBoundingBox().overlaps(objectB.getBoundingBox()))
-		{
-			//foreach polygonA in objectA
-			std::vector<wcl::Face*> faces = objectA.getFaces();
-			std::vector<wcl::Face*>::iterator polygonA;
-
-			for(polygonA = faces.begin(); polygonA < faces.end(); ++polygonA)
-			{
-				//if the extent of polygonA overlaps extent of objectB
-				if (objectB.getBoundingBox().overlaps((*polygonA)->getBoundingBox()))
-				{
-					//foreach polygonB in objectB
-					std::vector<wcl::Face*> bFaces = objectB.getFaces();
-					std::vector<wcl::Face*>::const_iterator polygonB;
-
-					for(polygonB = bFaces.begin(); polygonB < bFaces.end(); ++polygonB)
-					{
-						//if the extents of polygonA and polygonB overlap
-						if ((*polygonA)->getBoundingBox().overlaps((*polygonB)->getBoundingBox()))
-						{
-							//do they intersect
-							//if they are not coplanar and do intersect
-							if (intersect((*(*polygonA)), (*(*polygonB))) == INTERSECT)
-							{
-								//subdivide polygonA with polygonB
-							}
-						} // what
-					} // a
-				} // big
-			} //ugly
-		} // nesting
 	} // function
 
 
@@ -172,7 +140,7 @@ namespace wcl
 		}
 		//else
 		//calculate line of intersection of the two planes
-		wcl::PlaneIntersection pi = aPlane.intersect(bPlane);
+		wcl::Line pi = aPlane.intersect(bPlane);
 
 		//calculate line segments that pass through objectA and objectB
 		//if they overlap, there is an intersection

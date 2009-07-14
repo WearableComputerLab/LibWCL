@@ -46,7 +46,24 @@ namespace wcl
 		max = wcl::Vector(minDouble,minDouble,minDouble);
 	}
 
-	bool BoundingBox::overlaps(const wcl::BoundingBox& b)
+
+	BoundingBox::BoundingBox(const std::vector<Vertex*>& verts)
+	{
+		double maxDouble = std::numeric_limits<double>::max();
+		min = wcl::Vector(maxDouble,maxDouble,maxDouble);
+
+		double minDouble = std::numeric_limits<double>::min();
+		max = wcl::Vector(minDouble,minDouble,minDouble);
+
+		std::vector<Vertex*>::const_iterator it;
+		for (it = verts.begin(); it<verts.end(); ++it)
+		{
+			this->addPoint((*it)->position);
+		}
+	}
+
+
+	bool BoundingBox::overlaps(const wcl::BoundingBox& b) const
 	{
 		//this is going to be a big if statement
 		if (this->max[0] <= b.min[0] ||

@@ -28,7 +28,9 @@
 #ifndef BOUNDING_BOX_H
 #define BOUNDING_BOX_H
 
+#include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
+#include <config.h>
 
 namespace wcl
 {
@@ -40,6 +42,12 @@ namespace wcl
 			 * in parameters.
 			 */
 			BoundingBox(const wcl::Vector& min, const wcl::Vector& max);
+
+
+			/**
+			 * Creates a bounding box from a list of vertices.
+			 */
+			BoundingBox(const std::vector<Vertex*>& verts);
 
 			/**
 			 * Creates a bounding box with invalid parameters so
@@ -53,7 +61,7 @@ namespace wcl
 			/**
 			 * Returns true if this bounding box overlaps with b
 			 */
-			bool overlaps(const wcl::BoundingBox& b);
+			bool overlaps(const wcl::BoundingBox& b) const;
 
 			/**
 			 * Adds a point to the bounding box, adjusting

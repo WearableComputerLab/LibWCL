@@ -25,69 +25,27 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
-
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-#include <config.h>
-
-#include <wcl/geometry/BoundingBox.h>
-#include <wcl/geometry/Face.h>
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+	Vertex::Vertex() : status(UNKNOWN)
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
+		// hi!
+	}
 
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
+	Vertex::Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord)
+	{
+		this->position = position;
+		this->normal = normal;
+		this->texCoord = texCoord;
+	}
 
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+	Vertex::Vertex(const Vertex& v)
+	{
+		this->position = v.position;
+		this->normal = v.normal;
+		this->texCoord = v.texCoord;
+	}
 
-
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
-
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
-
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
-
-			void splitFaces(const PolygonObject& obj);
-
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
-	};
-};
-
-#endif
-
+}

@@ -28,6 +28,10 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
+#include <vector>
+
+#include <wcl/maths/Vector.h>
+
 namespace wcl
 {
 	/**
@@ -45,32 +49,42 @@ namespace wcl
 	/**
 	 * Structure of a single vertex.
 	 */
-	struct Vertex
+	class Vertex
 	{
-		/**
-		 * The position of the vertex in 3D space
-		 */
-		wcl::Vector position;
+		public:
+			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);
+			Vertex(const Vertex& v);
 
-		/**
-		 * The vertex normal
-		 */
-		wcl::Vector normal;
+			void setStatus(VertexStatus s);
+			VertexStatus getStatus();
 
-		/**
-		 * The texture coordinate of the vertex 
-		 */
-		wcl::Vector texCoord;
+			/**
+			 * The position of the vertex in 3D space
+			 */
+			wcl::Vector position;
 
-		/**
-		 * Vertices that are adjacent to this one.
-		 */
-		std::vector<Vertex*> adjacentVerts;
-		
-		/**
-		 * Status of the vertex, used during CSG operations
-		 */
-		VertexStatus status;
+			/**
+			 * The vertex normal
+			 */
+			wcl::Vector normal;
+
+			/**
+			 * The texture coordinate of the vertex 
+			 */
+			wcl::Vector texCoord;
+
+			/**
+			 * Vertices that are adjacent to this one.
+			 */
+			std::vector<Vertex*> adjacentVerts;
+			
+			/**
+			 * Status of the vertex, used during CSG operations
+			 */
+			VertexStatus status;
+
+		private:
+			//nothing :(
 	};
 
 }

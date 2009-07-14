@@ -244,6 +244,8 @@ if test "x$enable_x11" = "xyes"; then
 fi
 
 
+AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
+
 #
 # Checks for typedefs, structures, and compiler characteristics.
 #

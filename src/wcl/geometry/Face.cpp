@@ -37,7 +37,16 @@ namespace wcl
 	{
 		//let std::vector do the copying for us
 		//since we are only storing pointers after all...
-		this->verts = f.verts;
+		this->v1 = f.v1;
+		this->v2 = f.v2;
+		this->v3 = f.v3;
+	}
+
+	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3)
+	{
+		this->v1 = v1;
+		this->v2 = v2;
+		this->v3 = v3;
 	}
 
 	const BoundingBox& Face::getBoundingBox()
@@ -48,30 +57,18 @@ namespace wcl
 
 	wcl::Vector Face::getNormal()
 	{
-		wcl::Vector& v1 = verts[0]->position;
-		wcl::Vector& v2 = verts[1]->position;
-		wcl::Vector& v3 = verts[2]->position;
+		wcl::Vector& vec1 = v1->position;
+		wcl::Vector& vec2 = v2->position;
+		wcl::Vector& vec3 = v3->position;
 
-		return (v2 - v1).crossProduct(v3 - v1).unit();
+		return (vec2 - vec1).crossProduct(vec3 - vec1).unit();
 	}
 
 	Plane Face::getPlane()
 	{
-		return Plane(verts[0]->position,verts[0]->position,verts[0]->position);
+		return Plane(v1->position,v2->position,v3->position);
 	}
 
-	void Face::addVertex(Vertex* v)
-	{
-		assert(v != NULL);
-
-		boundingBox.addPoint(*v->position);
-		verts.push_back(v);
-	}
-
-	const std::vector<Vertex*>& Face::getVerts()
-	{
-		return verts;
-	}
 
 }
 

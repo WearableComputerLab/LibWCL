@@ -25,69 +25,49 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
+#ifndef LINE_SEGMENT_H
+#define LINE_SEGMENT_H
 
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
 #include <config.h>
 
-#include <wcl/geometry/BoundingBox.h>
+#include <wcl/maths/Vector.h>
 #include <wcl/geometry/Face.h>
-#include <wcl/geometry/Vertex.h>
+#include <wcl/geometry/Line.h>
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+	class LineSegment
 	{
 		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
+			enum LineIntersectType
+			{
+				VERTEX,
+				FACE,
+				EDGE
+			};
 
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
+			LineSegment(const Line& line, const Face& face, int sign1, int sign2, int sign3);
 
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+			double startDistance;
+			double endDistance;
+			int index;
 
+			LineIntersectType startType;
+			LineIntersectType middleType;
+			LineIntersectType endType;
 
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+			Line line;
+			Vertex* startVert;
+			Vertex* endVert;
 
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
-
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
-
-			void splitFaces(const PolygonObject& obj);
+			wcl::Vector startPos;
+			wcl::Vector endPos;
 
 		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
+			bool setVertex(Vertex* v);
+			void swapEnds();
 	};
-};
+}
 
 #endif
 

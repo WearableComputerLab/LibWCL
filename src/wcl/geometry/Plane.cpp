@@ -24,6 +24,8 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
+#include <cstdlib>
 #include <math.h>
 
 #include "Plane.h"
@@ -41,50 +43,55 @@ namespace wcl
 			- v3[0]*(v1[1]*v2[2] - v2[1]*v1[2]);
 	}
 
+	Plane::Plane()
+	{
+		d = 0;
+	}
+
 	double Plane::distanceFrom(const wcl::Vector& p) const
 	{
 		return (normal[0]*p[0] + normal[1]*p[1] + normal[2]*p[2] + d) / 
 			   sqrt(normal[0]*normal[0] + normal[1]*normal[1] + normal[2]*normal[2]);
 	}
 
-	PlaneIntersection Plane::intersect(const Plane& p) const
+	Line Plane::intersect(const Plane& p) const
 	{
-		PlaneIntersection i;
 		//the direction is perpendicular to the two planes, or
 		//the cross product
-		i.dir = this->normal.crossProduct(p.normal);
+		wcl::Vector dir = this->normal.crossProduct(p.normal);
+		wcl::Vector pos;
 		
 		//make it a unit vector
-		i.dir = i.dir.unit();
+		dir = dir.unit();
 
 		//find a point on the line..
+		double d1 = -(this->normal[0]*this->point[0] +
+					  this->normal[1]*this->point[1] +
+					  this->normal[2]*this->point[2]);
 
-		HNF plane1 = this->toHNF();
-		HNF plane2 = p.toHNF();
+		double d2 = -(p.normal[0]*p.point[0] +
+					  p.normal[1]*p.point[1] +
+					  p.normal[2]*p.point[2]);
 
-		//this only works if the direction.z is not 0
-		if (i.dir[2] != 0)
+		if (abs(dir[0]) > TOL)
 		{
-			double y = (plane2.n[0]*plane1.p - plane2.p/plane1.n[0]) / 
-				(plane2.n[1]*plane1.n[0] - plane1.n[1]*plane2.n[0]);
-
-			double x = (-plane1.p - plane1.n[1]*y) / plane1.n[0];
-
-			i.p = wcl::Vector(x,y,0);
+			pos[0] = 0;
+			pos[1] = (d2*this->normal[2] - d1*p.normal[2])/dir[0];
+			pos[2] = (d1*p.normal[1] - d2*normal[1])/dir[0];
 		}
-
-		//otherwise, lets just swap with y
+		else if (abs(dir[1]) > TOL)
+		{
+			pos[0] = (d1*p.normal[2] - d2*normal[2]) / dir[1];
+			pos[1] = 0;
+			pos[2] = (d2*normal[0] - d1*p.normal[0]) / dir[1];
+		}
 		else
 		{
-			double z = (plane2.n[0]*plane1.p - plane2.p/plane1.n[0]) / 
-				(plane2.n[2]*plane1.n[0] - plane1.n[2]*plane2.n[0]);
-
-			double x = (-plane1.p - plane1.n[z]*z) / plane1.n[0];
-
-			i.p = wcl::Vector(x,0,z);
+			pos[0] = (d2*normal[1] - d1*p.normal[1])/dir[2];
+			pos[1] = (d1*p.normal[0] - d2*normal[0])/dir[2];
+			pos[2] = 0;
 		}
-
-		return i;
+		return Line(pos, dir);
 	}
 
 	HNF Plane::toHNF() const

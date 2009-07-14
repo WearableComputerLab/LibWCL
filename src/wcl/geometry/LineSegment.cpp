@@ -25,69 +25,75 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
+#include <wcl/geometry/LineSegment.h>
 
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-#include <config.h>
-
-#include <wcl/geometry/BoundingBox.h>
-#include <wcl/geometry/Face.h>
-#include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+	LineSegment::LineSegment(const Line& l, const Face& face, int sign1, int sign2, int sign3) : line(l)
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
+		index = 0;
 
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
+		if (sign1 == 0)
+		{
 
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+		}
+	}
 
+	bool LineSegment::setVertex(Vertex* v)
+	{
+		if (index = 0)
+		{
+			startVert = v;
+			startType = VERTEX;
+			startDistance = line.distanceFromPoint(v->position);
+			startPos = v->position;
+			index++;
+			return true;
+		}
+		else if (index == 1)
+		{
+			endVert = v;
+			endType = VERTEX;
+			endDistance = line.distanceFromPoint(v->position);
+			endPos = v->position;
+			index++;
 
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+			if (startVert == endVert)
+			{
+				middleType = VERTEX;
+			}
+			else if (startType == VERTEX)
+			{
+				middleType = EDGE;
+			}
 
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
+			if (startDistance > endDistance)
+			{
+				this->swapEnds();
+			}
+			return true;
+		}
+		return false;
+	}
 
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
+	void LineSegment::swapEnds()
+	{
+		double tempDist = startDistance;
+		startDistance = endDistance;
+		endDistance = tempDist;
 
-			void splitFaces(const PolygonObject& obj);
+		LineIntersectType tempType = startType;
+		startType = endType;
+		endType = tempType;
 
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
-	};
-};
+		Vertex* tempVert = startVert;
+		startVert = endVert;
+		endVert= tempVert;
 
-#endif
+		wcl::Vector tempPos = startPos;
+		startPos = endPos;
+		endPos = tempPos;
+	}
+}
 

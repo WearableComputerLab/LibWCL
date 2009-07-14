@@ -28,8 +28,10 @@
 #ifndef FACE_H
 #define FACE_H
 
+#include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Plane.h>
 #include <wcl/geometry/Vertex.h>
+#include <config.h>
 
 namespace wcl
 {
@@ -39,16 +41,26 @@ namespace wcl
 	class Face 
 	{
 		public:
+			enum FaceStatus
+			{
+				UNKNOWN,
+				INSIDE,
+				OUTSIDE,
+				SAME,
+				OPPOSITE
+			};
+
 			/**
 			 * Copy Constructor.
 			 */
 			Face (const Face& f);
 
+			Face (Vertex* v1,Vertex* v2,Vertex* v3);
 
 			/**
 			 * Returns the axis aligned bounding box of this Face.
 			 */
-			BoundingBox getBoundingBox();
+			const BoundingBox& getBoundingBox();
 
 			/**
 			 * Returns the surface normal of this face.
@@ -70,11 +82,15 @@ namespace wcl
 
 			const std::vector<Vertex*>& getVerts();
 
-		private:
 			/**
-			 * The list of vertices.
+			 * The vertices
 			 */
-			std::vector<Vertex*> verts;
+			Vertex* v1;
+			Vertex* v2;
+			Vertex* v3;
+		private:
+
+			FaceStatus status;
 
 			/**
 			 * Calculating a bounding box whenever it's needed is slow,

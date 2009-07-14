@@ -29,25 +29,10 @@
 #define PLANE_H
 
 #include <wcl/maths/Vector.h>
+#include <wcl/geometry/Line.h>
 
 namespace wcl
 {
-	/**
-	 * Struct used to represent a Plane-Plane intersection.
-	 */
-	struct PlaneIntersection
-	{
-		/**
-		 * A point on the line of intersection.
-		 */
-		wcl::Vector p;
-
-		/**
-		 * The direction of the line of intersection./
-		 */
-		wcl::Vector dir;
-	};
-
 	struct HNF
 	{
 		wcl::Vector n;
@@ -66,6 +51,11 @@ namespace wcl
 			Plane(const wcl::Vector& v1, const wcl::Vector& v2, const wcl::Vector& v3);
 
 			/**
+			 * Default constructor. Don't use this.
+			 */
+			Plane();
+
+			/**
 			 * Destructor.
 			 */
 			~Plane();
@@ -82,7 +72,7 @@ namespace wcl
 			 * Returns a PlaneIntersection, or NULL if the
 			 * planes are parallel to each other.
 			 */
-			PlaneIntersection intersect(const Plane& p) const;
+			Line intersect(const Plane& p) const;
 
 			/**
 			 * Returns the Hessian Normal Form of this plane.

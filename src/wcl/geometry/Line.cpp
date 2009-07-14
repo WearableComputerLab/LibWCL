@@ -25,69 +25,37 @@
  */
 
 
-#ifndef POLYGON_OBJECT_H
-#define POLYGON_OBJECT_H
-
-#include <string>
-#include <vector>
-
-#include <wcl/maths/Vector.h>
-#include <config.h>
-
-#include <wcl/geometry/BoundingBox.h>
-#include <wcl/geometry/Face.h>
-#include <wcl/geometry/Vertex.h>
+#include <wcl/geometry/Line.h>
 
 namespace wcl
 {
-	/**
-	 * Representation of a polygonal object made of 1 or more polygons.
-	 */
-	class PolygonObject
+	Line::Line(const wcl::Vector& position, const wcl::Vector& direction)
+		: pos(position), dir(direction)
 	{
-		public:
-			/**
-			 * Default Constructor. Creates an object with zero polygons
-			 */
-			PolygonObject(std::string id="");
+		//just in case it's not a unit vector
+		this->dir = this->dir.unit();
+	}
 
-			/**
-			 * Copy Constructor.
-			 * Makes this and object the same by performing a deep copy
-			 * of all members.
-			 */
-			PolygonObject(const PolygonObject& object);
+	Line::Line(const Line& l)
+	{
+		this->pos = l.pos;
+		this->dir = l.dir;
+	}
 
-			/**
-			 * Overloaded = operator, performs a deep copy of object.
-			 */
-			const PolygonObject& operator=(const PolygonObject& object);
+	wcl::Vector Line::getPosition()
+	{
+		return pos;
+	}
 
+	wcl::Vector Line::getDirection()
+	{
+		return dir;
+	}
 
-			/**
-			 * Returns the list of faces for this object.
-			 * Be a bit careful here.
-			 */
-			std::vector<Face*>& getFaces();
+	double Line::distanceFromPoint(const wcl::Vector& p)
+	{
+		return (this->pos - p).normal();
+	}
 
-			/**
-			 * Destructor.
-			 */
-			~PolygonObject();
-
-			/**
-			 * Returns the axis aligned bounding box of this object.
-			 */
-			wcl::BoundingBox getBoundingBox() const;
-
-			void splitFaces(const PolygonObject& obj);
-
-		private:
-			std::string id;
-			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
-	};
-};
-
-#endif
+}
 
