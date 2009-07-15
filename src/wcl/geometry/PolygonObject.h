@@ -82,6 +82,8 @@ namespace wcl
 
 			void splitFaces(const PolygonObject& obj);
 
+			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
+
 		private:
 			std::string id;
 			std::vector<Face*> faceList;

@@ -143,6 +143,168 @@ namespace wcl
 		return b;
 	}
 
+	void PolygonObject::splitFace(int index, const LineSegment& segment1, const LineSegment& segment2)
+	{
+		Vertex* startPosvertex, endPosVertex;
+		wcl::Vector startPos, endPos;
+		double startDist, endDist;
+		LineIntersectType startType, endType, middleType;
+
+		Face* face = faceList[index];
+		Vertex* startVertex = segment1.startVert;
+		Vertex* endVertex = segment1.endVert;
+
+		// setup the starting values
+		if (segment2.startDistance > segment1.startDistance + TOL)
+		{
+			startDist = segment2.startDistance;
+			startType = segment1.middleType;
+			startPos = segment2.startPos;
+		}
+		else
+		{
+			startDist = segment1.startDistance;
+			startType = segment1.startType;
+			startPos = segment1.startPos;
+		}
+
+		// setup the ending values
+		if (segment2.endDistance < segment1.endDistance - TOL)
+		{
+			endDist = segment2.endDistance;
+			endType = segment1.middleType;
+			endPos = segment2.endPos;
+		}
+		else
+		{
+			endDist = segment1.endDistance;
+			endType = segment1.endType;
+			endPos = segment1.endPos;
+		}
+
+		middleType = segment1.middleType;
+
+		// see whether it is a boundary
+		if (startType == LineSegment::VERTEX)
+		{
+			startVertex.setStatus(Vertex::BOUNDARY);
+		}
+		if (endType == LineSegment::VERTEX)
+		{
+			endVertex.setStatus(Vertex::BOUNDARY);
+		}
+
+		/*
+		 * Now the rest of this function is messy because there are a lot of 
+		 * cases to consider.
+		 */
+
+		//Vertex - nothing - vertex
+		if (startType == LineSegment::VERTEX && endType == LineSegment::VERTEX)
+			return;
+
+		if (middleType == LineSegment::EDGE)
+		{
+			//decide what edge we need to split...
+			int splitEdge;
+			if ((startVertex == face.v1 && endVertex == face.v2) || (startVertex == face.v2 && endVertex == face.v1))
+				splitEdge = 1;
+			else if ((startVertex == face.v2 && endVertex == face.v3) || (startVertex == face.v3 && endVertex == face.v2))
+				splitEdge = 2;
+			else
+				splitEdge = 3;
+
+			//vertex-edge-edge
+			if (startType == LineSegment::VERTEX)
+			{
+				breakFaceInTwo(facePos, endPos, splitEdge);
+				return;
+			}
+			else if (endType == LineSegment::VERTEX)
+			{
+				breakFaceInTwo(facePos, endPos, splitEdge);
+			}
+			else
+			{
+				if ((startVertex == face.v1 && endVertex == face.v2) || 
+					(startVertex == face.v2 && endVertex == face.v3) ||
+					(startVertex == face.v3 && endVertex == face.v1))
+				{
+					breakFaceInThree(facePos, startPos, endPos, splitEdge);
+				}
+				else
+				{
+					breakFaceInThree(facePos, endPos, startPos, splitEdge);
+				}
+			}
+			return;
+		}
+		//vertex-face-edge
+		else if (startType == LineSegment::VERTEX && endType == LineSegment::EDGE)
+		{
+			breakFaceInTwo(facePos, endPos, endVertex);
+		}
+		//edge face vertex
+		else if (startType == LineSegment::EDGE && endType == LineSegment::VERTEX)
+		{
+			breakFaceInTwo(facePos, startPos, startVertex);
+		}
+		//vertex face face
+		else if (startType == LineSegment::VERTEX && endType == LineSegment::FACE)
+		{
+			breakFaceInThree(facePos, endPos, startVertex);
+		}
+		//face face vertex
+		else if (startType == LineSegment::FACE && endType == LineSegment::VERTEX)
+		{
+			breakFaceInThree(facePos, startPos, endVertex);
+		}
+		//edge face edge
+		else if (startType == LineSegment::EDGE && endType == LineSegment::EDGE)
+		{
+			breakFaceInThree(facePos, startPos, endPos, startVertex, endVertex);
+		}
+		//edge face face
+		else if (startType == LineSegment::EDGE && endType == LineSegment::FACE)
+		{
+			breakFaceInFour(facepos, startPos, endPos, startVertex);
+		}
+		//face face edge
+		else if (startType == LineSegment::FACE && endType == LineSegment::EDGE)
+		{
+			breakFaceInFour(facePos, endPos, startPos, endVertex);
+		}
+		// face face face
+		else if (startType == LineSegment::FACE && endType == LineSegment::FACE)
+		{
+			wcl::Vector segmentVector(startPos[0] - endPos[0], startPos[1] - endPos[1], startPos[2] - endPos[2]);
+
+			if (abs(segmentVector[0]) < TOL && abs(segmentVector[1]) < TOL && abs(segmentVector[2]) < TOL)
+			{
+				breakFaceInThree(facePos, startPos);
+				return;
+			}
+
+			int linedVertex;
+			wcl::Vector linedVertexPos;
+			wcl::Vector vertexVector(endPos[0] - face.v1[0], endPos[1] - face.v1[1], endPos[2] - face.v1[2]);
+			vertexVector = vertexVector.unit();
+			double dot1 = abs(segmentVector.dot(vertexVector));
+			vertexVector = wcl::Vector(endPos[0] - face.v2[0], endPos[1] - face.v2[1], endPos[2] - face.v2[2]);
+			vertexVector = vertexVector.unit();
+			double dot2 = abs(segmentVector.dot(vertexVector));
+			vertexVector = wcl::Vector(endPos[0] - face.v3[0], endPos[1] - face.v3[1], endPos[2] - face.v3[2]);
+			vertexVector = vertexVector.unit();
+			double dot3 = abs(segmentVector.dot(vertexVector));
+			if (dot1 > dot2 && dot1 > dot3)
+			{
+				linedVertex = 1;
+				linedVertexPos = face.v1.position;
+			
+
+
+			
+
 
 	void PolygonObject::splitFaces(const PolygonObject& object)
 	{
@@ -192,7 +354,14 @@ namespace wcl
 
 								if (!(signFace2Vert1==signFace2Vert2 && signFace2Vert2 == signFace2Vert3))
 								{
-									Line p = face1Plane.intersect(face2Plane);
+									Line line = face1Plane.intersect(face2Plane);
+									LineSegment segment1(line, face1, signFace1Vert1, signFace1Vert2, signFace1Vert3);
+									LineSegment segment2(line, face2, signFace2Vert1, signFace2Vert2, signFace2Vert3);
+
+									if (segment1.intersect(segment2))
+									{
+										int lastNumFaces = faceList.size();
+										this.splitFace(i, segment1, segment2);
 									
 
 };

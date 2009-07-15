@@ -35,25 +35,25 @@
 namespace wcl
 {
 	/**
-	 * The status of a polygon, used for CSG operations.
-	 */
-	enum VertexStatus 
-	{
-		INSIDE,
-		OUTSIDE,
-		BOUNDARY,
-		UNKNOWN
-	};
-
-
-	/**
 	 * Structure of a single vertex.
 	 */
 	class Vertex
 	{
 		public:
+			/**
+			 * The status of a polygon, used for CSG operations.
+			 */
+			enum VertexStatus 
+			{
+				INSIDE,
+				OUTSIDE,
+				BOUNDARY,
+				UNKNOWN
+			};
+
 			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);
 			Vertex(const Vertex& v);
+			Vertex();
 
 			void setStatus(VertexStatus s);
 			VertexStatus getStatus();

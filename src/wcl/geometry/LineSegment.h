@@ -48,6 +48,8 @@ namespace wcl
 
 			LineSegment(const Line& line, const Face& face, int sign1, int sign2, int sign3);
 
+			bool intersect(const LineSegment& s);
+
 			double startDistance;
 			double endDistance;
 			int index;
