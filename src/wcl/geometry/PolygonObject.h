@@ -36,6 +36,7 @@
 
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
+#include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
@@ -82,12 +83,32 @@ namespace wcl
 
 			void splitFaces(const PolygonObject& obj);
 
+			void classifyFaces(const PolygonObject& object);
+
 			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
 
 		private:
 			std::string id;
 			std::vector<Face*> faceList;
-			std::vector<wcl::Vector*> vertexList;
+			std::vector<wcl::Vertex*> vertexList;
+
+			void breakFaceInTwo(int facePos, wcl::Vector newPos, int splitEdge);
+			void breakFaceInTwo(int facePos, wcl::Vector newPos, Vertex* endVertex);
+			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int splitEdge);
+			void breakFaceInThree(int facePos, wcl::Vector newPos, Vertex* endVertex);
+			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* startVertex, Vertex* endVertex);
+			void breakFaceInThree(int facePos, wcl::Vector newPos);
+			void breakFaceInFour(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* endVertex);
+			void breakFaceInFive(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int linedVertex);
+
+			/**
+			 * Adds a vertex to the list, if an equal vertex doesn't already
+			 * exist.
+			 *
+			 * @returns the vertex
+			 */
+			Vertex* addVertex(const wcl::Vector& position, Vertex::VertexStatus v);
+			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 	};
 };
 

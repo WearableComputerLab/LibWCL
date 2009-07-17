@@ -26,6 +26,7 @@
 
 
 #include <limits>
+#include <math.h>
 
 #include "PolygonObject.h"
 
@@ -41,13 +42,13 @@ namespace wcl
 	PolygonObject::PolygonObject(const PolygonObject& object)
 	{
 		//copy over the vertices
-		std::vector<wcl::Vector*>::const_iterator i;
+		std::vector<wcl::Vertex*>::const_iterator i;
 		for (i = object.vertexList.begin(); i < object.vertexList.end(); ++i)
 		{
 			//hows that for some indirection!
 			//basically we need a Vector (not a pointer) so we can use the
 			//array acess operators
-			wcl::Vector* v = new wcl::Vector((*(*i))[0], (*(*i))[1], (*(*i))[2]);
+			wcl::Vertex* v = new Vertex(*(*i));
 			vertexList.push_back(v);
 		}
 
@@ -71,10 +72,10 @@ namespace wcl
 		}
 
 		//delete whatever we currently have
-		std::vector<wcl::Vector*>::iterator i;
+		std::vector<wcl::Vertex*>::iterator i;
 		for (i = vertexList.begin(); i < vertexList.end(); ++i)
 		{
-			wcl::Vector* v = (*i);
+			wcl::Vertex* v = (*i);
 			delete v;
 		}
 		std::vector<Face*>::const_iterator j;
@@ -87,13 +88,14 @@ namespace wcl
 		vertexList.clear();
 		faceList.clear();
 
-		std::vector<wcl::Vector*>::const_iterator io;
+		std::vector<wcl::Vertex*>::const_iterator io;
 		for (io = object.vertexList.begin(); io < object.vertexList.end(); ++io)
 		{
 			//hows that for some indirection!
 			//basically we need a Vector (not a pointer) so we can use the
 			//array acess operators
-			wcl::Vector* v = new wcl::Vector((*(*io))[0], (*(*io))[1], (*(*io))[2]); vertexList.push_back(v);
+			wcl::Vertex* v = new wcl::Vertex(*(*io));
+			vertexList.push_back(v);
 		}
 
 		//copy the faces
@@ -111,10 +113,10 @@ namespace wcl
 
 	PolygonObject::~PolygonObject()
 	{
-		std::vector<wcl::Vector*>::iterator i;
+		std::vector<wcl::Vertex*>::iterator i;
 		for (i = vertexList.begin(); i < vertexList.end(); ++i)
 		{
-			wcl::Vector* v = (*i);
+			wcl::Vertex* v = (*i);
 			delete v;
 		}
 		std::vector<Face*>::iterator j;
@@ -132,15 +134,25 @@ namespace wcl
 		BoundingBox b;
 
 		//loop over all points
-		std::vector<wcl::Vector*>::const_iterator it;
+		std::vector<wcl::Vertex*>::const_iterator it;
 		for (it = vertexList.begin();it<vertexList.end();++it)
 		{
 			//let the addPoint method handle the logic
-			b.addPoint(*(*it));
+			b.addPoint((*it)->position);
 		}
 
 		//return the box
 		return b;
+	}
+
+
+	void PolygonObject::classifyFaces(const PolygonObject& object)
+	{
+		std::vector<Vertex*>::iterator it;
+		for (it = faceList.begin(); it < faceList.end(); ++it)
+		{
+			(*it)->classify();
+		}
 	}
 
 	void PolygonObject::splitFace(int index, const LineSegment& segment1, const LineSegment& segment2)
@@ -148,7 +160,7 @@ namespace wcl
 		Vertex* startPosvertex, endPosVertex;
 		wcl::Vector startPos, endPos;
 		double startDist, endDist;
-		LineIntersectType startType, endType, middleType;
+		LineSegment::LineIntersectType startType, endType, middleType;
 
 		Face* face = faceList[index];
 		Vertex* startVertex = segment1.startVert;
@@ -187,11 +199,11 @@ namespace wcl
 		// see whether it is a boundary
 		if (startType == LineSegment::VERTEX)
 		{
-			startVertex.setStatus(Vertex::BOUNDARY);
+			startVertex->setStatus(Vertex::BOUNDARY);
 		}
 		if (endType == LineSegment::VERTEX)
 		{
-			endVertex.setStatus(Vertex::BOUNDARY);
+			endVertex->setStatus(Vertex::BOUNDARY);
 		}
 
 		/*
@@ -207,9 +219,9 @@ namespace wcl
 		{
 			//decide what edge we need to split...
 			int splitEdge;
-			if ((startVertex == face.v1 && endVertex == face.v2) || (startVertex == face.v2 && endVertex == face.v1))
+			if ((startVertex == face->v1 && endVertex == face->v2) || (startVertex == face->v2 && endVertex == face->v1))
 				splitEdge = 1;
-			else if ((startVertex == face.v2 && endVertex == face.v3) || (startVertex == face.v3 && endVertex == face.v2))
+			else if ((startVertex == face->v2 && endVertex == face->v3) || (startVertex == face->v3 && endVertex == face->v2))
 				splitEdge = 2;
 			else
 				splitEdge = 3;
@@ -217,24 +229,24 @@ namespace wcl
 			//vertex-edge-edge
 			if (startType == LineSegment::VERTEX)
 			{
-				breakFaceInTwo(facePos, endPos, splitEdge);
+				breakFaceInTwo(index, endPos, splitEdge);
 				return;
 			}
 			else if (endType == LineSegment::VERTEX)
 			{
-				breakFaceInTwo(facePos, endPos, splitEdge);
+				breakFaceInTwo(index, endPos, splitEdge);
 			}
 			else
 			{
-				if ((startVertex == face.v1 && endVertex == face.v2) || 
-					(startVertex == face.v2 && endVertex == face.v3) ||
-					(startVertex == face.v3 && endVertex == face.v1))
+				if ((startVertex == face->v1 && endVertex == face->v2) || 
+					(startVertex == face->v2 && endVertex == face->v3) ||
+					(startVertex == face->v3 && endVertex == face->v1))
 				{
-					breakFaceInThree(facePos, startPos, endPos, splitEdge);
+					breakFaceInThree(index, startPos, endPos, splitEdge);
 				}
 				else
 				{
-					breakFaceInThree(facePos, endPos, startPos, splitEdge);
+					breakFaceInThree(index, endPos, startPos, splitEdge);
 				}
 			}
 			return;
@@ -242,68 +254,362 @@ namespace wcl
 		//vertex-face-edge
 		else if (startType == LineSegment::VERTEX && endType == LineSegment::EDGE)
 		{
-			breakFaceInTwo(facePos, endPos, endVertex);
+			breakFaceInTwo(index, endPos, endVertex);
 		}
 		//edge face vertex
 		else if (startType == LineSegment::EDGE && endType == LineSegment::VERTEX)
 		{
-			breakFaceInTwo(facePos, startPos, startVertex);
+			breakFaceInTwo(index, startPos, startVertex);
 		}
 		//vertex face face
 		else if (startType == LineSegment::VERTEX && endType == LineSegment::FACE)
 		{
-			breakFaceInThree(facePos, endPos, startVertex);
+			breakFaceInThree(index, endPos, startVertex);
 		}
 		//face face vertex
 		else if (startType == LineSegment::FACE && endType == LineSegment::VERTEX)
 		{
-			breakFaceInThree(facePos, startPos, endVertex);
+			breakFaceInThree(index, startPos, endVertex);
 		}
 		//edge face edge
 		else if (startType == LineSegment::EDGE && endType == LineSegment::EDGE)
 		{
-			breakFaceInThree(facePos, startPos, endPos, startVertex, endVertex);
+			breakFaceInThree(index, startPos, endPos, startVertex, endVertex);
 		}
 		//edge face face
 		else if (startType == LineSegment::EDGE && endType == LineSegment::FACE)
 		{
-			breakFaceInFour(facepos, startPos, endPos, startVertex);
+			breakFaceInFour(index, startPos, endPos, startVertex);
 		}
 		//face face edge
 		else if (startType == LineSegment::FACE && endType == LineSegment::EDGE)
 		{
-			breakFaceInFour(facePos, endPos, startPos, endVertex);
+			breakFaceInFour(index, endPos, startPos, endVertex);
 		}
 		// face face face
 		else if (startType == LineSegment::FACE && endType == LineSegment::FACE)
 		{
 			wcl::Vector segmentVector(startPos[0] - endPos[0], startPos[1] - endPos[1], startPos[2] - endPos[2]);
 
-			if (abs(segmentVector[0]) < TOL && abs(segmentVector[1]) < TOL && abs(segmentVector[2]) < TOL)
+			if (fabs(segmentVector[0]) < TOL && fabs(segmentVector[1]) < TOL && fabs(segmentVector[2]) < TOL)
 			{
-				breakFaceInThree(facePos, startPos);
+				breakFaceInThree(index, startPos);
 				return;
 			}
 
 			int linedVertex;
 			wcl::Vector linedVertexPos;
-			wcl::Vector vertexVector(endPos[0] - face.v1[0], endPos[1] - face.v1[1], endPos[2] - face.v1[2]);
+			wcl::Vector vertexVector(endPos[0] - (face->v1->position[0]), endPos[1] - (face->v1->position[1]), endPos[2] - (face->v1->position[2]));
 			vertexVector = vertexVector.unit();
-			double dot1 = abs(segmentVector.dot(vertexVector));
-			vertexVector = wcl::Vector(endPos[0] - face.v2[0], endPos[1] - face.v2[1], endPos[2] - face.v2[2]);
+			double dot1 = fabs(segmentVector.dot(vertexVector));
+			vertexVector = wcl::Vector(endPos[0] - (face->v2->position[0]), endPos[1] - (face->v2->position[1]), endPos[2] - (face->v2->position[2]));
 			vertexVector = vertexVector.unit();
-			double dot2 = abs(segmentVector.dot(vertexVector));
-			vertexVector = wcl::Vector(endPos[0] - face.v3[0], endPos[1] - face.v3[1], endPos[2] - face.v3[2]);
+			double dot2 = fabs(segmentVector.dot(vertexVector));
+			vertexVector = wcl::Vector(endPos[0] - (face->v3->position[0]), endPos[1] - (face->v3->position[1]), endPos[2] - (face->v3->position[2]));
 			vertexVector = vertexVector.unit();
-			double dot3 = abs(segmentVector.dot(vertexVector));
+			double dot3 = fabs(segmentVector.dot(vertexVector));
 			if (dot1 > dot2 && dot1 > dot3)
 			{
 				linedVertex = 1;
-				linedVertexPos = face.v1.position;
-			
+				linedVertexPos = face->v1->position;
+			}
+			else if (dot2 > dot3 && dot2 > dot1)
+			{
+				linedVertex = 2;
+				linedVertexPos = face->v2->position;
+			}
+			else
+			{
+				linedVertex = 3;
+				linedVertexPos = face->v3->position;
+			}
+
+			if ((linedVertexPos - startPos).normal() > (linedVertexPos - endPos).normal())
+			{
+				breakFaceInFive(index, startPos, endPos, linedVertex);
+			}
+			else
+			{
+				breakFaceInFive(index, endPos, startPos, linedVertex);
+			}
+		}
+	}
+
+	Vertex* PolygonObject::addVertex(const wcl::Vector& position, Vertex::VertexStatus v)
+	{
+		Vertex* vertex = new Vertex(position, v);
+		std::vector<wcl::Vertex*>::iterator it;
+		for (it = vertexList.begin(); it < vertexList.end(); ++it)
+		{
+			if (*(*it) == *vertex)
+				break;
+		}
+		if (it == vertexList.end())
+		{
+			vertexList.push_back(vertex);
+			return vertex;
+		}
+		else
+		{
+			delete vertex;
+			return *it;
+		}
+	}
+
+	Face* PolygonObject::addFace(Vertex* v1, Vertex* v2, Vertex* v3)
+	{
+		if (!(*v1 == *v2 || *v1 == *v3 || *v2 == *v3))
+		{
+			Face* f = new Face(v1, v2, v3);
+			if (f->getArea() > TOL)
+			{
+				faceList.push_back(f);
+				return f;
+			}
+			else
+			{
+				delete f;
+			}
+		}
+		return NULL;
+	}
 
 
-			
+	void PolygonObject::breakFaceInTwo(int index, wcl::Vector newPos, int splitEdge)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+
+		switch(splitEdge)
+		{
+			case 1:
+				addFace(f->v1, v, f->v3);
+				addFace(v, f->v2, f->v3);
+				break;
+			case 2:
+				addFace(f->v2, v, f->v1);
+				addFace(v, f->v3, f->v1);
+				break;
+			case 3:
+				addFace(f->v3, v, f->v2);
+				addFace(v, f->v1, f->v2);
+				break;
+			default:
+				throw std::string("EDGE MUST BE LESS THAN 3");
+				break;
+		}
+	}
+
+	void PolygonObject::breakFaceInTwo(int index, wcl::Vector newPos, Vertex* endVertex)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+
+		if (*endVertex == *(f->v1))
+		{
+			addFace(f->v1, v, f->v3);
+			addFace(v, f->v2, f->v3);
+		}
+		else if (*endVertex == *(f->v2))
+		{
+			addFace(f->v2, v, f->v1);
+			addFace(v, f->v3, f->v1);
+		}
+		else
+		{
+			addFace(f->v3, v, f->v2);
+			addFace(v, f->v1, f->v2);
+		}
+	}
+
+
+	void PolygonObject::breakFaceInThree(int index, wcl::Vector newPos1, wcl::Vector newPos2, int splitEdge)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+
+		switch(splitEdge)
+		{
+			case 1:
+				addFace(f->v1, v1, f->v3);
+				addFace(v1, v2, f->v3);
+				addFace(v2, f->v2, f->v3);
+				break;
+			case 2:
+				addFace(f->v2, v1, f->v1);
+				addFace(v1, v2, f->v1);
+				addFace(v2, f->v3, f->v1);
+				break;
+			case 3:
+				addFace(f->v3, v1, f->v2);
+				addFace(v1, v2, f->v2);
+				addFace(v2, f->v1, f->v2);
+				break;
+			default:
+				throw std::string("EDGE MUST BE LESS THAN 3");
+				break;
+		}
+	}
+
+	void PolygonObject::breakFaceInThree(int index, wcl::Vector newPos, Vertex* endVertex)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+
+		if (*endVertex == *(f->v1))
+		{
+			addFace(f->v1, f->v2, v);
+			addFace(f->v2, f->v3, v);
+			addFace(f->v3, f->v1, v);
+		}
+		else if (*endVertex == *(f->v2))
+		{
+			addFace(f->v2, f->v3, v);
+			addFace(f->v3, f->v1, v);
+			addFace(f->v1, f->v2, v);
+		}
+		else
+		{
+			addFace(f->v3, f->v1, v);
+			addFace(f->v1, f->v2, v);
+			addFace(f->v2, f->v3, v);
+		}
+	}
+
+	void PolygonObject::breakFaceInThree(int index, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* startVertex, Vertex* endVertex)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+
+		if (*startVertex == *(f->v1) && *endVertex == *(f->v2))
+		{
+			addFace(f->v1, v1, v2);
+			addFace(f->v1, v2, f->v3);
+			addFace(v1, f->v2, v2);
+		}
+		else if (*startVertex == *(f->v2) && *endVertex == *(f->v1))
+		{
+			addFace(f->v1, v2, v1);
+			addFace(f->v1, v1, f->v3);
+			addFace(v2, f->v2, v1);
+		}
+		else if (*startVertex == *(f->v2) && *endVertex == *(f->v3))
+		{
+			addFace(f->v2, v1, v2);
+			addFace(f->v2, v2, f->v1);
+			addFace(v1, f->v3, v2);
+		}
+		else if (*startVertex == *(f->v3) && *endVertex == *(f->v2))
+		{
+			addFace(f->v2, v2, v1);
+			addFace(f->v2, v1, f->v1);
+			addFace(v2, f->v3, v1);
+		}
+		else if (*startVertex == *(f->v3) && *endVertex == *(f->v1))
+		{
+			addFace(f->v3, v1, v2);
+			addFace(f->v3, v2, f->v2);
+			addFace(v1, f->v1, v2);
+		}
+		else
+		{
+			addFace(f->v3, v2, v1);
+			addFace(f->v3, v1, f->v2);
+			addFace(v2, f->v1, v1);
+		}
+	}
+
+
+	void PolygonObject::breakFaceInThree(int index, wcl::Vector newPos)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+
+		addFace(f->v1, f->v2, v);
+		addFace(f->v2, f->v3, v);
+		addFace(f->v3, f->v1, v);
+	}
+
+
+	void PolygonObject::breakFaceInFour(int index, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* endVertex)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+
+		if (*endVertex == *(f->v1))
+		{
+			addFace(f->v1, v1, v2);
+			addFace(v1, f->v2, v2);
+			addFace(f->v2, f->v3, v2);
+			addFace(f->v3, f->v1, v2);
+		}
+		else if (*endVertex == *(f->v2))
+		{
+			addFace(f->v2, v1, v2);
+			addFace(v1, f->v3, v2);
+			addFace(f->v3, f->v1, v2);
+			addFace(f->v1, f->v2, v2);
+		}
+		else
+		{
+			addFace(f->v3, v1, v2);
+			addFace(v1, f->v1, v2);
+			addFace(f->v1, f->v2, v2);
+			addFace(f->v2, f->v3, v2);
+		}
+	}
+
+	void PolygonObject::breakFaceInFive(int index, wcl::Vector newPos1, wcl::Vector newPos2, int linedVertex)
+	{
+		Face* f = faceList[index];
+		faceList.erase(faceList.begin() + index);
+
+		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+
+		double cont = 0;
+		if (linedVertex == 1)
+		{
+			addFace(f->v2, f->v3, v1);
+			addFace(f->v2, v1, v2);
+			addFace(f->v3, v2, v1);
+			addFace(f->v2, v2, f->v1);
+			addFace(f->v3, f->v1, v2);
+		}
+		else if (linedVertex == 2)
+		{
+			addFace(f->v3, f->v1, v1);
+			addFace(f->v3, v1, v2);
+			addFace(f->v1, v2, v1);
+			addFace(f->v3, v2, f->v2);
+			addFace(f->v1, f->v2, v2);
+		}
+		else
+		{
+			addFace(f->v1, f->v2, v1);
+			addFace(f->v1, v1, v2);
+			addFace(f->v2, v2, v1);
+			addFace(f->v1, v2, f->v3);
+			addFace(f->v2, f->v3, v2);
+		}
+	}
 
 
 	void PolygonObject::splitFaces(const PolygonObject& object)
@@ -355,14 +661,42 @@ namespace wcl
 								if (!(signFace2Vert1==signFace2Vert2 && signFace2Vert2 == signFace2Vert3))
 								{
 									Line line = face1Plane.intersect(face2Plane);
-									LineSegment segment1(line, face1, signFace1Vert1, signFace1Vert2, signFace1Vert3);
-									LineSegment segment2(line, face2, signFace2Vert1, signFace2Vert2, signFace2Vert3);
+									LineSegment segment1(line, *face1, signFace1Vert1, signFace1Vert2, signFace1Vert3);
+									LineSegment segment2(line, *face2, signFace2Vert1, signFace2Vert2, signFace2Vert3);
 
 									if (segment1.intersect(segment2))
 									{
 										int lastNumFaces = faceList.size();
-										this.splitFace(i, segment1, segment2);
-									
+										this->splitFace(i, segment1, segment2);
 
+										if (face1 != faceList[i])
+										{
+											if (*face1 == *(faceList[faceList.size() -1]))
+											{
+												if (i != faceList.size() -1)
+												{
+													faceList.erase(faceList.end() - 1);
+													faceList.insert(faceList.begin() + i, face1);
+												}
+												else
+												{
+													continue;
+												}
+											}
+											else
+											{
+												i--;
+												break;
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 };
 

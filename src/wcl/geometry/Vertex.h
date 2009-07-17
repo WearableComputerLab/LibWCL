@@ -52,11 +52,15 @@ namespace wcl
 			};
 
 			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);
+			Vertex(const wcl::Vector& position, VertexStatus v);
 			Vertex(const Vertex& v);
 			Vertex();
 
 			void setStatus(VertexStatus s);
 			VertexStatus getStatus();
+
+			bool operator==(const Vertex& other) const;
+
 
 			/**
 			 * The position of the vertex in 3D space

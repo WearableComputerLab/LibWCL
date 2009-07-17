@@ -69,6 +69,7 @@ public:
     T normal() const;
     Vector unit() const;
 	Vector crossProduct(const Vector& v) const;
+	T angle(const Vector& v) const;
 
 	T dot(const Vector&) const;
 

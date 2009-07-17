@@ -79,7 +79,7 @@ namespace wcl
 
 	bool LineSegment::intersect(const LineSegment& s)
 	{
-		return(!(endDistance<s.startDistance+TOL || s.endDistance < this->startDistance + TOL))
+		return(!(endDistance<s.startDistance+TOL || s.endDistance < this->startDistance + TOL));
 	}
 
 	void LineSegment::swapEnds()

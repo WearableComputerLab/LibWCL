@@ -26,6 +26,7 @@
 
 
 #include <assert.h>
+#include <math.h>
 
 #include "Face.h"
 #include "Plane.h"
@@ -55,6 +56,22 @@ namespace wcl
 	}
 
 
+	double Face::getArea()
+	{
+		wcl::Vector p1 = v1->position;
+		wcl::Vector p2 = v2->position;
+		wcl::Vector p3 = v3->position;
+
+		wcl::Vector xy(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
+		wcl::Vector xz(p3[0] - p1[0], p3[1] - p1[1], p3[2] - p1[2]);
+
+		double a = fabs((p1 - p2).normal());
+		double c = fabs((p1 - p3).normal());
+		double b = xy.angle(xz);
+
+		return (a * c * sin(b)) / 2.0;
+	}
+
 	wcl::Vector Face::getNormal()
 	{
 		wcl::Vector& vec1 = v1->position;
@@ -69,6 +86,10 @@ namespace wcl
 		return Plane(v1->position,v2->position,v3->position);
 	}
 
+	bool Face::operator==(const Face& f) const
+	{
+		return (*v1 == *(f.v1) && *v2 == *(f.v2) && *v3 == *(f.v3));
+	}
 
 }
 

@@ -41,11 +41,22 @@ namespace wcl
 		this->texCoord = texCoord;
 	}
 
+	Vertex::Vertex(const wcl::Vector& position, VertexStatus v)
+	{
+		this->position = position;
+		this->status = v;
+	}
+
 	Vertex::Vertex(const Vertex& v)
 	{
 		this->position = v.position;
 		this->normal = v.normal;
 		this->texCoord = v.texCoord;
+	}
+
+	bool Vertex::operator== (const Vertex& other) const
+	{
+		return (this->position == other.position);
 	}
 
 }

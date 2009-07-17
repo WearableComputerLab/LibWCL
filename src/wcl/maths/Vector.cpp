@@ -354,6 +354,14 @@ T Vector::dot(const Vector& v) const
 	
 }
 
+T Vector::angle(const Vector& v) const
+{
+	Vector v1 = this->unit();
+	Vector v2 = v.unit();
+
+	return acos(v1.dot(v2));
+}
+
 Vector Vector::crossProduct(const Vector& v) const
 {
 	assert ((this->getRows() ==  3 && v.getRows() == 3) && "Vectors must have length 3 for cross product");

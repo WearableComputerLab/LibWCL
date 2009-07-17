@@ -82,6 +82,10 @@ namespace wcl
 
 			const std::vector<Vertex*>& getVerts();
 
+			bool operator== (const Face& f) const;
+
+			double getArea();
+
 			/**
 			 * The vertices
 			 */
