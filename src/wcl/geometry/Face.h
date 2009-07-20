@@ -29,9 +29,12 @@
 #define FACE_H
 
 #include <wcl/geometry/BoundingBox.h>
+#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/geometry/Plane.h>
 #include <wcl/geometry/Vertex.h>
 #include <config.h>
+
+class PolygonObject;
 
 namespace wcl
 {
@@ -41,14 +44,6 @@ namespace wcl
 	class Face 
 	{
 		public:
-			enum FaceStatus
-			{
-				UNKNOWN,
-				INSIDE,
-				OUTSIDE,
-				SAME,
-				OPPOSITE
-			};
 
 			/**
 			 * Copy Constructor.
@@ -84,6 +79,8 @@ namespace wcl
 
 			bool operator== (const Face& f) const;
 
+			bool quickClassify();
+
 			double getArea();
 
 			/**
@@ -94,7 +91,7 @@ namespace wcl
 			Vertex* v3;
 		private:
 
-			FaceStatus status;
+			IntersectStatus status;
 
 			/**
 			 * Calculating a bounding box whenever it's needed is slow,

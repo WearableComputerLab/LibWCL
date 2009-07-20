@@ -28,8 +28,9 @@
 #ifndef VERTEX_H
 #define VERTEX_H
 
-#include <vector>
+#include <set>
 
+#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl
@@ -40,24 +41,13 @@ namespace wcl
 	class Vertex
 	{
 		public:
-			/**
-			 * The status of a polygon, used for CSG operations.
-			 */
-			enum VertexStatus 
-			{
-				INSIDE,
-				OUTSIDE,
-				BOUNDARY,
-				UNKNOWN
-			};
-
 			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);
-			Vertex(const wcl::Vector& position, VertexStatus v);
+			Vertex(const wcl::Vector& position, IntersectStatus v);
 			Vertex(const Vertex& v);
 			Vertex();
 
-			void setStatus(VertexStatus s);
-			VertexStatus getStatus();
+			void setStatus(IntersectStatus s);
+			IntersectStatus getStatus();
 
 			bool operator==(const Vertex& other) const;
 
@@ -80,12 +70,14 @@ namespace wcl
 			/**
 			 * Vertices that are adjacent to this one.
 			 */
-			std::vector<Vertex*> adjacentVerts;
+			std::set<Vertex*> adjacentVerts;
 			
 			/**
 			 * Status of the vertex, used during CSG operations
 			 */
-			VertexStatus status;
+			IntersectStatus status;
+
+			void mark(IntersectStatus s);
 
 		private:
 			//nothing :(

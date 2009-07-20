@@ -36,11 +36,13 @@
 
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
+#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
+
 	/**
 	 * Representation of a polygonal object made of 1 or more polygons.
 	 */
@@ -107,10 +109,10 @@ namespace wcl
 			 *
 			 * @returns the vertex
 			 */
-			Vertex* addVertex(const wcl::Vector& position, Vertex::VertexStatus v);
+			Vertex* addVertex(const wcl::Vector& position, IntersectStatus v);
 			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 	};
-};
+}
 
 #endif
 

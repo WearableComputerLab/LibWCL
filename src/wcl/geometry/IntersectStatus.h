@@ -25,53 +25,21 @@
  */
 
 
-#include <wcl/geometry/Vertex.h>
+#ifndef INTERSECT_STATUS_H
+#define INTERSECT_STATUS_H
 
 namespace wcl
 {
-	Vertex::Vertex() : status(UNKNOWN)
+	enum IntersectStatus
 	{
-		// hi!
-	}
-
-	Vertex::Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord)
-	{
-		this->position = position;
-		this->normal = normal;
-		this->texCoord = texCoord;
-	}
-
-	Vertex::Vertex(const wcl::Vector& position, IntersectStatus v)
-	{
-		this->position = position;
-		this->status = v;
-	}
-
-	Vertex::Vertex(const Vertex& v)
-	{
-		this->position = v.position;
-		this->normal = v.normal;
-		this->texCoord = v.texCoord;
-	}
-
-	bool Vertex::operator== (const Vertex& other) const
-	{
-		return (this->position == other.position);
-	}
-
-	void Vertex::mark(IntersectStatus s)
-	{
-		this->status = s;
-
-		std::set<Vertex*>::iterator it;
-		for (it = adjacentVerts.begin(); it != adjacentVerts.end(); ++it)
-		{
-			if ((*it)->status == UNKNOWN)
-			{
-				(*it)->mark(s);
-			}
-		}
-	}
-
-
+		UNKNOWN,
+		INSIDE,
+		OUTSIDE,
+		SAME,
+		OPPOSITE,
+		BOUNDARY
+	};
 }
+
+#endif
+

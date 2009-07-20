@@ -28,6 +28,8 @@
 #ifndef BOUNDING_BOX_H
 #define BOUNDING_BOX_H
 
+#include <vector>
+
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
 #include <config.h>

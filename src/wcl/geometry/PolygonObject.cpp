@@ -148,10 +148,33 @@ namespace wcl
 
 	void PolygonObject::classifyFaces(const PolygonObject& object)
 	{
-		std::vector<Vertex*>::iterator it;
+		Face* f;
+		std::vector<Face*>::iterator it;
 		for (it = faceList.begin(); it < faceList.end(); ++it)
 		{
-			(*it)->classify();
+			f = *it;
+			f->v1->adjacentVerts.insert(f->v2);
+			f->v1->adjacentVerts.insert(f->v3);
+			f->v2->adjacentVerts.insert(f->v1);
+			f->v2->adjacentVerts.insert(f->v3);
+			f->v3->adjacentVerts.insert(f->v1);
+			f->v3->adjacentVerts.insert(f->v2);
+		}
+
+		for (it = faceList.begin(); it < faceList.end(); ++it)
+		{
+			f = *it;
+			if (f->quickClassify() == false)
+			{
+				f->raytraceClassify(object);
+
+				if (f->v1->status == Vertex::UNKNOWN)
+					f->v1->mark(f->status);
+				if (f->v2->status == Vertex::UNKNOWN)
+					f->v2->mark(f->status);
+				if (f->v3->status == Vertex::UNKNOWN)
+					f->v3->mark(f->status);
+			}
 		}
 	}
 

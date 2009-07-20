@@ -34,6 +34,8 @@
 #include <wcl/geometry/Face.h>
 #include <wcl/geometry/Line.h>
 
+class Face;
+
 namespace wcl
 {
 	class LineSegment
