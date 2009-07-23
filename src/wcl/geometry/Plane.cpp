@@ -106,5 +106,21 @@ namespace wcl
 		hnf.p = d / rootA2B2C2;
 	}
 
+	wcl::Vector Plane::getNormal() const
+	{
+		return normal;
+	}
+
+	double Plane::getD() const
+	{
+		return d;
+	}
+
+	wcl::Vector Plane::getPosition() const
+	{
+		return normal;
+	}
+
+
 }
 

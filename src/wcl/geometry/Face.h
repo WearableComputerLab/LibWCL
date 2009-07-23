@@ -89,9 +89,9 @@ namespace wcl
 			Vertex* v1;
 			Vertex* v2;
 			Vertex* v3;
+			IntersectStatus status;
 		private:
 
-			IntersectStatus status;
 
 			/**
 			 * Calculating a bounding box whenever it's needed is slow,

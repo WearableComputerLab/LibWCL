@@ -74,6 +74,11 @@ namespace wcl
 			 */
 			Line intersect(const Plane& p) const;
 
+
+			wcl::Vector getPosition() const;
+			wcl::Vector getNormal() const;
+			double getD() const;
+
 			/**
 			 * Returns the Hessian Normal Form of this plane.
 			 */

@@ -166,18 +166,46 @@ namespace wcl
 			f = *it;
 			if (f->quickClassify() == false)
 			{
-				f->raytraceClassify(object);
+				object.raytraceClassify(*f);
 
-				if (f->v1->status == Vertex::UNKNOWN)
+				if (f->v1->status == UNKNOWN)
 					f->v1->mark(f->status);
-				if (f->v2->status == Vertex::UNKNOWN)
+				if (f->v2->status == UNKNOWN)
 					f->v2->mark(f->status);
-				if (f->v3->status == Vertex::UNKNOWN)
+				if (f->v3->status == UNKNOWN)
 					f->v3->mark(f->status);
 			}
 		}
 	}
 
+	void PolygonObject::raytraceClassify(Face& f)
+	{
+		wcl::Vector p0;
+		p0.setSize(3);
+		p0[0] = (f.v1[0], + f.v2[0] + f.v3[0]) /3.0;
+		p0[1] = (f.v1[1], + f.v2[1] + f.v3[1]) /3.0;
+		p0[2] = (f.v1[2], + f.v2[2] + f.v3[2]) /3.0;
+		Line ray(f.getNormal(), p0);
+
+		bool success;
+		double dotProduct, distance;
+		wcl::Vector intersectionPoint;
+		Face* closestFace = NULL;
+		double closestDistance;
+
+		do
+		{
+			success = true;
+			closestDistance = std::numeric_limits<double>::max();
+
+			std::vector<Face*>::iterator it;
+			for (it = faceList.begin(); it < faceList.end(); ++it)
+			{
+				Face* face = *it;
+				dotProduct = face.getNormal().dot(ray.getDirection());
+				
+
+	}
 	void PolygonObject::splitFace(int index, const LineSegment& segment1, const LineSegment& segment2)
 	{
 		Vertex* startPosvertex, endPosVertex;
@@ -222,11 +250,11 @@ namespace wcl
 		// see whether it is a boundary
 		if (startType == LineSegment::VERTEX)
 		{
-			startVertex->setStatus(Vertex::BOUNDARY);
+			startVertex->setStatus(BOUNDARY);
 		}
 		if (endType == LineSegment::VERTEX)
 		{
-			endVertex->setStatus(Vertex::BOUNDARY);
+			endVertex->setStatus(BOUNDARY);
 		}
 
 		/*
@@ -358,7 +386,7 @@ namespace wcl
 		}
 	}
 
-	Vertex* PolygonObject::addVertex(const wcl::Vector& position, Vertex::VertexStatus v)
+	Vertex* PolygonObject::addVertex(const wcl::Vector& position, IntersectStatus v)
 	{
 		Vertex* vertex = new Vertex(position, v);
 		std::vector<wcl::Vertex*>::iterator it;
@@ -403,7 +431,7 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+		Vertex* v = addVertex(newPos, BOUNDARY);
 
 		switch(splitEdge)
 		{
@@ -430,7 +458,7 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+		Vertex* v = addVertex(newPos, BOUNDARY);
 
 		if (*endVertex == *(f->v1))
 		{
@@ -455,8 +483,8 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
-		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+		Vertex* v1 = addVertex(newPos1, BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, BOUNDARY);
 
 		switch(splitEdge)
 		{
@@ -486,7 +514,7 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+		Vertex* v = addVertex(newPos, BOUNDARY);
 
 		if (*endVertex == *(f->v1))
 		{
@@ -513,8 +541,8 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
-		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+		Vertex* v1 = addVertex(newPos1, BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, BOUNDARY);
 
 		if (*startVertex == *(f->v1) && *endVertex == *(f->v2))
 		{
@@ -560,7 +588,7 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v = addVertex(newPos, Vertex::BOUNDARY);
+		Vertex* v = addVertex(newPos, BOUNDARY);
 
 		addFace(f->v1, f->v2, v);
 		addFace(f->v2, f->v3, v);
@@ -573,8 +601,8 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
-		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+		Vertex* v1 = addVertex(newPos1, BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, BOUNDARY);
 
 		if (*endVertex == *(f->v1))
 		{
@@ -604,8 +632,8 @@ namespace wcl
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
 
-		Vertex* v1 = addVertex(newPos1, Vertex::BOUNDARY);
-		Vertex* v2 = addVertex(newPos2, Vertex::BOUNDARY);
+		Vertex* v1 = addVertex(newPos1, BOUNDARY);
+		Vertex* v2 = addVertex(newPos2, BOUNDARY);
 
 		double cont = 0;
 		if (linedVertex == 1)

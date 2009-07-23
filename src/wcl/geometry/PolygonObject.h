@@ -87,6 +87,8 @@ namespace wcl
 
 			void classifyFaces(const PolygonObject& object);
 
+			void raytraceClassify(Face& f) const;
+
 			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
 
 		private:

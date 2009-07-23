@@ -57,5 +57,14 @@ namespace wcl
 		return (this->pos - p).normal();
 	}
 
+	wcl::Vector Line::intersect(const wcl::Plane& p)
+	{
+		double a = p.getNormal()[0];
+		double b = p.getNormal()[1];
+		double c = p.getNormal()[2];
+
+	}
+
+
 }
 

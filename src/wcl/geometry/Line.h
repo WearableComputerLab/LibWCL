@@ -29,6 +29,7 @@
 #define LINE_H
 
 #include <wcl/maths/Vector.h>
+#include <wcl/geometry/Plane.h>
 
 namespace wcl
 {
@@ -42,6 +43,7 @@ namespace wcl
 			wcl::Vector getDirection();
 
 			double distanceFromPoint(const wcl::Vector& p);
+			wcl::Vector intersect(const wcl::Plane& p);
 
 		private:
 			wcl::Vector pos;
