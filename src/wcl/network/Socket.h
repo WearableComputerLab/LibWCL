@@ -66,8 +66,9 @@ class Socket
 		int operator *() const;
 	
 	protected:
-		int sockfd;	
+		int sockfd;
 		sockaddr_in address;
+                BlockingMode blocking;
 
 		Socket();
 		virtual bool bind( const unsigned port);
