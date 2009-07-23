@@ -230,11 +230,11 @@ void ViconClient::loadTrackedObjects()
 				else {
 					//Decide on whether it was a marker or a 6dof
 					if (channelPerNameCount == 4) {
-						TrackedObject m(prevName, MARKER);
+						ViconTrackedObject m(prevName, POSITION);
 						objects.push_back(m);
 					}
 					else if (channelPerNameCount == 6) {
-						TrackedObject sdo(prevName, SIX_DOF);
+						ViconTrackedObject sdo(prevName, SIX_DOF);
 						objects.push_back(sdo);
 					}
 					else {
@@ -248,11 +248,11 @@ void ViconClient::loadTrackedObjects()
 		}
 		//add the last one...
 		if (channelPerNameCount == 4) {
-			TrackedObject m(prevName, MARKER);
+			ViconTrackedObject m(prevName, POSITION);
 			objects.push_back(m);
 		}
 		else if (channelPerNameCount == 6) {
-			TrackedObject sdo(prevName, SIX_DOF);
+			ViconTrackedObject sdo(prevName, SIX_DOF);
 			objects.push_back(sdo);
 		}
 		else {

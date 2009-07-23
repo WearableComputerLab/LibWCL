@@ -77,12 +77,13 @@ vicon_sources=
 
 if ENABLE_VICON
 vicon_headers+=\
-			vicon/TrackedObject.h\
-			vicon/ViconClient.h
+			tracking/TrackedObject.h \
+			tracking/ViconTrackedObject.h \
+			tracking/ViconClient.h
 
 vicon_sources+=\
-			vicon/TrackedObject.cpp\
-			vicon/ViconClient.cpp
+			tracking/ViconTrackedObject.cpp \
+			tracking/ViconClient.cpp
 
 endif
 

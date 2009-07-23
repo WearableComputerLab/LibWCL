@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TRACKEDOBJECT_H_
-#define TRACKEDOBJECT_H_
+#ifndef VICON_TRACKEDOBJECT_H
+#define VICON_TRACKEDOBJECT_H
 
 #include <string>
 
@@ -33,47 +33,27 @@
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
+#include <wcl/tracking/TrackedObject.h>
 
 namespace wcl 
 {
-
-	/**
-	 * The type of object that we are tracking.
-	 * Markers simply have position.
-	 * Six DOF objects have position and rotation.
-	 */
-	enum ObjectType
-	{
-		/**
-		 * A 3DOF Marker
-		 */
-		MARKER,
-
-		/**
-		 * A 6DOF object
-		 */
-		SIX_DOF
-	};
-
 	/**
 	 * Represents an object that can be tracked by the Vicon system.
-	 * 
 	 */
-	class TrackedObject
+	class ViconTrackedObject : public TrackedObject
 	{
 		public:
-
 			/**
 			 * Constructor.
 			 * @param name The name of the channel.
 			 * @param type The type of tracked object.
 			 */
-			TrackedObject(std::string name, ObjectType type);
+			ViconTrackedObject(std::string name, ObjectType type);
 
 			/**
 			 * Destructor.
 			 */
-			virtual ~TrackedObject();
+			virtual ~ViconTrackedObject();
 
 			/**
 			 * Updates the data stored in this object.
@@ -88,33 +68,16 @@ namespace wcl
 			/**
 			 * Returns a string representation of the object.
 			 */
-			std::string toString();
+			virtual std::string toString();
 
-			/**
-			 * Returns the name of the object.
-			 */
-			std::string getName();
+			virtual SMatrix getTransform();
 
-			/**
-			 * Returns this object's type.
-			 */
-			ObjectType getType();
-
-
-			SMatrix getTransform();
-
-			Vector getTranslation();
+			virtual Vector getTranslation();
 			
-			SMatrix getRotation();
+			virtual SMatrix getRotation();
 
 
 		protected:
-
-			/**
-			 * The name of this object.
-			 */
-			std::string name;
-
 			/**
 			 * Location of this object in x.
 			 */
@@ -140,15 +103,9 @@ namespace wcl
 			 * receive this information from the server.
 			 */
 			bool occluded;
-		
-		private:
-			/**
-			 * The type of object.
-			 */
-			ObjectType type;
-
 	};
 
 };
 
-#endif /*TRACKEDOBJECT_H_*/
+#endif 
+
