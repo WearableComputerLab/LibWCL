@@ -88,9 +88,8 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 # 	This simply enables each option
 AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
 	     enable_network="yes";
-	     enable_serial="yes";
 	     enable_video_1394="yes";
-	     enable_rawports="yes" ;)
+	     enable_rawports="yes" ;
 	     enable_video_uvc="yes";
 		 enable_gestures="yes";
 		 enable_vicon="yes";
@@ -105,7 +104,6 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_gestures" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
-# test "x$enable_serial" = "xno" && \
    test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" ; then
    AC_MSG_RESULT([nup])
@@ -255,19 +253,19 @@ AC_CHECK_FUNCS([memset])
 # Crash out if nothing is defined
 #
 ###############################
-echo "-----------------------------"
+echo "-------------------------------"
 echo "libwcl Configuration Summary "
-echo "-----------------------------"
+echo "-------------------------------"
 echo "Rawports Support(com/lpt): $enable_rawports"
-echo "Microsoft (msvc) support: $enable_msvc"
-echo "network support         : $enable_network"
-#echo "serial (rs232) support  : $enable_serial"
-echo "1394 (Firewire) Video   : $enable_video_1394"
-echo "Gesture recognition     : $enable_gestures"
-echo "Vicon MoCap Support     : $enable_vicon"
-echo "X11 Support             : $enable_x11"
-echo "Maths Support           : Enabled (default)"
-echo "-----------------------------"
+echo "Microsoft (msvc) support : $enable_msvc"
+echo "network support          : $enable_network"
+echo "1394 (Firewire) Video    : $enable_video_1394"
+echo "Gesture recognition      : $enable_gestures"
+echo "Vicon MoCap Support      : $enable_vicon"
+echo "UVC Video support        : $enable_video_uvc"
+echo "X11 Support              : $enable_x11"
+echo "Maths Support            : Enabled (default)"
+echo "-------------------------------"
 
 #
 # Tell automake to substitute the values for 
