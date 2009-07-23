@@ -1,4 +1,4 @@
-/*-
+/*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
@@ -24,47 +24,45 @@
  * SUCH DAMAGE.
  */
 
+#include <wcl/maths/Matrix.h>
 
-#ifndef OSG_HELPER_H
-#define OSG_HELPER_H
+/**
+ * Performs a singlular value decomposition on a matrix.
+ *
+ * Based on the following tutorial:
+ *
+ * http://www.miislita.com/information-retrieval-tutorial/svd-lsi-tutorial-1-understanding.html
+ *
+ * @param[in] a The matrix to decompose.
+ * @param[out] d The diagonal matrix part of the decomposition
+ * @param[out] u wtf mate?! \todo What the hell am I doing here!
+ */
 
-namespace wcl
+void SVD(const Matrix& a, Matrix& d, Matrix& u)
 {
+	int rows = a.getRows();
+	int cols = a.getCols();
 
-	/**
-	 * Class contains helpful functions for dealing with OpenSceneGraph 2.
-	 * Common things that should be provided for you, but arent.
-	 *
-	 * @author Michael Marner (michael@20papercups.net)
-	 */
-	class OSGHelper
+	if (rows<cols)
 	{
+		throw std::string("Sorry buddy, rows >= cols for SVD!");
+	}
+	d = a;
+	double g = 0;
+	double f,h;
+	double x = 0
+	// rowvector e(n)
+	// rectMatrixRow ei(e,0)
+	// d.resize(n);
+	// rectmatrixcol uci(u,0)
+	// rectmatrixrow uri(u,0,1,cols-1)
+	
+	
+	for (int i=0;i<cols;i++)
+	{
+		
 
-		public:
+	}
 
-		/**
-		 * Returns the number of screens available to openscenegraph.
-		 *
-		 * On Linux, this number is the total number of screens defined
-		 * in xorg.conf. Note that if you are using Xinerama or TwinView
-		 * with two monitors, this appears to openscenegraph as a single
-		 * screen.
-		 *
-		 * On Windows, this should simply be the number of monitors you
-		 * have connected.
-		 *
-		 * BIG DISCLAIMER: OpenSceneGraph must be initialised before this
-		 * function is called. Creating an osgViewer should be enough, but
-		 * this requires further testing (sorry!).
-		 *
-		 * @return The number of screens on this system.
-		 */
-		int getNumScreens();
-
-
-	};
-
-};
-
-#endif
+}
 

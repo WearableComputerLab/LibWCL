@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2005-2008 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,19 +23,52 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef WCL_DISPLAY_XDISPLAY_H
+#define WCL_DISPLAY__XDISPLAY_H
 
-#include <osg/GraphicsContext>
-#include <wcl/osg/OSGHelper.h>
+#include <string>
+#include <X11/Xlib.h>
 
-using namespace wcl;
+namespace wcl {
 
-int OSGHelper::getNumScreens() 
+/**
+ * This class provides simple routines for
+ * Interating with an X11 Display
+ */
+class XDisplay
 {
-	osg::GraphicsContext::WindowingSystemInterface* wsi = osg::GraphicsContext::getWindowingSystemInterface();
-	osg::GraphicsContext::ScreenIdentifier si;
-	si.readDISPLAY();
+    public:
+	XDisplay(const char *displaynameandport);
+	XDisplay(::Display *); //Pass in an X Display
+	~XDisplay();
 
-	return wsi->getNumScreens(si);
+	void enableScreenSaver();
+	void enableDPMS();
+	void disableScreenSaver();
+	void disableDPMS();
+
+	void enableAll();
+	void disableAll();
+
+	::Display *getXConnection() const;
+
+    private:
+	::Display *connection; // X Windows Connection
+	bool connectionOwner;  // Whether this object is the connection owner or not
+
+};
+
+class XException
+{
+public:
+    XException(const XDisplay *){};
+    virtual ~XException(){};
+
+    int getCause() const { return 1;};
+    const std::string getReason() const {"Failed To Connect";};
+};
 
 }
 
+
+#endif

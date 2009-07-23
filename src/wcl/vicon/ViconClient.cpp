@@ -1,4 +1,4 @@
-/*-
+/*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
@@ -32,6 +32,7 @@
  * Michael Marner (michael.marner@unisa.edu.au)
  */
 
+#include "config.h"
 #include "ViconClient.h"
 #include <iostream>
 
@@ -39,13 +40,81 @@ using namespace std;
 using namespace wcl;
 
 
+/**
+ * Reverses the order of bytes in an int.
+ * Needed for Power PC
+ *
+ * @param The int to reverse.
+ * @return The int with the byte order reversed.
+ */
+int32_t ViconClient::reverseByteOrder(int32_t n)
+{
+	unsigned char c1,c2,c3,c4;
+	c1 = n & 255;
+	c2 = (n >> 8) & 255;
+	c3 = (n >> 16) & 255;
+	c4 = (n >> 24) & 255;
+
+	return ((int32_t)c1 << 24) + ((int32_t)c2 << 16) + ((int32_t)c3 << 8) + c4;
+}
+
+/**
+ * Reverses the byte order of a double.
+ * Needed for PowerPC
+ *
+ * @param n The double to reverse.
+ * @return The double with reveresed byte order.
+ */
+double ViconClient::reverseBytesDouble(double n)
+{
+	union
+	{
+		double f;
+		unsigned char b[8];
+	} dat1, dat2;
+
+	dat1.f = n;
+	dat2.b[0] = dat1.b[7];
+	dat2.b[1] = dat1.b[6];
+	dat2.b[2] = dat1.b[5];
+	dat2.b[3] = dat1.b[4];
+	dat2.b[4] = dat1.b[3];
+	dat2.b[5] = dat1.b[2];
+	dat2.b[6] = dat1.b[1];
+	dat2.b[7] = dat1.b[0];
+	return dat2.f;
+}
+
+
+// If we are on PowerPC, reverse the byte order of all the packet types
+#ifdef WORDS_BIGENDIAN
+int32_t ViconClient::CLOSE = 0;
+int32_t ViconClient::INFO = reverseByteOrder(1);
+int32_t ViconClient::DATA = reverseByteOrder(2);
+int32_t ViconClient::STREAMING_ON = reverseByteOrder(3);
+int32_t ViconClient::STREAMING_OFF = reverseByteOrder(4);
+int32_t ViconClient::REQUEST = 0;
+int32_t ViconClient::REPLY = reverseByteOrder(1);
+#else
+int32_t ViconClient::CLOSE = 0;
+int32_t ViconClient::INFO = 1;
+int32_t ViconClient::DATA = 2;
+int32_t ViconClient::STREAMING_ON = 3;
+int32_t ViconClient::STREAMING_OFF = 4;
+int32_t ViconClient::REQUEST = 0;
+int32_t ViconClient::REPLY = 1;
+#endif
+
 ViconClient::ViconClient(std::string hostname, int port)
 {
+
 	this->socket = new TCPSocket(hostname, port);
 	socket->setBlockingMode(socket->BLOCKING);
 	loadTrackedObjects();
-	update();
+
+	isStreaming = false;
 }
+
 
 ViconClient::~ViconClient()
 {
@@ -65,19 +134,24 @@ std::vector<std::string> ViconClient::getChannelNames()
 	//send it an info request...
 	int32_t request[] = {ViconClient::INFO, ViconClient::REQUEST};
 
-	socket->write(request, 8);
+	socket->writeUntil(request, 8);
 
 	int32_t packet;
 	int32_t type;
 	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
-	
+	socket->readUntil(&packet, 4);
+	socket->readUntil(&type, 4);
+
+
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
 	{
 		int32_t numChannels;
-		socket->read(&numChannels, 4);
+		socket->readUntil(&numChannels, 4);
+
+		#ifdef WORDS_BIGENDIAN
+		numChannels = reverseByteOrder(numChannels);
+		#endif
 
 		for (int i=0;i<numChannels;i++)
 		{
@@ -101,21 +175,29 @@ void ViconClient::loadTrackedObjects()
 	}
 	
 	//send it an info request...
-	socket->write(&info, 4);
-	socket->write(&request, 4);
+	socket->writeUntil(&info, 4);
+	socket->writeUntil(&request, 4);
 	
 	int32_t packet;
 	int32_t type;
 	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
+	socket->readUntil(&packet, 4);
+	socket->readUntil(&type, 4);
+
 	
 	//make sure we're getting the right data back!
 	if (packet == ViconClient::INFO && type == ViconClient::REPLY)
 	{
 		
 		int32_t numChannels;
-		socket->read(&numChannels, 4);
+		socket->readUntil(&numChannels, 4);
+
+		#ifdef WORDS_BIGENDIAN
+		numChannels = reverseByteOrder(numChannels);
+		#endif
+
+		//cout << "We are expecting " << numChannels << " channels" << endl;
+
 		std::string prevName;
 		int channelPerNameCount = 0;
 		for (int i=0;i<numChannels;i++)
@@ -177,6 +259,10 @@ void ViconClient::loadTrackedObjects()
 			throw std::string("Unexpected number of DOF");
 		}
 	}
+	else
+	{
+		throw std::string("Incorrect Packet/type when reading channel names");
+	}
 }
 
 TrackedObject* ViconClient::getObject(std::string name) {
@@ -193,37 +279,42 @@ TrackedObject* ViconClient::getObject(std::string name) {
 
 void ViconClient::update()
 {
-	int32_t data = ViconClient::DATA;
-	int32_t request = ViconClient::REQUEST;
+	if (!isStreaming)
+	{
+		//turn on streaming yeah!
+		int32_t data = ViconClient::STREAMING_ON;
+		int32_t request = ViconClient::REQUEST;
+		socket->writeUntil(&data, 4);
+		socket->writeUntil(&request, 4);
+		isStreaming = true;
+	}
+
+	int32_t packet[2];
+	socket->readUntil(packet, 8);
+
+	if (packet[0] == ViconClient::DATA && packet[1] == ViconClient::REPLY)
+	{
 	
-	//Send a data request to the server.
-	socket->write(&data, 4);
-	socket->write(&request, 4);
-	
-	int32_t packet;
-	int32_t type;
-	
-	socket->read(&packet, 4);
-	socket->read(&type, 4);
-	
-	if (packet == ViconClient::DATA && type == ViconClient::REPLY) {
-		
 		int32_t count;
-		socket->read(&count, 4);
-		
+		socket->readUntil(&count, 4);
+
+		#ifdef WORDS_BIGENDIAN
+		count = reverseByteOrder(count);
+		#endif
+
 		double values[count];
-		
+
 		// read all values in one big block
-		socket->read(values, sizeof((*values)*count));
-		
-		time = values[0];
+		socket->readUntil(values, 8*count);
+
 		int offset = 1;
 		for (unsigned int i=0;i<objects.size();i++) {
 			objects[i].updateData(values, offset);
 		}
 	}
-	else {
-		throw std::string("Broken Data packet");
+	else 
+	{
+		throw std::string ("Unexpected packet type");
 	}
 }
 
@@ -232,13 +323,20 @@ std::string ViconClient::readChannel()
 	if (socket->isValid())
 	{
 		int32_t letterCount;
-		socket->read(&letterCount, 4);
+		socket->readUntil(&letterCount, 4);
+
+		//cout << "The length of this channel name is " << letterCount << " letters" << endl;
+
+		#ifdef WORDS_BIGENDIAN
+		letterCount = reverseByteOrder(letterCount);
+		#endif
 
 		char name[letterCount+1];
 
-		socket->read(name, letterCount);
+		socket->readUntil(name, letterCount);
 		name[letterCount] = '\0';
 		
+		//cout << "New channel is " << std::string(name) << endl;
 		return std::string(name);
 	}
 	return 0;

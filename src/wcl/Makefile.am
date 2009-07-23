@@ -10,6 +10,8 @@
 INCLUDES= -I@top_srcdir@/src/
 libwcl_a_includedir=$(includedir)/wcl
 libwcl_win32_a_includedir=$(includedir)/wcl
+AM_CPPFLAGS=
+AM_LDFLAGS=
 
 #
 # Predefines, needed for the conditionals below
@@ -84,20 +86,6 @@ vicon_sources+=\
 
 endif
 
-# 
-# OpenSceneGraph Helper Functions
-# 
-osg_headers=
-osg_sources=
-
-if ENABLE_OSG
-osg_headers+=\
-			  osg/OSGHelper.h
-
-osg_sources+=\
-              osg/OSGHelper.cpp
-endif
-
 #
 # 1394 Camera Support
 #
@@ -105,33 +93,22 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=1394cam/IEEE1394Cam.h\
-		    1394cam/AbstractIEEE1394Cam.h
+video_1394_headers+=1394cam/DC1394.h
 
-video_1394_sources+=1394cam/AbstractIEEE1394Cam.cpp\
-		    1394cam/IEEE1394Cam.cpp\
-		    1394cam/debug.cpp
+video_1394_sources+=1394cam/DC1394.cpp
+endif
+
 #
-# Platform Specific Sources
+# UVC Camera Support
 #
-if PLATFORM_OSX
-video_1394_sources+=1394cam/osx/Camera.cpp\
-		    1394cam/osx/Control.cpp\
-		    1394cam/osx/FWController.cpp\
-		    1394cam/osx/OSXIEEE1394Cam.cpp
+video_uvc_headers=
+video_uvc_sources=
 
+if ENABLE_VIDEO_UVC
+video_uvc_headers+=uvccam/UVCCamera.h
+
+video_uvc_sources+=uvccam/UVCCamera.cpp
 endif
-
-if PLATFORM_LINUX
-video_1394_sources+=1394cam/linux/LinuxIEEE1394Cam.cpp\
-		    1394cam/linux/firewire.cpp\
-		    1394cam/linux/conversions.cpp
-
-endif
-
-
-endif
-
 
 #
 # Math Libraries
@@ -141,7 +118,7 @@ maths_headers=maths/Matrix.h\
 	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
-	      maths/SMatrix.h\
+	      maths/SMatrix.cpp\
 	      maths/Vector.cpp
 
 
@@ -158,6 +135,21 @@ rawports_sources+=parallel/Parallel.cpp\
 		 serial/Serial.cpp
 endif
 
+x11_headers=
+x11_sources=
+
+if ENABLE_X11
+#
+# X11 Specific 
+#
+x11_headers+=display/XDisplay.h
+x11_sources+=display/XDisplay.cpp
+AM_CPPFLAGS+=@X11_CFLAGS@
+AM_LDFLAGS+=@X11_LIBS@
+endif
+
+
+
 #
 # What to build and what to install
 #
@@ -166,25 +158,28 @@ lib_LIBRARIES=libwcl.a
 nobase_libwcl_a_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
 				$(video_1394_headers)\
+				$(video_uvc_headers)\
 				$(gestures_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
 				$(rawports_headers)\
-				$(osg_headers)
+				$(x11_headers)
 
 libwcl_a_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
+		 $(video_uvc_sources)\
 		 $(gestures_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
 		 $(rawports_sources)\
-		 $(osg_sources)
+		 $(x11_sources)
 
 else
 lib_LIBRARIES=libwcl_win32.a
 nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 				      $(network_headers)\
 				      $(video_1394_headers)\
+				      $(video_uvc_headers)\
 				      $(gestures_headers)\
 				      $(vicon_headers)\
 				      $(maths_headers)\
@@ -194,6 +189,7 @@ nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 
 libwcl_win32_a_SOURCES=$(network_sources)\
 		       $(video_1394_sources)\
+		       $(video_uvc_sources)\
 		       $(gestures_headers)\
 		       $(vicon_sources)\
 		       $(maths_sources)\

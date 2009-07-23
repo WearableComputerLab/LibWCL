@@ -39,6 +39,7 @@
 #include <iostream>
 #include <float.h>
 #include <math.h>
+#include <cstdlib>
 
 #include "Gestures.h"
 

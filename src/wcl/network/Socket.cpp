@@ -203,8 +203,34 @@ void Socket::readUntil ( void *buffer, size_t size )
 	// pointing too. However, we know that ::read returns in bytes so we 
 	// cast to a type which can be validly incremented
 	buffer = amount + (uint8_t *)buffer; 
+	size-=amount;
     }
 }
+
+
+/**
+ * Will attempt to write to a socket form a buffer. This method will block
+ * until the requested size has been written. 
+ *
+ * @param buffer The buffer to read from.
+ * @param size The amount of data to write, the buffer must be at least this size.
+ * @throws SocketException if the remote peer has forced the socket closes.
+ */
+void Socket::writeUntil ( void *buffer, size_t size )
+{
+    ssize_t amount;
+
+    while( size > 0 ){
+		amount = this->write( buffer, size );
+
+		// We just can't increment a void * pointer as we don't know what it is
+		// pointing too. However, we know that ::read returns in bytes so we 
+		// cast to a type which can be validly incremented
+		buffer = amount + (uint8_t *)buffer; 
+		size-=amount;
+    }
+}
+
 
 /**
  * Attempt to write size characters from buffer to the socket.
@@ -218,22 +244,22 @@ void Socket::readUntil ( void *buffer, size_t size )
  */
 ssize_t Socket::write( const void *buffer, size_t size )
 {
-    if ( !isValid()){
-	return -1;
-    }
+	if ( !isValid()){
+		return -1;
+	}
 
 #ifdef WIN32
-    ssize_t retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
-    if ( retval == SOCKET_ERROR ){
-	throw new SocketException(this);
-    }
-    return retval;
+	ssize_t retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
+	if ( retval == SOCKET_ERROR ){
+		throw new SocketException(this);
+	}
+	return retval;
 #else
-    ssize_t retval =  ::write( this->sockfd, buffer, size );
-    if ( retval == -1 ){
-	throw new SocketException(this);
-    }
-    return retval;
+	ssize_t retval =  ::write( this->sockfd, buffer, size );
+	if ( retval == -1 ){
+		throw new SocketException(this);
+	}
+	return retval;
 #endif
 }
 
@@ -241,7 +267,8 @@ ssize_t Socket::write( const void *buffer, size_t size )
  * Write the given string to the socket. 
  *
  * @param string The string to write
- * @return -1 on failure, or the number of bytes written otherwise 
+ * @return -1 if the socket is invalid, or the number of bytes written otherwise 
+ * @throws SocketException if the write fails.
  */ 
 ssize_t Socket::write( const std::string &string )
 {

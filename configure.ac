@@ -58,6 +58,11 @@ AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib &
 #
 AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
+#
+# UVC Video Support 
+#
+AC_ARG_ENABLE(video-uvc, AC_HELP_STRING([--enable-video-uvc], [Enable UVC Video Support]), enable_video_uvc="yes" , enable_video_uvc="no")
+
 
 #
 # Gesture recognition support
@@ -74,9 +79,9 @@ AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System suppo
 #
 AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial/parallel]), enable_rawports="yes" , enable_rawports="no")
 
-# Support for OpenSceneGraph helper functions
+# Support for X11
 #
-AC_ARG_ENABLE(osg, AC_HELP_STRING([--enable-osg], [Enable OpenSceneGraph helper functions]), enable_osg="yes" , enable_osg="no")
+AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
 
 # 
 #  Enable All Options
@@ -85,10 +90,11 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_network="yes";
 	     enable_serial="yes";
 	     enable_video_1394="yes";
-	     enable_gestures="yes";
-	     enable_vicon="yes";
-	     enable_osg="yes";
 	     enable_rawports="yes" ;)
+	     enable_video_uvc="yes";
+		 enable_gestures="yes";
+		 enable_vicon="yes";
+		 enable_x11="yes"; )
 
 #
 #  Check to see if anything is configured
@@ -98,9 +104,12 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_video_1394" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_gestures" = "xno" && \
-   test "x$enable_osg" == "xno" && \
-   test "x$enable_rawports" = "xno" ; then
-   AC_MSG_RESULT([Note: ONLY Building Math support, try --help for more options about what to build])
+   test "x$enable_rawports" = "xno" && \ 
+# test "x$enable_serial" = "xno" && \
+   test "x$enable_video_uvc" = "xno" && \
+   test "x$enable_x11" = "xno" ; then
+   AC_MSG_RESULT([nup])
+   AC_MSG_ERROR([You must select something to build!, use --help for details])
 fi
 AC_MSG_RESULT([yes])
 
@@ -121,10 +130,11 @@ fi
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
-AM_CONDITIONAL(ENABLE_OSG, test "x$enable_osg" = "xyes")
+AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 
 
 #
@@ -138,6 +148,15 @@ AM_CONDITIONAL(ENABLE_OSG, test "x$enable_osg" = "xyes")
 
 # Aaron put this in as a quick hack to test something, shouldn't really be here though
 _AM_DEPENDENCIES([OBJC])
+
+
+#
+# The vicon system ignorantly assumes that data is in Intel format (little endian)
+# meaning we can't use network byte order. Therefore, we treat things differently
+# if we're on PowerPC
+#
+AC_C_BIGENDIAN
+
 
 #
 # Add required hacks to make automake work
@@ -198,19 +217,21 @@ WCL_PLATFORM_SETUP
 if test "x$enable_video_1394" = "xyes"; then
     if test "x$platform_linux" = "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS"
+	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBRAW1394_LIBS $LIBDC1394_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBRAW1394_CFLAGS"
     elif test "x$platform_osx" = "xyes"; then
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
+	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
 	AC_MSG_ERROR([Video Support Is Not Available on your platform])
     fi
 fi
 
-if test "x$enable_osg" == "xyes"; then
-	PKG_CHECK_MODULES(OPENSCENEGRAPH, openscenegraph >= 2.0.0)
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $OPENSCENEGRAPH_LIBS"
-	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $OPENSCENEGRAPH_CFLAGS"
+if test "x$enable_x11" = "xyes"; then
+    PKG_CHECK_MODULES(X11, x11 )
+    PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
+    PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi
 
 
@@ -237,14 +258,15 @@ AC_CHECK_FUNCS([memset])
 echo "-----------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "Microsoft (msvc) support : $enable_msvc"
-echo "network support          : $enable_network"
-echo "1394 (Firewire) Video    : $enable_video_1394"
-echo "Gesture recognition      : $enable_gestures"
-echo "Vicon MoCap Support      : $enable_vicon"
 echo "Rawports Support(com/lpt): $enable_rawports"
-echo "OpenSceneGraph Helper    : $enable_osg"
-echo "Maths Support            : Enabled (default)"
+echo "Microsoft (msvc) support: $enable_msvc"
+echo "network support         : $enable_network"
+#echo "serial (rs232) support  : $enable_serial"
+echo "1394 (Firewire) Video   : $enable_video_1394"
+echo "Gesture recognition     : $enable_gestures"
+echo "Vicon MoCap Support     : $enable_vicon"
+echo "X11 Support             : $enable_x11"
+echo "Maths Support           : Enabled (default)"
 echo "-----------------------------"
 
 #

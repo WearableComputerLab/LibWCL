@@ -42,12 +42,6 @@
 #include "TrackedObject.h"
 
 
-/**
- * Interface to the Vicon Motion Capture System. 
- * Provides access to motion capture data from the mocap system.
- *
- * @author Michael Marner (marnermr@cs.unisa.edu.au)
- */
 namespace wcl 
 {
 
@@ -71,17 +65,17 @@ namespace wcl
 			/*
 			 * Vicon Packets
 			 */
-			static const int32_t CLOSE = 0;
-			static const int32_t INFO = 1;
-			static const int32_t DATA = 2;
-			static const int32_t STREAMING_ON = 3;
-			static const int32_t STREAMING_OFF = 4;
+			static int32_t CLOSE;
+			static int32_t INFO;
+			static int32_t DATA;
+			static int32_t STREAMING_ON;
+			static int32_t STREAMING_OFF;
 
 			/*
 			 * Packet Types
 			 */
-			static const int32_t REQUEST = 0;
-			static const int32_t REPLY = 1;
+			static int32_t REQUEST;
+			static int32_t REPLY;
 
 
 			/**
@@ -130,6 +124,30 @@ namespace wcl
 			 */
 			TrackedObject* getObject(std::string name);
 
+			/**
+			 * The list of objects.
+			 */
+			std::vector<TrackedObject> objects;
+
+
+			/**
+			 * Reverses the byte order of a 32 bit int.
+			 * Needed for PowerPC.
+			 *
+			 * @param n The int32 to reverse.
+			 * @return The int with the byte order reversed.
+			 */
+			static int32_t reverseByteOrder(int32_t n);
+
+			/**
+			 * Reverses the byte order of a double.
+			 * Needed for PowerPC.
+			 *
+			 * @param n The double to reverse.
+			 * @return The double with the byte order reversed.
+			 */
+			static double reverseBytesDouble(double n);
+
 		private:
 			/**
 			 * The socket handling the connection to the server.
@@ -163,10 +181,8 @@ namespace wcl
 			 */
 			void loadTrackedObjects();
 
-			/**
-			 * The list of objects.
-			 */
-			std::vector<TrackedObject> objects;
+			bool isStreaming;
+
 
 	};
 

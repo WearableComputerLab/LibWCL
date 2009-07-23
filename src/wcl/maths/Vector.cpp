@@ -46,6 +46,20 @@ Vector::Vector( unsigned size )
     this->setSize( size );
 }
 
+/**
+ * Convenience constructor for creating a 4 value vector.
+ * This can be used for storing x,y,z coordinates, colours, etc.
+ * The reason we have a W value is it makes it easier to do
+ * matrix operations on 4x4 matrices...
+ */
+Vector::Vector(T x, T y, T z)
+{
+	this->setSize(3);
+	Vector::operator[] (0) = x;
+	Vector::operator[] (1) = y;
+	Vector::operator[] (2) = z;
+}
+
 Vector::Vector( const Matrix &m ):
     Matrix( m)
 {
@@ -158,10 +172,12 @@ Vector Vector::operator * ( const T &value ) const
 }
 
 /**
- * Obtain the result of multiplying this vector
- * by the given vector;
+ * Returns the dot product of 2 vectors.
+ *
+ * Thats right! DOT Product
  *
  * @param v The vector to multiply this vector by
+ * \warning The dot function below uses this implementation to reduce code duplication.
  */
 T Vector::operator * ( const Vector & v) const
 {
@@ -300,5 +316,30 @@ Vector operator *(const Matrix &m, const Vector &v )
 
     return temp;
 }
+
+/**
+ * Obtain the dot product of two vectors.
+ * Calculates the dot product of this with v, such that
+ *
+ * return = this DOT v
+ *
+ * @return the dot product.
+ */
+T Vector::dot(const Vector& v) const
+{
+	assert (this->getRows() == v.getRows() && "Vectors must have the same number of values for dot product");
+	return operator * (v);
+	
+}
+
+Vector Vector::crossProduct(const Vector& v)
+{
+	assert ((this->getRows() ==  3 && v.getRows() == 3) && "Vectors must have length 3 for cross product");
+	return Vector((*this)[1] * v[2] - (*this)[2] * v[1], 
+				  (*this)[2] * v[0] - (*this)[0] * v[2], 
+				  (*this)[0] * v[1] - (*this)[1] * v[0]);
+}
+	
+
 
 }; //namespace wcl

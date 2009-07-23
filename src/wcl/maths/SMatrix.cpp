@@ -27,6 +27,10 @@
 #include <assert.h>
 #include "SMatrix.h"
 
+
+namespace wcl
+{
+
 /**
  * Default Constructor
  */
@@ -127,7 +131,7 @@ SMatrix SMatrix::operator -() const
 SMatrix SMatrix::operator *( const T &v ) const
 {
     SMatrix m ( *this );
-    return  ((Matrix)m).operator *(v);
+    return  SMatrix(((Matrix)m).operator *(v));
 }
 
 /**
@@ -349,7 +353,7 @@ SMatrix operator * ( const T &v, const SMatrix &im )
  *
  * @param im The matrix to transpose
  */
-SMatrix MathLib::transpose ( const SMatrix &im )
+SMatrix transpose ( const SMatrix &im )
 {
     SMatrix m( im.getRows());
 
@@ -364,7 +368,7 @@ SMatrix MathLib::transpose ( const SMatrix &im )
  *
  * @param im The matrix to invert
  */
-SMatrix MathLib::inv ( const SMatrix &im )
+SMatrix inv ( const SMatrix &im )
 {
     SMatrix m ( im.getRows() );
 
@@ -389,7 +393,7 @@ SMatrix MathLib::inv ( const SMatrix &im )
  *
  * @param im The matrix to calculate the determinate of
  */
-T MathLib::det ( const SMatrix &im )
+T det ( const SMatrix &im )
 {
     unsigned i, j, k;
     T temp, factor, detvalue = 1.0;
@@ -463,3 +467,6 @@ T MathLib::det ( const SMatrix &im )
 
     return detvalue;
 }
+
+}; //end namespace
+
