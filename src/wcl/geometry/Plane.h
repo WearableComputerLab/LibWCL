@@ -39,6 +39,8 @@ namespace wcl
 		double p;
 	};
 
+	class Line;
+
 	/**
 	 * A 3 dimensional, infinite plane.
 	 */

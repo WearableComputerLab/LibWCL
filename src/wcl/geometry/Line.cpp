@@ -25,6 +25,9 @@
  */
 
 
+#include <math.h>
+#include <cstdlib>
+#include <config.h>
 #include <wcl/geometry/Line.h>
 
 namespace wcl
@@ -59,12 +62,45 @@ namespace wcl
 
 	wcl::Vector Line::intersect(const wcl::Plane& p)
 	{
-		double a = p.getNormal()[0];
-		double b = p.getNormal()[1];
-		double c = p.getNormal()[2];
+		wcl::Vector normal = p.getNormal();
+		wcl::Vector point = p.getPosition();
+		double a = normal[0];
+		double b = normal[1];
+		double c = normal[2];
+		double d = -(normal[0]*point[0] + normal[1]*point[1] + normal[2]*point[2]);
 
+		double numerator = a*pos[0] + b*pos[1] + c*pos[2] + d;
+		double denominator = a*dir[0] + b*dir[1] + c*dir[2];
+
+		if (fabs(denominator) < TOL)
+		{
+			if (fabs(numerator) < TOL)
+			{
+				return pos;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			double t = -numerator/denominator;
+			wcl::Vector result;
+			result.setSize(3);
+			result[0] = pos[0] + t*dir[0];
+			result[1] = pos[1] + t*dir[1];
+			result[2] = pos[2] + t*dir[2];
+
+			return result;
+		}
 	}
 
-
+	void Line::perturbDirection()
+	{
+		dir[0] += 1e-5*(((double)rand())/ RAND_MAX);
+		dir[1] += 1e-5*(((double)rand())/ RAND_MAX);
+		dir[2] += 1e-5*(((double)rand())/ RAND_MAX);
+	}
 }
 

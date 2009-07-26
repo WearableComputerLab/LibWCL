@@ -81,6 +81,8 @@ namespace wcl
 
 			bool quickClassify();
 
+			bool hasPoint(const wcl::Vector& p) const;
+
 			double getArea();
 
 			/**

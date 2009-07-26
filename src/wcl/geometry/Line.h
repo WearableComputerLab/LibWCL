@@ -33,6 +33,8 @@
 
 namespace wcl
 {
+	class Plane;
+
 	class Line
 	{
 		public:
@@ -43,7 +45,8 @@ namespace wcl
 			wcl::Vector getDirection();
 
 			double distanceFromPoint(const wcl::Vector& p);
-			wcl::Vector intersect(const wcl::Plane& p);
+			wcl::Vector intersect(const Plane& p);
+			void perturbDirection();
 
 		private:
 			wcl::Vector pos;

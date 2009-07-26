@@ -178,13 +178,13 @@ namespace wcl
 		}
 	}
 
-	void PolygonObject::raytraceClassify(Face& f)
+	void PolygonObject::raytraceClassify(Face& f) const
 	{
 		wcl::Vector p0;
 		p0.setSize(3);
-		p0[0] = (f.v1[0], + f.v2[0] + f.v3[0]) /3.0;
-		p0[1] = (f.v1[1], + f.v2[1] + f.v3[1]) /3.0;
-		p0[2] = (f.v1[2], + f.v2[2] + f.v3[2]) /3.0;
+		p0[0] = (f.v1->position[0] + f.v2->position[0] + f.v3->position[0]) /3.0;
+		p0[1] = (f.v1->position[1] + f.v2->position[1] + f.v3->position[1]) /3.0;
+		p0[2] = (f.v1->position[2] + f.v2->position[2] + f.v3->position[2]) /3.0;
 		Line ray(f.getNormal(), p0);
 
 		bool success;
@@ -198,14 +198,77 @@ namespace wcl
 			success = true;
 			closestDistance = std::numeric_limits<double>::max();
 
-			std::vector<Face*>::iterator it;
+			std::vector<Face*>::const_iterator it;
 			for (it = faceList.begin(); it < faceList.end(); ++it)
 			{
 				Face* face = *it;
-				dotProduct = face.getNormal().dot(ray.getDirection());
-				
+				dotProduct = face->getNormal().dot(ray.getDirection());
+				intersectionPoint = ray.intersect(f.getPlane());
 
+				//FIXME check for parallelness
+				if (true)
+				{
+					distance = (ray.getPosition()-intersectionPoint).normal();
+					if (fabs(distance)<TOL && fabs(dotProduct)<TOL)
+					{
+						ray.perturbDirection();
+						success = false;
+						break;
+					}
+					if (fabs(distance)<TOL && fabs(dotProduct)>TOL)
+					{
+						if (face.hasPoint(intersectionPoint))
+						{
+							closestFace = face;
+							closestDistance = 0;
+							break;
+						}
+					}
+					else if (fabs(dotProduct)>TOL && distance > TOL)
+					{
+						if (distance < closestDistance)
+						{
+							if (face.hasPoint(intersectionPoint))
+							{
+								closestDistance = distance;
+								closestFace = face;
+							}
+						}
+					}
+				}
+			}
+		}
+		while (!success);
+		if (closestFace == NULL)
+		{
+			status = OUTSIDE;
+		}
+		else
+		{
+			dotProduct = closestFace->getNormal().dot(ray.getDirection());
+
+			if (fabs(closestDistance) < TOL)
+			{
+				if (dotProduct > TOL)
+				{
+					status = SAME;
+				}
+				else if (dotProduct < -TOL)
+				{
+					status = OPPOSITE;
+				}
+			}
+			else if (dotProduct > TOL)
+			{
+				status = INSIDE;
+			}
+			else if (dotProduct < -TOL)
+			{
+				status = OUTSIDE;
+			}
+		}
 	}
+
 	void PolygonObject::splitFace(int index, const LineSegment& segment1, const LineSegment& segment2)
 	{
 		Vertex* startPosvertex, endPosVertex;
