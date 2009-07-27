@@ -29,12 +29,27 @@
 #define PATRIOT_H
 
 #include <string>
+#include <wcl/tracking/PatriotTrackedObject.h>
+#include <wcl/serial/Serial.h>
 
 namespace wcl
 {
 	class Patriot
 	{
 		public:
+			enum Sensor
+			{
+				SENSOR1,
+				SENSOR2
+			};
+
+			enum Units
+			{
+				INCHES,
+				CM,
+				MM
+			};
+
 			/**
 			 * Creates a new connection to the Patriot tracker
 			 * over a serial connection.
@@ -60,9 +75,22 @@ namespace wcl
 			 *
 			 */
 			TrackedObject* getObject(std::string name);
+
+			void setHemisphere(Sensor s, const wcl::Vector& hemisphere);
+			void setUnits(Units u);
+
 		private:
-			TrackedObject* sensor1;
-			TrackedObject* sensor2;
-	}
-};
+			wcl::Serial connection;
+			Units units;
+			void setAsciiOutput();
+			void setContinuous();
+			void setDataFormat();
+			void getSensorCount();
+			int activeSensorCount;
+			PatriotTrackedObject sensor1;
+			PatriotTrackedObject sensor2;
+	};
+}
+
+#endif
 

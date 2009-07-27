@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2004-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,52 @@
  * SUCH DAMAGE.
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef PATRIOT_TRACKED_OBJECT_H
+#define PATRIOT_TRACKED_OBJECT_H
+
+#include <string>
+#include <sstream>
 
 #include <wcl/maths/Matrix.h>
+#include <wcl/maths/SMatrix.h>
+#include <wcl/maths/Vector.h>
+#include <wcl/maths/Quaternion.h>
+#include <wcl/tracking/TrackedObject.h>
 
-namespace wcl {
-
-/**
- * A Class representing a vector (aka a 1D matrix)
- */
-class Vector : public Matrix
+namespace wcl 
 {
-public:
-    Vector();
-    Vector( const Matrix & );
-    Vector( unsigned size );
-    Vector( const Vector & );
-	Vector(T x, T y, T z);
+	/**
+	 * Represents an object that can be tracked by the Vicon system.
+	 * 
+	 */
+	class PatriotTrackedObject : public TrackedObject
+	{
+		public:
+			PatriotTrackedObject();
 
-    void setSize( unsigned );
+			/**
+			 * Destructor.
+			 */
+			virtual ~PatriotTrackedObject();
 
-    virtual ~Vector();
+			/**
+			 * Returns a string representation of the object.
+			 */
+			virtual std::string toString();
 
-    T &operator[] ( unsigned );
-    const T &operator[] ( unsigned ) const;
+			virtual SMatrix getTransform();
 
-    Vector operator + ( const Vector & ) const;
-    Vector operator - ( const Vector & ) const;
-    Vector operator - () const;
-    Vector operator * ( const T & ) const;
+			virtual Vector getTranslation();
+			
+			virtual SMatrix getRotation();
 
-    T  operator * ( const Vector & ) const;
-    Vector operator / ( const  T & ) const;
+			void update(T x, T y, T z, T rw, T rx, T ry, T rz);
+		private:
+			wcl::Vector position;
+			wcl::Quaternion orientation;
+	};
 
-    Vector & operator = ( const Vector & );
-    Vector & operator +=( const Vector & );
-    Vector & operator -=( const Vector & );
-    Vector & operator *=( const T & );
-    Vector & operator /=( const T & );
-
-    T normal() const;
-    Vector unit() const;
-	Vector crossProduct(const Vector& v) const;
-
-	T dot(const Vector&) const;
-
-private:
-    Matrix::setSize;
-    Matrix::getCols;
 };
 
-// Global Operators
-Vector operator *(const T &, const Vector & );
-Vector operator *(const Matrix &, const Vector & );
+#endif /*TRACKEDOBJECT_H_*/
 
-}; //namespace wcl
-
-#endif

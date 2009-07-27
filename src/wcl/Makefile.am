@@ -77,11 +77,15 @@ vicon_sources=
 
 if ENABLE_VICON
 vicon_headers+=\
+			tracking/Patriot.h \
+			tracking/PatriotTrackedObject.h \
 			tracking/TrackedObject.h \
 			tracking/ViconTrackedObject.h \
 			tracking/ViconClient.h
 
 vicon_sources+=\
+			tracking/Patriot.cpp \
+			tracking/PatriotTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \
 			tracking/ViconClient.cpp
 
@@ -114,11 +118,14 @@ endif
 #
 # Math Libraries
 # 
-maths_headers=maths/Matrix.h\
+maths_headers= \
+		  maths/Matrix.h\
+		  maths/Quaternion.h\
 	      maths/SMatrix.h\
 	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
+	      maths/Quaternion.cpp\
 	      maths/SMatrix.cpp\
 	      maths/Vector.cpp
 

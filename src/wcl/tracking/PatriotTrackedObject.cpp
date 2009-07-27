@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2004-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,58 @@
  * SUCH DAMAGE.
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#include <wcl/tracking/PatriotTrackedObject.h>
 
-#include <wcl/maths/Matrix.h>
-
-namespace wcl {
-
-/**
- * A Class representing a vector (aka a 1D matrix)
- */
-class Vector : public Matrix
+namespace wcl
 {
-public:
-    Vector();
-    Vector( const Matrix & );
-    Vector( unsigned size );
-    Vector( const Vector & );
-	Vector(T x, T y, T z);
+	PatriotTrackedObject::PatriotTrackedObject()
+	{
+		position.setSize(3);
+	}
 
-    void setSize( unsigned );
+	PatriotTrackedObject::~PatriotTrackedObject()
+	{}
 
-    virtual ~Vector();
+	std::string PatriotTrackedObject::toString()
+	{
+		std::stringstream ss;
+		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
+		ss << orientation.toString();
+		return ss.str();
+	}
 
-    T &operator[] ( unsigned );
-    const T &operator[] ( unsigned ) const;
+	SMatrix PatriotTrackedObject::getTransform()
+	{
+		SMatrix T(4);
+		T[0][0] = 1;
+		T[1][1] = 1;
+		T[2][2] = 1;
+		T[3][3] = 1;
 
-    Vector operator + ( const Vector & ) const;
-    Vector operator - ( const Vector & ) const;
-    Vector operator - () const;
-    Vector operator * ( const T & ) const;
+		T[0][3] = position[0];
+		T[1][3] = position[1];
+		T[2][3] = position[2];
 
-    T  operator * ( const Vector & ) const;
-    Vector operator / ( const  T & ) const;
+		return getRotation() * T;
+	}
 
-    Vector & operator = ( const Vector & );
-    Vector & operator +=( const Vector & );
-    Vector & operator -=( const Vector & );
-    Vector & operator *=( const T & );
-    Vector & operator /=( const T & );
+	Vector PatriotTrackedObject::getTranslation()
+	{
+		return position;
+	}
 
-    T normal() const;
-    Vector unit() const;
-	Vector crossProduct(const Vector& v) const;
+	SMatrix PatriotTrackedObject::getRotation()
+	{
+		return orientation.getRotation();
+	}
 
-	T dot(const Vector&) const;
+	void PatriotTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
+	{
+		position[0] = x;
+		position[1] = y;
+		position[2] = z;
 
-private:
-    Matrix::setSize;
-    Matrix::getCols;
-};
+		orientation.set(rw, rx, ry, rz);
+	}
+}
 
-// Global Operators
-Vector operator *(const T &, const Vector & );
-Vector operator *(const Matrix &, const Vector & );
-
-}; //namespace wcl
-
-#endif

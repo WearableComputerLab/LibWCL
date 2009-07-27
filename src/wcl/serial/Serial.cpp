@@ -177,7 +177,7 @@ Serial::open( const char *device,
 	mask |= O_NDELAY;
 
     this->fd = ::open( device, mask );
-    if ( this->fd ){
+    if ( this->fd == -1){
 	return false;
     }
 

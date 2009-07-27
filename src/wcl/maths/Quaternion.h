@@ -1,5 +1,5 @@
-/*-
- * Copyright (c) 2004-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+/*
+ * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,61 +24,39 @@
  * SUCH DAMAGE.
  */
 
-#ifndef VECTOR_H
-#define VECTOR_H
+#ifndef QUATERNION_H
+#define QUATERNION_H
 
-#include <wcl/maths/Matrix.h>
+#include <wcl/maths/SMatrix.h>
+#include <wcl/maths/Vector.h>
+#include <string>
+#include <sstream>
 
-namespace wcl {
-
-/**
- * A Class representing a vector (aka a 1D matrix)
- */
-class Vector : public Matrix
+namespace wcl
 {
-public:
-    Vector();
-    Vector( const Matrix & );
-    Vector( unsigned size );
-    Vector( const Vector & );
-	Vector(T x, T y, T z);
+	class Quaternion
+	{
+		public:
+			Quaternion() {}
+			Quaternion(T _w, T _x, T _y, T _z);
+			Quaternion(const wcl::Vector& axis, T angle);
+			Quaternion(const wcl::Vector& v1, const wcl::Vector& v2);
 
-    void setSize( unsigned );
+			wcl::SMatrix getRotation() const;
 
-    virtual ~Vector();
+			std::string toString();
+			
+			void set(T w, T x, T y, T z);
 
-    T &operator[] ( unsigned );
-    const T &operator[] ( unsigned ) const;
+			~Quaternion(){}
 
-    Vector operator + ( const Vector & ) const;
-    Vector operator - ( const Vector & ) const;
-    Vector operator - () const;
-    Vector operator * ( const T & ) const;
+		private:
+			T x;
+			T y;
+			T z;
+			T w;
 
-    T  operator * ( const Vector & ) const;
-    Vector operator / ( const  T & ) const;
-
-    Vector & operator = ( const Vector & );
-    Vector & operator +=( const Vector & );
-    Vector & operator -=( const Vector & );
-    Vector & operator *=( const T & );
-    Vector & operator /=( const T & );
-
-    T normal() const;
-    Vector unit() const;
-	Vector crossProduct(const Vector& v) const;
-
-	T dot(const Vector&) const;
-
-private:
-    Matrix::setSize;
-    Matrix::getCols;
-};
-
-// Global Operators
-Vector operator *(const T &, const Vector & );
-Vector operator *(const Matrix &, const Vector & );
-
-}; //namespace wcl
-
+	};
+}
 #endif
+

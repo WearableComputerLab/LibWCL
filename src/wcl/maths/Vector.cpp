@@ -332,7 +332,7 @@ T Vector::dot(const Vector& v) const
 	
 }
 
-Vector Vector::crossProduct(const Vector& v)
+Vector Vector::crossProduct(const Vector& v) const
 {
 	assert ((this->getRows() ==  3 && v.getRows() == 3) && "Vectors must have length 3 for cross product");
 	return Vector((*this)[1] * v[2] - (*this)[2] * v[1], 

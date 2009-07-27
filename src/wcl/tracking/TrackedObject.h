@@ -68,7 +68,7 @@ namespace wcl
 			/**
 			 * Destructor.
 			 */
-			virtual ~TrackedObject();
+			virtual ~TrackedObject(){}
 
 			/**
 			 * Returns a string representation of the object.
