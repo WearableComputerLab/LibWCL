@@ -240,8 +240,8 @@ Serial::open( const char *device,
     // Setup the input mode correctly
     this->input = input;
     switch ( inputmode ){
-	case RAW: this->currstate.c_lflag |= ( ICANON | ECHO | ECHOE ); break;
-	case LINE: this->currstate.c_lflag &= ~(  ICANON | ECHO |ECHOE /*| XXXSIG*/ ); break;
+		case LINE: this->currstate.c_lflag |= ( ICANON | ECHO | ECHOE ); break;
+		case RAW: this->currstate.c_lflag &= ~(  ICANON | ECHO |ECHOE | ISIG ); break;
     }
 
     // Setup hw/sw flow control
