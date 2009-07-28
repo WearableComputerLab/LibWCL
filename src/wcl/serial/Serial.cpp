@@ -93,8 +93,8 @@ bool Serial::setBlockingMode( const BlockingMode mode )
     }
 
     // Don't bother setting the mode if it's the default
-    if ( this->blocking == blocking )
-	return true;
+    //if ( this->blocking == blocking )
+	//return true;
 
     // In order to set the blocking flag, we must be careful not
     // to stop on any other flags that have been set. Hence
@@ -247,7 +247,7 @@ Serial::open( const char *device,
     // Setup hw/sw flow control
     this->flow = flow;
     switch ( flow ){
-	case NONE:
+	case DISABLED: 
 	    this->currstate.c_cflag &= ~CRTSCTS;
 	    this->currstate.c_iflag &= ~(IXON | IXOFF | IXANY);
 	    break;
@@ -290,6 +290,14 @@ Serial::flush(const Flush what)
 {
     if ( !this->isValid())
 	return false;
+
+	if (what == BOTH || what == INPUT)
+	{
+		//read until we can't read no more!
+		//char buffer[1024];
+		//while (read(&buffer, 1024) > 0)
+		//	continue;
+	}
 
     if( tcflush(this->fd, what) == -1 )
 	return false;

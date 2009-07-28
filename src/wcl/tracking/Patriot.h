@@ -89,6 +89,7 @@ namespace wcl
 			int activeSensorCount;
 			PatriotTrackedObject sensor1;
 			PatriotTrackedObject sensor2;
+			void readAll(std::string prefix);
 	};
 }
 

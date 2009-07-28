@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 
 namespace wcl
 {
@@ -38,18 +39,37 @@ namespace wcl
 	Patriot::Patriot(std::string path)
 	{
 		std::cout << "About to connect to " << path << std::endl;
-		connection.setBlockingMode(Serial::BLOCKING);
 		if (!connection.open(path.c_str(), Serial::BAUD_115200))
 		{
 			throw std::string(strerror(errno));
 		}
+		connection.setBlockingMode(Serial::BLOCKING);
 		// clear whatever existing half completed commands exist
-		setAsciiOutput();
-		setUnits(MM);
-		setDataFormat();
-		//getSensorCount();
-		activeSensorCount = 2;
+		if (!connection.flush())
+		{
+			throw std::string(strerror(errno));
+		}
+		//std::cout << "Setting ascii output... ";
+		//setAsciiOutput();
+		//readAll("in setAscii");
+		//std::cout << "DONE!" << std::endl;
+		//std::cout << "Setting units ... ";
+		//setUnits(MM);
+		//readAll("in setunits");
+		//std::cout << "DONE!" << std::endl;
+		//std::cout << "Setting data format... ";
+		//setDataFormat();
+		//readAll("in setformat");
+		//std::cout << "DONE!" << std::endl;
+		//std::cout << "getting sensor count... ";
+		getSensorCount();
+		//activeSensorCount = 1;
+		//readAll();
+		//std::cout << "DONE!" << std::endl;
+		std::cout << "Setting continuous... ";
 		setContinuous();
+		//readAll("In setContinuous");
+		std::cout << "DONE!" << std::endl;
 	}
 
 	Patriot::~Patriot()
@@ -59,7 +79,7 @@ namespace wcl
 
 	void Patriot::update()
 	{
-		char response[68];
+		char response[68] = {0};
 		double x, y, z, rx, ry, rz, rw;
 		int number;
 
@@ -67,8 +87,8 @@ namespace wcl
 		{
 			connection.read((void*) &response, 67);
 			response[67] = '\0';
-			std::cout << response << std::endl;
-			scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+			std::cout << "Reading Update Response: " << response << std::endl;
+			int result = scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 			if (units == MM)
 			{
 				sensor1.update(x*10,y*10,z*10,rw,rx,ry,rz);
@@ -82,7 +102,7 @@ namespace wcl
 		{
 			connection.read((void*) &response, 67);
 			response[67] = '\0';
-			scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+			int result =  scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 			if (units == MM)
 			{
 				sensor2.update(x*10,y*10,z*10,rw,rx,ry,rz);
@@ -119,45 +139,82 @@ namespace wcl
 	void Patriot::setUnits(Units u)
 	{
 		this->units = u;
+		int bytesWritten = 0;
 		switch (u)
 		{
 			case INCHES:
-				connection.write("U0\r\n");
+				bytesWritten = connection.write("U0\r");
 				break;
 			case CM:
 			case MM:
-				connection.write("U1\r\n");
+				bytesWritten = connection.write("U1\r");
 				break;
+		}
+		if (bytesWritten != 3)
+		{
+			std::stringstream ss;
+			ss << "ERROR: Could not set units, expected to write 3 bytes but only wrote " << bytesWritten;
+			throw std::string(ss.str());
 		}
 	}
 
 	void Patriot::setAsciiOutput()
 	{
-		connection.write("F0\r\n");
+		int bytesWritten = connection.write("F0\r");
+		if (bytesWritten != 3)
+		{
+			std::stringstream ss;
+			ss << "ERROR: Could not set ascii output, expected to write 4 bytes but only wrote " << bytesWritten;
+			throw std::string(ss.str());
+		}
 	}
 
 	void Patriot::setContinuous()
 	{
-		connection.write("C\r\n");
+		connection.write("C\r");
 	}
 
 	void Patriot::setDataFormat()
 	{
 		// we are going to ask for cartesian coordinates for position
 		// and a quaternion for rotation, with a CRLF separating stations
-		connection.write("O*,2,7,1\r\n");
+		int bytesWritten = connection.write("O*,2,7,1\r");
+		if (bytesWritten != 9)
+		{
+			std::stringstream ss;
+			ss << "ERROR: Could not set ascii output, expected to write 9 bytes but only wrote " << bytesWritten;
+			throw std::string(ss.str());
+		}
 	}
 
+	void Patriot::readAll(std::string prefix)
+	{
+		unsigned char response[1024] = {0};
+		response[1023] = '\0';
+		int responseLength = connection.read((void*) &response, 1024);
+		std::cout << prefix << " (" << response << ")" << std::endl;
+
+	}
 	void Patriot::getSensorCount()
 	{
-		unsigned char ctrlU = 0x15;
-		connection.write((void*) &ctrlU, 1);
-		connection.write("0\r\n", 2);
-		connection.drain();
-		unsigned char response[16];
+		int bytesWritten = connection.write("0\r", 3);
+		if (bytesWritten != 3)
+		{
+			std::stringstream ss;
+			ss << "ERROR: Could not get sensor count, expected to write 3 bytes but only wrote " << bytesWritten;
+			throw std::string(ss.str());
+		}
+		unsigned char response[16] = {0};
 		response[15] = '\0';
-		connection.read((void*) &response, 15);
-		std::cout << response << std::endl;
+		int responseLength = connection.read((void*) &response, 15);
+		if (responseLength != 15)
+		{
+			std::stringstream ss;
+			ss << "ERROR: Could not get sensor count, expected to read 15 bytes but only read " << responseLength;
+			//throw std::string(strerror(errno));
+			throw std::string(ss.str());
+		}
+		std::cout << "Response from tracker in getSensorCount: " << response << std::endl;
 		if (response[12] == '3')
 		{
 			activeSensorCount = 2;
