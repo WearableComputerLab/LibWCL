@@ -50,15 +50,15 @@ namespace wcl
 			throw std::string(strerror(errno));
 		}
 		//std::cout << "Setting ascii output... ";
-		//setAsciiOutput();
+		setAsciiOutput();
 		//readAll("in setAscii");
 		//std::cout << "DONE!" << std::endl;
 		//std::cout << "Setting units ... ";
-		//setUnits(MM);
+		setUnits(MM);
 		//readAll("in setunits");
 		//std::cout << "DONE!" << std::endl;
 		//std::cout << "Setting data format... ";
-		//setDataFormat();
+		setDataFormat();
 		//readAll("in setformat");
 		//std::cout << "DONE!" << std::endl;
 		//std::cout << "getting sensor count... ";
@@ -66,10 +66,10 @@ namespace wcl
 		//activeSensorCount = 1;
 		//readAll();
 		//std::cout << "DONE!" << std::endl;
-		std::cout << "Setting continuous... ";
-		setContinuous();
+		//std::cout << "Setting continuous... ";
+		//setContinuous();
 		//readAll("In setContinuous");
-		std::cout << "DONE!" << std::endl;
+		//std::cout << "DONE!" << std::endl;
 	}
 
 	Patriot::~Patriot()
@@ -79,16 +79,17 @@ namespace wcl
 
 	void Patriot::update()
 	{
-		char response[68] = {0};
+		char response[70] = {0};
 		double x, y, z, rx, ry, rz, rw;
 		int number;
 
 		if (activeSensorCount > 0)
 		{
-			connection.read((void*) &response, 67);
-			response[67] = '\0';
-			std::cout << "Reading Update Response: " << response << std::endl;
-			int result = scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+			connection.write("P");
+			connection.read((void*) &response, 69);
+			response[69] = '\0';
+			//std::cout << "Reading Update Response: " << response << std::endl;
+			int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 			if (units == MM)
 			{
 				sensor1.update(x*10,y*10,z*10,rw,rx,ry,rz);
@@ -100,9 +101,9 @@ namespace wcl
 		}
 		if (activeSensorCount > 1)
 		{
-			connection.read((void*) &response, 67);
-			response[67] = '\0';
-			int result =  scanf(response, "%d%f%f%f%f%f%f%f", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+			connection.read((void*) &response, 69);
+			response[69] = '\0';
+			int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 			if (units == MM)
 			{
 				sensor2.update(x*10,y*10,z*10,rw,rx,ry,rz);
@@ -197,7 +198,7 @@ namespace wcl
 	}
 	void Patriot::getSensorCount()
 	{
-		int bytesWritten = connection.write("0\r", 3);
+		int bytesWritten = connection.write("0\r");
 		if (bytesWritten != 3)
 		{
 			std::stringstream ss;

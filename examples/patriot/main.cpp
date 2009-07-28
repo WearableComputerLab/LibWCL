@@ -111,7 +111,7 @@ int main(int argc, char** argv)
 			client->update();
 			cout << s1->toString() << endl;
 			cout << s2->toString() << endl;
-			usleep(500);
+			//usleep(2000000);
 		}
 	}
 	catch(string s)
