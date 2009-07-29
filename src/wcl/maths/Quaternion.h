@@ -34,18 +34,50 @@
 
 namespace wcl
 {
+	/**
+	 * A Quaternion!
+	 */
 	class Quaternion
 	{
 		public:
+			/**
+			 * Default constructor, sets xyzw to 0.
+			 * Probably don't want to use this one.
+			 */
 			Quaternion() {}
+
+			/**
+			 * Constructor.
+			 * Sets xyzw to the parameters passed in.
+			 *
+			 * @param _w The w component.
+			 * @param _x The x component.
+			 * @param _y The y component.
+			 * @param _z The z component.
+			 */
 			Quaternion(T _w, T _x, T _y, T _z);
+
+			/**
+			 * Takes an axis of rotation and an angle (rads)
+			 * and constructs a quaternion.
+			 *
+			 * @param axis The vector representing the axis of rotation.
+			 * @param the amount of rotation, in radians.
+			 */
 			Quaternion(const wcl::Vector& axis, T angle);
+
 			Quaternion(const wcl::Vector& v1, const wcl::Vector& v2);
 
 			wcl::SMatrix getRotation() const;
 
+			/**
+			 * Returns a string representation of the quaternion.
+			 */
 			std::string toString();
 			
+			/**
+			 * Sets the values of the quaternion.
+			 */
 			void set(T w, T x, T y, T z);
 
 			~Quaternion(){}

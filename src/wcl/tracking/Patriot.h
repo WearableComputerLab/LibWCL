@@ -34,19 +34,36 @@
 
 namespace wcl
 {
+	/**
+	 * An interface for talking to the Polhemus Patriot tracking system.
+	 *
+	 * This class connects to the hardware via RS232 serial connection,
+	 * and provides two tracked objects.
+	 */
 	class Patriot
 	{
 		public:
-			enum Sensor
-			{
-				SENSOR1,
-				SENSOR2
-			};
-
+			/**
+			 * The units to receive values in.
+			 */
 			enum Units
 			{
+				/**
+				 * Patriot returns positional data in inches.
+				 */
 				INCHES,
+
+				/**
+				 * Patriot returns positional data in cm.
+				 */
 				CM,
+
+				/**
+				 * Patriot returns positional data in mm.
+				 * Note that the Patriot hardware doesn't actually support
+				 * mm, this is handled internally by multiplying cm values
+				 * by 10.
+				 */
 				MM
 			};
 
@@ -76,19 +93,77 @@ namespace wcl
 			 */
 			TrackedObject* getObject(std::string name);
 
+			/**
+			 * Set the hemisphere of operation for the system.
+			 * The Patriot can only track in a hemisphere around the origin,
+			 * this function sets the hemisphere. For example, 
+			 *
+			 * (0,0,1) represents the Z+ hemisphere.
+			 *
+			 * @param hemisphere The vector representing the hemisphre of operation.
+			 */
 			void setHemisphere(const wcl::Vector& hemisphere);
+
+			/**
+			 * Sets the units of measurements used by the tracker.
+			 *
+			 * @param u The units to use.
+			 */
 			void setUnits(Units u);
 
 		private:
+			/**
+			 * The serial connection to the Patriot.
+			 */
 			wcl::Serial connection;
+
+			/**
+			 * The units we are currently using.
+			 */
 			Units units;
+
+			/**
+			 * Tells the patriot to send ASCII data.
+			 */
 			void setAsciiOutput();
+			
+			/**
+			 * Puts the tracker into continuous mode.
+			 * Currently not used.
+			 */
 			void setContinuous();
+
+			/**
+			 * Sets the data format to what we want.
+			 * This class uses cartesian coordinates for position
+			 * and a quaternion for orientation.
+			 */
 			void setDataFormat();
+
+			/**
+			 * Finds out how many sensors are connected.
+			 */
 			void getSensorCount();
+
+			/**
+			 * The number of sensors we have.
+			 */
 			int activeSensorCount;
+
+			/**
+			 * TrackedObject for sensor 1.
+			 */
 			PatriotTrackedObject sensor1;
+
+			/**
+			 * TrackedObject for sensor 2.
+			 */
 			PatriotTrackedObject sensor2;
+
+			/**
+			 * Function to read any data that is left
+			 * on the serial buffer.
+			 */
 			void readAll(std::string prefix);
 	};
 }
