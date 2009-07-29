@@ -99,6 +99,11 @@ namespace wcl
 				sensor1.update(x,y,z,rw,rx,ry,rz);
 			}
 		}
+		else
+		{
+			throw std::string("No sensors detected!");
+		}
+
 		if (activeSensorCount > 1)
 		{
 			connection.read((void*) &response, 69);
@@ -126,15 +131,13 @@ namespace wcl
 	}
 
 	
-	void Patriot::setHemisphere(Sensor s, const wcl::Vector& hemisphere)
+	void Patriot::setHemisphere(const wcl::Vector& hemisphere)
 	{
-		std::stringstream command;
-		if (s == SENSOR1)
-			command << "h1,";
-		else
-			command << "h2,";
-
-		command << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+		std::stringstream command1, command2;
+		command1 << "h1," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+		command2 << "h2," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+		connection.write(command1.str());
+		connection.write(command2.str());
 	}
 
 	void Patriot::setUnits(Units u)

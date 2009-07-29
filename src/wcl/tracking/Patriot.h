@@ -76,7 +76,7 @@ namespace wcl
 			 */
 			TrackedObject* getObject(std::string name);
 
-			void setHemisphere(Sensor s, const wcl::Vector& hemisphere);
+			void setHemisphere(const wcl::Vector& hemisphere);
 			void setUnits(Units u);
 
 		private:
