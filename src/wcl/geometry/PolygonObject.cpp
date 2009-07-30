@@ -217,7 +217,7 @@ namespace wcl
 					}
 					if (fabs(distance)<TOL && fabs(dotProduct)>TOL)
 					{
-						if (face.hasPoint(intersectionPoint))
+						if (face->hasPoint(intersectionPoint))
 						{
 							closestFace = face;
 							closestDistance = 0;
@@ -228,7 +228,7 @@ namespace wcl
 					{
 						if (distance < closestDistance)
 						{
-							if (face.hasPoint(intersectionPoint))
+							if (face->hasPoint(intersectionPoint))
 							{
 								closestDistance = distance;
 								closestFace = face;
@@ -241,7 +241,7 @@ namespace wcl
 		while (!success);
 		if (closestFace == NULL)
 		{
-			status = OUTSIDE;
+			f.status = OUTSIDE;
 		}
 		else
 		{
@@ -251,20 +251,20 @@ namespace wcl
 			{
 				if (dotProduct > TOL)
 				{
-					status = SAME;
+					f.status = SAME;
 				}
 				else if (dotProduct < -TOL)
 				{
-					status = OPPOSITE;
+					f.status = OPPOSITE;
 				}
 			}
 			else if (dotProduct > TOL)
 			{
-				status = INSIDE;
+				f.status = INSIDE;
 			}
 			else if (dotProduct < -TOL)
 			{
-				status = OUTSIDE;
+				f.status = OUTSIDE;
 			}
 		}
 	}

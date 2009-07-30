@@ -83,19 +83,21 @@ namespace wcl
 			 */
 			wcl::BoundingBox getBoundingBox() const;
 
-			void splitFaces(const PolygonObject& obj);
 
-			void classifyFaces(const PolygonObject& object);
+			PolygonObject* csgUnion(const PolygonObject& b);
+			PolygonObject* csgIntersect(const PolygonObject& b);
+			PolygonObject* csgDifference(const PolygonObject& b);
 
-			void raytraceClassify(Face& f) const;
-
-			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
 
 		private:
 			std::string id;
 			std::vector<Face*> faceList;
 			std::vector<wcl::Vertex*> vertexList;
 
+			void classifyFaces(const PolygonObject& object);
+			void raytraceClassify(Face& f) const;
+			void splitFaces(const PolygonObject& obj);
+			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
 			void breakFaceInTwo(int facePos, wcl::Vector newPos, int splitEdge);
 			void breakFaceInTwo(int facePos, wcl::Vector newPos, Vertex* endVertex);
 			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int splitEdge);

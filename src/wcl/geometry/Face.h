@@ -60,13 +60,13 @@ namespace wcl
 			/**
 			 * Returns the surface normal of this face.
 			 */
-			wcl::Vector getNormal();
+			wcl::Vector getNormal() const;
 
 			/**
 			 * Returns a plane representing this face.
 			 * Note that this only works with planar faces (so maybe not N-gons)
 			 */
-			Plane getPlane();
+			Plane getPlane() const;
 
 			/**
 			 * Adds a vertex to the face.
@@ -94,12 +94,25 @@ namespace wcl
 			IntersectStatus status;
 		private:
 
+			enum LinePosition
+			{
+				UP,
+				DOWN,
+				ON,
+				NONE
+			};
 
 			/**
 			 * Calculating a bounding box whenever it's needed is slow,
 			 * so we'll just maintain one and return a reference to it when needed.
 			 */
 			BoundingBox boundingBox;
+			
+			LinePosition linePositionInX(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
+			LinePosition linePositionInY(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
+			LinePosition linePositionInZ(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
+
+			
 	};
 };
 

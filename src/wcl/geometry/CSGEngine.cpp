@@ -49,10 +49,13 @@ namespace wcl
 		PolygonObject b(objectB);
 
 		//subdivide
-		split(a, b);
-		split(b, a);
-		split(a, b);
+		a.splitFaces(b);
+		b.splitFaces(a);
 
+		a.classifyFaces(b);
+		b.classifyFaces(a);
+
+		return 
 	
 	}
 
