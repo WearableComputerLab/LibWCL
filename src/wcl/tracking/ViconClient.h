@@ -39,7 +39,7 @@
 #include <stdint.h>
 #include <wcl/network/TCPSocket.h>
 
-#include "TrackedObject.h"
+#include "ViconTrackedObject.h"
 
 
 namespace wcl 
@@ -127,7 +127,7 @@ namespace wcl
 			/**
 			 * The list of objects.
 			 */
-			std::vector<TrackedObject> objects;
+			std::vector<ViconTrackedObject> objects;
 
 
 			/**

@@ -58,9 +58,9 @@ static WSADATA wsaData;
  * allocated to it. This can only be called by subclasses to its the sub classes
  * responsibility to create the socket.
  */
-Socket::Socket()
+Socket::Socket():
+    sockfd(-1),blocking(BLOCKING)
 {
-    this->sockfd = -1;
     memset( &this->address, 0, sizeof( this->address ));
 
 #ifdef WIN32
@@ -308,12 +308,14 @@ bool Socket::setBlockingMode( const BlockingMode mode)
 	case BLOCKING:
 	    flags &=~O_NONBLOCK;
 	    if ( ::fcntl( this->sockfd, F_SETFL, flags ) == 0 ){
+                this->blocking = mode;
 		return true;
 	    } 
 	    break;
 	case NONBLOCKING:
 	    flags |= O_NONBLOCK;
 	    if ( ::fcntl( this->sockfd, F_SETFL, flags ) == 0 ){
+                this->blocking = mode;
 		return true;
 	    } 
 	    break;
@@ -332,15 +334,7 @@ bool Socket::setBlockingMode( const BlockingMode mode)
  */
 Socket::BlockingMode Socket::getBlockingMode() const 
 {
-#ifdef WIN32
-	return BLOCKING;
-
-#else /* UNIX */
-    if ( !isValid() || ::fcntl( this->sockfd, F_GETFL, O_NONBLOCK) == 0 ){
-		return BLOCKING;
-    }
-    return NONBLOCKING;
-#endif
+    return this->blocking;
 }
 
 /**

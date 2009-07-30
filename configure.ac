@@ -53,12 +53,6 @@ AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP 
 AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib & .dll library]), , enable_msvc="no")
 
 #
-# Serial Port / RS232 Code
-# 	When enabled: enable_serial is defined to 'yes' or 'no'
-#
-#AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
-
-#
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
@@ -86,6 +80,10 @@ AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System suppo
 AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), enable_geometry="yes" , enable_geometry="no")
 
 #
+# Support for Raw ports
+#
+AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial/parallel]), enable_rawports="yes" , enable_rawports="no")
+
 # Support for X11
 #
 AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
@@ -95,8 +93,8 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 # 	This simply enables each option
 AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
 	     enable_network="yes";
-	     enable_serial="yes";
 	     enable_video_1394="yes";
+	     enable_rawports="yes" ;
 	     enable_video_uvc="yes";
 		 enable_gestures="yes";
 		 enable_vicon="yes";
@@ -108,13 +106,13 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 #
 AC_MSG_CHECKING([Checking we need to build something]);
 if test "x$enable_network" = "xno" && \
-# test "x$enable_serial" = "xno" && \
    test "x$enable_video_1394" = "xno" && \
-   test "x$enable_video_uvc" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_osg" = "xno" && \
    test "x$enable_geometry" = "xno" && \
    test "x$enable_gestures" = "xno" && \
+   test "x$enable_rawports" = "xno" && \ 
+   test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
@@ -137,12 +135,12 @@ fi
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
-AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
+AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 
 
@@ -266,7 +264,7 @@ AC_CHECK_FUNCS([memset])
 # Crash out if nothing is defined
 #
 ###############################
-echo "-----------------------------"
+echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
 echo "Microsoft (msvc) support: $enable_msvc"
@@ -278,7 +276,10 @@ echo "Geometry classes        : $enable_geometry"
 echo "Vicon MoCap Support     : $enable_vicon"
 echo "X11 Support             : $enable_x11"
 echo "Maths Support           : Enabled (default)"
-echo "-----------------------------"
+echo "Rawports Support(com/lpt): $enable_rawports"
+echo "UVC Video support        : $enable_video_uvc"
+echo "Maths Support            : Enabled (default)"
+echo "-------------------------------"
 
 #
 # Tell automake to substitute the values for 

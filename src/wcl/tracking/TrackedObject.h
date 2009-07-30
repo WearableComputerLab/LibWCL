@@ -24,19 +24,17 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TRACKEDOBJECT_H_
-#define TRACKEDOBJECT_H_
+#ifndef TRACKEDOBJECT_H
+#define TRACKEDOBJECT_H
 
 #include <string>
 
-#include <wcl/network/TCPSocket.h>
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl 
 {
-
 	/**
 	 * The type of object that we are tracking.
 	 * Markers simply have position.
@@ -47,7 +45,12 @@ namespace wcl
 		/**
 		 * A 3DOF Marker
 		 */
-		MARKER,
+		POSITION,
+
+		/**
+		 * Orientation marker only
+		 */
+		ORIENTATION,
 
 		/**
 		 * A 6DOF object
@@ -62,93 +65,46 @@ namespace wcl
 	class TrackedObject
 	{
 		public:
-
-			/**
-			 * Constructor.
-			 * @param name The name of the channel.
-			 * @param type The type of tracked object.
-			 */
-			TrackedObject(std::string name, ObjectType type);
-
 			/**
 			 * Destructor.
 			 */
-			virtual ~TrackedObject();
-
-			/**
-			 * Updates the data stored in this object.
-			 * 
-			 * @param array The array of data to read from
-			 * @param offset The location in the array to start reading from. Note that
-			 *               the object will increment this based on how many values
-			 *               it reads. 6 for 6DOF objects, 4 for markers.
-			 */
-			void updateData(double* array, int & offset);
+			virtual ~TrackedObject(){}
 
 			/**
 			 * Returns a string representation of the object.
 			 */
-			std::string toString();
+			virtual std::string toString() = 0;
 
 			/**
 			 * Returns the name of the object.
 			 */
-			std::string getName();
+			virtual std::string getName() { return name;}
 
 			/**
 			 * Returns this object's type.
 			 */
-			ObjectType getType();
+			virtual ObjectType getType() { return type;}
 
+			virtual SMatrix getTransform() = 0;
 
-			SMatrix getTransform();
-
-			Vector getTranslation();
+			virtual Vector getTranslation() = 0;
 			
-			SMatrix getRotation();
+			virtual SMatrix getRotation() = 0;
 
 
 		protected:
-
 			/**
 			 * The name of this object.
 			 */
 			std::string name;
 
 			/**
-			 * Location of this object in x.
-			 */
-			double x;
-
-			/**
-			 * Location of this object in y.
-			 */
-			double y;
-
-			/**
-			 * Location of this object in z.
-			 */
-			double z;
-
-			double rx;
-			double ry;
-			double rz;
-
-			/**
-			 * Whether the object is visible or not.
-			 * This only applies to Markers, 6DOF objects do not
-			 * receive this information from the server.
-			 */
-			bool occluded;
-		
-		private:
-			/**
 			 * The type of object.
 			 */
 			ObjectType type;
-
 	};
 
 };
 
 #endif /*TRACKEDOBJECT_H_*/
+

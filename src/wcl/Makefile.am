@@ -102,12 +102,17 @@ vicon_sources=
 
 if ENABLE_VICON
 vicon_headers+=\
-			vicon/TrackedObject.h\
-			vicon/ViconClient.h
+			tracking/Patriot.h \
+			tracking/PatriotTrackedObject.h \
+			tracking/TrackedObject.h \
+			tracking/ViconTrackedObject.h \
+			tracking/ViconClient.h
 
 vicon_sources+=\
-			vicon/TrackedObject.cpp\
-			vicon/ViconClient.cpp
+			tracking/Patriot.cpp \
+			tracking/PatriotTrackedObject.cpp \
+			tracking/ViconTrackedObject.cpp \
+			tracking/ViconClient.cpp
 
 endif
 
@@ -138,13 +143,30 @@ endif
 #
 # Math Libraries
 # 
-maths_headers=maths/Matrix.h\
+maths_headers= \
+		  maths/Matrix.h\
+		  maths/Quaternion.h\
 	      maths/SMatrix.h\
 	      maths/Vector.h
 
 maths_sources=maths/Matrix.cpp\
+	      maths/Quaternion.cpp\
 	      maths/SMatrix.cpp\
 	      maths/Vector.cpp
+
+
+rawports_headers=
+rawports_sources=
+if ENABLE_RAWPORTS
+#
+# Raw ports
+#
+rawports_headers+=parallel/Parallel.h\
+		 serial/Serial.h
+
+rawports_sources+=parallel/Parallel.cpp\
+		 serial/Serial.cpp
+endif
 
 x11_headers=
 x11_sources=
@@ -175,6 +197,7 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(maths_headers)\
 				$(osg_headers)\
 				$(geometry_headers)\
+				$(rawports_headers)\
 				$(x11_headers)
 
 libwcl_a_SOURCES=$(network_sources)\
@@ -185,6 +208,7 @@ libwcl_a_SOURCES=$(network_sources)\
 		 $(maths_sources)\
 		 $(osg_sources)\
 		 $(geometry_sources)\
+		 $(rawports_sources)\
 		 $(x11_sources)
 
 else
@@ -195,8 +219,10 @@ nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
 				      $(video_uvc_headers)\
 				      $(gestures_headers)\
 				      $(vicon_headers)\
+				      $(maths_headers)\
+				      $(rawports_headers)
 				      $(maths_header)\
-					  $(osg_headers)
+				      $(osg_headers)
 
 libwcl_win32_a_SOURCES=$(network_sources)\
 		       $(video_1394_sources)\
@@ -204,7 +230,8 @@ libwcl_win32_a_SOURCES=$(network_sources)\
 		       $(gestures_headers)\
 		       $(vicon_sources)\
 		       $(maths_sources)\
-			   $(osg_sources)
+		       $(rawports_sources)\
+		       $(osg_sources)
 
 noinst_DATA=wcl.lib
 CLEANFILES+=wcl.lib

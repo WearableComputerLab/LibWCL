@@ -27,14 +27,14 @@
 #include <math.h>
 #include <sstream>
 #include <iostream>
-#include "TrackedObject.h"
+#include "ViconTrackedObject.h"
 #include "ViconClient.h"
 
 
 using namespace wcl;
 using namespace std;
 
-TrackedObject::TrackedObject(std::string name, ObjectType type)
+ViconTrackedObject::ViconTrackedObject(std::string name, ObjectType type)
 {
 	this->name = name;
 	this->type = type;
@@ -47,21 +47,11 @@ TrackedObject::TrackedObject(std::string name, ObjectType type)
 	rz = 0;
 }
 
-TrackedObject::~TrackedObject()
+ViconTrackedObject::~ViconTrackedObject()
 {
 }
 
-std::string TrackedObject::getName()
-{
-	return name;
-}
-
-ObjectType TrackedObject::getType()
-{
-	return type;
-}
-
-SMatrix TrackedObject::getTransform()
+SMatrix ViconTrackedObject::getTransform()
 {
 	/*
 	 *
@@ -127,7 +117,7 @@ SMatrix TrackedObject::getTransform()
 }
 
 
-Vector TrackedObject::getTranslation()
+Vector ViconTrackedObject::getTranslation()
 {
 	Vector v(3);
 	v[0] = x;
@@ -137,7 +127,7 @@ Vector TrackedObject::getTranslation()
 }
 
 
-SMatrix TrackedObject::getRotation()
+SMatrix ViconTrackedObject::getRotation()
 {
 	/*
 	 *
@@ -187,7 +177,7 @@ SMatrix TrackedObject::getRotation()
 }
 
 
-std::string TrackedObject::toString() {
+std::string ViconTrackedObject::toString() {
 	std::stringstream s;
 	s << name;
 	s << ": (" ;
@@ -202,7 +192,7 @@ std::string TrackedObject::toString() {
 	
 }
 
-void TrackedObject::updateData(double* array, int &offset)
+void ViconTrackedObject::updateData(double* array, int &offset)
 {
 	//Six dof objects also have rotation
 	if (this->type == SIX_DOF)
@@ -231,7 +221,7 @@ void TrackedObject::updateData(double* array, int &offset)
 	#endif
 
 	//The marker has an occluded value
-	if (this->type == MARKER)
+	if (this->type == POSITION)
 	{
 		double o = array[offset++];
 		if (o != 0)
