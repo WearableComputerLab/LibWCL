@@ -72,6 +72,14 @@ namespace wcl
 		return (a * c * sin(b)) / 2.0;
 	}
 
+
+	void Face::invert()
+	{
+		Vertex* temp = v2;
+		v2 = v1;
+		v1 = temp;
+	}
+
 	wcl::Vector Face::getNormal() const
 	{
 		wcl::Vector& vec1 = v1->position;

@@ -85,6 +85,12 @@ namespace wcl
 
 			double getArea();
 
+
+			/**
+			 * Reverses the order of the vertices to invert the face normal.
+			 */
+			void invert();
+
 			/**
 			 * The vertices
 			 */

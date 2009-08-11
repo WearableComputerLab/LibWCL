@@ -127,6 +127,182 @@ namespace wcl
 		}
 	}
 
+	void PolygonObject::invertInsideFaces()
+	{
+		std::vector<Face*>::iterator it;
+		for (it = faceList.begin(); it < faceList.end(); ++it)
+		{
+			if ((*it)->status == INSIDE)
+			{
+				(*it)->invert();
+			}
+		}
+	}
+
+	PolygonObject* PolygonObject::csgUnion(const PolygonObject& b)
+	{
+		//create copies
+		PolygonObject objectA = *this;
+		PolygonObject objectB = b;
+
+		//split the intersecting faces of both objects
+		objectA.splitFaces(objectB);
+		objectB.splitFaces(objectA);
+
+		//now classify them
+		objectA.classifyFaces(objectB);
+		objectB.classifyFaces(objectA);
+
+		//we will return these
+		PolygonObject* returnObj = new PolygonObject();
+
+		//add objectA's faces that are either oudside or same 
+		std::vector<Face*>::iterator it;
+		for (it = objectA.faceList.begin(); it < objectA.faceList.end(); ++it)
+		{
+			if ((*it)->status == OUTSIDE || (*it)->status == SAME)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+
+		// add objectB's outside faces
+		for (it = objectB.faceList.begin(); it < objectB.faceList.end(); ++it)
+		{
+			if ((*it)->status == OUTSIDE)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+		return returnObj;
+	}
+	PolygonObject* PolygonObject::csgIntersect(const PolygonObject& b)
+	{
+		//create copies
+		PolygonObject objectA = *this;
+		PolygonObject objectB = b;
+
+		//split the intersecting faces of both objects
+		objectA.splitFaces(objectB);
+		objectB.splitFaces(objectA);
+
+		//now classify them
+		objectA.classifyFaces(objectB);
+		objectB.classifyFaces(objectA);
+
+		//we will return these
+		PolygonObject* returnObj = new PolygonObject();
+
+		//add objectA's faces that are either inside or same 
+		std::vector<Face*>::iterator it;
+		for (it = objectA.faceList.begin(); it < objectA.faceList.end(); ++it)
+		{
+			if ((*it)->status == INSIDE || (*it)->status == SAME)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+
+		// add objectB's inside faces
+		for (it = objectB.faceList.begin(); it < objectB.faceList.end(); ++it)
+		{
+			if ((*it)->status == INSIDE)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+		return returnObj;
+	}
+
+	PolygonObject* PolygonObject::csgDifference(const PolygonObject& b)
+	{
+		//create copies
+		PolygonObject objectA = *this;
+		PolygonObject objectB = b;
+
+		//split the intersecting faces of both objects
+		objectA.splitFaces(objectB);
+		objectB.splitFaces(objectA);
+
+		//now classify them
+		objectA.classifyFaces(objectB);
+		objectB.classifyFaces(objectA);
+
+		//object b's inside faces need to have their normals inverted
+		//because they now become the outside of objectA
+		objectB.invertInsideFaces();
+
+		//we will return these
+		PolygonObject* returnObj = new PolygonObject();
+
+		//add objectA's faces that are either oudside or opposite
+		std::vector<Face*>::iterator it;
+		for (it = objectA.faceList.begin(); it < objectA.faceList.end(); ++it)
+		{
+			if ((*it)->status == OUTSIDE || (*it)->status == OPPOSITE)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+
+		// add objectB's inside faces
+		for (it = objectB.faceList.begin(); it < objectB.faceList.end(); ++it)
+		{
+			if ((*it)->status == INSIDE)
+			{
+				Vertex* v1 = new Vertex(*((*it)->v1));
+				Vertex* v2 = new Vertex(*((*it)->v2));
+				Vertex* v3 = new Vertex(*((*it)->v3));
+
+				vertexList.push_back(v1);
+				vertexList.push_back(v2);
+				vertexList.push_back(v3);
+
+				faceList.push_back(new Face(v1, v2, v3));
+			}
+		}
+		return returnObj;
+	}
 
 	wcl::BoundingBox PolygonObject::getBoundingBox() const
 	{
