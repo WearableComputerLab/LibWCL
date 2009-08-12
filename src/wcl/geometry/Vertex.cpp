@@ -25,17 +25,24 @@
  */
 
 
+#include <assert.h>
+#include <config.h>
+#include <math.h>
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
-	Vertex::Vertex() : status(UNKNOWN)
+	Vertex::Vertex() : status(UNKNOWN), position(wcl::Vector(3)), normal(wcl::Vector(3)), texCoord(wcl::Vector(3))
 	{
 		// hi!
 	}
 
 	Vertex::Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord)
 	{
+		assert(position.getRows() == 3);
+		assert(normal.getRows() == 3);
+		assert(texCoord.getRows() == 3);
+
 		this->position = position;
 		this->normal = normal;
 		this->texCoord = texCoord;
@@ -43,12 +50,15 @@ namespace wcl
 
 	Vertex::Vertex(const wcl::Vector& position, IntersectStatus v)
 	{
+		assert(position.getRows() == 3);
+
 		this->position = position;
 		this->status = v;
 	}
 
 	Vertex::Vertex(const Vertex& v)
 	{
+		assert(position.getRows() == 3);
 		this->position = v.position;
 		this->normal = v.normal;
 		this->texCoord = v.texCoord;
@@ -56,7 +66,7 @@ namespace wcl
 
 	bool Vertex::operator== (const Vertex& other) const
 	{
-		return (this->position == other.position);
+		return (fabs((this->position - other.position).normal()) < TOL);
 	}
 
 	void Vertex::mark(IntersectStatus s)

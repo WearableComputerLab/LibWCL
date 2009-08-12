@@ -91,19 +91,14 @@ map_Kd { return DIFFUSE_MAP;      }
  */
 int parse( ServerThread *thread, const char *str )
 {
-    YY_BUFFER_STATE buffer = server_scan_string(str);
-    if(buffer==NULL){
-	perror("yy_scan_bytes");
-	return true;
-    }
-    #ifdef WIN32
-    param = (void *)thread;
-    int retval =serverparse();
-    #else
-    int retval =serverparse((void*) thread);
-    #endif
-    server_switch_to_buffer( buffer );
-    server_delete_buffer(buffer);
+	YY_BUFFER_STATE buffer = server_scan_string(str);
+	if(buffer==NULL){
+		perror("yy_scan_bytes");
+		return true;
+	}
+	int retval =serverparse((void*) thread);
+	server_switch_to_buffer( buffer );
+	server_delete_buffer(buffer);
 
-    return retval;
+	return retval;
 }

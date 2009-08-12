@@ -42,7 +42,7 @@ namespace wcl
 			 * @param path The name of the obj file to load.
 			 *
 			 */
-			static PolygonObject* loadSolidFromOBJ(string path);
+			static PolygonObject* loadSolidFromOBJ(std::string path);
 
 	};
 }

@@ -36,6 +36,7 @@ namespace wcl
 
 	Face::Face(const Face& f)
 	{
+		assert(!(*(f.v1) == *(f.v2) && *(f.v1) == *(f.v3) && *(f.v2) == *(f.v3))); 
 		//let std::vector do the copying for us
 		//since we are only storing pointers after all...
 		this->v1 = f.v1;
@@ -45,6 +46,7 @@ namespace wcl
 
 	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3)
 	{
+		assert(!(*(v1) == *(v2) && *(v1) == *(v3) && *(v2) == *(v3))); 
 		this->v1 = v1;
 		this->v2 = v2;
 		this->v3 = v3;

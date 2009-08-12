@@ -51,7 +51,7 @@ namespace wcl
 			/**
 			 * Default Constructor. Creates an object with zero polygons
 			 */
-			PolygonObject(std::string id="");
+			PolygonObject();
 
 			/**
 			 * Copy Constructor.
@@ -64,7 +64,6 @@ namespace wcl
 			 * Overloaded = operator, performs a deep copy of object.
 			 */
 			const PolygonObject& operator=(const PolygonObject& object);
-
 
 			/**
 			 * Returns the list of faces for this object.
@@ -111,11 +110,17 @@ namespace wcl
 			 */
 			PolygonObject* csgDifference(const PolygonObject& b);
 
-			Vertex* addVertex(wcl::Vector position, wcl::Vector uv, wcl::Vector normal);
+			/**
+			 * Adds a vertex to the list, if an equal vertex doesn't already
+			 * exist.
+			 *
+			 * @returns the vertex
+			 */
+			Vertex* addVertex(const wcl::Vector& position, IntersectStatus v = UNKNOWN);
 
+			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 
 		private:
-			std::string id;
 			std::vector<Face*> faceList;
 			std::vector<wcl::Vertex*> vertexList;
 
@@ -132,15 +137,6 @@ namespace wcl
 			void breakFaceInFour(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* endVertex);
 			void breakFaceInFive(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int linedVertex);
 
-			/**
-			 * Adds a vertex to the list, if an equal vertex doesn't already
-			 * exist.
-			 *
-			 * @returns the vertex
-			 */
-			Vertex* addVertex(const wcl::Vector& position, IntersectStatus v);
-
-			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 
 			/**
 			 * inverts the faces that have been classified as INSIDE.

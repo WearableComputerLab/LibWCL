@@ -34,9 +34,8 @@
 namespace wcl
 {
 
-	PolygonObject::PolygonObject(std::string id) 
+	PolygonObject::PolygonObject() 
 	{
-		this->id = id;
 	}
 
 	PolygonObject::PolygonObject(const PolygonObject& object)
@@ -61,7 +60,6 @@ namespace wcl
 			faceList.push_back(f);
 		}
 
-		this->id = object.id;
 	}
 
 	const PolygonObject& PolygonObject::operator=(const PolygonObject& object)

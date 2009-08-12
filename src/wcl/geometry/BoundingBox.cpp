@@ -25,6 +25,7 @@
  */
 
 #include <limits>
+#include <assert.h>
 
 #include "BoundingBox.h"
 
@@ -34,6 +35,8 @@ namespace wcl
 	BoundingBox::BoundingBox(const wcl::Vector& minimum, const wcl::Vector& maximum) :
 		min(minimum), max(maximum)
 	{
+		assert(minimum.getRows() == 3);
+		assert(maximum.getRows() == 3);
 		// hello!
 	}
 
@@ -58,6 +61,7 @@ namespace wcl
 		std::vector<Vertex*>::const_iterator it;
 		for (it = verts.begin(); it<verts.end(); ++it)
 		{
+			assert((*it)->position.getRows() == 3);
 			this->addPoint((*it)->position);
 		}
 	}
@@ -81,6 +85,7 @@ namespace wcl
 
 	void BoundingBox::addPoint(const wcl::Vector& p)
 	{
+		assert(p.getRows() == 3);
 		//test x
 		if (p[0] < min[0])
 			min[0] = p[0];
@@ -102,6 +107,5 @@ namespace wcl
 		if (p[2] > max[2])
 			max[2] = p[2];
 	}
-
 }
 

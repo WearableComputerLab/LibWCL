@@ -36,18 +36,25 @@
 
 namespace wcl
 {
+	/**
+	 * An axis aligned bounding box for some object.
+	 */
 	class BoundingBox
 	{
 		public:
 			/**
 			 * Creates a bounding box with the extents as passed
 			 * in parameters.
+			 *
+			 * @param min The minimum x, y and z.
+			 * @param max The minimum x, y and z.
 			 */
 			BoundingBox(const wcl::Vector& min, const wcl::Vector& max);
 
-
 			/**
 			 * Creates a bounding box from a list of vertices.
+			 *
+			 * @param verts The list of vertices to use for the bounding box.
 			 */
 			BoundingBox(const std::vector<Vertex*>& verts);
 
@@ -62,17 +69,28 @@ namespace wcl
 
 			/**
 			 * Returns true if this bounding box overlaps with b
+			 *
+			 * @param b The bounding box to test against
 			 */
 			bool overlaps(const wcl::BoundingBox& b) const;
 
 			/**
 			 * Adds a point to the bounding box, adjusting
 			 * the size if needed.
+			 *
+			 * @param p The point to add to the bounding volume.
 			 */
 			void addPoint(const wcl::Vector& p);
 
 		private:
+			/**
+			 * the minimum x,y and z
+			 */
 			wcl::Vector min;
+
+			/**
+			 * the maximum x,y and z
+			 */
 			wcl::Vector max;
 	};
 };
