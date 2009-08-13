@@ -117,8 +117,6 @@ namespace wcl
 			LinePosition linePositionInX(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
 			LinePosition linePositionInY(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
 			LinePosition linePositionInZ(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
-
-			
 	};
 };
 

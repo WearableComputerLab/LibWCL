@@ -135,6 +135,31 @@ namespace wcl
 
 	}
 
+	bool Face::quickClassify()
+	{
+		IntersectStatus s1 = v1->status;
+		IntersectStatus s2 = v2->status;
+		IntersectStatus s3 = v3->status;
+
+		if (s1 == INSIDE || s1 == OUTSIDE)
+		{
+			this->status = s1;
+			return true;
+		}
+		if (s2 == INSIDE || s2 == OUTSIDE)
+		{
+			this->status = s2;
+			return true;
+		}
+		if (s3 == INSIDE || s3 == OUTSIDE)
+		{
+			this->status = s3;
+			return true;
+		}
+		return false;
+	}
+
+
 	Face::LinePosition Face::linePositionInX(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const
 	{
 		double a,b,z;

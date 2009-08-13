@@ -487,11 +487,11 @@ namespace wcl
 		// see whether it is a boundary
 		if (startType == LineSegment::VERTEX)
 		{
-			startVertex->setStatus(BOUNDARY);
+			startVertex->status = BOUNDARY;
 		}
 		if (endType == LineSegment::VERTEX)
 		{
-			endVertex->setStatus(BOUNDARY);
+			endVertex->status = BOUNDARY;
 		}
 
 		/*

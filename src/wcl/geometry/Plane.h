@@ -60,7 +60,7 @@ namespace wcl
 			/**
 			 * Destructor.
 			 */
-			~Plane();
+			~Plane() {}
 
 			/**
 			 * Returns the minimum distance from p to the plane.
