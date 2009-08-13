@@ -120,8 +120,10 @@ namespace wcl
 
 			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 
-		private:
+		protected:
 			std::vector<Face*> faceList;
+
+		private:
 			std::vector<wcl::Vertex*> vertexList;
 
 			void classifyFaces(const PolygonObject& object);
