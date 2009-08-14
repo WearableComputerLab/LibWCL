@@ -47,10 +47,10 @@ AM_MAINTAINER_MODE
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
 
 #
-# Microsoft Visual C++ Compiler
-# 	When enabled: enable_msvc is defined to 'yes' or 'no'
+# Serial Port / RS232 Code
+# 	When enabled: enable_serial is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(msvc, AC_HELP_STRING([--enable-msvc], [Compile to Microsoft .lib & .dll library]), , enable_msvc="no")
+AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
 
 #
 # Firewire/1394 Video Support 
@@ -134,7 +134,7 @@ fi
 #
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_MSVC, test "x$enable_msvc" = "xyes")
+AM_CONDITIONAL(ENABLE_SERIAL, test "x$enable_serial" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
@@ -169,16 +169,6 @@ AC_C_BIGENDIAN
 # Add required hacks to make automake work
 # (defined in cfg/other.m4)
 WCL_HACKS
-
-#
-# Check to see if an Microsoft Compiler is requested, if so
-# we need to check a few other things
-#
-
-if test "x$enable_msvc" = "xyes"; then
-    WCL_AC_MSVC_SETUP
-fi
-
 WCL_FRIDGE_CHECK
 
 #
@@ -208,7 +198,7 @@ AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
 AC_PROG_RANLIB
-#AC_PROG_LIBTOOL
+AC_PROG_LIBTOOL
 
 #
 # Platform specific setup
@@ -267,7 +257,6 @@ AC_CHECK_FUNCS([memset])
 echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "Microsoft (msvc) support: $enable_msvc"
 echo "network support         : $enable_network"
 #echo "serial (rs232) support  : $enable_serial"
 echo "1394 (Firewire) Video   : $enable_video_1394"
