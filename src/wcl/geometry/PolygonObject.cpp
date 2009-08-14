@@ -27,9 +27,11 @@
 
 #include <limits>
 #include <math.h>
+#include <iostream>
 
 #include "PolygonObject.h"
 
+using namespace std;
 
 namespace wcl
 {
@@ -40,23 +42,16 @@ namespace wcl
 
 	PolygonObject::PolygonObject(const PolygonObject& object)
 	{
-		//copy over the vertices
-		std::vector<wcl::Vertex*>::const_iterator i;
-		for (i = object.vertexList.begin(); i < object.vertexList.end(); ++i)
-		{
-			//hows that for some indirection!
-			//basically we need a Vector (not a pointer) so we can use the
-			//array acess operators
-			wcl::Vertex* v = new Vertex(*(*i));
-			vertexList.push_back(v);
-		}
-
 		//copy the faces
 		std::vector<Face*>::const_iterator j;
 		for (j = object.faceList.begin(); j < object.faceList.end(); ++j)
 		{
-			//use the brand new copy constructor 
-			Face* f = new Face(*(*j));
+			Vertex* v1 = this->addVertex((*j)->v1->position);
+			Vertex* v2 = this->addVertex((*j)->v2->position);
+			Vertex* v3 = this->addVertex((*j)->v3->position);
+			
+			Face* f = new Face(v1, v2, v3);
+
 			faceList.push_back(f);
 		}
 
@@ -86,25 +81,18 @@ namespace wcl
 		vertexList.clear();
 		faceList.clear();
 
-		std::vector<wcl::Vertex*>::const_iterator io;
-		for (io = object.vertexList.begin(); io < object.vertexList.end(); ++io)
-		{
-			//hows that for some indirection!
-			//basically we need a Vector (not a pointer) so we can use the
-			//array acess operators
-			wcl::Vertex* v = new wcl::Vertex(*(*io));
-			vertexList.push_back(v);
-		}
-
 		//copy the faces
 		std::vector<Face*>::const_iterator jo;
 		for (jo = object.faceList.begin(); jo < object.faceList.end(); ++jo)
 		{
-			//use the brand new copy constructor 
-			Face* f = new Face(*(*j));
+			Vertex* v1 = this->addVertex((*j)->v1->position);
+			Vertex* v2 = this->addVertex((*j)->v2->position);
+			Vertex* v3 = this->addVertex((*j)->v3->position);
+			
+			Face* f = new Face(v1, v2, v3);
+
 			faceList.push_back(f);
 		}
-
 
 		return (*this);
 	}
@@ -248,7 +236,9 @@ namespace wcl
 	{
 		//create copies
 		PolygonObject objectA = *this;
+		cerr << "ObjectA has " << objectA.faceList.size() << "Faces" << endl;
 		PolygonObject objectB = b;
+		cerr << "ObjectB has " << objectB.faceList.size() << "Faces" << endl;
 
 		//split the intersecting faces of both objects
 		objectA.splitFaces(objectB);
@@ -899,6 +889,11 @@ namespace wcl
 		}
 	}
 
+	std::vector<Face*>& PolygonObject::getFaces()
+	{
+		return faceList;
+	}
+
 
 	void PolygonObject::splitFaces(const PolygonObject& object)
 	{
@@ -914,17 +909,20 @@ namespace wcl
 
 		if (this->getBoundingBox().overlaps(object.getBoundingBox()))
 		{
+			cerr << "Bounding boxes of objects A and B overlap" << endl;
 			for (int i = 0; i<this->faceList.size(); ++i)
 			{
 				face1 = faceList[i];
 
 				if (face1->getBoundingBox().overlaps(object.getBoundingBox()))
 				{
+					cerr << "this face overlaps with objectB " << endl;
 					for (int j=0; j<object.faceList.size(); ++j)
 					{
 						face2 = object.faceList[j];
 						if (face1->getBoundingBox().overlaps(face2->getBoundingBox()))
 						{
+							cerr << "two faces overlap" << endl;
 							face1Plane = face1->getPlane();
 							face2Plane = face2->getPlane();
 
