@@ -58,7 +58,7 @@ namespace wcl
 
 	Vertex::Vertex(const Vertex& v)
 	{
-		assert(position.getRows() == 3);
+		assert(v.position.getRows() == 3);
 		this->position = v.position;
 		this->normal = v.normal;
 		this->texCoord = v.texCoord;
