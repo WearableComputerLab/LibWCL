@@ -42,6 +42,10 @@ namespace wcl
 		this->v1 = f.v1;
 		this->v2 = f.v2;
 		this->v3 = f.v3;
+
+		boundingBox.addPoint(v1->position);
+		boundingBox.addPoint(v1->position);
+		boundingBox.addPoint(v3->position);
 	}
 
 	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3)
@@ -50,6 +54,10 @@ namespace wcl
 		this->v1 = v1;
 		this->v2 = v2;
 		this->v3 = v3;
+
+		boundingBox.addPoint(v1->position);
+		boundingBox.addPoint(v1->position);
+		boundingBox.addPoint(v3->position);
 	}
 
 	const BoundingBox& Face::getBoundingBox()
