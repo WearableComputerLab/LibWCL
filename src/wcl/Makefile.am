@@ -8,7 +8,7 @@
 # Environment
 #
 INCLUDES= -I@top_srcdir@/src/
-libwcl_a_includedir=$(includedir)/wcl
+libwcl_la_includedir=$(includedir)/wcl
 AM_CPPFLAGS=
 AM_LDFLAGS=
 
@@ -137,8 +137,8 @@ endif
 #
 # What to build and what to install
 #
-lib_LIBRARIES=libwcl.a
-nobase_libwcl_a_include_HEADERS=$(common_headers)\
+lib_LTLIBRARIES=libwcl.la
+nobase_libwcl_la_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
 				$(video_1394_headers)\
 				$(video_uvc_headers)\
@@ -148,7 +148,7 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(osg_headers)\
 				$(x11_headers)
 
-libwcl_a_SOURCES=$(network_sources)\
+libwcl_la_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
 		 $(video_uvc_sources)\
 		 $(gestures_sources)\
