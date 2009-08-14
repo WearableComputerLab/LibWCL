@@ -9,14 +9,12 @@
 #
 INCLUDES= -I@top_srcdir@/src/
 libwcl_a_includedir=$(includedir)/wcl
-libwcl_win32_a_includedir=$(includedir)/wcl
 AM_CPPFLAGS=
 AM_LDFLAGS=
 
 #
 # Predefines, needed for the conditionals below
 #
-LIBFLAGS=ws2_32.lib
 CLEANFILES=
 
 #
@@ -139,7 +137,6 @@ endif
 #
 # What to build and what to install
 #
-if !ENABLE_MSVC
 lib_LIBRARIES=libwcl.a
 nobase_libwcl_a_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
@@ -160,55 +157,3 @@ libwcl_a_SOURCES=$(network_sources)\
 		 $(osg_sources)\
 		 $(x11_sources)
 
-else
-lib_LIBRARIES=libwcl_win32.a
-nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
-				      $(network_headers)\
-				      $(video_1394_headers)\
-				      $(video_uvc_headers)\
-				      $(gestures_headers)\
-				      $(vicon_headers)\
-				      $(maths_header)\
-					  $(osg_headers)
-
-libwcl_win32_a_SOURCES=$(network_sources)\
-		       $(video_1394_sources)\
-		       $(video_uvc_sources)\
-		       $(gestures_headers)\
-		       $(vicon_sources)\
-		       $(maths_sources)\
-			   $(osg_sources)
-
-noinst_DATA=wcl.lib
-CLEANFILES+=wcl.lib
-
-#	
-# Custom rule for linking a Visual C++ (MS Windows) library.
-#
-wcl.lib: libwcl_win32_a
-    copy libwcl_win32.a wcl.lib
-
-libwcl_win32.a: Makefile\
-  $(libwcl_win32_a_OBJECTS) \
-  $(libwcl_win32_a_DEPENDENCIES)
-	@basename="wcl"; \
-	rm -f "$$basename.dll" "$$basename.lib"; \
-	echo "Linking $$basename.lib..."; \
-	echo $(CXX) -LIB /OUT:libwcl_win32.a $(LDFLAGS) $(LIBFLAGS) \
-	  $(libwcl_win32_a_OBJECTS) \
-	  $(libwcl_win32_a_LIBADD) $(LIBS); \
-	$(CXX) -LIB /OUT:libwcl_win32.a $(LDFLAGS) $(LIBFLAGS)\
-	  $(libwcl_win32_a_OBJECTS) \
-	  $(libwcl_win32_a_LIBADD) $(LIBS); 
-
-install-exec-local: wcl.lib
-	@basename="wcl"; \
-	for ext in dll pdb; do \
-	  file="$$basename.$$ext"; \
-	  if test -f "$$file"; then \
-	    $(mkinstalldirs) "$(DESTDIR)$(bindir)"; \
-	    echo " $(INSTALL_PROGRAM) $$file $(DESTDIR)$(bindir)/$$file"; \
-	    $(INSTALL_PROGRAM) "$$file" "$(DESTDIR)$(bindir)/$$file" || exit 1; \
-	  fi \
-	done
-endif
