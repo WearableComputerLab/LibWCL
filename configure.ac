@@ -24,6 +24,10 @@ AC_CONFIG_AUX_DIR(cfg)
 AM_INIT_AUTOMAKE(wcl,0.0.0)
 AM_CONFIG_HEADER(config.h)
 
+# Init LIBToolize
+AC_CONFIG_MACRO_DIR([cfg])
+LT_INIT()
+
 #
 # Setup Options
 #
@@ -197,8 +201,6 @@ AC_MSG_RESULT($PKGCONFIG_LIBDIR)
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
-AC_PROG_RANLIB
-AC_PROG_LIBTOOL
 
 #
 # Platform specific setup
