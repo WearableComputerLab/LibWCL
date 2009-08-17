@@ -127,7 +127,7 @@ namespace wcl
 		wcl::Vector p2 = v2->position;
 		wcl::Vector edgeDir(p2[0] - p1[0], p2[1] - p1[1], p2[2] - p1[2]);
 		edgeDir = edgeDir.unit();
-		Line edgeLine(edgeDir, p1);
+		Line edgeLine(p1, edgeDir);
 
 		if (index == 0)
 		{

@@ -384,7 +384,7 @@ namespace wcl
 		p0[0] = (f.v1->position[0] + f.v2->position[0] + f.v3->position[0]) /3.0;
 		p0[1] = (f.v1->position[1] + f.v2->position[1] + f.v3->position[1]) /3.0;
 		p0[2] = (f.v1->position[2] + f.v2->position[2] + f.v3->position[2]) /3.0;
-		Line ray(f.getNormal(), p0);
+		Line ray(p0, f.getNormal());
 
 		bool success;
 		double dotProduct, distance;
