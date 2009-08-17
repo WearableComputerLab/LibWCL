@@ -132,8 +132,12 @@ namespace wcl
 		PolygonObject objectB = b;
 
 		//split the intersecting faces of both objects
+		cerr << "Before splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
 		objectA.splitFaces(objectB);
+		cerr << "After splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
+		cerr << "Before splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 		objectB.splitFaces(objectA);
+		cerr << "After splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 
 		//now classify them
 		objectA.classifyFaces(objectB);
@@ -146,34 +150,48 @@ namespace wcl
 		std::vector<Face*>::iterator it;
 		for (it = objectA.faceList.begin(); it < objectA.faceList.end(); ++it)
 		{
-			if ((*it)->status == OUTSIDE || (*it)->status == SAME)
+			if (true || (*it)->status == OUTSIDE || (*it)->status == SAME)
 			{
 				Vertex* v1 = new Vertex(*((*it)->v1));
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				//cerr << "Adding a face to the new object: " << endl;
+				//cerr << "   " << v1->toString();
+				//cerr << "   " << v2->toString();
+				//cerr << "   " << v3->toString();
+
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
+			}
+			else
+			{
+				cerr << "Status is " << (*it)->status << ", discarding" << endl;
 			}
 		}
 
 		// add objectB's outside faces
 		for (it = objectB.faceList.begin(); it < objectB.faceList.end(); ++it)
 		{
-			if ((*it)->status == OUTSIDE)
+			if (true || (*it)->status == OUTSIDE)
 			{
 				Vertex* v1 = new Vertex(*((*it)->v1));
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				//cerr << "Adding a face from objectB to the new object: " << endl;
+				//cerr << "   " << v1->toString();
+				//cerr << "   " << v2->toString();
+				//cerr << "   " << v3->toString();
+
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
 			}
 		}
 		return returnObj;
@@ -185,8 +203,13 @@ namespace wcl
 		PolygonObject objectB = b;
 
 		//split the intersecting faces of both objects
+		//cerr << "before splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
 		objectA.splitFaces(objectB);
+		//cerr << "After splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
+
+		//cerr << "before splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 		objectB.splitFaces(objectA);
+		//cerr << "After splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 
 		//now classify them
 		objectA.classifyFaces(objectB);
@@ -205,11 +228,11 @@ namespace wcl
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
 			}
 		}
 
@@ -222,11 +245,11 @@ namespace wcl
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
 			}
 		}
 		return returnObj;
@@ -236,13 +259,16 @@ namespace wcl
 	{
 		//create copies
 		PolygonObject objectA = *this;
-		cerr << "ObjectA has " << objectA.faceList.size() << "Faces" << endl;
 		PolygonObject objectB = b;
-		cerr << "ObjectB has " << objectB.faceList.size() << "Faces" << endl;
 
 		//split the intersecting faces of both objects
+		//cerr << "before splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
 		objectA.splitFaces(objectB);
+		//cerr << "After splitting, objectA has " << objectA.faceList.size() << " faces. " << endl;
+
+		//cerr << "before splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 		objectB.splitFaces(objectA);
+		//cerr << "After splitting, objectB has " << objectB.faceList.size() << " faces. " << endl;
 
 		//now classify them
 		objectA.classifyFaces(objectB);
@@ -265,11 +291,16 @@ namespace wcl
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				////cerr << "Adding a face to the new object: " << endl;
+				////cerr << "   " << v1->toString();
+				////cerr << "   " << v2->toString();
+				////cerr << "   " << v3->toString();
+
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
 			}
 		}
 
@@ -282,11 +313,16 @@ namespace wcl
 				Vertex* v2 = new Vertex(*((*it)->v2));
 				Vertex* v3 = new Vertex(*((*it)->v3));
 
-				vertexList.push_back(v1);
-				vertexList.push_back(v2);
-				vertexList.push_back(v3);
+				returnObj->vertexList.push_back(v1);
+				returnObj->vertexList.push_back(v2);
+				returnObj->vertexList.push_back(v3);
 
-				faceList.push_back(new Face(v1, v2, v3));
+				////cerr << "Adding a face from objectB to the new object: " << endl;
+				////cerr << "   " << v1->toString();
+				////cerr << "   " << v2->toString();
+				////cerr << "   " << v3->toString();
+
+				returnObj->faceList.push_back(new Face(v1, v2, v3));
 			}
 		}
 		return returnObj;
@@ -344,8 +380,7 @@ namespace wcl
 
 	void PolygonObject::raytraceClassify(Face& f) const
 	{
-		wcl::Vector p0;
-		p0.setSize(3);
+		wcl::Vector p0(3);
 		p0[0] = (f.v1->position[0] + f.v2->position[0] + f.v3->position[0]) /3.0;
 		p0[1] = (f.v1->position[1] + f.v2->position[1] + f.v3->position[1]) /3.0;
 		p0[2] = (f.v1->position[2] + f.v2->position[2] + f.v3->position[2]) /3.0;
@@ -353,7 +388,7 @@ namespace wcl
 
 		bool success;
 		double dotProduct, distance;
-		wcl::Vector intersectionPoint;
+		wcl::Vector intersectionPoint(3);
 		Face* closestFace = NULL;
 		double closestDistance;
 
@@ -372,7 +407,8 @@ namespace wcl
 				//FIXME check for parallelness
 				if (true)
 				{
-					distance = (ray.getPosition()-intersectionPoint).normal();
+					distance = ray.distanceFromPoint(intersectionPoint);
+
 					if (fabs(distance)<TOL && fabs(dotProduct)<TOL)
 					{
 						ray.perturbDirection();
@@ -435,8 +471,9 @@ namespace wcl
 
 	void PolygonObject::splitFace(int index, const LineSegment& segment1, const LineSegment& segment2)
 	{
-		Vertex* startPosvertex, endPosVertex;
-		wcl::Vector startPos, endPos;
+		Vertex* startPosVertex, endPosVertex;
+		wcl::Vector startPos(3);
+		wcl::Vector endPos(3);
 		double startDist, endDist;
 		LineSegment::LineIntersectType startType, endType, middleType;
 
@@ -507,11 +544,13 @@ namespace wcl
 			//vertex-edge-edge
 			if (startType == LineSegment::VERTEX)
 			{
+				//cerr << "Breaking face in 2" << endl;
 				breakFaceInTwo(index, endPos, splitEdge);
 				return;
 			}
 			else if (endType == LineSegment::VERTEX)
 			{
+				//cerr << "Breaking face in 2" << endl;
 				breakFaceInTwo(index, endPos, splitEdge);
 			}
 			else
@@ -520,10 +559,12 @@ namespace wcl
 					(startVertex == face->v2 && endVertex == face->v3) ||
 					(startVertex == face->v3 && endVertex == face->v1))
 				{
+					//cerr << "Breaking face in 3" << endl;
 					breakFaceInThree(index, startPos, endPos, splitEdge);
 				}
 				else
 				{
+					//cerr << "Breaking face in 3" << endl;
 					breakFaceInThree(index, endPos, startPos, splitEdge);
 				}
 			}
@@ -532,36 +573,43 @@ namespace wcl
 		//vertex-face-edge
 		else if (startType == LineSegment::VERTEX && endType == LineSegment::EDGE)
 		{
+			//cerr << "Breaking face in 2" << endl;
 			breakFaceInTwo(index, endPos, endVertex);
 		}
 		//edge face vertex
 		else if (startType == LineSegment::EDGE && endType == LineSegment::VERTEX)
 		{
+			//cerr << "Breaking face in 2" << endl;
 			breakFaceInTwo(index, startPos, startVertex);
 		}
 		//vertex face face
 		else if (startType == LineSegment::VERTEX && endType == LineSegment::FACE)
 		{
+			//cerr << "Breaking face in 3" << endl;
 			breakFaceInThree(index, endPos, startVertex);
 		}
 		//face face vertex
 		else if (startType == LineSegment::FACE && endType == LineSegment::VERTEX)
 		{
+			//cerr << "Breaking face in 3" << endl;
 			breakFaceInThree(index, startPos, endVertex);
 		}
 		//edge face edge
 		else if (startType == LineSegment::EDGE && endType == LineSegment::EDGE)
 		{
+			//cerr << "Breaking face in 3" << endl;
 			breakFaceInThree(index, startPos, endPos, startVertex, endVertex);
 		}
 		//edge face face
 		else if (startType == LineSegment::EDGE && endType == LineSegment::FACE)
 		{
+			//cerr << "Breaking face in 4" << endl;
 			breakFaceInFour(index, startPos, endPos, startVertex);
 		}
 		//face face edge
 		else if (startType == LineSegment::FACE && endType == LineSegment::EDGE)
 		{
+			//cerr << "Breaking face in 4" << endl;
 			breakFaceInFour(index, endPos, startPos, endVertex);
 		}
 		// face face face
@@ -571,6 +619,7 @@ namespace wcl
 
 			if (fabs(segmentVector[0]) < TOL && fabs(segmentVector[1]) < TOL && fabs(segmentVector[2]) < TOL)
 			{
+			//cerr << "Breaking face in 3" << endl;
 				breakFaceInThree(index, startPos);
 				return;
 			}
@@ -604,10 +653,12 @@ namespace wcl
 
 			if ((linedVertexPos - startPos).normal() > (linedVertexPos - endPos).normal())
 			{
+				//cerr << "Breaking face in 5" << endl;
 				breakFaceInFive(index, startPos, endPos, linedVertex);
 			}
 			else
 			{
+				//cerr << "Breaking face in 5" << endl;
 				breakFaceInFive(index, endPos, startPos, linedVertex);
 			}
 		}
@@ -636,19 +687,23 @@ namespace wcl
 
 	Face* PolygonObject::addFace(Vertex* v1, Vertex* v2, Vertex* v3)
 	{
-		if (!(*v1 == *v2 || *v1 == *v3 || *v2 == *v3))
+		if (!((*v1) == (*v2) || (*v1) == (*v3) || (*v2) == (*v3)))
 		{
 			Face* f = new Face(v1, v2, v3);
 			if (f->getArea() > TOL)
 			{
+				//cerr << "Actually adding the face" << endl;
 				faceList.push_back(f);
+				//cerr << "the size is " << faceList.size() << endl;
 				return f;
 			}
 			else
 			{
+				//cerr << "area is < TOL" << endl;
 				delete f;
 			}
 		}
+		//throw std::string("cheating");
 		return NULL;
 	}
 
@@ -763,7 +818,7 @@ namespace wcl
 		}
 	}
 
-	void PolygonObject::breakFaceInThree(int index, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* startVertex, Vertex* endVertex)
+	void PolygonObject::breakFaceInThree(int index, const wcl::Vector& newPos1, const wcl::Vector& newPos2, Vertex* startVertex, Vertex* endVertex)
 	{
 		Face* f = faceList[index];
 		faceList.erase(faceList.begin() + index);
@@ -909,26 +964,31 @@ namespace wcl
 
 		if (this->getBoundingBox().overlaps(object.getBoundingBox()))
 		{
-			cerr << "Bounding boxes of objects A and B overlap" << endl;
+			//cerr << "Bounding boxes of objects A and B overlap" << endl;
 			for (int i = 0; i<this->faceList.size(); ++i)
 			{
 				face1 = faceList[i];
 
 				if (face1->getBoundingBox().overlaps(object.getBoundingBox()))
 				{
-					cerr << "this face overlaps with objectB " << endl;
+					//cerr << "this face overlaps with objectB " << endl;
 					for (int j=0; j<object.faceList.size(); ++j)
 					{
 						face2 = object.faceList[j];
 						if (face1->getBoundingBox().overlaps(face2->getBoundingBox()))
 						{
-							cerr << "two faces overlap" << endl;
+							//cerr << "two face bounding boxes overlap" << endl;
 							face1Plane = face1->getPlane();
 							face2Plane = face2->getPlane();
 
+							//cout << face1Plane.toString();
+							//cout << face2Plane.toString();
+							
 							distFace1Vert1 = face2Plane.distanceFrom(face1->v1->position);
 							distFace1Vert2 = face2Plane.distanceFrom(face1->v2->position);
 							distFace1Vert3 = face2Plane.distanceFrom(face1->v3->position);
+
+							////cerr <<  "Distances: " << distFace1Vert1 << ", " << distFace1Vert2 << ", " << distFace1Vert3 << endl;
 
 							signFace1Vert1 = (distFace1Vert1>TOL ? 1 : (distFace1Vert1<-TOL? -1 : 0));
 							signFace1Vert2 = (distFace1Vert2>TOL ? 1 : (distFace1Vert2<-TOL? -1 : 0));
@@ -946,12 +1006,20 @@ namespace wcl
 
 								if (!(signFace2Vert1==signFace2Vert2 && signFace2Vert2 == signFace2Vert3))
 								{
+									//cerr << "Testing plane intersections" << endl;
 									Line line = face1Plane.intersect(face2Plane);
+
+									//cout << line.toString();
+
 									LineSegment segment1(line, *face1, signFace1Vert1, signFace1Vert2, signFace1Vert3);
 									LineSegment segment2(line, *face2, signFace2Vert1, signFace2Vert2, signFace2Vert3);
 
+									//cout << segment1.toString();
+									//cout << segment2.toString();
+
 									if (segment1.intersect(segment2))
 									{
+										//cerr << "*** Line segments intersect, about to split" << endl;
 										int lastNumFaces = faceList.size();
 										this->splitFace(i, segment1, segment2);
 

@@ -28,6 +28,8 @@
 #include <assert.h>
 #include <config.h>
 #include <math.h>
+#include <sstream>
+
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
@@ -67,6 +69,13 @@ namespace wcl
 	bool Vertex::operator== (const Vertex& other) const
 	{
 		return (fabs((this->position - other.position).normal()) < TOL);
+	}
+
+	std::string Vertex::toString()
+	{
+		std::stringstream ss;
+		ss << "Vertex. (" << position[0] << ", " << position[1] << ", " << position[2] << ")" << std::endl;
+		return ss.str();
 	}
 
 	void Vertex::mark(IntersectStatus s)

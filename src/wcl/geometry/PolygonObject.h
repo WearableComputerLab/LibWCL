@@ -134,7 +134,7 @@ namespace wcl
 			void breakFaceInTwo(int facePos, wcl::Vector newPos, Vertex* endVertex);
 			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int splitEdge);
 			void breakFaceInThree(int facePos, wcl::Vector newPos, Vertex* endVertex);
-			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* startVertex, Vertex* endVertex);
+			void breakFaceInThree(int facePos, const wcl::Vector& newPos1, const wcl::Vector& newPos2, Vertex* startVertex, Vertex* endVertex);
 			void breakFaceInThree(int facePos, wcl::Vector newPos);
 			void breakFaceInFour(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* endVertex);
 			void breakFaceInFive(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int linedVertex);

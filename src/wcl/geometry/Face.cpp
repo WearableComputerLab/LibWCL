@@ -34,7 +34,7 @@
 namespace wcl
 {
 
-	Face::Face(const Face& f)
+	Face::Face(const Face& f) : status(UNKNOWN)
 	{
 		assert(!(*(f.v1) == *(f.v2) && *(f.v1) == *(f.v3) && *(f.v2) == *(f.v3))); 
 		//let std::vector do the copying for us
@@ -48,7 +48,7 @@ namespace wcl
 		boundingBox.addPoint(v3->position);
 	}
 
-	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3)
+	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3) : status(UNKNOWN)
 	{
 		assert(!(*(v1) == *(v2) && *(v1) == *(v3) && *(v2) == *(v3))); 
 		this->v1 = v1;
@@ -129,9 +129,9 @@ namespace wcl
 		}
 		else
 		{
-			res1 = linePositionInY(p, v1->position, v2->position);
-			res2 = linePositionInY(p, v2->position, v3->position);
-			res3 = linePositionInY(p, v3->position, v1->position);
+			res1 = linePositionInZ(p, v1->position, v2->position);
+			res2 = linePositionInZ(p, v2->position, v3->position);
+			res3 = linePositionInZ(p, v3->position, v1->position);
 		}
 
 		if (((res1 == UP)||(res2==UP)||(res3==UP)) && ((res1==DOWN)||(res2==DOWN)||(res3==DOWN)))

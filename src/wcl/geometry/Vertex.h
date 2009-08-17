@@ -29,6 +29,7 @@
 #define VERTEX_H
 
 #include <set>
+#include <string>
 
 #include <wcl/geometry/IntersectStatus.h>
 #include <wcl/maths/Vector.h>
@@ -51,6 +52,7 @@ namespace wcl
 
 			bool operator==(const Vertex& other) const;
 
+			std::string toString();
 
 			/**
 			 * The position of the vertex in 3D space

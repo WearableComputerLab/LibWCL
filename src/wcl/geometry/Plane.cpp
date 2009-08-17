@@ -38,9 +38,7 @@ namespace wcl
 		point = v1;
 		normal = (v2 - v1).crossProduct(v3 - v1).unit();
 
-		d = -v1[0]*(v2[1]*v3[2] - v3[1]*v2[2]) 
-			- v2[0]*(v3[1]*v1[2] - v1[1]*v3[2]) 
-			- v3[0]*(v1[1]*v2[2] - v2[1]*v1[2]);
+		d = -(normal[0]*point[0] + normal[1]*point[1] + normal[2]*point[2]);
 	}
 
 	Plane::Plane()
@@ -50,8 +48,7 @@ namespace wcl
 
 	double Plane::distanceFrom(const wcl::Vector& p) const
 	{
-		return (normal[0]*p[0] + normal[1]*p[1] + normal[2]*p[2] + d) / 
-			   sqrt(normal[0]*normal[0] + normal[1]*normal[1] + normal[2]*normal[2]);
+		return (normal[0]*p[0] + normal[1]*p[1] + normal[2]*p[2] + d);
 	}
 
 	Line Plane::intersect(const Plane& p) const
@@ -59,7 +56,7 @@ namespace wcl
 		//the direction is perpendicular to the two planes, or
 		//the cross product
 		wcl::Vector dir = this->normal.crossProduct(p.normal);
-		wcl::Vector pos;
+		wcl::Vector pos(3);
 		
 		//make it a unit vector
 		dir = dir.unit();
@@ -121,6 +118,11 @@ namespace wcl
 		return normal;
 	}
 
-
+	std::string Plane::toString()
+	{
+		std::stringstream ss;
+		ss << "Plane. Normal: (" << normal[0] << ", " << normal[1] << ", " << normal[2] << "), d:" << d << std::endl;
+		return ss.str();
+	}
 }
 
