@@ -9,6 +9,7 @@ ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
 AUTOHEADER=`which autoheader`
 AUTOMAKE=`which automake`
+LIBTOOLIZE=`which libtoolize`
 
 #
 # LIBTOOLIZE
