@@ -87,7 +87,7 @@ namespace wcl
 			 *
 			 * @returns the vertex
 			 */
-			Vertex* addVertex(const wcl::Vector& position, IntersectStatus v = UNKNOWN);
+			Vertex* addVertex(const wcl::Vector& position);
 
 			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 

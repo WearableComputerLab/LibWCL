@@ -74,7 +74,6 @@ geometry_headers+=\
 			geometry/BoundingBox.h \
 			geometry/Face.h \
 			geometry/GeometryLoader.h \
-			geometry/IntersectStatus.h \
 			geometry/Line.h \
 			geometry/LineSegment.h \
 			geometry/Plane.h \

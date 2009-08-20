@@ -129,5 +129,51 @@ namespace wcl
 		//return the box
 		return b;
 	}
+
+	Vertex* PolygonObject::addVertex(const wcl::Vector& position)
+	{
+		Vertex* vertex = new Vertex(position);
+		std::vector<wcl::Vertex*>::iterator it;
+		for (it = vertexList.begin(); it < vertexList.end(); ++it)
+		{
+			if (*(*it) == *vertex)
+				break;
+		}
+		if (it == vertexList.end())
+		{
+			vertexList.push_back(vertex);
+			return vertex;
+		}
+		else
+		{
+			delete vertex;
+			return *it;
+		}
+	}
+
+	Face* PolygonObject::addFace(Vertex* v1, Vertex* v2, Vertex* v3)
+	{
+		if (!((*v1) == (*v2) || (*v1) == (*v3) || (*v2) == (*v3)))
+		{
+			Face* f = new Face(v1, v2, v3);
+			if (f->getArea() > TOL)
+			{
+				//cerr << "Actually adding the face" << endl;
+				faceList.push_back(f);
+				//cerr << "the size is " << faceList.size() << endl;
+				return f;
+			}
+			else
+			{
+				//cerr << "area is < TOL" << endl;
+				delete f;
+			}
+		}
+		//throw std::string("cheating");
+		return NULL;
+	}
+
+
+
 };
 
