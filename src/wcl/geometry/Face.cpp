@@ -34,7 +34,7 @@
 namespace wcl
 {
 
-	Face::Face(const Face& f) : status(UNKNOWN)
+	Face::Face(const Face& f) 
 	{
 		assert(!(*(f.v1) == *(f.v2) && *(f.v1) == *(f.v3) && *(f.v2) == *(f.v3))); 
 		//let std::vector do the copying for us
@@ -48,7 +48,7 @@ namespace wcl
 		boundingBox.addPoint(v3->position);
 	}
 
-	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3) : status(UNKNOWN)
+	Face::Face(Vertex* v1,Vertex* v2,Vertex* v3)
 	{
 		assert(!(*(v1) == *(v2) && *(v1) == *(v3) && *(v2) == *(v3))); 
 		this->v1 = v1;
@@ -109,144 +109,8 @@ namespace wcl
 		return (*v1 == *(f.v1) && *v2 == *(f.v2) && *v3 == *(f.v3));
 	}
 
-	bool Face::hasPoint(const wcl::Vector& p) const
-	{
-		LinePosition res1, res2, res3;
-		bool hasUp, hasDown, hasOn;
-		wcl::Vector normal = this->getNormal();
-
-		if (fabs(normal[0]) > TOL)
-		{
-			res1 = linePositionInX(p, v1->position, v2->position);
-			res2 = linePositionInX(p, v2->position, v3->position);
-			res3 = linePositionInX(p, v3->position, v1->position);
-		}
-		else if (fabs(normal[1]) > TOL)
-		{
-			res1 = linePositionInY(p, v1->position, v2->position);
-			res2 = linePositionInY(p, v2->position, v3->position);
-			res3 = linePositionInY(p, v3->position, v1->position);
-		}
-		else
-		{
-			res1 = linePositionInZ(p, v1->position, v2->position);
-			res2 = linePositionInZ(p, v2->position, v3->position);
-			res3 = linePositionInZ(p, v3->position, v1->position);
-		}
-
-		if (((res1 == UP)||(res2==UP)||(res3==UP)) && ((res1==DOWN)||(res2==DOWN)||(res3==DOWN)))
-			return true;
-		else if ((res1==ON)||(res2==ON)||(res3==ON))
-			return true;
-		else
-			return false;
-
-	}
-
-	bool Face::quickClassify()
-	{
-		IntersectStatus s1 = v1->status;
-		IntersectStatus s2 = v2->status;
-		IntersectStatus s3 = v3->status;
-
-		if (s1 == INSIDE || s1 == OUTSIDE)
-		{
-			this->status = s1;
-			return true;
-		}
-		if (s2 == INSIDE || s2 == OUTSIDE)
-		{
-			this->status = s2;
-			return true;
-		}
-		if (s3 == INSIDE || s3 == OUTSIDE)
-		{
-			this->status = s3;
-			return true;
-		}
-		return false;
-	}
 
 
-	Face::LinePosition Face::linePositionInX(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const
-	{
-		double a,b,z;
-		if ((fabs(pLine1[1] - pLine2[1]) > TOL) &&(((point[1]>=pLine1[1]) && (point[1] <= pLine2[1])) || ((point[1] <= pLine1[1]) && (point[1]>=pLine2[1]))))
-		{
-			a = (pLine2[2] - pLine1[2]) / (pLine2[1] - pLine1[1]);
-			b = pLine1[2] - a*pLine1[1];
-			z = a*point[1] + b;
-			if (z> point[2] + TOL)
-			{
-				return UP;
-			}
-			else if (z < point[2] - TOL)
-			{
-				return DOWN;
-			}
-			else
-			{
-				return ON;
-			}
-		}
-		else
-		{
-			return NONE;
-		}
-	}
 
-	Face::LinePosition Face::linePositionInY(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const
-	{
-		double a,b,z;
-		if ((fabs(pLine1[0] - pLine2[0]) > TOL) &&(((point[0]>=pLine1[0]) && (point[0] <= pLine2[0])) || ((point[0] <= pLine1[0]) && (point[0]>=pLine2[0]))))
-		{
-			a = (pLine2[2] - pLine1[2]) / (pLine2[0] - pLine1[0]);
-			b = pLine1[2] - a*pLine1[0];
-			z = a*point[0] + b;
-			if (z> point[2] + TOL)
-			{
-				return UP;
-			}
-			else if (z < point[2] - TOL)
-			{
-				return DOWN;
-			}
-			else
-			{
-				return ON;
-			}
-		}
-		else
-		{
-			return NONE;
-		}
-	}
-
-	Face::LinePosition Face::linePositionInZ(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const
-	{
-		double a,b,y;
-		if ((fabs(pLine1[0] - pLine2[0]) > TOL) &&(((point[0]>=pLine1[0]) && (point[0] <= pLine2[0])) || ((point[0] <= pLine1[0]) && (point[0]>=pLine2[0]))))
-		{
-			a = (pLine2[1] - pLine1[1]) / (pLine2[0] - pLine1[0]);
-			b = pLine1[1] - a*pLine1[0];
-			y = a*point[0] + b;
-			if (y> point[1] + TOL)
-			{
-				return UP;
-			}
-			else if (y < point[1] - TOL)
-			{
-				return DOWN;
-			}
-			else
-			{
-				return ON;
-			}
-		}
-		else
-		{
-			return NONE;
-		}
-	}
 }
 

@@ -34,7 +34,7 @@
 
 namespace wcl
 {
-	Vertex::Vertex() : status(UNKNOWN), position(wcl::Vector(3)), normal(wcl::Vector(3)), texCoord(wcl::Vector(3))
+	Vertex::Vertex() : position(wcl::Vector(3)), normal(wcl::Vector(3)), texCoord(wcl::Vector(3))
 	{
 		// hi!
 	}
@@ -50,12 +50,11 @@ namespace wcl
 		this->texCoord = texCoord;
 	}
 
-	Vertex::Vertex(const wcl::Vector& position, IntersectStatus v)
+	Vertex::Vertex(const wcl::Vector& position)
 	{
 		assert(position.getRows() == 3);
 
 		this->position = position;
-		this->status = v;
 	}
 
 	Vertex::Vertex(const Vertex& v)
@@ -78,19 +77,5 @@ namespace wcl
 		return ss.str();
 	}
 
-	void Vertex::mark(IntersectStatus s)
-	{
-		this->status = s;
-
-		std::set<Vertex*>::iterator it;
-		for (it = adjacentVerts.begin(); it != adjacentVerts.end(); ++it)
-		{
-			if ((*it)->status == UNKNOWN)
-			{
-				(*it)->mark(s);
-			}
-		}
-	}
-
-
 }
+
