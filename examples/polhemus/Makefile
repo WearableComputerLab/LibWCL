@@ -1,4 +1,4 @@
-LDFLAGS=	-L/usr/lib -L/usr/local/lib -lwcl -lraw1394 -ldc1394 -lX11
+LDFLAGS=	-lX11 -lXext -L/usr/local/lib -lwcl -lraw1394 -ldc1394 
 
 
 

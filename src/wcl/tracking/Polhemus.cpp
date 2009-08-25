@@ -50,8 +50,8 @@ namespace wcl
 			throw std::string(strerror(errno));
 		}
 		setAsciiOutput();
-		setUnits(MM);
 		setDataFormat();
+		setUnits(MM);
 
 		if (type == PATRIOT)
 		{
@@ -154,15 +154,15 @@ namespace wcl
 		}
 		else
 		{
-			expected = 2;
+			expected = 1;
 			switch (u)
 			{
 				case INCHES:
-					bytesWritten = connection.write("U\r");
+					bytesWritten = connection.write("U");
 					break;
 				case CM:
 				case MM:
-					bytesWritten = connection.write("u\r");
+					bytesWritten = connection.write("u");
 					break;
 			}
 		}
@@ -185,8 +185,8 @@ namespace wcl
 		}
 		else
 		{
-			expected = 2;
-			bytesWritten = connection.write("F\r");
+			expected = 1;
+			bytesWritten = connection.write("F");
 		}
 		if (bytesWritten != expected)
 		{
