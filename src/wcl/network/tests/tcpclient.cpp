@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "wcl/network/TCPSocket.h"
 
+using namespace wcl;
+
 int main(void)
 {
 	char buffer[4096];

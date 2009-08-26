@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "wcl/network/UDPServer.h"
 
+using namespace wcl;
+
 int main(void)
 {
     UDPServer s(55555);
