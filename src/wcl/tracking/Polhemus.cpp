@@ -53,7 +53,7 @@ namespace wcl
 		setAsciiOutput();
 		setDataFormat();
 		setUnits(MM);
-		setContinuous(true);
+		//setContinuous(true);
 
 		if (type == PATRIOT)
 		{
