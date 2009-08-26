@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "wcl/network/TCPServer.h"
 
+using namespace wcl;
+
 int main(void)
 {
     TCPServer s(55555);
