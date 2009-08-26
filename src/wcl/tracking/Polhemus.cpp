@@ -36,7 +36,7 @@
 namespace wcl
 {
 
-	Polhemus::Polhemus(std::string path, TrackerType t) : type(t), activeSensorCount(-1)
+	Polhemus::Polhemus(std::string path, TrackerType t) : type(t), activeSensorCount(-1), continuous(false)
 	{
 		std::cout << "About to connect to " << path << std::endl;
 		if (!connection.open(path.c_str(), Serial::BAUD_115200))
@@ -52,6 +52,7 @@ namespace wcl
 		setAsciiOutput();
 		setDataFormat();
 		setUnits(MM);
+		setContinuous(true);
 
 		if (type == PATRIOT)
 		{
@@ -66,6 +67,9 @@ namespace wcl
 
 	Polhemus::~Polhemus()
 	{
+		if (continuous)
+			setContinuous(false);
+
 		connection.close();
 		delete[] sensors;
 	}
@@ -78,7 +82,10 @@ namespace wcl
 
 		if (activeSensorCount > 0)
 		{
-			connection.write("P");
+			if (!continuous)
+			{
+				connection.write("P");
+			}
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
@@ -196,9 +203,24 @@ namespace wcl
 		}
 	}
 
-	void Polhemus::setContinuous()
+	void Polhemus::setContinuous(bool c)
 	{
-		connection.write("C\r");
+		switch (type)
+		{
+			case PATRIOT:
+				if (c)
+					connection.write("C\r");
+				else
+					connection.write("P");
+				break;
+			case FASTRAK:
+				if (c)
+					connection.write("C");
+				else
+					connection.write("c");
+				break;
+		}
+		continuous = c;
 	}
 
 	void Polhemus::setDataFormat()

@@ -139,7 +139,7 @@ namespace wcl
 			 * Puts the tracker into continuous mode.
 			 * Currently not used.
 			 */
-			void setContinuous();
+			void setContinuous(bool c);
 
 			/**
 			 * Sets the data format to what we want.
@@ -167,6 +167,8 @@ namespace wcl
 			void readAll(std::string prefix);
 
 			TrackerType type;
+
+			bool continuous;
 	};
 }
 
