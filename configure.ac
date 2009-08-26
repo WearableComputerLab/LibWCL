@@ -22,6 +22,8 @@ AC_CONFIG_AUX_DIR(cfg)
 # Init Automake subsystem
 #
 AM_INIT_AUTOMAKE(wcl,0.0.0)
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+
 AM_CONFIG_HEADER(config.h)
 
 # Init LIBToolize
@@ -54,7 +56,7 @@ AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP 
 # Serial Port / RS232 Code
 # 	When enabled: enable_serial is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
+#AC_ARG_ENABLE(serial, AC_HELP_STRING([--enable-serial], [Enable RS232 Serial Code]), , enable_serial="no")
 
 #
 # Firewire/1394 Video Support 

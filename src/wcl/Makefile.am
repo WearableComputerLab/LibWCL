@@ -100,15 +100,15 @@ vicon_sources=
 
 if ENABLE_VICON
 vicon_headers+=\
-			tracking/Patriot.h \
-			tracking/PatriotTrackedObject.h \
+			tracking/Polhemus.h \
+			tracking/PolhemusTrackedObject.h \
 			tracking/TrackedObject.h \
 			tracking/ViconTrackedObject.h \
 			tracking/ViconClient.h
 
 vicon_sources+=\
-			tracking/Patriot.cpp \
-			tracking/PatriotTrackedObject.cpp \
+			tracking/Polhemus.cpp \
+			tracking/PolhemusTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \
 			tracking/ViconClient.cpp
 
