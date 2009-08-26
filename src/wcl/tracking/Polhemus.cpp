@@ -43,6 +43,7 @@ namespace wcl
 		{
 			throw std::string(strerror(errno));
 		}
+		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
@@ -89,9 +90,18 @@ namespace wcl
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				connection.read((void*) &response, 69);
-				response[69] = '\0';
-				//std::cout << "Reading Update Response: " << response << std::endl;
+				if (type == PATRIOT)
+				{
+					connection.read((void*) &response, 69);
+					response[69] = '\0';
+				}
+				else if (type == FASTRAK)
+				{
+					connection.read((void*) &response, 54);
+					response[54] = '\0';
+				}
+
+				std::cout << "Reading Update Response: " << response << std::endl;
 				int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 				if (units == MM)
 				{
@@ -127,17 +137,18 @@ namespace wcl
 	void Polhemus::setHemisphere(const wcl::Vector& hemisphere)
 	{
 		std::stringstream command1, command2, command3, command4;
-		command1 << "h1," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
-		command2 << "h2," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+		command1 << "H1," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+		command2 << "H2," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
 		connection.write(command1.str());
 		connection.write(command2.str());
 		if (type == FASTRAK)
 		{
-			command3 << "h3," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
-			command4 << "h4," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+			command3 << "H3," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
+			command4 << "H4," << hemisphere[0] << "," << hemisphere[1] << "," << hemisphere[2] << "\r";
 			connection.write(command3.str());
 			connection.write(command4.str());
 		}
+		std::cout << command1.str() ;
 	}
 
 	void Polhemus::setUnits(Units u)
@@ -289,7 +300,7 @@ namespace wcl
 				//throw std::string(strerror(errno));
 				throw std::string(ss.str());
 			}
-			std::cout << "Response from tracker in getSensorCount: " << response << std::endl;
+			//std::cout << "Response from tracker in getSensorCount: " << response << std::endl;
 			if (response[12] == '3')
 			{
 				activeSensorCount = 2;

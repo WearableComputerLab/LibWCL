@@ -85,7 +85,7 @@ void termHandler(int a)
 int main(int argc, char** argv)
 {
 	// register the signal handler
-	//signal(SIGINT, termHandler);
+	signal(SIGINT, termHandler);
 
 	try
 	{
