@@ -12,9 +12,9 @@
 
 %%
 
-/**************************************************************
-                   OBJ Specific classes
-**************************************************************/
+ /**************************************************************
+                    OBJ Specific classes
+ **************************************************************/
 g      { return GROUP;            }
 s      { return SHADING_GROUP;    }
 v      { return VERTEX;           }
@@ -26,9 +26,9 @@ usemtl { return USE_MTL;          }
 #      { return HASH;             }
 
 
-/**************************************************************
-                   MTL Specific classes
-**************************************************************/
+ /**************************************************************
+                    MTL Specific classes
+ **************************************************************/
 newmtl { return NEW_MTL;          }
 Kd     { return DIFFUSE;          }
 Ka     { return AMBIENT;          }
@@ -39,39 +39,39 @@ Ns     { return SPECULAR_EXP;     }
 map_Kd { return DIFFUSE_MAP;      }
 
 
-/**************************************************************
-                  Data that we care about 
-**************************************************************/
+ /**************************************************************
+                   Data that we care about
+ **************************************************************/
 
-/* Floating point number */
+ /* Floating point number */
 [0-9]+.[0-9]+ {
 	yylval.d = atof(yytext);
 	return DOUBLE;
 }
 
-/* integer number */
+ /* integer number */
 [0-9]+ {
 	yylval.i = atoi(yytext);
 	return INT;
 }
 
-/* string */
+ /* string */
 [a-z0-9._-]+ {
 	yylval.text = yytext;
 	return STRING;
 }
 
-/**************************************************************
-                  General stuff, separators 
-**************************************************************/
+ /**************************************************************
+                   General stuff, separators
+ **************************************************************/
 \n     { return NEWLINE;          }
-/      { return SLASH;            } 
+\/      { return SLASH;            }
 
 
-/* Squeltch whitespace */
+ /* Squeltch whitespace */
 [ \t]+ ;
 
-/* ignore things we don't know about */
+ /* ignore things we don't know about */
 . ;
 
 %%
