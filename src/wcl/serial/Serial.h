@@ -172,6 +172,7 @@ public:
 
     bool isValid() const;
 
+#if NOTYET
     BaudRate getBaudRate() const;
     BlockingMode getBlockingMode() const;
     StopBits getStopBits() const;
@@ -209,6 +210,8 @@ public:
 #endif
 		       )
 		     );
+
+#endif
 
     // Get the actual file descriptor
     int operator *() const;

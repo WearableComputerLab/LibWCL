@@ -9,6 +9,14 @@ ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
 AUTOHEADER=`which autoheader`
 AUTOMAKE=`which automake`
+LIBTOOLIZE=`which libtoolize`
+
+#
+# LIBTOOLIZE
+#
+# We don't check the libtoolize verision as we don't know if we need to
+$LIBTOOLIZE
+
 #
 #  ACLOCAL
 #
