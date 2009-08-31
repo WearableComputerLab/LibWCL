@@ -12,12 +12,14 @@ libwcl_a_includedir=$(includedir)/wcl
 libwcl_win32_a_includedir=$(includedir)/wcl
 AM_CPPFLAGS=
 AM_LDFLAGS=
+AM_YFLAGS=-d
 
 #
 # Predefines, needed for the conditionals below
 #
 LIBFLAGS=ws2_32.lib
 CLEANFILES=
+BUILT_SOURCES=
 
 #
 # Common Headers
@@ -26,6 +28,9 @@ common_headers=\
 	      debug.h\
 		  CircularQueue\
 		  Singleton
+
+parser_headers=
+parser_sources=
     
 
 # 
@@ -92,6 +97,26 @@ geometry_sources+=\
 			geometry/PolygonObject.cpp \
 			geometry/Vertex.cpp
 
+endif
+
+#
+# Parsers
+#
+if ENABLE_PARSERS
+parser_sources+=	parser/OBJFormatGrammar.yy \
+			parser/OBJFormatScanner.ll \
+			parser/OBJParser.cpp \
+			parser/Parser.cpp
+
+parser_headers+=	parser/OBJParser.h \
+			parser/Parser.h
+
+BUILT_SOURCES+=		OBJFormatGrammar.cc \
+		       	OBJFormatGrammar.h \
+			OBJFormatScanner.cc
+CLEANFILES+=OBJFormatGrammar.h\
+	   OBJFormatGrammar.cc\
+	   OBJFormatScanner.cc
 endif
 
 #
@@ -198,7 +223,9 @@ nobase_libwcl_a_include_HEADERS=$(common_headers)\
 				$(osg_headers)\
 				$(geometry_headers)\
 				$(rawports_headers)\
-				$(x11_headers)
+				$(x11_headers)\
+				$(parser_headers)
+
 
 libwcl_a_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
@@ -209,8 +236,8 @@ libwcl_a_SOURCES=$(network_sources)\
 		 $(osg_sources)\
 		 $(geometry_sources)\
 		 $(rawports_sources)\
-		 $(x11_sources)
-
+		 $(x11_sources)\
+		 $(parser_sources)
 else
 lib_LIBRARIES=libwcl_win32.a
 nobase_libwcl_win32_a_include_HEADERS=$(common_headers)\
