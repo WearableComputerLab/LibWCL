@@ -175,7 +175,7 @@ ssize_t Socket::read ( void *buffer, size_t size )
     return retval;
 #else
     ssize_t retval = ::read(this->sockfd, buffer, size );
-    if ( retval == -1 ){
+    if ( retval == -1 && errno == ECONNRESET){
 	throw new SocketException(this);
     }
     return retval;
