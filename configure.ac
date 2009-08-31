@@ -210,6 +210,7 @@ if test "x$enable_parsers" = "xyes"; then
 	AC_PROG_YACC
 	AC_PROG_LEX
 fi
+AC_PROG_LIBTOOL
 
 #
 # Platform specific setup
@@ -268,15 +269,12 @@ AC_CHECK_FUNCS([memset])
 echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "Microsoft (msvc) support: $enable_msvc"
-echo "network support         : $enable_network"
-#echo "serial (rs232) support  : $enable_serial"
-echo "1394 (Firewire) Video   : $enable_video_1394"
-echo "Gesture recognition     : $enable_gestures"
-echo "Geometry classes        : $enable_geometry"
-echo "Vicon MoCap Support     : $enable_vicon"
-echo "X11 Support             : $enable_x11"
-echo "Maths Support           : Enabled (default)"
+echo "network support          : $enable_network"
+echo "1394 (Firewire) Video    : $enable_video_1394"
+echo "Gesture recognition      : $enable_gestures"
+echo "Geometry classes         : $enable_geometry"
+echo "Vicon MoCap Support      : $enable_vicon"
+echo "X11 Support              : $enable_x11"
 echo "Rawports Support(com/lpt): $enable_rawports"
 echo "UVC Video support        : $enable_video_uvc"
 echo "Parser Support           : $enable_parsers"
