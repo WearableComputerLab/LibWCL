@@ -28,10 +28,23 @@
 
 namespace wcl {
 
-Parser::Parser()
+Parser::Parser():
+    debug(false)
 {}
 
 Parser::~Parser()
 {}
 
+void Parser::print()
+{
+    printf("Parser does not implement the print method\n");
+}
+
+void Parser::setDebug(bool state)
+{
+    this->debug=state;
+}
+
 };
+
+

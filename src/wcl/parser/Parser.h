@@ -56,10 +56,32 @@ namespace wcl
     {
     public:
         virtual ~Parser();
+
+        /**
+         * This pure virtual method must be implemented by all parsers. It's
+         * used to fire off the actual parse process of a parser
+         */
         virtual void parse() = 0;
+
+        /**
+         * Provide a means of turning on debug output. By default debug output
+         * should be off
+         */
+        virtual void setDebug(bool state=false);
+
+        /**
+         * The print method of a parser is provided as an abstract method that
+         * classes extending this base class can implement. The aim is to print
+         * out details about the results of parsing, generally based upon the
+         * data structure the parser knows about. It's not pure virtual as it's
+         * implementation is optional
+         */
+        virtual void print();
 
     protected:
         Parser();
+
+        bool debug;
 
         /**
          * Called by parsers when an error condition occurs
