@@ -101,7 +101,7 @@ namespace wcl
 					response[54] = '\0';
 				}
 
-				std::cout << "Reading Update Response: " << response << std::endl;
+				//std::cout << "Reading Update Response: " << response << std::endl;
 				int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 				if (units == MM)
 				{
