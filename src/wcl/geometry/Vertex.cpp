@@ -28,11 +28,13 @@
 #include <assert.h>
 #include <config.h>
 #include <math.h>
+#include <sstream>
+
 #include <wcl/geometry/Vertex.h>
 
 namespace wcl
 {
-	Vertex::Vertex() : status(UNKNOWN), position(wcl::Vector(3)), normal(wcl::Vector(3)), texCoord(wcl::Vector(3))
+	Vertex::Vertex() : position(wcl::Vector(3)), normal(wcl::Vector(3)), texCoord(wcl::Vector(3))
 	{
 		// hi!
 	}
@@ -48,17 +50,16 @@ namespace wcl
 		this->texCoord = texCoord;
 	}
 
-	Vertex::Vertex(const wcl::Vector& position, IntersectStatus v)
+	Vertex::Vertex(const wcl::Vector& position)
 	{
 		assert(position.getRows() == 3);
 
 		this->position = position;
-		this->status = v;
 	}
 
 	Vertex::Vertex(const Vertex& v)
 	{
-		assert(position.getRows() == 3);
+		assert(v.position.getRows() == 3);
 		this->position = v.position;
 		this->normal = v.normal;
 		this->texCoord = v.texCoord;
@@ -69,19 +70,12 @@ namespace wcl
 		return (fabs((this->position - other.position).normal()) < TOL);
 	}
 
-	void Vertex::mark(IntersectStatus s)
+	std::string Vertex::toString()
 	{
-		this->status = s;
-
-		std::set<Vertex*>::iterator it;
-		for (it = adjacentVerts.begin(); it != adjacentVerts.end(); ++it)
-		{
-			if ((*it)->status == UNKNOWN)
-			{
-				(*it)->mark(s);
-			}
-		}
+		std::stringstream ss;
+		ss << "Vertex. (" << position[0] << ", " << position[1] << ", " << position[2] << ")" << std::endl;
+		return ss.str();
 	}
 
-
 }
+

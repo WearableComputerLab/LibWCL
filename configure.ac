@@ -53,8 +53,6 @@ AM_MAINTAINER_MODE
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
 
 #
-
-#
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #

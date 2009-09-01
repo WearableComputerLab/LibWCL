@@ -29,8 +29,8 @@
 #define VERTEX_H
 
 #include <set>
+#include <string>
 
-#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl
@@ -42,15 +42,13 @@ namespace wcl
 	{
 		public:
 			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);
-			Vertex(const wcl::Vector& position, IntersectStatus v);
+			Vertex(const wcl::Vector& position);
 			Vertex(const Vertex& v);
 			Vertex();
 
-			void setStatus(IntersectStatus s);
-			IntersectStatus getStatus();
-
 			bool operator==(const Vertex& other) const;
 
+			std::string toString();
 
 			/**
 			 * The position of the vertex in 3D space
@@ -66,18 +64,6 @@ namespace wcl
 			 * The texture coordinate of the vertex 
 			 */
 			wcl::Vector texCoord;
-
-			/**
-			 * Vertices that are adjacent to this one.
-			 */
-			std::set<Vertex*> adjacentVerts;
-			
-			/**
-			 * Status of the vertex, used during CSG operations
-			 */
-			IntersectStatus status;
-
-			void mark(IntersectStatus s);
 
 		private:
 			//nothing :(

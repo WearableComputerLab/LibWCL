@@ -25,80 +25,33 @@
  */
 
 
+#include <sstream>
+#include <iostream>
+
 #include <wcl/geometry/LineSegment.h>
 
 
 namespace wcl
 {
-	LineSegment::LineSegment(const Line& l, const Face& face, int sign1, int sign2, int sign3) : line(l)
+	LineSegment::LineSegment(const wcl::Vector& start, const wcl::Vector& end) : 
+		startPos(start), endPos(end)
 	{
-		index = 0;
-
-		if (sign1 == 0)
-		{
-
-		}
 	}
 
-	bool LineSegment::setVertex(Vertex* v)
-	{
-		if (index = 0)
-		{
-			startVert = v;
-			startType = VERTEX;
-			startDistance = line.distanceFromPoint(v->position);
-			startPos = v->position;
-			index++;
-			return true;
-		}
-		else if (index == 1)
-		{
-			endVert = v;
-			endType = VERTEX;
-			endDistance = line.distanceFromPoint(v->position);
-			endPos = v->position;
-			index++;
-
-			if (startVert == endVert)
-			{
-				middleType = VERTEX;
-			}
-			else if (startType == VERTEX)
-			{
-				middleType = EDGE;
-			}
-
-			if (startDistance > endDistance)
-			{
-				this->swapEnds();
-			}
-			return true;
-		}
-		return false;
-	}
 
 	bool LineSegment::intersect(const LineSegment& s)
 	{
-		return(!(endDistance<s.startDistance+TOL || s.endDistance < this->startDistance + TOL));
+		//TODO Implement LineSegment's intersect
+		return true;
 	}
 
-	void LineSegment::swapEnds()
+	std::string LineSegment::toString()
 	{
-		double tempDist = startDistance;
-		startDistance = endDistance;
-		endDistance = tempDist;
-
-		LineIntersectType tempType = startType;
-		startType = endType;
-		endType = tempType;
-
-		Vertex* tempVert = startVert;
-		startVert = endVert;
-		endVert= tempVert;
-
-		wcl::Vector tempPos = startPos;
-		startPos = endPos;
-		endPos = tempPos;
+		std::stringstream ss;
+		ss << "LineSegment. Start: (" << startPos[0] << ", " << startPos[1] << ", " << startPos[2];
+		ss << ") End: (" << endPos[0] << ", " << endPos[1] << ", " << endPos[2] << ")" << std::endl;
+		return ss.str();
 	}
+
 }
 

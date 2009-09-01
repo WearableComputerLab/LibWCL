@@ -30,6 +30,7 @@
 
 #include <vector>
 
+#include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
 #include <config.h>
@@ -74,6 +75,8 @@ namespace wcl
 			 */
 			bool overlaps(const wcl::BoundingBox& b) const;
 
+			bool intersect(const wcl::LineSegment& s) const;
+
 			/**
 			 * Adds a point to the bounding box, adjusting
 			 * the size if needed.
@@ -93,7 +96,7 @@ namespace wcl
 			 */
 			wcl::Vector max;
 	};
-};
+}
 
 #endif
 

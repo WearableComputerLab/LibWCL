@@ -28,6 +28,8 @@
 #ifndef LINE_H
 #define LINE_H
 
+#include <string>
+
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Plane.h>
 
@@ -46,7 +48,10 @@ namespace wcl
 
 			double distanceFromPoint(const wcl::Vector& p);
 			wcl::Vector intersect(const Plane& p);
+			wcl::Vector intersect(const Line& l);
 			void perturbDirection();
+
+			std::string toString();
 
 		private:
 			wcl::Vector pos;

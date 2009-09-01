@@ -28,48 +28,29 @@
 #ifndef LINE_SEGMENT_H
 #define LINE_SEGMENT_H
 
+#include <string>
+
 #include <config.h>
 
 #include <wcl/maths/Vector.h>
-#include <wcl/geometry/Face.h>
 #include <wcl/geometry/Line.h>
 
-class Face;
 
 namespace wcl
 {
 	class LineSegment
 	{
 		public:
-			enum LineIntersectType
-			{
-				VERTEX,
-				FACE,
-				EDGE
-			};
-
-			LineSegment(const Line& line, const Face& face, int sign1, int sign2, int sign3);
+			LineSegment(const wcl::Vector& startPos, const wcl::Vector& endPos);
 
 			bool intersect(const LineSegment& s);
-
-			double startDistance;
-			double endDistance;
-			int index;
-
-			LineIntersectType startType;
-			LineIntersectType middleType;
-			LineIntersectType endType;
-
-			Line line;
-			Vertex* startVert;
-			Vertex* endVert;
 
 			wcl::Vector startPos;
 			wcl::Vector endPos;
 
+			std::string toString();
+
 		private:
-			bool setVertex(Vertex* v);
-			void swapEnds();
 	};
 }
 

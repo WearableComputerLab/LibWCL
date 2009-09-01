@@ -82,67 +82,20 @@ namespace wcl
 			wcl::BoundingBox getBoundingBox() const;
 
 			/**
-			 * Returns a new PolygonObject consisting of a union of this
-			 * and b.
-			 *
-			 * @param b The object to union with this.
-			 * @return A new polygon object representing the result of the union.
-			 */
-			PolygonObject* csgUnion(const PolygonObject& b);
-
-			/**
-			 * Returns a new PolygonObject consisting of an intersect of this
-			 * and b.
-			 *
-			 * @param b The object to union with this.
-			 * @return A new polygon object representing the result of the intersect.
-			 */
-			PolygonObject* csgIntersect(const PolygonObject& b);
-
-			/**
-			 * Returns a new PolygonObject consisting of a difference of this
-			 * and b.
-			 *
-			 * result = this - b
-			 *
-			 * @param b The object to union with this.
-			 * @return A new polygon object representing the result of the difference.
-			 */
-			PolygonObject* csgDifference(const PolygonObject& b);
-
-			/**
 			 * Adds a vertex to the list, if an equal vertex doesn't already
 			 * exist.
 			 *
 			 * @returns the vertex
 			 */
-			Vertex* addVertex(const wcl::Vector& position, IntersectStatus v = UNKNOWN);
+			Vertex* addVertex(const wcl::Vector& position);
 
 			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
 
-		private:
+		protected:
 			std::vector<Face*> faceList;
+
+		private:
 			std::vector<wcl::Vertex*> vertexList;
-
-			void classifyFaces(const PolygonObject& object);
-			void raytraceClassify(Face& f) const;
-			void splitFaces(const PolygonObject& obj);
-			void splitFace(int index, const LineSegment& segment1, const LineSegment& segment2);
-			void breakFaceInTwo(int facePos, wcl::Vector newPos, int splitEdge);
-			void breakFaceInTwo(int facePos, wcl::Vector newPos, Vertex* endVertex);
-			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int splitEdge);
-			void breakFaceInThree(int facePos, wcl::Vector newPos, Vertex* endVertex);
-			void breakFaceInThree(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* startVertex, Vertex* endVertex);
-			void breakFaceInThree(int facePos, wcl::Vector newPos);
-			void breakFaceInFour(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, Vertex* endVertex);
-			void breakFaceInFive(int facePos, wcl::Vector newPos1, wcl::Vector newPos2, int linedVertex);
-
-
-			/**
-			 * inverts the faces that have been classified as INSIDE.
-			 * Needed when doing difference operation.
-			 */
-			void invertInsideFaces();
 	};
 }
 

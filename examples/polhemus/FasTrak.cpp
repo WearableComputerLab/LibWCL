@@ -41,7 +41,7 @@
 #include <signal.h>
 
 // include our headers
-#include <wcl/tracking/Patriot.h>
+#include <wcl/tracking/Polhemus.h>
 #include <wcl/tracking/TrackedObject.h>
 
 using namespace std;
@@ -53,7 +53,7 @@ using namespace wcl;
  * This is just a demo program so we are allowed to use
  * bad practices like this!
  */
-Patriot* client;
+Polhemus* client;
 
 
 /**
@@ -61,7 +61,7 @@ Patriot* client;
  */
 void printUsage()
 {
-	cout << "Patriot Client Example" << endl;
+	cout << "Polhemus Client Example" << endl;
 	cout << "Usage: patriottest  [device]" << endl;
 }
 
@@ -85,13 +85,13 @@ void termHandler(int a)
 int main(int argc, char** argv)
 {
 	// register the signal handler
-	//signal(SIGINT, termHandler);
+	signal(SIGINT, termHandler);
 
 	try
 	{
 		if (argc == 2)
 		{
-			client = new Patriot(argv[1]);
+			client = new Polhemus(argv[1], Polhemus::FASTRAK);
 		}
 		// display usage and exit
 		else
@@ -100,8 +100,8 @@ int main(int argc, char** argv)
 			return 1;
 		}
 
+		client->setSensorCount(1);
 		TrackedObject* s1 = client->getObject("sensor1");
-		TrackedObject* s2 = client->getObject("sensor2");
 
 		// now lets just loop, printing out the current positions/rotation of each object.
 		cout << endl << "*** Entering update loop ***" << endl << endl;
@@ -110,7 +110,6 @@ int main(int argc, char** argv)
 		{
 			client->update();
 			cout << s1->toString() << endl;
-			cout << s2->toString() << endl;
 			//usleep(2000000);
 		}
 	}
