@@ -25,6 +25,7 @@
  */
 
 
+#include <assert.h>
 #include <sstream>
 #include <iostream>
 #include <wcl/tracking/Polhemus.h>
@@ -189,6 +190,47 @@ namespace wcl
 			std::stringstream ss;
 			ss << "ERROR: Could not set units, expected to write " << expected << " bytes but only wrote " << bytesWritten;
 			throw std::string(ss.str());
+		}
+	}
+
+
+	void Polhemus::setAlignmentFrame(const wcl::Vector& origin, const wcl::Vector& xPos, const wcl::Vector& yPos)
+	{
+		assert (origin.getRows() == 3);
+		assert (xPos.getRows() == 3);
+		assert (yPos.getRows() == 3);
+
+		int numSensors = 0;
+		if (type == PATRIOT)
+			numSensors = 2;
+		else if (type == FASTRAK)
+			numSensors = 4;
+
+		for (int i=1;i<=numSensors;++i)
+		{
+			//first we reset...
+			if (type == PATRIOT)
+			{
+				char msg[3];
+				sprintf(msg, "%d\r", i);
+				connection.write(msg, 3);
+			}
+			else if (type == FASTRAK)
+			{
+				char msg[3];
+				//subtle difference is subtle
+				sprintf(msg, "R%d\r", i);
+				connection.write(msg, 3);
+			}
+
+			//now we set the reference frame
+			std::stringstream ss;
+			ss << "A" << i << ",";
+			ss << origin[0] << "," << origin[1] << ","<< origin[2] << ",";
+			ss << xPos[0] << "," << xPos[1] << ","<< xPos[2] << ",";
+			ss << yPos[0] << "," << yPos[1] << ","<< yPos[2] << "\r";
+
+			connection.write(ss.str());
 		}
 	}
 

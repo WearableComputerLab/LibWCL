@@ -105,6 +105,7 @@ namespace wcl
 			 * this function sets the hemisphere. For example, 
 			 *
 			 * (0,0,1) represents the Z+ hemisphere.
+			 * (0,0,0) puts the tracker in hemisphere tracking mode.
 			 *
 			 * @param hemisphere The vector representing the hemisphre of operation.
 			 */
@@ -117,7 +118,29 @@ namespace wcl
 			 */
 			void setUnits(Units u);
 
+			/**
+			 * Sets the sensor count.
+			 *
+			 * The Patriot autodetects the number of active sensors by querying the
+			 * device. However, the FasTRAK does not support this feature, so you 
+			 * have to specify the sensor count.
+			 *
+			 * This function can also be used to override the detected setting for 
+			 * the Patriot, but this is not recommended.
+			 *
+			 * @param c The number of sensors attached to the tracker.
+			 */
 			void setSensorCount(int c);
+
+
+			/**
+			 * Sets the alignment reference frame of the device.
+			 * 
+			 * @param origin The position to be the new origin.
+			 * @param xPos A position along the X axis from the origin.
+			 * @param yPos A position along the Y axis from the origin.
+			 */
+			void setAlignmentFrame(const wcl::Vector& origin, const wcl::Vector& xPos, const wcl::Vector& yPos);
 
 		private:
 			/**
