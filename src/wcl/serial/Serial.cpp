@@ -65,6 +65,8 @@ bool Serial::isValid() const
     return true;
 }
 
+#if NOTYET
+
 /**
  * Indicate if the port is in Blocking or non blocking mode
  *
@@ -118,6 +120,9 @@ bool Serial::setBlockingMode( const BlockingMode mode )
 
     return false;
 }
+
+
+#endif
 
 /**
  * Obtain the file descriptior associated with this object
@@ -403,6 +408,9 @@ Serial::write( const std::string &str )
     return this->write( str.c_str(), str.size());
 }
 
+
+#if NOTYET
+
 /**
  * Get the current baud rate of the connection
  *
@@ -504,6 +512,8 @@ bool
 Serial::setParityCheck( const bool state)
 {
 }
+
+#endif
 
 #if 0 //XXX
 /**
