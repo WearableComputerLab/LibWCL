@@ -236,7 +236,7 @@ if test "x$enable_video_1394" = "xyes"; then
 fi
 
 if test "x$enable_x11" = "xyes"; then
-    PKG_CHECK_MODULES(X11, x11 )
+    PKG_CHECK_MODULES(X11, x11 xext )
     PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi
