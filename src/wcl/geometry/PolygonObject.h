@@ -36,7 +36,6 @@
 
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
-#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 
