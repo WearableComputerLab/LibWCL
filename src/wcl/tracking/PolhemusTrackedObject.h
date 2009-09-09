@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef PATRIOT_TRACKED_OBJECT_H
-#define PATRIOT_TRACKED_OBJECT_H
+#ifndef POLHEMUS_TRACKED_OBJECT_H
+#define POLHEMUS_TRACKED_OBJECT_H
 
 #include <string>
 #include <sstream>
@@ -42,15 +42,15 @@ namespace wcl
 	 * Represents an object that can be tracked by the Vicon system.
 	 * 
 	 */
-	class PatriotTrackedObject : public TrackedObject
+	class PolhemusTrackedObject : public TrackedObject
 	{
 		public:
-			PatriotTrackedObject();
+			PolhemusTrackedObject();
 
 			/**
 			 * Destructor.
 			 */
-			virtual ~PatriotTrackedObject();
+			virtual ~PolhemusTrackedObject();
 
 			/**
 			 * Returns a string representation of the object.

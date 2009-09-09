@@ -29,12 +29,9 @@
 #define FACE_H
 
 #include <wcl/geometry/BoundingBox.h>
-#include <wcl/geometry/IntersectStatus.h>
 #include <wcl/geometry/Plane.h>
 #include <wcl/geometry/Vertex.h>
 #include <config.h>
-
-class PolygonObject;
 
 namespace wcl
 {
@@ -55,7 +52,7 @@ namespace wcl
 			/**
 			 * Returns the axis aligned bounding box of this Face.
 			 */
-			const BoundingBox& getBoundingBox();
+			const wcl::BoundingBox& getBoundingBox();
 
 			/**
 			 * Returns the surface normal of this face.
@@ -79,12 +76,9 @@ namespace wcl
 
 			bool operator== (const Face& f) const;
 
-			bool quickClassify();
-
 			bool hasPoint(const wcl::Vector& p) const;
 
 			double getArea();
-
 
 			/**
 			 * Reverses the order of the vertices to invert the face normal.
@@ -97,31 +91,15 @@ namespace wcl
 			Vertex* v1;
 			Vertex* v2;
 			Vertex* v3;
-			IntersectStatus status;
 		private:
-
-			enum LinePosition
-			{
-				UP,
-				DOWN,
-				ON,
-				NONE
-			};
-
 			/**
 			 * Calculating a bounding box whenever it's needed is slow,
 			 * so we'll just maintain one and return a reference to it when needed.
 			 */
-			BoundingBox boundingBox;
-			
-			LinePosition linePositionInX(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
-			LinePosition linePositionInY(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
-			LinePosition linePositionInZ(const wcl::Vector& point, const wcl::Vector& pLine1, const wcl::Vector& pLine2) const;
-
+			wcl::BoundingBox boundingBox;
 			
 	};
-};
-
+}
 
 #endif
 

@@ -28,6 +28,9 @@
 #ifndef PLANE_H
 #define PLANE_H
 
+#include <iostream>
+#include <sstream>
+
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Line.h>
 
@@ -60,7 +63,7 @@ namespace wcl
 			/**
 			 * Destructor.
 			 */
-			~Plane();
+			~Plane() {}
 
 			/**
 			 * Returns the minimum distance from p to the plane.
@@ -85,6 +88,8 @@ namespace wcl
 			 * Returns the Hessian Normal Form of this plane.
 			 */
 			HNF toHNF() const;
+
+			std::string toString();
 
 		private:
 			/**

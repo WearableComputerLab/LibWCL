@@ -53,8 +53,6 @@ AM_MAINTAINER_MODE
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
 
 #
-
-#
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
@@ -238,7 +236,7 @@ if test "x$enable_video_1394" = "xyes"; then
 fi
 
 if test "x$enable_x11" = "xyes"; then
-    PKG_CHECK_MODULES(X11, x11 )
+    PKG_CHECK_MODULES(X11, x11 xext )
     PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi

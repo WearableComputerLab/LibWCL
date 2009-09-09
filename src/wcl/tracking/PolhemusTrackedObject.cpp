@@ -24,19 +24,19 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/tracking/PatriotTrackedObject.h>
+#include <wcl/tracking/PolhemusTrackedObject.h>
 
 namespace wcl
 {
-	PatriotTrackedObject::PatriotTrackedObject()
+	PolhemusTrackedObject::PolhemusTrackedObject()
 	{
 		position.setSize(3);
 	}
 
-	PatriotTrackedObject::~PatriotTrackedObject()
+	PolhemusTrackedObject::~PolhemusTrackedObject()
 	{}
 
-	std::string PatriotTrackedObject::toString()
+	std::string PolhemusTrackedObject::toString()
 	{
 		std::stringstream ss;
 		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
@@ -44,7 +44,7 @@ namespace wcl
 		return ss.str();
 	}
 
-	SMatrix PatriotTrackedObject::getTransform()
+	SMatrix PolhemusTrackedObject::getTransform()
 	{
 		SMatrix T(4);
 		T[0][0] = 1;
@@ -59,17 +59,17 @@ namespace wcl
 		return getRotation() * T;
 	}
 
-	Vector PatriotTrackedObject::getTranslation()
+	Vector PolhemusTrackedObject::getTranslation()
 	{
 		return position;
 	}
 
-	SMatrix PatriotTrackedObject::getRotation()
+	SMatrix PolhemusTrackedObject::getRotation()
 	{
 		return orientation.getRotation();
 	}
 
-	void PatriotTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
+	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
 	{
 		position[0] = x;
 		position[1] = y;

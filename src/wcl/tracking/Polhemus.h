@@ -25,11 +25,11 @@
  */
 
 
-#ifndef PATRIOT_H
-#define PATRIOT_H
+#ifndef POLHEMUS_H
+#define POLHEMUS_H
 
 #include <string>
-#include <wcl/tracking/PatriotTrackedObject.h>
+#include <wcl/tracking/PolhemusTrackedObject.h>
 #include <wcl/serial/Serial.h>
 
 namespace wcl
@@ -40,7 +40,7 @@ namespace wcl
 	 * This class connects to the hardware via RS232 serial connection,
 	 * and provides two tracked objects.
 	 */
-	class Patriot
+	class Polhemus 
 	{
 		public:
 			/**
@@ -67,18 +67,24 @@ namespace wcl
 				MM
 			};
 
+			enum TrackerType
+			{
+				PATRIOT,
+				FASTRAK
+			};
+
 			/**
 			 * Creates a new connection to the Patriot tracker
 			 * over a serial connection.
 			 *
 			 * @param path The path to the serial connection (/etc/ttyUSB0 or something)
 			 */
-			Patriot(std::string path);
+			Polhemus(std::string path, TrackerType t);
 
 			/**
 			 * DESTRUCTOR!
 			 */
-			virtual ~Patriot();
+			virtual ~Polhemus();
 
 			/**
 			 * Fills the tracked objects witht he latest frame of data from the server.
@@ -99,6 +105,7 @@ namespace wcl
 			 * this function sets the hemisphere. For example, 
 			 *
 			 * (0,0,1) represents the Z+ hemisphere.
+			 * (0,0,0) puts the tracker in hemisphere tracking mode.
 			 *
 			 * @param hemisphere The vector representing the hemisphre of operation.
 			 */
@@ -110,6 +117,30 @@ namespace wcl
 			 * @param u The units to use.
 			 */
 			void setUnits(Units u);
+
+			/**
+			 * Sets the sensor count.
+			 *
+			 * The Patriot autodetects the number of active sensors by querying the
+			 * device. However, the FasTRAK does not support this feature, so you 
+			 * have to specify the sensor count.
+			 *
+			 * This function can also be used to override the detected setting for 
+			 * the Patriot, but this is not recommended.
+			 *
+			 * @param c The number of sensors attached to the tracker.
+			 */
+			void setSensorCount(int c);
+
+
+			/**
+			 * Sets the alignment reference frame of the device.
+			 * 
+			 * @param origin The position to be the new origin.
+			 * @param xPos A position along the X axis from the origin.
+			 * @param yPos A position along the Y axis from the origin.
+			 */
+			void setAlignmentFrame(const wcl::Vector& origin, const wcl::Vector& xPos, const wcl::Vector& yPos);
 
 		private:
 			/**
@@ -131,7 +162,7 @@ namespace wcl
 			 * Puts the tracker into continuous mode.
 			 * Currently not used.
 			 */
-			void setContinuous();
+			void setContinuous(bool c);
 
 			/**
 			 * Sets the data format to what we want.
@@ -150,21 +181,17 @@ namespace wcl
 			 */
 			int activeSensorCount;
 
-			/**
-			 * TrackedObject for sensor 1.
-			 */
-			PatriotTrackedObject sensor1;
-
-			/**
-			 * TrackedObject for sensor 2.
-			 */
-			PatriotTrackedObject sensor2;
+			PolhemusTrackedObject* sensors;
 
 			/**
 			 * Function to read any data that is left
 			 * on the serial buffer.
 			 */
 			void readAll(std::string prefix);
+
+			TrackerType type;
+
+			bool continuous;
 	};
 }
 

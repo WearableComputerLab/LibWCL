@@ -9,9 +9,7 @@
  *    notice, this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ *    documentation and/or other materials provided with the distribution.  * * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
  * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
@@ -28,6 +26,7 @@
 #include <math.h>
 #include <cstdlib>
 #include <config.h>
+#include <sstream>
 #include <wcl/geometry/Line.h>
 
 namespace wcl
@@ -55,9 +54,57 @@ namespace wcl
 		return dir;
 	}
 
+	std::string Line::toString()
+	{
+		std::stringstream ss;
+		ss << "Line. Position: (" << pos[0] << ", " << pos[1] << ", " << pos[2] << ") ";
+		ss << "Direction: (" << dir[0] << ", " << dir[1] << ", " << dir[2] << ")" << std::endl;
+
+		return ss.str();
+	}
+
 	double Line::distanceFromPoint(const wcl::Vector& p)
 	{
 		return (this->pos - p).normal();
+	}
+
+	wcl::Vector Line::intersect(const wcl::Line& l)
+	{
+		double t;
+		if (fabs(dir[1] * l.dir[0] - dir[0] * l.dir[1]) > TOL)
+		{
+			t = (-pos[1]*l.dir[0] +
+			      l.pos[1]*l.dir[0] +
+				  l.dir[1]*pos[0] -
+				  l.dir[1]*l.pos[0]) /
+				(dir[1]*l.dir[0] - dir[0]*l.dir[1]);
+		}
+		else if (fabs(-dir[0] * l.dir[2] + dir[2]*l.dir[0]) > TOL)
+		{
+			t = -(-l.dir[2]*pos[0] +
+				  l.dir[2]*l.pos[0] + 
+				  l.dir[0]*pos[2] -
+				  l.dir[0]*l.pos[2]) /
+				(-dir[0]*l.dir[2]+dir[2]*l.dir[0]);
+		}
+		else if (fabs(-dir[2]*l.dir[1] + dir[1]*l.dir[2]) > TOL)
+		{
+			t = (pos[2]*l.dir[1] -
+				 l.pos[2]*l.dir[1] -
+				 l.dir[2]*pos[1] +
+				 l.dir[2]*l.pos[1]) /
+				(-dir[2]*l.dir[1] + dir[1]*l.dir[2]);
+		}
+		else
+		{
+			return NULL;
+		}
+
+		double x = pos[0] + dir[0]*t;
+		double y = pos[1] + dir[1]*t;
+		double z = pos[2] + dir[2]*t;
+
+		return wcl::Vector(x,y,z);
 	}
 
 	wcl::Vector Line::intersect(const wcl::Plane& p)
@@ -80,7 +127,7 @@ namespace wcl
 			}
 			else
 			{
-				return 0;
+				return NULL;
 			}
 		}
 		else
