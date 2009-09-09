@@ -184,7 +184,9 @@ public:
     // When calling theses, check the return values. If
     // a call is not valid on the given port it will fail and return
     // false.
+#endif
     bool setBlockingMode( const BlockingMode );
+#if NOTYET
     bool setStopBits( const StopBits );
     bool setParity( const Parity );
     bool setDataBits( const DataBits );

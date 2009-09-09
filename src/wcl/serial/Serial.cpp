@@ -65,8 +65,8 @@ bool Serial::isValid() const
     return true;
 }
 
-#if NOTYET
 
+#if NOTYET
 /**
  * Indicate if the port is in Blocking or non blocking mode
  *
@@ -77,6 +77,7 @@ Serial::BlockingMode Serial::getBlockingMode() const
     return this->blocking;
 }
 
+#endif
 /**
  * Set the blocking mode for the serial port. If the serial port is opened
  * an attempt will be made to change the current mode of the conneciton. If
@@ -122,7 +123,6 @@ bool Serial::setBlockingMode( const BlockingMode mode )
 }
 
 
-#endif
 
 /**
  * Obtain the file descriptior associated with this object
