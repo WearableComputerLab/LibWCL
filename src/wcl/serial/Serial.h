@@ -38,7 +38,8 @@ namespace wcl {
  * compliance, define _POSIX_SOURCE_
  *
  * Note: http://www.easysw.com/~mike/serial/serial.html is a great reference for
- * RS232 information.
+ * RS232 information. http://digilander.libero.it/robang/rubrica/serial.htm has
+ * details about the meanings of the different termio options
  *
  * At the time of writing there was 3 different ways to do serial these are:
  * o Termios
@@ -83,10 +84,10 @@ public:
     enum StopBits { ONE=0,
 		    TWO=CSTOPB };
 
-    enum Parity   { NONE = 0,	//Enabling Parity (E,O,S) will enable the parity
-		    ODD  = 1,	//checking & parity bit stripping
-		    EVEN = 2,	//use setParityCheck to disable
-		    SPACE= 3  };
+    enum Parity   { NONE = 0,	 //Enabling Parity (E,O,S) will enable the parity
+		    ODD  = 1,	 //checking & parity bit stripping
+		    EVEN = 2,	 //use extra params to setParity to
+		    SPACE= 3  }; //disable checking/stripping
 
     enum DataBits { DB_FIVE  = CS5,
 		    DB_SIX   = CS6,
@@ -99,6 +100,7 @@ public:
 		    BAUD_2400  = B2400,
 		    BAUD_4800  = B4800,
 		    BAUD_9600  = B9600,
+		    BAUD_14400 = B14400,
 		    BAUD_19200 = B19200,
 		    BAUD_38400 = B38400,
 		    BAUD_57600 = B57600,
@@ -116,7 +118,8 @@ public:
     enum FlowControl {
 		    DISABLED = 0,
 		    RTSCTS   = 1,	// Hardware (RTS/CTS lines)
-		    XONXOFF  = 2	// Software
+		    XONXOFF  = 2,	// Software
+                    RTSCTS_XONXOFF= 3    // HW & Software
 		     };
 
     enum InputMode { RAW,		// Character mode
@@ -159,6 +162,7 @@ public:
 	       const InputMode = RAW,
 	       const FlowControl = DISABLED,
 	       const BlockingMode = BLOCKING,
+               const Flush = INPUT,
 	       const Signal= (const Signal)0 );  // Set this to DCD to NOT ignore the DCD signal
 
     bool flush( const Flush = BOTH  );	// Clear fifos, don't write it
@@ -169,10 +173,10 @@ public:
     virtual ssize_t read ( void *buffer, size_t size );
     virtual ssize_t write( const void *buffer, size_t size );
     virtual ssize_t write( const std::string & );
+    virtual ssize_t getAvailableCount() const;
 
     bool isValid() const;
 
-#if NOTYET
     BaudRate getBaudRate() const;
     BlockingMode getBlockingMode() const;
     StopBits getStopBits() const;
@@ -186,32 +190,40 @@ public:
     // false.
     bool setBlockingMode( const BlockingMode );
     bool setStopBits( const StopBits );
-    bool setParity( const Parity );
+    bool setParity( const Parity, const bool strip=true, const bool check=true, const bool mark=false );
     bool setDataBits( const DataBits );
     bool setBaudRate( const BaudRate );
     bool setFlowControl( const FlowControl );
     bool setInputMode( const InputMode );
 
     // See Parity enum above for details about these
-    bool setParityCheck( const bool );
     bool getParityCheck() const;
+    bool getParityMark() const;
+    bool getParityStrip() const;
 
     // Set / Get the state of a particular signal
     bool setLine ( const Line, bool );
     bool getSignal ( const Signal );
+    Signal getSignals();
 
     // Attempt to determine the baud rate automatically
+    bool scanBaudRate();
+
+    // Current baud rate scanner has fixed character/baudrate set
     bool scanBaudRate( const char = '\n', const BaudRate = (const BaudRate)(
-		       BAUD_4800
-		       | BAUD_9600
-		       | BAUD_38400
+                       BAUD_1200
+                       | BAUD_2400
+                       | BAUD_4800
+                       | BAUD_9600
+                       | BAUD_14400
+                       | BAUD_19200
+                       | BAUD_38400
+                       | BAUD_57600
 #ifndef _POSIX_SOURCE_
-		       | BAUD_115200
+                       | BAUD_115200
 #endif
 		       )
 		     );
-
-#endif
 
     // Get the actual file descriptor
     int operator *() const;
@@ -223,6 +235,7 @@ private:
     InputMode input;
     BlockingMode blocking;
     FlowControl flow;
+    bool applyImmediately;
 
     // original state of the port
     struct termios origstate;
@@ -240,6 +253,7 @@ private:
      */
     struct termios currstate;
 
+    bool apply();
     bool applyParams( const struct termios &);
 
     // For now we prevent copying of the object
