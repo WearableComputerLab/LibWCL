@@ -56,7 +56,7 @@ namespace wcl
 		T[1][3] = position[1];
 		T[2][3] = position[2];
 
-		return getRotation() * T;
+		return T * getRotation();
 	}
 
 	Vector PolhemusTrackedObject::getTranslation()

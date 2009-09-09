@@ -45,7 +45,7 @@ namespace wcl
 			throw std::string(strerror(errno));
 		}
 		usleep(2000);
-		//connection.setBlockingMode(Serial::BLOCKING);
+		connection.setBlockingMode(Serial::BLOCKING);
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
 		{
@@ -196,9 +196,12 @@ namespace wcl
 
 	void Polhemus::setAlignmentFrame(const wcl::Vector& origin, const wcl::Vector& xPos, const wcl::Vector& yPos)
 	{
+		using namespace std;
+		std::cout << "in setAlignmentFrame" << std::endl;
 		assert (origin.getRows() == 3);
 		assert (xPos.getRows() == 3);
 		assert (yPos.getRows() == 3);
+		cout << "finished asserts" << endl;
 
 		int numSensors = 0;
 		if (type == PATRIOT)
@@ -208,16 +211,17 @@ namespace wcl
 
 		for (int i=1;i<=numSensors;++i)
 		{
+			cout << "about to clear alignment frame for sensor" << i << endl;
 			//first we reset...
 			if (type == PATRIOT)
 			{
-				char msg[3];
+				char msg[4];
 				sprintf(msg, "%d\r", i);
 				connection.write(msg, 3);
 			}
 			else if (type == FASTRAK)
 			{
-				char msg[3];
+				char msg[4];
 				//subtle difference is subtle
 				sprintf(msg, "R%d\r", i);
 				connection.write(msg, 3);
@@ -230,6 +234,7 @@ namespace wcl
 			ss << xPos[0] << "," << xPos[1] << ","<< xPos[2] << ",";
 			ss << yPos[0] << "," << yPos[1] << ","<< yPos[2] << "\r";
 
+			std::cout << "about to write " << ss.str() << std::endl;
 			connection.write(ss.str());
 		}
 	}
