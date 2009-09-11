@@ -82,6 +82,7 @@ namespace wcl
 		double x, y, z, rx, ry, rz, rw;
 		int number;
 		int expectedBytes=0;
+		int bytesRead = 0;
 		if (type == PATRIOT)
 			expectedBytes = 69;
 		else if (type == FASTRAK)
@@ -96,20 +97,21 @@ namespace wcl
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				if (connection.getAvailableCount() < expectedBytes)
+				if (connection.getAvailableCount() > expectedBytes)
 				{
 					if (type == PATRIOT)
 					{
-						connection.read((void*) &response, 69);
+						bytesRead = connection.read((void*) &response, 69);
 						response[69] = '\0';
 					}
 					else if (type == FASTRAK)
 					{
-						connection.read((void*) &response, 54);
+						bytesRead = connection.read((void*) &response, 54);
 						response[54] = '\0';
 					}
 
-					//std::cout << "Reading Update Response: " << response << std::endl;
+					//std::cout << "BytesRead: " << bytesRead << std::endl;
+					//std::cout << "Reading Update Response: " << response;
 					int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 					if (units == MM)
 					{
