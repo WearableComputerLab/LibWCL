@@ -813,7 +813,9 @@ Serial::scanBaudRate( const char testchar, const BaudRate baudstotry )
         case 0xe6: rate = BAUD_57600; break;
         case 0x1c: rate = BAUD_38400; break;
         case 0xe0: rate = BAUD_19200; break;
+#ifdef B14400
         case 0x80: rate = BAUD_14400; break;
+#endif
         case 0x00:
                    {
                        usleep(8330); // Slowest wait for 1200Baud (ie guarentee character)

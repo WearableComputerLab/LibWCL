@@ -100,7 +100,9 @@ public:
 		    BAUD_2400  = B2400,
 		    BAUD_4800  = B4800,
 		    BAUD_9600  = B9600,
-		    BAUD_14400 = B14400,
+#ifdef B14400
+                    BAUD_14400 = B14400, // Not all O/S support 14400, so only use it if supported
+#endif
 		    BAUD_19200 = B19200,
 		    BAUD_38400 = B38400,
 		    BAUD_57600 = B57600,
@@ -215,7 +217,9 @@ public:
                        | BAUD_2400
                        | BAUD_4800
                        | BAUD_9600
+#ifdef B14400
                        | BAUD_14400
+#endif
                        | BAUD_19200
                        | BAUD_38400
                        | BAUD_57600
