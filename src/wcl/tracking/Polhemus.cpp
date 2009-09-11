@@ -54,7 +54,7 @@ namespace wcl
 		setAsciiOutput();
 		setDataFormat();
 		setUnits(MM);
-		//setContinuous(true);
+		setContinuous(true);
 
 		if (type == PATRIOT)
 		{
@@ -81,6 +81,11 @@ namespace wcl
 		char response[70] = {0};
 		double x, y, z, rx, ry, rz, rw;
 		int number;
+		int expectedBytes=0;
+		if (type == PATRIOT)
+			expectedBytes = 69;
+		else if (type == FASTRAK)
+			expectedBytes = 54;
 
 		if (activeSensorCount > 0)
 		{
@@ -91,26 +96,29 @@ namespace wcl
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				if (type == PATRIOT)
+				if (connection.getAvailableCount() < expectedBytes)
 				{
-					connection.read((void*) &response, 69);
-					response[69] = '\0';
-				}
-				else if (type == FASTRAK)
-				{
-					connection.read((void*) &response, 54);
-					response[54] = '\0';
-				}
+					if (type == PATRIOT)
+					{
+						connection.read((void*) &response, 69);
+						response[69] = '\0';
+					}
+					else if (type == FASTRAK)
+					{
+						connection.read((void*) &response, 54);
+						response[54] = '\0';
+					}
 
-				//std::cout << "Reading Update Response: " << response << std::endl;
-				int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
-				if (units == MM)
-				{
-					sensors[i].update(x*10,y*10,z*10,rw,rx,ry,rz);
-				}
-				else
-				{
-					sensors[i].update(x,y,z,rw,rx,ry,rz);
+					//std::cout << "Reading Update Response: " << response << std::endl;
+					int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+					if (units == MM)
+					{
+						sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
+					}
+					else
+					{
+						sensors[number-1].update(x,y,z,rw,rx,ry,rz);
+					}
 				}
 			}
 		}
