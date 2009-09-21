@@ -46,6 +46,7 @@ namespace wcl
 		}
 		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
+		setContinuous(false);
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
 		{
