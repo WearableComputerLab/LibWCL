@@ -97,6 +97,8 @@ SMatrix ViconTrackedObject::getTransform()
 		M[3][3] = 1;
 	}
 
+	M = inv(M);
+
 
 	/*
 	 *
@@ -173,6 +175,7 @@ SMatrix ViconTrackedObject::getRotation()
 		M[3][3] = 1;
 	}
 
+	M = inv(M);
 	return M;
 }
 
