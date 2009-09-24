@@ -34,6 +34,7 @@
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
 #include <wcl/tracking/TrackedObject.h>
+#include <wcl/tracking/Tracker.h>
 
 namespace wcl 
 {
@@ -76,6 +77,7 @@ namespace wcl
 			
 			virtual SMatrix getRotation();
 
+			void setUnits(Tracker::Units u);
 
 		protected:
 			/**
@@ -103,6 +105,8 @@ namespace wcl
 			 * receive this information from the server.
 			 */
 			bool occluded;
+
+			Tracker::Units units;
 	};
 
 };

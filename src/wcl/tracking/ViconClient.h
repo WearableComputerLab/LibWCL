@@ -38,7 +38,7 @@
 #include <vector>
 #include <stdint.h>
 #include <wcl/network/TCPSocket.h>
-
+#include <wcl/tracking/Tracker.h>
 #include "ViconTrackedObject.h"
 
 
@@ -58,7 +58,7 @@ namespace wcl
 	 * in the update loop you would get the data from the TrackedObject
 	 * and update any scene graph nodes.
 	 */
-	class ViconClient
+	class ViconClient : public Tracker
 	{
 		public: 
 
@@ -114,7 +114,7 @@ namespace wcl
 			 * @throw Throws a std::string if the connection fails or invalid data is received
 			 *        from the server.
 			 */
-			void update();
+			virtual void update();
 
 			/**
 			 * Gets a tracked object with the specified name.
@@ -122,7 +122,9 @@ namespace wcl
 			 * @param name The object to search for.
 			 * @return A pointer to the object, or 0 if it is not found.
 			 */
-			TrackedObject* getObject(std::string name);
+			virtual TrackedObject* getObject(std::string name);
+
+			virtual void setUnits(Units u);
 
 			/**
 			 * The list of objects.
@@ -181,6 +183,7 @@ namespace wcl
 			 */
 			void loadTrackedObjects();
 
+			Units units;
 			bool isStreaming;
 
 

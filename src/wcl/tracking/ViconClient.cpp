@@ -106,6 +106,7 @@ int32_t ViconClient::REPLY = 1;
 #endif
 
 ViconClient::ViconClient(std::string hostname, int port)
+	: units(MM)
 {
 
 	this->socket = new TCPSocket(hostname, port);
@@ -120,6 +121,14 @@ ViconClient::~ViconClient()
 {
 	socket->close();
 	delete this->socket;
+}
+
+void ViconClient::setUnits(Units u)
+{
+	this->units = u;
+	for (unsigned int i=0;i<objects.size();i++) {
+		objects[i].setUnits(u);
+	}
 }
 
 std::vector<std::string> ViconClient::getChannelNames()

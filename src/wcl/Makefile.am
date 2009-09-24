@@ -128,6 +128,7 @@ vicon_headers+=\
 			tracking/Polhemus.h \
 			tracking/PolhemusTrackedObject.h \
 			tracking/TrackedObject.h \
+			tracking/Tracker.h \
 			tracking/ViconTrackedObject.h \
 			tracking/ViconClient.h
 

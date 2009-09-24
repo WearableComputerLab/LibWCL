@@ -45,6 +45,7 @@ ViconTrackedObject::ViconTrackedObject(std::string name, ObjectType type)
 	rx = 0;
 	ry = 0;
 	rz = 0;
+	units = Tracker::MM;
 }
 
 ViconTrackedObject::~ViconTrackedObject()
@@ -111,9 +112,24 @@ SMatrix ViconTrackedObject::getTransform()
 	T[2][2] = 1;
 	T[3][3] = 1;
 
-	T[0][3] = this->x;
-	T[1][3] = this->y;
-	T[2][3] = this->z;
+	switch (this->units)
+	{
+		case Tracker::MM:
+			T[0][3] = this->x;
+			T[1][3] = this->y;
+			T[2][3] = this->z;
+			break;
+		case Tracker::CM:
+			T[0][3] = this->x/10.0;
+			T[1][3] = this->y/10.0;
+			T[2][3] = this->z/10.0;
+			break;
+		case Tracker::INCHES:
+			T[0][3] = this->x/25.4;
+			T[1][3] = this->y/25.4;
+			T[2][3] = this->z/25.4;
+			break;
+	}
 
 	return M*T;
 }
@@ -122,9 +138,25 @@ SMatrix ViconTrackedObject::getTransform()
 Vector ViconTrackedObject::getTranslation()
 {
 	Vector v(3);
-	v[0] = x;
-	v[1] = y;
-	v[2] = z;
+	switch (this->units)
+	{
+		case Tracker::MM:
+			v[0] = x;
+			v[1] = y;
+			v[2] = z;
+			break;
+		case Tracker::CM:
+			v[0] = x/10.0;
+			v[1] = y/10.0;
+			v[2] = z/10.0;
+			break;
+		case Tracker::INCHES:
+			v[0] = x/25.4;
+			v[1] = y/25.4;
+			v[2] = z/25.4;
+			break;
+	}
+
 	return v;
 }
 
@@ -193,6 +225,11 @@ std::string ViconTrackedObject::toString() {
 	s << rx << ", " << ry << ", " << rz << ")";
 	return s.str(); 	
 	
+}
+
+void ViconTrackedObject::setUnits(Tracker::Units u)
+{
+	this->units = u;
 }
 
 void ViconTrackedObject::updateData(double* array, int &offset)

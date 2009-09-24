@@ -30,6 +30,7 @@
 
 #include <string>
 #include <wcl/tracking/PolhemusTrackedObject.h>
+#include <wcl/tracking/Tracker.h>
 #include <wcl/serial/Serial.h>
 
 namespace wcl
@@ -40,33 +41,9 @@ namespace wcl
 	 * This class connects to the hardware via RS232 serial connection,
 	 * and provides two tracked objects.
 	 */
-	class Polhemus 
+	class Polhemus : public Tracker
 	{
 		public:
-			/**
-			 * The units to receive values in.
-			 */
-			enum Units
-			{
-				/**
-				 * Patriot returns positional data in inches.
-				 */
-				INCHES,
-
-				/**
-				 * Patriot returns positional data in cm.
-				 */
-				CM,
-
-				/**
-				 * Patriot returns positional data in mm.
-				 * Note that the Patriot hardware doesn't actually support
-				 * mm, this is handled internally by multiplying cm values
-				 * by 10.
-				 */
-				MM
-			};
-
 			enum TrackerType
 			{
 				PATRIOT,
@@ -89,7 +66,7 @@ namespace wcl
 			/**
 			 * Fills the tracked objects witht he latest frame of data from the server.
 			 */
-			void update();
+			virtual void update();
 
 			/**
 			 * Returns the tracked object with the specified name.
@@ -97,7 +74,7 @@ namespace wcl
 			 * Note, the only valid names are sensor1 or sensor2
 			 *
 			 */
-			TrackedObject* getObject(std::string name);
+			virtual TrackedObject* getObject(std::string name);
 
 			/**
 			 * Set the hemisphere of operation for the system.
@@ -116,7 +93,7 @@ namespace wcl
 			 *
 			 * @param u The units to use.
 			 */
-			void setUnits(Units u);
+			virtual void setUnits(Units u);
 
 			/**
 			 * Sets the sensor count.
