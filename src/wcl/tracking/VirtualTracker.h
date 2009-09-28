@@ -1,4 +1,4 @@
-/*-
+/*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
@@ -24,60 +24,59 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/tracking/PolhemusTrackedObject.h>
+
+#ifndef VIRTUAL_TRACKER_H
+#define VIRTUAL_TRACKER_H
+
+#include <map>
+
+#include <wcl/network/TCPSocket.h>
+#include <wcl/tracking/VirtualTrackedObject.h>
+#include <wcl/tracking/Tracker.h>
 
 namespace wcl
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
-		: position(3)
+
+	/**
+	 * Abstract Base Class that Trackers should extend.
+	 * Provides (as best possible) a unified interface for all
+	 * tracker types.
+	 */
+	class VirtualTracker : public Tracker
 	{
-		//all of the polhemus trackers are 6dof
-		type = SIX_DOF;
-	}
+		public:
+			VirtualTracker(std::string host, unsigned int port);
+			~VirtualTracker();
+			/**
+			 * Fills the tracked objects witht he latest frame of data from the server.
+			 */
+			virtual void update();
 
-	PolhemusTrackedObject::~PolhemusTrackedObject()
-	{}
 
-	std::string PolhemusTrackedObject::toString()
-	{
-		std::stringstream ss;
-		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-		ss << orientation.toString();
-		return ss.str();
-	}
+			/**
+			 * Returns the tracked object with the specified name.
+			 *
+			 * Note, the only valid names are sensor1 or sensor2
+			 *
+			 */
+			virtual TrackedObject* getObject(std::string name);
 
-	SMatrix PolhemusTrackedObject::getTransform()
-	{
-		SMatrix T(4);
-		T[0][0] = 1;
-		T[1][1] = 1;
-		T[2][2] = 1;
-		T[3][3] = 1;
+			/**
+			 * Sets the units of measurements used by the tracker.
+			 *
+			 * @param u The units to use.
+			 */
+			virtual void setUnits(Units u);
 
-		T[0][3] = position[0];
-		T[1][3] = position[1];
-		T[2][3] = position[2];
+		private:
+			std::map<std::string, VirtualTrackedObject*> objects;
+			Units units;
+			wcl::TCPSocket * socket;
 
-		return T * getRotation();
-	}
+	};
 
-	Vector PolhemusTrackedObject::getTranslation()
-	{
-		return position;
-	}
-
-	SMatrix PolhemusTrackedObject::getRotation()
-	{
-		return orientation.getRotation();
-	}
-
-	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
-	{
-		position[0] = x;
-		position[1] = y;
-		position[2] = z;
-
-		orientation.set(rw, rx, ry, rz);
-	}
 }
+
+#endif
+
 

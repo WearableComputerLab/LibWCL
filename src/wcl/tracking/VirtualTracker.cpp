@@ -1,4 +1,4 @@
-/*-
+/*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
@@ -24,60 +24,66 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/tracking/PolhemusTrackedObject.h>
+#include <wcl/tracking/VirtualTracker.h>
+
+#include <netinet/in.h>
+#include <stdint.h>
 
 namespace wcl
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
-		: position(3)
+	VirtualTracker::VirtualTracker(std::string host, unsigned int port)
 	{
-		//all of the polhemus trackers are 6dof
-		type = SIX_DOF;
+		socket = new wcl::TCPSocket(host, port);
 	}
 
-	PolhemusTrackedObject::~PolhemusTrackedObject()
-	{}
-
-	std::string PolhemusTrackedObject::toString()
+	VirtualTracker::~VirtualTracker()
 	{
-		std::stringstream ss;
-		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-		ss << orientation.toString();
-		return ss.str();
+		delete socket;
 	}
 
-	SMatrix PolhemusTrackedObject::getTransform()
+	void VirtualTracker::update()
 	{
-		SMatrix T(4);
-		T[0][0] = 1;
-		T[1][1] = 1;
-		T[2][2] = 1;
-		T[3][3] = 1;
+		int32_t objectCount=0;
+		socket->readUntil(&objectCount, 4);
+		objectCount = ntohl(objectCount);
 
-		T[0][3] = position[0];
-		T[1][3] = position[1];
-		T[2][3] = position[2];
+		for (unsigned i=0;i<objectCount;i++)
+		{
+			char name[9];
+			name[8] = '\0';
+			socket->readUntil(name, 8);
+			double data[7];
+			VirtualTrackedObject* to;
 
-		return T * getRotation();
+			if ((objects.find(name)) == objects.end())
+			{
+				to = new VirtualTrackedObject(name);
+				objects[name] = to;
+			}
+			else
+			{
+				to = objects[name];
+			}
+			socket->readUntil(data, 56);
+
+			to->setData(data[0],
+						data[1],
+						data[2],
+						data[3],
+						data[4],
+						data[5],
+						data[6]);
+		}
 	}
 
-	Vector PolhemusTrackedObject::getTranslation()
+	TrackedObject* VirtualTracker::getObject(std::string name)
 	{
-		return position;
+		if ((objects.find(name)) != objects.end())
+		{
+			return objects[name];
+		}
+		return NULL;
 	}
 
-	SMatrix PolhemusTrackedObject::getRotation()
-	{
-		return orientation.getRotation();
-	}
-
-	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
-	{
-		position[0] = x;
-		position[1] = y;
-		position[2] = z;
-
-		orientation.set(rw, rx, ry, rz);
-	}
 }
 

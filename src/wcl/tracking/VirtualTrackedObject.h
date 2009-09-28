@@ -24,60 +24,59 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/tracking/PolhemusTrackedObject.h>
+#ifndef VIRTUAL_TRACKEDOBJECT_H
+#define VIRTUAL_TRACKEDOBJECT_H
 
-namespace wcl
+#include <string>
+
+#include <wcl/maths/Matrix.h>
+#include <wcl/maths/Quaternion.h>
+#include <wcl/maths/SMatrix.h>
+#include <wcl/maths/Vector.h>
+#include <wcl/tracking/TrackedObject.h>
+
+namespace wcl 
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
-		: position(3)
+	/**
+	 * Represents an object that can be tracked by the Vicon system.
+	 * 
+	 */
+	class VirtualTrackedObject : public TrackedObject
 	{
-		//all of the polhemus trackers are 6dof
-		type = SIX_DOF;
-	}
+		public:
+			VirtualTrackedObject(std::string _name);
+			
+			/**
+			 * Destructor.
+			 */
+			virtual ~VirtualTrackedObject(){}
 
-	PolhemusTrackedObject::~PolhemusTrackedObject()
-	{}
+			/**
+			 * Returns a string representation of the object.
+			 */
+			virtual std::string toString();
 
-	std::string PolhemusTrackedObject::toString()
-	{
-		std::stringstream ss;
-		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-		ss << orientation.toString();
-		return ss.str();
-	}
+			virtual SMatrix getTransform();
 
-	SMatrix PolhemusTrackedObject::getTransform()
-	{
-		SMatrix T(4);
-		T[0][0] = 1;
-		T[1][1] = 1;
-		T[2][2] = 1;
-		T[3][3] = 1;
+			virtual Vector getTranslation();
+			
+			virtual SMatrix getRotation();
 
-		T[0][3] = position[0];
-		T[1][3] = position[1];
-		T[2][3] = position[2];
+			void setData(const double& x,
+						 const double& y,
+						 const double& z,
+						 const double& rw,
+						 const double& rx,
+						 const double& ry,
+						 const double& rz);
 
-		return T * getRotation();
-	}
+		private:
+			wcl::Quaternion orientation;
+			wcl::Vector translation;
+	};
 
-	Vector PolhemusTrackedObject::getTranslation()
-	{
-		return position;
-	}
+};
 
-	SMatrix PolhemusTrackedObject::getRotation()
-	{
-		return orientation.getRotation();
-	}
+#endif /*VIRTUAL_TRACKEDOBJECT_H_*/
 
-	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
-	{
-		position[0] = x;
-		position[1] = y;
-		position[2] = z;
-
-		orientation.set(rw, rx, ry, rz);
-	}
-}
 

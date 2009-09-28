@@ -24,29 +24,27 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/tracking/PolhemusTrackedObject.h>
+
+#include <wcl/tracking/VirtualTrackedObject.h>
 
 namespace wcl
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
-		: position(3)
+
+	VirtualTrackedObject::VirtualTrackedObject(std::string _name)
+		: orientation(), translation(3)
 	{
-		//all of the polhemus trackers are 6dof
+		name = _name;
 		type = SIX_DOF;
 	}
 
-	PolhemusTrackedObject::~PolhemusTrackedObject()
-	{}
 
-	std::string PolhemusTrackedObject::toString()
+	std::string VirtualTrackedObject::toString()
 	{
-		std::stringstream ss;
-		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-		ss << orientation.toString();
-		return ss.str();
+		//TODO implement me
+		return "VirtualTrackedObject";
 	}
 
-	SMatrix PolhemusTrackedObject::getTransform()
+	SMatrix VirtualTrackedObject::getTransform()
 	{
 		SMatrix T(4);
 		T[0][0] = 1;
@@ -54,30 +52,38 @@ namespace wcl
 		T[2][2] = 1;
 		T[3][3] = 1;
 
-		T[0][3] = position[0];
-		T[1][3] = position[1];
-		T[2][3] = position[2];
+		T[0][3] = translation[0];
+		T[1][3] = translation[1];
+		T[2][3] = translation[2];
 
 		return T * getRotation();
+
 	}
 
-	Vector PolhemusTrackedObject::getTranslation()
+	Vector VirtualTrackedObject::getTranslation()
 	{
-		return position;
+		return translation;
 	}
 
-	SMatrix PolhemusTrackedObject::getRotation()
+	void VirtualTrackedObject::setData(const double& x,
+							           const double& y,
+							           const double& z,
+							           const double& rw,
+							           const double& rx,
+							           const double& ry,
+							           const double& rz)
+	{
+		this->translation[0] = x;
+		this->translation[1] = y;
+		this->translation[2] = z;
+		this->orientation.set(rw,rx,ry,rz);
+	}
+
+
+	SMatrix VirtualTrackedObject::getRotation()
 	{
 		return orientation.getRotation();
 	}
 
-	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)
-	{
-		position[0] = x;
-		position[1] = y;
-		position[2] = z;
-
-		orientation.set(rw, rx, ry, rz);
-	}
 }
 

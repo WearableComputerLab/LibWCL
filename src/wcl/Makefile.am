@@ -130,13 +130,17 @@ vicon_headers+=\
 			tracking/TrackedObject.h \
 			tracking/Tracker.h \
 			tracking/ViconTrackedObject.h \
-			tracking/ViconClient.h
+			tracking/ViconClient.h \
+			tracking/VirtualTrackedObject.h \
+			tracking/VirtualTracker.h
 
 vicon_sources+=\
 			tracking/Polhemus.cpp \
 			tracking/PolhemusTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \
-			tracking/ViconClient.cpp
+			tracking/ViconClient.cpp \
+			tracking/VirtualTrackedObject.cpp \
+			tracking/VirtualTracker.cpp
 
 endif
 
