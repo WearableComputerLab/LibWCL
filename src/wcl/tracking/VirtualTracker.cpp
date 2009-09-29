@@ -66,13 +66,37 @@ namespace wcl
 			}
 			socket->readUntil(data, 56);
 
-			to->setData(data[0],
-						data[1],
-						data[2],
-						data[3],
-						data[4],
-						data[5],
-						data[6]);
+
+			switch (units)
+			{
+				case MM:
+					to->setData(data[0],
+							    data[1],
+							    data[2],
+							    data[3],
+							    data[4],
+							    data[5],
+							    data[6]);
+					break;
+				case CM:
+					to->setData(data[0]/10.0,
+							    data[1]/10.0,
+							    data[2]/10.0,
+							    data[3],
+							    data[4],
+							    data[5],
+							    data[6]);
+					break;
+				case INCHES:
+					to->setData(data[0]/25.4,
+							    data[1]/25.4,
+							    data[2]/25.4,
+							    data[3],
+							    data[4],
+							    data[5],
+							    data[6]);
+					break;
+			}
 		}
 	}
 
@@ -83,6 +107,11 @@ namespace wcl
 			return objects[name];
 		}
 		return NULL;
+	}
+
+	void VirtualTracker::setUnits(Units u)
+	{
+		this->units = u;
 	}
 
 }

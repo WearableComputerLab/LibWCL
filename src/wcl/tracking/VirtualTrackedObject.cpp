@@ -80,9 +80,14 @@ namespace wcl
 	}
 
 
-	SMatrix VirtualTrackedObject::getRotation()
+	SMatrix VirtualTrackedObject::getRotation() 
 	{
 		return orientation.getRotation();
+	}
+
+	wcl::Quaternion VirtualTrackedObject::getRotationAsQuat() 
+	{
+		return orientation;
 	}
 
 }

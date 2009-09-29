@@ -62,6 +62,8 @@ namespace wcl
 			
 			virtual SMatrix getRotation();
 
+			wcl::Quaternion getRotationAsQuat();
+
 			void setData(const double& x,
 						 const double& y,
 						 const double& z,
