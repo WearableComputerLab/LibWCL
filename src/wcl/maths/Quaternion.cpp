@@ -31,7 +31,7 @@
 namespace wcl
 {
 
-	Quaternion::Quaternion(T _w, T _x, T _y, T _z) : x(_x), y(_y), z(_z), w(_w)
+	Quaternion::Quaternion(T _w, T _x, T _y, T _z) : m_X(_x), m_Y(_y), m_Z(_z), m_W(_w)
 	{
 		//helpimtrappedinauniversefactory
 	}
@@ -44,44 +44,44 @@ namespace wcl
 	 */
 	Quaternion::Quaternion(const wcl::Vector& axis, T angle)
 	{
-		this->w = cos(angle/2.0);
+		this->m_W = cos(angle/2.0);
 		T scale = sin(angle/2.0);
 
 		wcl::Vector v(axis);
 		v * scale;
-		x = v[0];
-		y = v[1];
-		z = v[2];
+		m_X = v[0];
+		m_Y = v[1];
+		m_Z = v[2];
 	}
 
 	void Quaternion::set(T w, T x, T y, T z)
 	{
-		this->x = x;
-		this->y = y;
-		this->z = z;
-		this->w = w;
+		this->m_X = x;
+		this->m_Y = y;
+		this->m_Z = z;
+		this->m_W = w;
 	}
 
 	Quaternion::Quaternion(const wcl::Vector& v1, const wcl::Vector& v2)
 	{
 		wcl::Vector r = v1.crossProduct(v2);
 		T s = sqrt(2*(1 + v1.dot(v2)));
-		this->w = s/2.0;
+		this->m_W = s/2.0;
 		r = r * (1.0/s);
-		this->x = r[0];
-		this->y = r[1];
-		this->z = r[2];
+		this->m_X = r[0];
+		this->m_Y = r[1];
+		this->m_Z = r[2];
 	}
 
 	wcl::SMatrix Quaternion::getRotation() const
 	{
 		T s, xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;
-		s = 2.0/(x*x + y*y + z*z + w*w);
+		s = 2.0/(m_X*m_X + m_Y*m_Y + m_Z*m_Z + m_W*m_W);
 
-		xs = s*x;	ys = s*y;	zs = s*z;
-		wx = w*xs;	wy = w*ys;	wz = w*zs;
-		xx = x*xs;	xy = x*ys;	xz = x*zs;
-		yy = y*ys;	yz = y*zs;	zz = z*zs;
+		xs = s*m_X;	ys = s*m_Y;	zs = s*m_Z;
+		wx = m_W*xs;	wy = m_W*ys;	wz = m_W*zs;
+		xx = m_X*xs;	xy = m_X*ys;	xz = m_X*zs;
+		yy = m_Y*ys;	yz = m_Y*zs;	zz = m_Z*zs;
 
 		wcl::SMatrix m(4);
 
@@ -105,8 +105,13 @@ namespace wcl
 	std::string Quaternion::toString()
 	{
 		std::stringstream ss;
-		ss << "w: " << w << " x: " << x << " y: " << y << " z: " << z;
+		ss << "w: " << m_W << " x: " << m_X << " y: " << m_Y << " z: " << m_Z;
 		return ss.str();
 	}
+
+	T Quaternion::x() const { return m_X;}
+	T Quaternion::y() const { return m_Y;}
+	T Quaternion::z() const { return m_Z;}
+	T Quaternion::w() const { return m_W;}
 }
 

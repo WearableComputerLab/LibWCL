@@ -70,6 +70,11 @@ namespace wcl
 
 			wcl::SMatrix getRotation() const;
 
+			T x() const;
+			T y() const;
+			T z() const;
+			T w() const;
+
 			/**
 			 * Returns a string representation of the quaternion.
 			 */
@@ -83,10 +88,10 @@ namespace wcl
 			~Quaternion(){}
 
 		private:
-			T x;
-			T y;
-			T z;
-			T w;
+			T m_X;
+			T m_Y;
+			T m_Z;
+			T m_W;
 
 	};
 }
