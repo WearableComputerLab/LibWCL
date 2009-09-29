@@ -154,6 +154,11 @@ namespace wcl
 			void getSensorCount();
 
 			/**
+			 * Clears the input stream.
+			 */
+			void clearInput();
+
+			/**
 			 * The number of sensors we have.
 			 */
 			int activeSensorCount;

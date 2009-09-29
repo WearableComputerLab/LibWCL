@@ -37,7 +37,7 @@
 namespace wcl
 {
 
-	Polhemus::Polhemus(std::string path, TrackerType t) : type(t), activeSensorCount(-1), continuous(false)
+	Polhemus::Polhemus(std::string path, TrackerType t) : Tracker(), type(t), activeSensorCount(-1), continuous(false)
 	{
 		std::cout << "About to connect to " << path << std::endl;
 		if (!connection.open(path.c_str(), Serial::BAUD_115200))
@@ -46,7 +46,9 @@ namespace wcl
 		}
 		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
-		setContinuous(false);
+		//setContinuous(false);
+		usleep(2000);
+		clearInput();
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
 		{
@@ -55,17 +57,18 @@ namespace wcl
 		setAsciiOutput();
 		setDataFormat();
 		setUnits(MM);
-		setContinuous(true);
 
 		if (type == PATRIOT)
 		{
 			sensors = new PolhemusTrackedObject[2];
-			getSensorCount();
+			//getSensorCount();
 		}
 		else
 		{
 			sensors = new PolhemusTrackedObject[4];
 		}
+
+		setContinuous(true);
 	}
 
 	Polhemus::~Polhemus()
@@ -75,6 +78,13 @@ namespace wcl
 
 		connection.close();
 		delete[] sensors;
+	}
+
+	void Polhemus::clearInput()
+	{
+		int bytesAvailable = connection.getAvailableCount();
+		char* rubbish[bytesAvailable];
+		connection.read((void*) rubbish, bytesAvailable);
 	}
 
 	void Polhemus::update()
@@ -356,7 +366,7 @@ namespace wcl
 				std::stringstream ss;
 				ss << "ERROR: Could not get sensor count, expected to read 15 bytes but only read " << responseLength;
 				//throw std::string(strerror(errno));
-				throw std::string(ss.str());
+				//throw std::string(ss.str());
 			}
 			//std::cout << "Response from tracker in getSensorCount: " << response << std::endl;
 			if (response[12] == '3')

@@ -65,6 +65,9 @@ namespace wcl
 				MM
 			};
 
+			Tracker(){}
+			virtual ~Tracker(){}
+
 			/**
 			 * Fills the tracked objects witht he latest frame of data from the server.
 			 */
