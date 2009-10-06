@@ -102,6 +102,19 @@ namespace wcl
 		return m;
 	}
 
+	wcl::Vector Quaternion::rotate(const wcl::Vector& v) const
+	{
+		double vMult = 2.0 * (m_X*v[0] + m_Y*v[1] + m_Z*v[2]);
+		double crossMult = 2.0*m_W;
+		double pMult = crossMult*m_W - 1.0;
+
+		return wcl::Vector(pMult*v[0] + vMult*m_X + crossMult*(m_Y*v[2] - m_Z*v[1]),
+						   pMult*v[1] + vMult*m_Y + crossMult*(m_Z*v[0] - m_X*v[2]),
+						   pMult*v[2] + vMult*m_Z + crossMult*(m_X*v[1] - m_Y*v[0]));
+	}
+
+
+
 	std::string Quaternion::toString()
 	{
 		std::stringstream ss;

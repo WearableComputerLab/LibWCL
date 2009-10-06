@@ -75,6 +75,8 @@ namespace wcl
 			T z() const;
 			T w() const;
 
+			wcl::Vector rotate(const wcl::Vector& v) const;
+
 			/**
 			 * Returns a string representation of the quaternion.
 			 */
