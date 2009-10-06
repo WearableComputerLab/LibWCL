@@ -258,7 +258,7 @@ SMatrix & SMatrix::operator /=( const SMatrix &im )
  *
  * @param im The matrix to inverse
  */
-void SMatrix::storeInverse( const SMatrix &im )
+SMatrix& SMatrix::storeInverse( const SMatrix &im )
 {
     SMatrix m ( im );
     T tmp;
@@ -309,13 +309,14 @@ void SMatrix::storeInverse( const SMatrix &im )
 	    }
 	}
     }
+	return *this;
 }
 
 
 /**
  * Store the identity/unity matrix within the current matrix. 
  */
-void SMatrix::storeIdentity()
+SMatrix& SMatrix::storeIdentity()
 {
     for ( unsigned i = 0; i < this->getRows(); i++ ){
 	for ( unsigned j = 0; j < this->getRows(); j++ ){
@@ -326,6 +327,7 @@ void SMatrix::storeIdentity()
 	    }
 	}
     }
+	return *this;
 }
 
 

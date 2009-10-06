@@ -57,8 +57,8 @@ public:
     SMatrix & operator /=( const T & );
     SMatrix & operator /=( const SMatrix & );
 
-    void storeInverse( const SMatrix & );
-    void storeIdentity();
+    SMatrix& storeInverse( const SMatrix & );
+    SMatrix& storeIdentity();
 
 private:
     SMatrix();
