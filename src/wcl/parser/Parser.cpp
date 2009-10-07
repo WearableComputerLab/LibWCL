@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <stdio.h>
 #include "Parser.h"
 
 namespace wcl {
