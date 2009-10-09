@@ -28,12 +28,35 @@
 #include <wcl/maths/Quaternion.h>
 #include <math.h>
 
+#include <assert.h>
+
 namespace wcl
 {
 
 	Quaternion::Quaternion(T _w, T _x, T _y, T _z) : m_X(_x), m_Y(_y), m_Z(_z), m_W(_w)
 	{
 		//helpimtrappedinauniversefactory
+		assert(m_W != 0);
+	}
+
+	Quaternion::Quaternion(const wcl::Quaternion& q)
+	{
+		m_X = q.m_X;
+		m_Y = q.m_Y;
+		m_Z = q.m_Z;
+		m_W = q.m_W;
+	}
+
+	Quaternion::Quaternion() : m_X(0), m_Y(0), m_Z(0), m_W(1)
+	{
+	}
+
+	Quaternion& Quaternion::operator=(const wcl::Quaternion& rhs)
+	{
+		m_X = rhs.m_X;
+		m_Y = rhs.m_Y;
+		m_Z = rhs.m_Z;
+		m_W = rhs.m_W;
 	}
 
 	/**
@@ -60,6 +83,7 @@ namespace wcl
 		this->m_Y = y;
 		this->m_Z = z;
 		this->m_W = w;
+		assert(m_W != 0);
 	}
 
 	Quaternion::Quaternion(const wcl::Vector& v1, const wcl::Vector& v2)

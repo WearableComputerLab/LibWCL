@@ -44,7 +44,17 @@ namespace wcl
 			 * Default constructor, sets xyzw to 0.
 			 * Probably don't want to use this one.
 			 */
-			Quaternion() {}
+			Quaternion();
+
+			/**
+			 * Copy Constructor.
+			 */
+			Quaternion(const wcl::Quaternion& q);
+
+			/**
+			 * Equals operator.
+			 */
+			Quaternion& operator=(const wcl::Quaternion& rhs);
 
 			/**
 			 * Constructor.
