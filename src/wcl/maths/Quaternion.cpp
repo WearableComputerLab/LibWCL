@@ -57,6 +57,7 @@ namespace wcl
 		m_Y = rhs.m_Y;
 		m_Z = rhs.m_Z;
 		m_W = rhs.m_W;
+		return *this;
 	}
 
 	/**
