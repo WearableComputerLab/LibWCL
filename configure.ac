@@ -22,7 +22,7 @@ AC_CONFIG_AUX_DIR(cfg)
 # Init Automake subsystem
 #
 AM_INIT_AUTOMAKE(wcl,0.0.0)
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AM_CONFIG_HEADER(config.h)
 
