@@ -85,6 +85,16 @@ namespace wcl
 			 */
 			void addPoint(const wcl::Vector& p);
 
+			/**
+			 * Resets the bounding box to an invalid state
+			 */
+			void clear();
+
+			/**
+			 * Returns the centroid of the bounding box.
+			 */
+			wcl::Vector getCentroid();
+
 		private:
 			/**
 			 * the minimum x,y and z
