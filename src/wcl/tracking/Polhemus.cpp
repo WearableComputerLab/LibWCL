@@ -46,7 +46,7 @@ namespace wcl
 		}
 		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
-		//setContinuous(false);
+		setContinuous(false);
 		usleep(2000);
 		clearInput();
 		// clear whatever existing half completed commands exist
@@ -68,7 +68,7 @@ namespace wcl
 			sensors = new PolhemusTrackedObject[4];
 		}
 
-		setContinuous(true);
+		//setContinuous(true);
 	}
 
 	Polhemus::~Polhemus()
@@ -108,7 +108,7 @@ namespace wcl
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				if (connection.getAvailableCount() > expectedBytes)
+				if (connection.getAvailableCount() >= expectedBytes)
 				{
 					if (type == PATRIOT)
 					{
@@ -121,16 +121,25 @@ namespace wcl
 						response[54] = '\0';
 					}
 
-					//std::cout << "BytesRead: " << bytesRead << std::endl;
-					//std::cout << "Reading Update Response: " << response;
-					int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
-					if (units == MM)
+					if (bytesRead == expectedBytes)
 					{
-						sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
+						//std::cout << "BytesRead: " << bytesRead << std::endl;
+						//std::cout << "Reading Update Response: " << response;
+						int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+						if (units == MM)
+						{
+							sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
+						}
+						else
+						{
+							sensors[number-1].update(x,y,z,rw,rx,ry,rz);
+						}
 					}
 					else
 					{
-						sensors[number-1].update(x,y,z,rw,rx,ry,rz);
+						std::cout << "Did not read the right number of bytes, ignoring" << std::endl;
+						connection.flush();
+						clearInput();
 					}
 				}
 			}

@@ -36,7 +36,7 @@ namespace wcl
 	Quaternion::Quaternion(T _w, T _x, T _y, T _z) : m_X(_x), m_Y(_y), m_Z(_z), m_W(_w)
 	{
 		//helpimtrappedinauniversefactory
-		assert(m_W != 0);
+		//assert(m_W != 0);
 	}
 
 	Quaternion::Quaternion(const wcl::Quaternion& q)
@@ -84,7 +84,7 @@ namespace wcl
 		this->m_Y = y;
 		this->m_Z = z;
 		this->m_W = w;
-		assert(m_W != 0);
+		//assert(m_W != 0);
 	}
 
 	Quaternion::Quaternion(const wcl::Vector& v1, const wcl::Vector& v2)
