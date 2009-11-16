@@ -207,6 +207,9 @@ AC_PROG_INSTALL
 if test "x$enable_parsers" = "xyes"; then
 	AC_PROG_YACC
 	AC_PROG_LEX
+	if "$LEX" = ":"; then
+		AC_MSG_ERROR([Could not find lex. (F)Lex and yacc must be intalled to build parsers])
+	fi
 fi
 AC_PROG_LIBTOOL
 
