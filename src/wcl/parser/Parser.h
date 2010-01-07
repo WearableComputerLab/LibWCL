@@ -28,6 +28,7 @@
 #define WCL_PARSER_H
 
 #include <string>
+#include <stdio.h>
 
 namespace wcl
 {
