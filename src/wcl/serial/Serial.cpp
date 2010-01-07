@@ -496,14 +496,14 @@ Serial::setParity( const Parity parity, const bool strip, const bool check, cons
         this->currstate.c_cflag &= ~PARENB;
 
         switch( parity ){
-            case 'N':
+            case NONE:
                 break;
-            case 'S':
+            case SPACE:
                 // Increase databits by one needed by space parity
                 this->currstate.c_cflag &= ~CSIZE;
                 this->currstate.c_cflag |= (this->getDataBits() + CS6 );
                 /* fallthrough */
-            case 'O':
+            case ODD:
                 this->currstate.c_cflag |= PARODD;
 
                 if( check )
@@ -516,7 +516,7 @@ Serial::setParity( const Parity parity, const bool strip, const bool check, cons
                 if( mark )
                     this->currstate.c_iflag |= PARMRK;
                 break;
-            case 'E':
+            case EVEN:
                 this->currstate.c_cflag |= PARENB;
                 this->currstate.c_cflag &= ~PARODD;
                 if( check )
@@ -796,7 +796,7 @@ Serial::getSignals()
 bool
 Serial::scanBaudRate( const char testchar, const BaudRate baudstotry )
 {
-    char ch;
+    unsigned char ch;
     BaudRate rate;
 
     assert( testchar != '\n' && "Only \\n is supported as a testchar at the moment");
