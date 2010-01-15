@@ -24,9 +24,10 @@
  * SUCH DAMAGE.
  */
 
-#ifndef UVCCAMERA_H
-#define UVCCAMERA_H
+#ifndef WCL_CAMERA_UVCCAMERA_H
+#define WCL_CAMERA_UVCCAMERA_H
 
+#include <wcl/camera/Camera.h>
 #include <linux/videodev2.h>
 #include <string>
 
@@ -37,108 +38,15 @@ using namespace std;
 
 namespace wcl
 {
-
-	//struct for information about the image buffers we create
-	struct bufferT {
-		void* start;
-		size_t length;
-	};
-
 	/**
 	 * A class for talking to USB cameras that follow the UVC standard.
 	 * This might actually work for any camera that has a Video4Linux2
 	 * driver, but untested.
 	 */
-	class UVCCamera
+	class UVCCamera: public Camera
 	{
 
 		public:
-
-			/**
-			 * Enumeration of supported image formats.
-			 */
-			enum ImageFormat
-			{
-				/**
-				 * Motion JPEG Format.
-				 */
-				MJPEG,
-
-				/**
-				 * YUYV 4:2:2 format.
-				 */
-				YUYV
-			};
-
-			/**
-			 * Enumeration for supported read acess modes.
-			 * Currently, only MMAP works. However, it is unlikely
-			 * that the application programmer will ever need to set the read mode,
-			 * it is handled automagically depending on what the camera supports.
-			 */
-			enum ReadMode
-			{
-				/**
-				 * Camera supports using read()
-				 */
-				CALL_READ,
-
-				/**
-				 * Access using mmaped buffers.
-				 */
-				MMAP,
-
-				/**
-				 * Access using pointer swapping.
-				 */
-				POINTER
-			};
-
-
-			/**
-			 * Camera exposure modes.
-			 */
-			enum ExposureMode
-			{
-				/**
-				 * Auto exposure
-				 */
-				AUTO,
-
-				/**
-				 * Manual exposure
-				 */
-				MANUAL,
-
-				/**
-				 * Auto exposure with shutter speed priority.
-				 */
-				AUTO_SHUTTER_PRIORITY,
-
-				/**
-				 * Auto exposure with aperture priority.
-				 * Note that most webcams that don't have adjustable
-				 * apertures only support this mode or manual.
-				 */
-				AUTO_APERTURE_PRIORITY
-			};
-
-
-			/**
-			 * Control names for controlling various parameters of the camera.
-			 */
-			enum Control
-			{
-				BRIGHTNESS      = V4L2_CID_BRIGHTNESS,
-				CONTRAST        = V4L2_CID_CONTRAST,
-				SATURATION      = V4L2_CID_SATURATION,
-				GAIN            = V4L2_CID_GAIN,
-				POWER_FREQUENCY = V4L2_CID_POWER_LINE_FREQUENCY,
-				WHITE_BALANCE   = V4L2_CID_WHITE_BALANCE_TEMPERATURE,
-				SHARPNESS       = V4L2_CID_SHARPNESS,
-				EXPOSURE        = V4L2_CID_EXPOSURE
-			};
-
 
 			/**
 			 * Opens a connection to a camera.
@@ -166,7 +74,7 @@ namespace wcl
 			 * @param width The width of the image in pixels
 			 * @param height The height of the image in pixels
 			 */
-			void setFormat(ImageFormat f, unsigned width, unsigned height);
+			void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
 
 
 			/**
@@ -184,27 +92,23 @@ namespace wcl
 			 *
 			 * @param t The exposure mode to change to.
 			 */
-			bool setExposureMode(ExposureMode t);
+			bool setExposureMode(const ExposureMode t);
 
 
-			bool setControlValue(Control control, int value);
+			bool setControlValue(const Control control, const int value);
 
 			/**
 			 * Returns an image buffer for use in a program.
 			 *
-			 * DO NOT DELETE THIS BUFFER.
-			 * It is managed by this class but mostly the driver.
-			 * calling delete on this buffer should cause the program to crash.
-			 *
 			 * @return a char array containing the image buffer.
 			 */
-			unsigned char* getFrame();
+			const unsigned char* getFrame();
 
 
 			/**
 			 * Returns the size of the image buffer, in bytes.
 			 */
-			int getBufferSize();
+			int getBufferSize() const ;
 
 
 			/**
@@ -252,16 +156,10 @@ namespace wcl
 			ReadMode mode;
 
 			/**
-			 * Array of buffers we are using.
+			 * Convert between the Camera abstract controls and the
+			 * V4L2 values
 			 */
-			bufferT* buffers;
-
-			int bufferSize;
-
-			/**
-			 * The number of buffers we have
-			 */
-			int numBuffers;
+			uint32_t mapControlToV4L2( const Control ) const ;
 
 	};
 

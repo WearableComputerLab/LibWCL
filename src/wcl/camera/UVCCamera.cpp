@@ -49,8 +49,6 @@ UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 		throw string(strerror(errno));
 	}
 
-	numBuffers = 0;
-
 	loadCapabilities();
 }
 
@@ -84,7 +82,7 @@ void UVCCamera::loadCapabilities()
 
 }
 
-void UVCCamera::setFormat(ImageFormat f, unsigned width, unsigned height)
+void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
 {
 	v4l2_format newf;
 	newf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -115,7 +113,7 @@ void UVCCamera::setFormat(ImageFormat f, unsigned width, unsigned height)
 }
 
 
-unsigned char* UVCCamera::getFrame()
+const unsigned char* UVCCamera::getFrame()
 {
 	if (!isReadyForCapture)
 	{
@@ -137,7 +135,7 @@ unsigned char* UVCCamera::getFrame()
 	// requeue buffer
 	ioctl(cam, VIDIOC_QBUF, &buf);
 
-	return (unsigned char*) buffers[buf.index].start;
+	return (const unsigned char*) buffers[buf.index].start;
 }
 
 void UVCCamera::prepareForCapture()
@@ -155,8 +153,7 @@ void UVCCamera::prepareForCapture()
 
 	// create an array for our buffers
 	// The buffer count may be less than we asked for
-	buffers = new bufferT[reqbuf.count];
-	numBuffers = reqbuf.count;
+	this->allocateBuffers(reqbuf.count);
 
 	for (int i=0;i<reqbuf.count; i++)
 	{
@@ -206,8 +203,7 @@ void UVCCamera::shutdown()
 	for (int i=0; i<numBuffers; i++)
 		munmap(buffers[i].start, buffers[i].length);
 
-	if (numBuffers > 0)
-		delete[] buffers;
+	this->deleteBuffers();
 	close(cam);
 }
 
@@ -260,7 +256,7 @@ void UVCCamera::printDetails()
 	loadControls();
 }
 
-bool UVCCamera::setExposureMode(ExposureMode t)
+bool UVCCamera::setExposureMode(const ExposureMode t)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -302,7 +298,7 @@ bool UVCCamera::setExposureMode(ExposureMode t)
 }
 
 
-bool UVCCamera::setControlValue(Control controlName, int value)
+bool UVCCamera::setControlValue(const Control controlName, const int value)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -311,7 +307,7 @@ bool UVCCamera::setControlValue(Control controlName, int value)
 	struct v4l2_ext_controls box;
 
 	//setup the control
-	control.id = controlName;
+	control.id = mapControlToV4L2(controlName);
 	control.value = value;
 	
 	//setup the container
@@ -345,7 +341,7 @@ bool UVCCamera::setControlValue(Control controlName, int value)
 }
 
 
-int UVCCamera::getBufferSize()
+int UVCCamera::getBufferSize() const
 {
 	return bufferSize;
 }
@@ -387,5 +383,21 @@ void UVCCamera::loadControls()
 		ctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 	}
 
+}
+
+
+uint32_t UVCamera::mapControlToV4L2( const Control c ) const
+{
+    switch( c )
+    {
+	case BRIGHTNESS: return V4L2_CID_BRIGHTNESS,
+	case CONTRAST: return V4L2_CID_CONTRAST,
+	case SATURATION:return V4L2_CID_SATURATION,
+	case GAIN:return V4L2_CID_GAIN,
+	case POWER_FREQUENCY:return V4L2_CID_POWER_LINE_FREQUENCY,
+	case WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE,
+	case SHARPNESS:return V4L2_CID_SHARPNESS,
+	case EXPOSURE: return V4L2_CID_EXPOSURE
+    }
 }
 
