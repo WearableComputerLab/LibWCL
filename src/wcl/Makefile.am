@@ -152,9 +152,11 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=1394cam/DC1394.h
+video_1394_headers+=camera/DC1394.h\
+		    camera/Camera.h
 
-video_1394_sources+=1394cam/DC1394.cpp
+video_1394_sources+=camera/DC1394.cpp\
+		    camera/Camera.cpp
 endif
 
 #
@@ -164,9 +166,25 @@ video_uvc_headers=
 video_uvc_sources=
 
 if ENABLE_VIDEO_UVC
-video_uvc_headers+=uvccam/UVCCamera.h
+video_uvc_headers+=camera/UVCCamera.h\
+		   camera/Camera.h
 
-video_uvc_sources+=uvccam/UVCCamera.cpp
+video_uvc_sources+=camera/UVCCamera.cpp\
+		   camera/Camera.cpp
+endif
+
+#
+# Virtual Camera Support
+# 
+video_virtualcamera_headers=
+video_virtualcamera_sources=
+
+if ENABLE_VIDEO_VIRTUAL
+video_virtualcamera_headers+=camera/VirtualCamera.h\
+			     camera/Camera.h
+
+video_virtualcamera__sources+=camera/VirtualCamera.cpp\
+			      camera/Camera.cpp
 endif
 
 #
@@ -220,6 +238,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
 				$(video_1394_headers)\
 				$(video_uvc_headers)\
+				$(video_virtualcamera_headers)\
 				$(gestures_headers)\
 				$(vicon_headers)\
 				$(maths_headers)\
@@ -233,6 +252,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 libwcl_la_SOURCES=$(network_sources)\
 		 $(video_1394_sources)\
 		 $(video_uvc_sources)\
+		 $(video_virtualcamera_sources)\
 		 $(gestures_sources)\
 		 $(vicon_sources)\
 		 $(maths_sources)\
