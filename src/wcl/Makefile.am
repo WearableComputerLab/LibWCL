@@ -183,7 +183,7 @@ if ENABLE_VIDEO_VIRTUAL
 video_virtualcamera_headers+=camera/VirtualCamera.h\
 			     camera/Camera.h
 
-video_virtualcamera__sources+=camera/VirtualCamera.cpp\
+video_virtualcamera_sources+=camera/VirtualCamera.cpp\
 			      camera/Camera.cpp
 endif
 
