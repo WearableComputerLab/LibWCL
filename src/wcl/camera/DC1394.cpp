@@ -1,6 +1,6 @@
 /*
   DC1394.cpp
-  By Aaron Stafford - aaron.stafford@unisa.edu.au
+  By Aaron Stafford - aaron.stafford@unisa.edu.au (c) 2006
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the WTF License.
@@ -16,6 +16,8 @@
 #include <iostream>
 
 using namespace std;
+
+namespace wcl {
 
 // default constructor
 DC1394::DC1394()
@@ -1242,4 +1244,5 @@ DC1394::~DC1394()
 	// tidy up 
 	this->cleanup( );
 	fprintf( stderr, "%s:cleanning up after myself", __FILE__ );
+}
 }

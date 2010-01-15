@@ -1,5 +1,14 @@
-#ifndef _DC1394CAMERA_H_
-#define _DC1394CAMERA_H_
+/**
+ * Created by Aaron Stafford 2006, Copyright Unknown
+ */
+
+
+#ifndef WCL_CAMERA_DC1394_H
+#define WCL_CAMERA_DC1394_H
+
+#warning "The DC1394 Camera Code is not yet standardized to the Camera API"
+
+namespace wcl {
 
 #include <dc1394/control.h>
 #include <dc1394/conversions.h>
@@ -130,4 +139,6 @@ private:
 	// the depth of the image
 	uint32_t depth;
 };
-#endif // _DC1394CAMERA_H_
+
+};
+#endif
