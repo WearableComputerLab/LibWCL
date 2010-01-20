@@ -94,7 +94,7 @@ AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Sup
 
 # Support for Virtual Video
 #
-AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
+AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
 # 
 #  Enable All Options
