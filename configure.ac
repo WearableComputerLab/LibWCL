@@ -99,6 +99,10 @@ AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Sup
 #
 AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
+# Support for ARToolkitPlus Tracking
+#
+AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), enable_tracking_artoolkitplus="yes" , enable_tracking_artoolkitplus="no")
+
 # 
 #  Enable All Options
 # 	This simply enables each option
@@ -113,6 +117,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_x11="yes";
 	     enable_parsers="yes";
 	     enable_video_virtual="yes";
+	     enable_tracking_artoolkitplus="yes";
 	     )
 
 #
@@ -129,6 +134,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
    test "x$enable_video_virtual" = "xno" && \
+   test "x$enable_tracking_artoolkitplus" = "xno" && \
    test "x$enable_parsers" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
@@ -169,6 +175,7 @@ AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_VIRTUAL, test "x$enable_video_virtual" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
 
 
 #
@@ -256,6 +263,14 @@ if test "x$enable_video_virtual" = "xyes"; then
 :
 fi
 	
+if test "x$enable_tracking_artoolkitplus" = "xyes"; then
+AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
+	     AC_MSG_ERROR([You Need to Install ARToolKit Plus. Under ubuntu add
+			http://ppa.launchpad.net/rojtberg/ppa/ubuntu to your
+			sources and to a apt-get update; apt-get install
+			artoolkitplus-dev])
+	    )
+fi
 
 if test "x$enable_x11" = "xyes"; then
     PKG_CHECK_MODULES(X11, x11 xext )
@@ -289,18 +304,19 @@ AC_CHECK_FUNCS([memset])
 echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "network support          : $enable_network"
-echo "1394 (Firewire) Video    : $enable_video_1394"
-echo "Gesture recognition      : $enable_gestures"
-echo "Geometry classes         : $enable_geometry"
-echo "Vicon MoCap Support      : $enable_vicon"
-echo "X11 Support              : $enable_x11"
-echo "Rawports Support(com/lpt): $enable_rawports"
-echo "UVC Video support        : $enable_video_uvc"
-echo "Parser Support           : $enable_parsers"
-echo "Virtual Video Support    : $enable_video_virtual"
-echo "Maths Support            : Enabled (default)"
-echo "-------------------------------"
+echo "network support               : $enable_network"
+echo "1394 (Firewire) Video         : $enable_video_1394"
+echo "Gesture recognition           : $enable_gestures"
+echo "Geometry classes              : $enable_geometry"
+echo "Vicon MoCap Support           : $enable_vicon"
+echo "X11 Support                   : $enable_x11"
+echo "Rawports Support(com/lpt)     : $enable_rawports"
+echo "UVC Video support             : $enable_video_uvc"
+echo "Parser Support                : $enable_parsers"
+echo "Virtual Video Support         : $enable_video_virtual"
+echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
+echo "Maths Support                 : Enabled (default)"
+echo "-------------------------------------------------"
 
 #
 # Tell automake to substitute the values for 

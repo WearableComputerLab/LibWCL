@@ -19,6 +19,7 @@ AM_YFLAGS=-d
 CLEANFILES=
 BUILT_SOURCES=
 
+########################################################
 #
 # Common Headers
 # 
@@ -31,6 +32,7 @@ parser_headers=
 parser_sources=
     
 
+########################################################
 # 
 # Networking Support
 # 
@@ -55,6 +57,7 @@ network_sources+=\
 endif
 
 
+######################################################
 #
 # Gesture Recognition
 #
@@ -69,6 +72,7 @@ gestures_sources+=\
 
 endif
 
+########################################################
 #
 # Geometry stuff 
 #
@@ -98,6 +102,7 @@ geometry_sources+=\
 
 endif
 
+#########################################################
 #
 # Parsers
 #
@@ -118,14 +123,18 @@ CLEANFILES+=OBJFormatGrammar.h\
 	   OBJFormatScanner.cc
 endif
 
+#####################################################################
+#
+# Tracker support
+#
 #
 # Vicon MoCap
 #
-vicon_headers=
-vicon_sources=
+tracking_headers=
+tracking_sources=
 
 if ENABLE_VICON
-vicon_headers+=\
+tracking_headers+=\
 			tracking/Polhemus.h \
 			tracking/PolhemusTrackedObject.h \
 			tracking/TrackedObject.h \
@@ -135,7 +144,7 @@ vicon_headers+=\
 			tracking/VirtualTrackedObject.h \
 			tracking/VirtualTracker.h
 
-vicon_sources+=\
+tracking_sources+=\
 			tracking/Polhemus.cpp \
 			tracking/PolhemusTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \
@@ -145,7 +154,25 @@ vicon_sources+=\
 
 endif
 
+if ENABLE_TRACKING_ARTOOLKITPLUS
+tracking_headers+=tracking/ARToolKitPlusTracker.h\
+		  tracking/ARToolKitPlusTrackedObject.h
 
+tracking_sources+=tracking/ARToolKitPlusTracker.cpp\
+		  tracking/ARToolKitPlusTrackedObject.cpp
+endif
+
+
+
+##################################################################
+# 
+# Video/Camera Support
+# 
+# 
+
+#
+# Common Video
+# 
 video_headers=
 video_sources=
 
@@ -187,9 +214,11 @@ video_virtualcamera_headers+=camera/VirtualCamera.h
 video_virtualcamera_sources+=camera/VirtualCamera.cpp
 endif
 
+#######################################################################
 #
 # Math Libraries
 # 
+
 maths_headers= \
 		  maths/Matrix.h\
 		  maths/Quaternion.h\
@@ -202,12 +231,13 @@ maths_sources=maths/Matrix.cpp\
 	      maths/Vector.cpp
 
 
-rawports_headers=
-rawports_sources=
-if ENABLE_RAWPORTS
+#######################################################################
 #
 # Raw ports
 #
+rawports_headers=
+rawports_sources=
+if ENABLE_RAWPORTS
 rawports_headers+=parallel/Parallel.h\
 		 serial/Serial.h
 
@@ -215,13 +245,14 @@ rawports_sources+=parallel/Parallel.cpp\
 		 serial/Serial.cpp
 endif
 
-x11_headers=
-x11_sources=
 
-if ENABLE_X11
+#####################################################################
 #
 # X11 Specific 
 #
+x11_headers=
+x11_sources=
+if ENABLE_X11
 x11_headers+=display/XDisplay.h
 x11_sources+=display/XDisplay.cpp
 AM_CPPFLAGS+=@X11_CFLAGS@
@@ -230,6 +261,7 @@ endif
 
 
 
+####################################################################
 #
 # What to build and what to install
 #
@@ -241,7 +273,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(video_uvc_headers)\
 				$(video_virtualcamera_headers)\
 				$(gestures_headers)\
-				$(vicon_headers)\
+				$(tracking_headers)\
 				$(maths_headers)\
 				$(osg_headers)\
 				$(geometry_headers)\
@@ -256,7 +288,7 @@ libwcl_la_SOURCES=$(network_sources)\
 		 $(video_uvc_sources)\
 		 $(video_virtualcamera_sources)\
 		 $(gestures_sources)\
-		 $(vicon_sources)\
+		 $(tracking_sources)\
 		 $(maths_sources)\
 		 $(osg_sources)\
 		 $(geometry_sources)\
