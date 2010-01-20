@@ -145,6 +145,15 @@ vicon_sources+=\
 
 endif
 
+
+video_headers=
+video_sources=
+
+if ENABLE_VIDEO
+video_headers+=camera/Camera.h
+video_sources+=camera/Camera.cpp
+endif
+
 #
 # 1394 Camera Support
 #
@@ -152,11 +161,8 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=camera/DC1394.h\
-		    camera/Camera.h
-
-video_1394_sources+=camera/DC1394.cpp\
-		    camera/Camera.cpp
+video_1394_headers+=camera/DC1394.h
+video_1394_sources+=camera/DC1394.cpp
 endif
 
 #
@@ -166,11 +172,8 @@ video_uvc_headers=
 video_uvc_sources=
 
 if ENABLE_VIDEO_UVC
-video_uvc_headers+=camera/UVCCamera.h\
-		   camera/Camera.h
-
-video_uvc_sources+=camera/UVCCamera.cpp\
-		   camera/Camera.cpp
+video_uvc_headers+=camera/UVCCamera.h
+video_uvc_sources+=camera/UVCCamera.cpp
 endif
 
 #
@@ -180,11 +183,8 @@ video_virtualcamera_headers=
 video_virtualcamera_sources=
 
 if ENABLE_VIDEO_VIRTUAL
-video_virtualcamera_headers+=camera/VirtualCamera.h\
-			     camera/Camera.h
-
-video_virtualcamera_sources+=camera/VirtualCamera.cpp\
-			      camera/Camera.cpp
+video_virtualcamera_headers+=camera/VirtualCamera.h
+video_virtualcamera_sources+=camera/VirtualCamera.cpp
 endif
 
 #
@@ -236,6 +236,7 @@ endif
 lib_LTLIBRARIES=libwcl.la
 nobase_libwcl_la_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
+				$(video_headers)\
 				$(video_1394_headers)\
 				$(video_uvc_headers)\
 				$(video_virtualcamera_headers)\
@@ -250,6 +251,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 
 
 libwcl_la_SOURCES=$(network_sources)\
+		 $(video_sources)\
 		 $(video_1394_sources)\
 		 $(video_uvc_sources)\
 		 $(video_virtualcamera_sources)\

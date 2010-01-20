@@ -104,12 +104,12 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_1394="yes";
 	     enable_rawports="yes" ;
 	     enable_video_uvc="yes";
-		 enable_gestures="yes";
-		 enable_vicon="yes";
-		 enable_geometry="yes";
-		 enable_x11="yes";
-		 enable_parsers="yes";
-		 enable_video_virtual="yes";
+	     enable_gestures="yes";
+	     enable_vicon="yes";
+	     enable_geometry="yes";
+	     enable_x11="yes";
+	     enable_parsers="yes";
+	     enable_video_virtual="yes";
 	     )
 
 #
@@ -141,6 +141,15 @@ if test "x$enable_vicon" = "xyes"; then
 	echo "*** Vicon Module selected, automatically enabling Network ***";
 fi
 
+#
+# Auto turn on the common video support if any video option is enabled
+#
+if test "x$enable_video_uvc" = "xyes" || \
+   test "x$enable_video_1394" = "xyes" ||
+   test "x$enable_video_virutal" = "xyes"; then
+	enable_video="yes";
+fi
+
 
 #
 # Automake Substitution Variables
@@ -156,6 +165,7 @@ AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_VIRTUAL, test "x$enable_video_virtual" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
 
 
 #
@@ -246,6 +256,7 @@ if test "x$enable_video_1394" = "xyes"; then
 fi
 
 if test "x$enable_video_virtual" = "xyes"; then
+:
 fi
 	
 
