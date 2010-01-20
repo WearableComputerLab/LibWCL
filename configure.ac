@@ -30,6 +30,9 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([cfg])
 LT_INIT()
 
+# tell autoconf that we are using CPP libraries
+AC_LANG([C++])
+
 #
 # Setup Options
 #
@@ -174,19 +177,13 @@ AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
 #######################################
 
 #
-# Check which system we are on
-#  	This sets: host variable
-
-# Aaron put this in as a quick hack to test something, shouldn't really be here though
-_AM_DEPENDENCIES([OBJC])
-
-
-#
 # The vicon system ignorantly assumes that data is in Intel format (little endian)
 # meaning we can't use network byte order. Therefore, we treat things differently
 # if we're on PowerPC
 #
+AC_LANG_PUSH([C])
 AC_C_BIGENDIAN
+AC_LANG_POP()
 
 
 #
