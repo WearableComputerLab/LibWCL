@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef TRACKEDOBJECT_H
-#define TRACKEDOBJECT_H
+#ifndef WCL_TRACKING_TRACKEDOBJECT_H
+#define WCL_TRACKING_TRACKEDOBJECT_H
 
 #include <string>
 
@@ -33,7 +33,7 @@
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
 
-namespace wcl 
+namespace wcl
 {
 	/**
 	 * The type of object that we are tracking.
@@ -60,7 +60,7 @@ namespace wcl
 
 	/**
 	 * Represents an object that can be tracked by the Vicon system.
-	 * 
+	 *
 	 */
 	class TrackedObject
 	{
@@ -88,7 +88,7 @@ namespace wcl
 			virtual SMatrix getTransform() = 0;
 
 			virtual Vector getTranslation() = 0;
-			
+
 			virtual SMatrix getRotation() = 0;
 
 
@@ -106,5 +106,5 @@ namespace wcl
 
 };
 
-#endif /*TRACKEDOBJECT_H_*/
+#endif /*WCL_TRACKING_TRACKEDOBJECT_H_*/
 
