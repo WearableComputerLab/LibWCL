@@ -153,7 +153,7 @@ void UVCCamera::prepareForCapture()
 
 	// create an array for our buffers
 	// The buffer count may be less than we asked for
-	this->allocateBuffers(reqbuf.count);
+	this->allocateBuffers(sizeof(CameraBuffer),  reqbuf.count);
 
 	for (int i=0;i<reqbuf.count; i++)
 	{
@@ -203,7 +203,7 @@ void UVCCamera::shutdown()
 	for (int i=0; i<numBuffers; i++)
 		munmap(buffers[i].start, buffers[i].length);
 
-	this->deleteBuffers();
+	this->destroyBuffers();
 	close(cam);
 }
 
@@ -386,18 +386,18 @@ void UVCCamera::loadControls()
 }
 
 
-uint32_t UVCamera::mapControlToV4L2( const Control c ) const
+uint32_t UVCCamera::mapControlToV4L2( const Control c ) const
 {
     switch( c )
     {
-	case BRIGHTNESS: return V4L2_CID_BRIGHTNESS,
-	case CONTRAST: return V4L2_CID_CONTRAST,
-	case SATURATION:return V4L2_CID_SATURATION,
-	case GAIN:return V4L2_CID_GAIN,
-	case POWER_FREQUENCY:return V4L2_CID_POWER_LINE_FREQUENCY,
-	case WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE,
-	case SHARPNESS:return V4L2_CID_SHARPNESS,
-	case EXPOSURE: return V4L2_CID_EXPOSURE
+	case Camera::BRIGHTNESS: return V4L2_CID_BRIGHTNESS;
+	case Camera::CONTRAST: return V4L2_CID_CONTRAST;
+	case Camera::SATURATION:return V4L2_CID_SATURATION;
+	case Camera::GAIN:return V4L2_CID_GAIN;
+	case Camera::POWER_FREQUENCY:return V4L2_CID_POWER_LINE_FREQUENCY;
+	case Camera::WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
+	case Camera::SHARPNESS:return V4L2_CID_SHARPNESS;
+	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE;
     }
 }
 

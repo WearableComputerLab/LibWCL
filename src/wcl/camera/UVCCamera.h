@@ -27,6 +27,7 @@
 #ifndef WCL_CAMERA_UVCCAMERA_H
 #define WCL_CAMERA_UVCCAMERA_H
 
+#include <stdint.h>
 #include <wcl/camera/Camera.h>
 #include <linux/videodev2.h>
 #include <string>
@@ -47,6 +48,31 @@ namespace wcl
 	{
 
 		public:
+
+			/**
+                        * Enumeration for supported read acess modes.
+                        * Currently, only MMAP works. However, it is unlikely
+                        * that the application programmer will ever need to set the read mode,
+                        * it is handled automagically depending on what the camera supports.
+                        */
+                       enum ReadMode
+                       {
+                               /**
+                                * Camera supports using read()
+                                */
+                               CALL_READ,
+
+                               /**
+                                * Access using mmaped buffers.
+                                */
+                               MMAP,
+
+                               /**
+                                * Access using pointer swapping.
+                                */
+                               POINTER
+                       };
+
 
 			/**
 			 * Opens a connection to a camera.
