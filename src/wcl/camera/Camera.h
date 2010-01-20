@@ -159,13 +159,13 @@ namespace wcl
                         Camera();
                         virtual ~Camera();
 
-                        bool allocateBuffers(const size_t size, const unsigned count);
+                        void allocateBuffers(const size_t size, const unsigned count);
                         void destroyBuffers();
 
 			/**
 			 * Array of buffers we are using.
 			 */
-			CameraBuffer T* buffers;
+			CameraBuffer* buffers;
 
 			int bufferSize;
 

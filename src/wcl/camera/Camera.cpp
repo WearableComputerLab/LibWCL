@@ -46,7 +46,7 @@ Camera::~Camera()
     this->destroyBuffers();
 }
 
-Camera::allocateBuffers(const size_t size, const unsigned count)
+void Camera::allocateBuffers(const size_t size, const unsigned count)
 {
     this->destroyBuffers();
     this->buffers = new CameraBuffer[count];
