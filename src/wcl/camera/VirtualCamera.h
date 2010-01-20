@@ -33,22 +33,37 @@ namespace wcl
 {
 
 	/**
-	 * The virtual camera allows either a static image, an image set or
-	 * a video to be used instead of a real camera.
+	 * The virtual camera allows a single frame or list of frames to be used
+	 * to represent a camera. All frames provided to the class are
+	 * maintained untouched. If no frames are provided, a default frame is
+	 * show. Upon a shutdown, the default frame is used again.
 	 */
-	class VirtualCamera
+	class VirtualCamera: public Camera
 	{
 
 	   public:
 		    VirtualCamera();
 		    ~VirtualCamera();
 
+		    // Overrides of Camera
 		    virtual void printDetails() = 0;
 		    virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
 		    virtual bool setExposureMode(const ExposureMode t);
 		    virtual bool setControlValue(const Control control, const int value);
 		    virtual const unsigned char* getFrame() = 0;
 		    virtual void shutdown();
+
+		    /**
+		     * Set the data used by the virtual camera.
+		     * The Virtual Camera doesn't know how to load images
+		     * however it knows about buffer data and hence makes use of
+		     * the buffers to provide frames
+		     */
+		    void setFrames(const CameraBuffer *buffers, const unsigned bufferCount);
+
+	    private:
+		    static CameraBuffer defaultBuffer;
+		    unsigned inUseBuffer;
 	};
 
 };

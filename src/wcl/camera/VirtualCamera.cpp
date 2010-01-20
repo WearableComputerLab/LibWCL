@@ -24,33 +24,93 @@
  * SUCH DAMAGE.
  */
 
+#include <iostream>
 #include "VirtualCamera.h"
+
+#define guint int
+#define guint8 const char *
+#include "VirtualCameraDefaultImage.c"
+
+using namespace std;
 
 namespace wcl
 {
 
+CameraBuffer VirtualCamera::defaultBuffer;
+
 VirtualCamera::VirtualCamera()
-{}
+{
+    if(VirtualCamera::defaultBuffer.start==NULL){
+	VirtualCamera::defaultBuffer.start=(void *)gimp_image.pixel_data; // NOTE: CONST LOST
+	VirtualCamera::defaultBuffer.length=sizeof(gimp_image.pixel_data)/sizeof(gimp_image.pixel_data[0]);
+    }
+}
 
 VirtualCamera::~VirtualCamera()
 {}
 
 void VirtualCamera::printDetails()
-{}
+{
+    cout << "WCL Virtual Camera" << endl;
+    if ( this->buffers ){
+	cout << "Using Provided Frames" << endl;
+	cout << "| Current Frame: " << inUseBuffer << endl;
+	cout << "| Total Frames: " << this->numBuffers << endl;
+    } else {
+
+	cout << "Using Default Frame" << endl;
+    }
+}
 
 void VirtualCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
-{}
+{
+    cout << "VirtualCamera: SetFormat Called - not Virtual Camera only supports RGB" << endl;
+
+    Camera::setFormat(f,width, height);
+}
 
 bool VirtualCamera::setExposureMode(const ExposureMode t)
-{}
+{
+    cout << "VirtualCamera: Confirming Exposure Mode change "
+	 << "(Note: No change to the image will occur)" << endl;
+    return true;
+}
 
 bool VirtualCamera::setControlValue(const Control control, const int value)
-{}
+{
+    cout << "VirtualCamera: Confirming control " << control << "Set to value "
+	 << value << "(Note: No change to the image will occur)" << endl;
+    return true;
+}
 
 const unsigned char* VirtualCamera::getFrame()
-{}
+{
+    if( this->buffers ){
+	const unsigned char *frame =
+	   (const unsigned char *) this->buffers[this->inUseBuffer].start;
+	this->inUseBuffer++;
+	if( this->inUseBuffer > this->numBuffers){
+	    this->inUseBuffer = 0;
+	}
+	return frame;
+    }
+    return (const unsigned char *)defaultBuffer.start;
+}
 
 void VirtualCamera::shutdown()
-{}
+{
+    this->buffers=NULL;
+    this->inUseBuffer=0;
+    this->numBuffers=0;
+}
+
+
+void VirtualCamera::setFrames(const CameraBuffer *buffers, const unsigned bufferCount)
+{
+    this->buffers=const_cast<CameraBuffer *>(buffers); //NOTE: cost removed, though the buffer is still treated as read only internally
+    this->numBuffers = bufferCount;
+    this->inUseBuffer=0;
+}
+
 
 }; //namespace wcl
