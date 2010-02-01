@@ -46,11 +46,11 @@ namespace wcl
 		    ~VirtualCamera();
 
 		    // Overrides of Camera
-		    virtual void printDetails() = 0;
+		    virtual void printDetails();
 		    virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
 		    virtual bool setExposureMode(const ExposureMode t);
 		    virtual bool setControlValue(const Control control, const int value);
-		    virtual const unsigned char* getFrame() = 0;
+		    virtual const unsigned char* getFrame();
 		    virtual void shutdown();
 
 		    /**

@@ -44,6 +44,8 @@ VirtualCamera::VirtualCamera()
 	VirtualCamera::defaultBuffer.start=(void *)gimp_image.pixel_data; // NOTE: CONST LOST
 	VirtualCamera::defaultBuffer.length=sizeof(gimp_image.pixel_data)/sizeof(gimp_image.pixel_data[0]);
     }
+
+    Camera::setFormat(Camera::RGB,640,480);
 }
 
 VirtualCamera::~VirtualCamera()
@@ -102,6 +104,9 @@ void VirtualCamera::shutdown()
     this->buffers=NULL;
     this->inUseBuffer=0;
     this->numBuffers=0;
+
+    //Reset the default format, size for the default image
+    Camera::setFormat(Camera::RGB,640,480);
 }
 
 
