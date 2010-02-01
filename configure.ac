@@ -270,6 +270,8 @@ AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
 			sources and to a apt-get update; apt-get install
 			artoolkitplus-dev])
 	    )
+
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
 fi
 
 if test "x$enable_x11" = "xyes"; then
