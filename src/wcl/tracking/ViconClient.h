@@ -124,6 +124,12 @@ namespace wcl
 			 */
 			virtual TrackedObject* getObject(std::string name);
 
+
+			/**
+			 * Get all Tracked objects
+			 */
+			virtual std::vector<TrackedObject *> getAllObjects();
+
 			virtual void setUnits(Units u);
 
 			/**

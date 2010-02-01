@@ -285,6 +285,16 @@ TrackedObject* ViconClient::getObject(std::string name) {
 	
 }
 
+vector<TrackedObject *> ViconClient::getAllObjects()
+{
+    vector<TrackedObject *> v;
+    for(vector<ViconTrackedObject>::iterator i=this->objects.begin();
+	i!=this->objects.end(); 
+	++i)
+	v.push_back(&*i);
+    return v;
+}
+
 
 void ViconClient::update()
 {

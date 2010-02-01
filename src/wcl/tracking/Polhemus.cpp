@@ -29,6 +29,7 @@
 #include <sstream>
 #include <iostream>
 #include <wcl/tracking/Polhemus.h>
+#include <wcl/tracking/TrackedObject.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -162,6 +163,17 @@ namespace wcl
 			return &sensors[3];
 		else
 			throw std::string("Invalid tracked object name");
+	}
+
+	std::vector<TrackedObject *> Polhemus::getAllObjects()
+	{
+	    std::vector<TrackedObject *> objects;
+
+	    for(unsigned i=0; i< activeSensorCount; i++ ){
+		objects.push_back(&sensors[i]);
+	    }
+
+	    return objects;
 	}
 
 	
