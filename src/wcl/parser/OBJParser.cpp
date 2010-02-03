@@ -384,7 +384,11 @@ void OBJParser::print()
 }
 
 /*
- * TODO BEN! Is there supposed to be more to this method?
+ * Return the parsed geometry of the class.
+ * It's assumed the user has called OBJParser::parse()
+ * prior to this call, else the returned geometry will be empty
+ *
+ * @return The parsed geometry object
  */
 const OBJGeometry& OBJParser::getGeometry()
 {
