@@ -451,7 +451,7 @@ void Matrix::print() const
 {
     printf("Matrix(%d,%d)={\n", this->rows, this->cols );
     for ( unsigned rows = 0; rows < this->rows; rows++ ){
-	const double *row = this->data[rows];
+	const T *row = this->data[rows];
 	printf("\t{");
 	for ( unsigned cols = 0; cols < this->cols; cols++ ){
 	    printf("%5.5g%s ", row[cols], cols==this->cols-1?"":",");
