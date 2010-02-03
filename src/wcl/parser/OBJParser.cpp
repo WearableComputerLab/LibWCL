@@ -383,4 +383,12 @@ void OBJParser::print()
     }
 }
 
+/*
+ * TODO BEN! Is there supposed to be more to this method?
+ */
+const OBJGeometry& OBJParser::getGeometry()
+{
+	return data;
+}
+
 };
