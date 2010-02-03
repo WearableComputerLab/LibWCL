@@ -81,6 +81,7 @@ geometry_headers+=\
 			geometry/GeometryLoader.h \
 			geometry/Line.h \
 			geometry/LineSegment.h \
+			geometry/OBJGeometry.h \
 			geometry/Plane.h \
 			geometry/PolygonObject.h \
 			geometry/Vertex.h
