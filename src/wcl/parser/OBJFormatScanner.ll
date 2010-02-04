@@ -14,6 +14,9 @@
 #include "parser/OBJParser.h"
 #include "OBJFormatGrammar.h"
 #include <string.h>
+
+#define YY_FATAL_ERROR(msg) doFatal(msg)
+extern void doFatal( const char *);
 %}
 
 %%

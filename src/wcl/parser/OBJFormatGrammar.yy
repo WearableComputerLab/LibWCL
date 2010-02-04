@@ -183,3 +183,12 @@ void yyerror( const char *)
     //TODO: Really should give a good error message here -benjsc 20090827
 }
 
+
+void doFatal(std::string &msg)
+{
+    printf("You Found A Bug in the Scanner\n");
+    printf("Please Contact libWCL writers with the file your trying to read for a fix\n");
+    printf("Program will now exit\n");
+    printf("Error: %s\n", msg.c_str());
+    exit(2);
+}
