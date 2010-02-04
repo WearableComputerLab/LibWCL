@@ -106,6 +106,11 @@ material_property:
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->setMaterialDiffuseMap($2);
 		}
+		| SPECULAR_EXP DOUBLE
+		{
+		    OBJParser *parser = (OBJParser *)param;
+		    parser->setMaterialSpecularExponent($2);
+		}
 		;
 
 group:		GROUP STRING

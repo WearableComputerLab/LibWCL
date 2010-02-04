@@ -286,13 +286,13 @@ void OBJParser::addMaterial(const std::string &name)
     this->material = m;
 }
 
-void OBJParser::setMaterialSpecularExp(const int value)
+void OBJParser::setMaterialSpecularExponent(const double value)
 {
-#warning OBJParser: SpecularEXP Loading Is Not Yet Implemented
-    //NOTIMP, let user know
-    cout <<"OBJParser::setMaterialSpecularExt| Specular EXP not Implemented, ignoring "
-          << value
-          << endl;
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_INPUT, "Attempt to set refraction index with no material present");
+    }
+    this->material->valid |= OBJMaterial::M_SPECULAREXP;
+    this->material->specularExp = value;
 }
 
 void OBJParser::print()
