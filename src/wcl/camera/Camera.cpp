@@ -39,7 +39,9 @@ Camera::Camera() :
     buffers(NULL),
     bufferSize(0),
     numBuffers(0)
-{}
+{
+    distortion.cameraToWorld.storeIdentity();
+}
 
 Camera::~Camera()
 {
@@ -66,6 +68,11 @@ void Camera::setFormat(const ImageFormat f, const unsigned width, const unsigned
     this->format = f;
     this->width = width;
     this->height = height;
+}
+
+Camera::Distortion Camera::getDistortion() const
+{
+    return this->distortion;
 }
 
 }

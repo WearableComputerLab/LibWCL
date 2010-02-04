@@ -28,6 +28,7 @@
 #ifndef WCL_CAMERA_CAMERA_H
 #define WCL_CAMERA_CAMERA_H
 
+#include <wcl/maths/SMatrix.h>
 #include <string>
 
 namespace wcl
@@ -48,6 +49,17 @@ namespace wcl
 	{
 
 		public:
+
+			struct Distortion {
+			    SMatrix cameraToWorld;
+			    float factor[4];
+
+			    Distortion():
+				cameraToWorld(4)
+			    {
+				factor[0]=factor[1]=factor[2]=factor[3]=0.0;
+			    }
+			};
 
 			/**
 			 * Enumeration of supported image formats.
@@ -154,6 +166,17 @@ namespace wcl
 			 */
 			virtual void shutdown() = 0;
 
+			/**
+			 * Indicates if there is a known undistortion matrix for
+			 * the camera
+			 */
+			virtual bool hasDistortionMatrix() const { return false; }
+
+			/**
+		         * Obtain the distortion Matrix for the camera
+			 */
+			virtual Distortion getDistortion() const;
+
                 protected:
 
                         Camera();
@@ -180,6 +203,11 @@ namespace wcl
                         ImageFormat format;
                         unsigned height;
                         unsigned width;
+
+			/**
+		         * Default Distortion parameters
+			 */
+			Distortion distortion;
 	};
 
 };
