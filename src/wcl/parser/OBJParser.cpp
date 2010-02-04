@@ -150,7 +150,7 @@ void OBJParser::addNormal(const double n1, const double n2, const double n3)
     this->data.normals.push_back(v);
 }
 
-void OBJParser::addShaderGroup( const int sgroup )
+void OBJParser::addShaderGroup( const std::string &sgroup )
 {
 #warning OBJParser: Note Shader Group support is not implemented
     //NOTIMP, let user know

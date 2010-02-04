@@ -56,7 +56,7 @@ class OBJParser: public Parser
         void addVertex(const double, const double, const double);
         void addVertexTexture(const double, const double);
         void addNormal(const double, const double, const double);
-        void addShaderGroup( const int);
+        void addShaderGroup( const std::string &);
         void addFace(const double, const double, const double,
                      const double, const double, const double,
                      const double, const double, const double);

@@ -141,7 +141,7 @@ vertexnormal:	NORMAL DOUBLE DOUBLE DOUBLE
 		}
 		;
 
-shadinggroup:	SHADING_GROUP INT
+shadinggroup:   SHADING_GROUP STRING
 		{
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->addShaderGroup($2);
