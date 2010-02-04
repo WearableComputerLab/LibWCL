@@ -99,7 +99,7 @@ material_property:
 		| ILLUM INT
 		{
 		    OBJParser *parser  = (OBJParser *)param;
-		    parser->setMaterialSpecularExp($2);
+		    parser->setMaterialIlluminationGroup($2);
 		}
 		| DIFFUSE_MAP STRING
 		{

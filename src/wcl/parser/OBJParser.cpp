@@ -267,6 +267,15 @@ void OBJParser::setMaterialDiffuseMap(const std::string &path)
           << endl;
 }
 
+void OBJParser::setMaterialIlluminationGroup(const int group)
+{
+#warning OBJParser: Illumination Group Loading Is Not Yet Implemented
+    //NOTIMP, let user know
+    cout <<"OBJParser::setMaterialIlluminationGroup| Illumination Group loading not Implemented, ignoring "
+          << group
+          << endl;
+}
+
 void OBJParser::addMaterial(const std::string &name)
 {
     OBJMaterial *m = new OBJMaterial;

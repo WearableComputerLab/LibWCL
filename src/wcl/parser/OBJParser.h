@@ -68,6 +68,7 @@ class OBJParser: public Parser
         void setMaterialRefractionIndex( const double );
         void setMaterialSpecularExp(const int);
         void setMaterialDiffuseMap(const std::string &);
+        void setMaterialIlluminationGroup( const int );
 
         static int scanner(OBJParser *);
 
