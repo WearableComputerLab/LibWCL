@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
 #define YYPARSE_PARAM param
 #define YYLEX_PARAM (wcl::OBJParser *)param
 #include "parser/OBJParser.h"
@@ -145,6 +146,13 @@ shadinggroup:   SHADING_GROUP STRING
 		{
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->addShaderGroup($2);
+		} 
+		| SHADING_GROUP INT
+		{
+		    std::stringstream s;
+		    s<< $2;
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->addShaderGroup(s.str());
 		}
 		;
 
@@ -183,12 +191,11 @@ void yyerror( const char *)
     //TODO: Really should give a good error message here -benjsc 20090827
 }
 
-
-void doFatal(std::string &msg)
+void doFatal(const char *str)
 {
     printf("You Found A Bug in the Scanner\n");
     printf("Please Contact libWCL writers with the file your trying to read for a fix\n");
     printf("Program will now exit\n");
-    printf("Error: %s\n", msg.c_str());
+    printf("Error: %s\n", str);
     exit(2);
 }
