@@ -158,14 +158,13 @@ void OBJParser::addShaderGroup( const std::string &sgroup )
           << sgroup
           << endl;
 }
+#warning OBJParser: Only Faces consiting of Triangles or Quads are supported
 
 void OBJParser::addFace(
              const double vi1, const double ti1, const double ni1,
              const double vi2, const double ti2, const double ni2,
              const double vi3, const double ti3, const double ni3)
 {
-#warning OBJParser: Note Only Faces consisting of Triangles are currently supported
-
     if( !this->group )
         this->parseError(ParserException::INVALID_INPUT,"No Group, to add Face too");
 
@@ -190,6 +189,46 @@ void OBJParser::addFace(
     v3->pointIndex = vi3;
     v3->normalIndex= ni3;
     v3->uvIndex    = ti3;
+
+    this->group->faces.push_back(face);
+}
+
+void OBJParser::addFace(
+             const double vi1, const double ti1, const double ni1,
+             const double vi2, const double ti2, const double ni2,
+             const double vi3, const double ti3, const double ni3,
+	     const double vi4, const double ti4, const double ni4)
+{
+    if( !this->group )
+        this->parseError(ParserException::INVALID_INPUT,"No Group, to add Face too");
+
+    OBJFace *face = new OBJFace;
+    OBJVertex *v1 = new OBJVertex;
+    OBJVertex *v2 = new OBJVertex;
+    OBJVertex *v3 = new OBJVertex;
+    OBJVertex *v4 = new OBJVertex;
+
+    face->verts.push_back( v1 );
+    face->verts.push_back( v2 );
+    face->verts.push_back( v3 );
+    face->verts.push_back( v4 );
+
+    face->material = this->material;
+    v1->pointIndex = vi1;
+    v1->normalIndex= ni1;
+    v1->uvIndex    = ti1;
+
+    v2->pointIndex = vi2;
+    v2->normalIndex= ni2;
+    v2->uvIndex    = ti2;
+
+    v3->pointIndex = vi3;
+    v3->normalIndex= ni3;
+    v3->uvIndex    = ti3;
+
+    v4->pointIndex = vi4;
+    v4->normalIndex= ni4;
+    v4->uvIndex    = ti4;
 
     this->group->faces.push_back(face);
 }

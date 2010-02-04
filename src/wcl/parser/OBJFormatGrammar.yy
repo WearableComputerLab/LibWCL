@@ -155,6 +155,15 @@ face:		FACE  INT INT INT  INT INT INT  INT INT INT
 				    $5,$6,$7,
 				    $8,$9,$10);
 		}
+		|
+		FACE  INT INT INT INT  INT INT INT INT  INT INT INT INT
+		{
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->addFace($2,$3,$4,
+				    $5,$6,$7,
+				    $8,$9,$10,
+				    $11,$12,$13);
+		}
 		;
 
 use_material:	USE_MTL STRING
