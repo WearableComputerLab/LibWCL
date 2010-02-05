@@ -1,11 +1,29 @@
-/*
-  DC1394.cpp
-  By Aaron Stafford - aaron.stafford@unisa.edu.au (c) 2006
-
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the WTF License.
-*/
-
+/*-
+ * Copyright (c) 2006 Aaron Stafford 2006 <aaron@staffordfarm.com.au>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the above copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ */
 #include <stdio.h>
 #include <dc1394/dc1394.h>
 #include <dc1394/utils.h>
@@ -15,12 +33,14 @@
 #include <string.h>
 #include <iostream>
 
+#warning DC1394: Note This class needs some major cleanup -benjsc 20100205
+
 using namespace std;
 
 namespace wcl {
 
-// default constructor
-DC1394::DC1394()
+DC1394::DC1394():
+    running(false)
 {
 	// initialize some of the variables
 	this->frame = NULL;
@@ -101,14 +121,152 @@ DC1394::DC1394()
 	// free the memory associated with the cameras array
 	free( this->cameras );
 	 */
-	this->printFeatureSet();
-	// grab the configuration information from the config file and setup
-	// this class.
-
-	//this->configure();
 }
 
-void DC1394::startCapture()
+DC1394::~DC1394()
+{
+	this->shutdown ();
+}
+
+void DC1394::setFormat( const ImageFormat format, const unsigned width,
+			const unsigned height )
+{
+    dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
+
+#warning DC1349:setFormat This methods needs work.. benjsc - 20100205
+    //XXX This needs to be redone
+    switch( format ){
+	case BGR:
+	case MJPEG:
+	    // NOT Supported
+	case YUYV:
+	    if( width == 160 ) mode = DC1394_VIDEO_MODE_160x120_YUV444; break;
+	    if( width == 320 ) mode = DC1394_VIDEO_MODE_320x240_YUV422; break;
+	    if( width == 640 ) mode = DC1394_VIDEO_MODE_640x480_YUV422; break;
+	    //if( width == 640 ) mode = DC1394_VIDEO_MODE_640x480_YUV411; break;
+	    if( width == 800 ) mode = DC1394_VIDEO_MODE_800x600_YUV422; break;
+	    if( width == 1024 ) mode = DC1394_VIDEO_MODE_1024x768_YUV422; break;
+	    if( width == 1280 ) mode = DC1394_VIDEO_MODE_1280x960_YUV422; break;
+	    if( width == 1600) mode = DC1394_VIDEO_MODE_1600x1200_YUV422; break;
+	case RGB:
+	    if( width == 640 ) mode = DC1394_VIDEO_MODE_640x480_RGB8; break;
+	    if( width == 800 ) mode = DC1394_VIDEO_MODE_800x600_RGB8; break;
+	    if( width == 1024 ) mode = DC1394_VIDEO_MODE_1024x768_RGB8; break;
+	    if( width == 1280 ) mode = DC1394_VIDEO_MODE_1280x960_RGB8; break;
+	    if( width == 1600) mode = DC1394_VIDEO_MODE_1600x1200_RGB8; break;
+#if notyet
+	case MONO8:
+	    if( width == 640 ) mode = DC1394_VIDEO_MODE_640x480_MONO8; break;
+	    if( width == 800 ) mode = DC1394_VIDEO_MODE_800x600_MONO8; break;
+	    if( width == 1024) mode = DC1394_VIDEO_MODE_1024x768_MONO8; break;
+	    if( width == 1280) mode = DC1394_VIDEO_MODE_1280x960_MONO8; break;
+	    if( width == 1600) mode = DC1394_VIDEO_MODE_1600x1200_MONO8; break;
+	case MONO16:
+	    if( width == 640 ) mode = DC1394_VIDEO_MODE_640x480_MONO16; break;
+	    if( width == 800 ) mode = DC1394_VIDEO_MODE_800x600_MONO16; break;
+	    if( width == 1024) mode = DC1394_VIDEO_MODE_1024x768_MONO16; break;
+	    if( width == 1280) mode = DC1394_VIDEO_MODE_1280x960_MONO16; break;
+	    if( width == 1600) mode = DC1394_VIDEO_MODE_1600x1200_MONO16; break;
+	case FORMAT7:
+	    mode = DC1394_VIDEO_MODE_FORMAT7_0; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_1; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_2; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_3; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_4; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_5; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_6; break;
+	    mode = DC1394_VIDEO_MODE_FORMAT7_7; break;
+	case EXIF:
+	    mode = DC1394_VIDEO_MODE_EXIF; break;
+#endif
+    }
+    this->videoMode = mode;
+
+    // make sure the camera is set up
+    if( this->camera == NULL )
+    {
+	fprintf( stderr, "camera isn't initialized" );
+	exit( EXIT_FAILURE );
+    }
+
+    // attempt to set the video mode
+    this->result = dc1394_video_set_mode( this->camera, this->videoMode );
+
+    // attempt to set the video mode
+    if( this->result != DC1394_SUCCESS )
+    {
+	fprintf( stderr, "failed to set video mode" );
+	this->printSupportedVideoModes();
+	fprintf( stderr, "message from libdc1394 was: %s", dc1394_error_get_string( this->result ) );
+	exit( EXIT_FAILURE );
+    }
+
+    // attempt to fetch the image properties now that we know the video mode.
+    this->fetchImageProperties();
+}
+
+bool DC1394::setExposureMode( const ExposureMode t )
+{
+    int retval;
+    switch( t ){
+	case AUTO_SHUTTER_PRIORITY:
+	case AUTO_APERTURE_PRIORITY:
+	    /* FALL THROUGH */
+	    printf("DC1394: AUTO_SHUTTER_PRIORITY & AUTO_APETURE_PRIORITY Not Supported, defaulting to AUTO\n");
+	case AUTO:
+	    retval =dc1394_feature_set_mode( camera, DC1394_FEATURE_EXPOSURE,
+					     DC1394_FEATURE_MODE_AUTO );
+	    return ( retval == DC1394_SUCCESS );
+
+	case MANUAL:
+	    retval = dc1394_feature_set_mode( camera,
+					      DC1394_FEATURE_EXPOSURE,
+					      DC1394_FEATURE_MODE_MANUAL );
+	    return (retval == DC1394_SUCCESS );
+    }
+}
+
+void DC1394::setBrightness( char* brightness )
+{
+	if( brightness == NULL )
+	{
+		// set brightness to automatic
+		// set birghtness to levels specified.
+		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
+		{
+			fprintf( stderr, "unable to set the brightness to auto" );
+			exit( EXIT_FAILURE );
+		}
+	}
+	else
+	{
+		// set brightness to levels specified.
+		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
+		{
+			fprintf( stderr, "unable to set the brightness to manual" );
+			exit( EXIT_FAILURE );
+		}
+
+		fprintf( stderr, "attempting to set brightness to %s", brightness );
+
+		// atempt to tweak the brightness :)
+		if( dc1394_feature_set_value( camera, DC1394_FEATURE_BRIGHTNESS, atoi( brightness ) ) != DC1394_SUCCESS )
+		{
+			fprintf( stderr, "unable to change the brightness of the camera" );
+			exit( EXIT_FAILURE );
+		}
+
+	}
+}
+
+bool DC1394::setControlValue(const Control control, const int value )
+{
+#warning DC1394:setControlValue NOTIMP YET
+    return false;
+}
+
+
+void DC1394::startup()
 {
 	fprintf( stderr, "finished configuring" );
 
@@ -118,7 +276,7 @@ void DC1394::startCapture()
 	// check to make sure if everything went okay
 	if( result != DC1394_SUCCESS )
 	{
-		this->cleanup();
+		this->shutdown();
 
 		fprintf( stderr, "The only reason I have had this error occur so far is because the "
 				"ISO speed was not supported so far everything else is check that it is "
@@ -135,7 +293,7 @@ void DC1394::startCapture()
 	if( dc1394_video_set_transmission( this->camera, DC1394_ON ) != DC1394_SUCCESS )
 	{
 		fprintf( stderr, "unable to start camera iso transmission" );
-		this->cleanup();
+		this->shutdown();
 	}
 
 	fprintf( stderr, "wait transmission" );
@@ -154,7 +312,7 @@ void DC1394::startCapture()
 		// check to see if everything went okay
 		if( this->result != DC1394_SUCCESS )
 		{
-			this->cleanup();
+			this->shutdown();
 
 			fprintf( stderr, "failed to get a transmission. libdc1394 said: %s", dc1394_error_get_string( this->result ) );
 			exit( EXIT_FAILURE );
@@ -164,7 +322,7 @@ void DC1394::startCapture()
 	// check if we tried to turn it on 5 times without success
 	if( i == 5 )
 	{
-		this->cleanup();
+		this->shutdown ();
 
 		fprintf( stderr, "Camera doesn't seem to want to turn on!" );
 		exit( EXIT_FAILURE );
@@ -267,7 +425,7 @@ else
 */
 
 // Release the camera.
-void DC1394::cleanup( void )
+void DC1394::shutdown( void )
 {
 	dc1394_video_set_transmission( this->camera, DC1394_OFF );
 	dc1394_capture_stop( this->camera );
@@ -278,11 +436,16 @@ void DC1394::cleanup( void )
 	{
 		delete this->convertedImage;
 	}
+
+	this->running=false;
 }
 
 // method to get a frame from the camera
-unsigned char* DC1394::getFrame( void )
+const unsigned char* DC1394::getFrame()
 {
+    if(!this->running)
+	this->startup();
+
 	// check if there is a valid frame left over in the buffer
 	if( this->frame != NULL )
 	{
@@ -317,7 +480,7 @@ unsigned char* DC1394::getFrame( void )
 		// check to see if there were any errors.
 		if( this->result != DC1394_SUCCESS )
 		{
-			this->cleanup();
+			this->shutdown();
 
 			fprintf( stderr, "failed to convert to bayer, libdc1394 said: %s", dc1394_error_get_string( this->result ) );
 			exit( EXIT_FAILURE );
@@ -340,7 +503,7 @@ void DC1394::close_camera( void )
 	}
 
 	// close the camera down
-	this->cleanup();
+	this->shutdown();
 }
 
 // method to populate video_modes with data
@@ -354,7 +517,7 @@ void DC1394::getSupportedVideoModes()
 		// get video modes:
 		if( dc1394_video_get_supported_modes( camera, &this->videoModes ) != DC1394_SUCCESS )
 		{
-			this->cleanup();
+			this->shutdown();
 
 			fprintf( stderr, "Can't get video modes" );
 			exit( EXIT_FAILURE );
@@ -379,7 +542,7 @@ void DC1394::getSupportedFramerates()
 	// check if everything went smoothly
 	if( this->result != DC1394_SUCCESS )
 	{
-		this->cleanup();
+		this->shutdown();
 
 		fprintf( stderr, "Unable to fetch the framerates from the camera\n"
 				"The reason that dc1394 gave was: %s", dc1394_error_get_string( this->result ) );
@@ -434,189 +597,6 @@ bool DC1394::isFramerateSupported( dc1394framerate_t framerate )
 // a method to set the video mode given a string representing the video mode.
 void DC1394::setVideoMode( char* newVideoMode )
 {
-	// make sure the video mode wasn't null
-	if( newVideoMode == NULL )
-	{
-		fprintf( stderr, "videoMode was null" );
-		exit( EXIT_FAILURE );
-	}
-
-	// check to find out what was passed in
-	if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_160x120_YUV444" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_160x120_YUV444;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_320x240_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_320x240_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_640x480_YUV411" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_640x480_YUV411;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_640x480_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_640x480_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_640x480_RGB8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_640x480_RGB8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_640x480_MONO8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_640x480_MONO8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_640x480_MONO16" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_640x480_MONO16;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_800x600_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_800x600_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_800x600_RGB8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_800x600_RGB8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_800x600_MONO8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_800x600_MONO8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1024x768_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1024x768_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1024x768_RGB8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1024x768_RGB8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1024x768_MONO8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1024x768_MONO8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_800x600_MONO16" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_800x600_MONO16;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1024x768_MONO16" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1024x768_MONO16;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1280x960_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1280x960_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1280x960_RGB8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1280x960_RGB8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1280x960_MONO8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1280x960_MONO8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1600x1200_YUV422" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1600x1200_YUV422;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1600x1200_RGB8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1600x1200_RGB8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1600x1200_MONO8" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1600x1200_MONO8;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1280x960_MONO16" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1280x960_MONO16;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_1600x1200_MONO16" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_1600x1200_MONO16;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_EXIF" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_EXIF;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_0" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_0;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_1" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_1;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_2" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_2;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_3" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_3;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_4" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_4;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_5" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_5;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_6" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_6;
-	}
-	else if( strcmp( newVideoMode, "DC1394_VIDEO_MODE_FORMAT7_7" ) == 0 )
-	{
-		this->videoMode = DC1394_VIDEO_MODE_FORMAT7_7;
-	}
-	else
-	{
-		fprintf( stderr, "video mode not supported" );
-		this->printSupportedVideoModes();
-		fprintf( stderr, "unsupported video mode, see list above for available video modes" );
-		exit( EXIT_FAILURE );
-	}
-
-	// check that the video mode is supported
-	if( !isVideoModeSupported( videoMode ) )
-	{
-		fprintf( stderr, "failed to set video mode" );
-		this->printSupportedVideoModes();
-		fprintf( stderr, "Please check that the video mode you requested is supported by the camera (see list above)" );
-		exit( EXIT_FAILURE );
-	}
-
-	// make sure the camera is set up
-	if( this->camera == NULL )
-	{
-		fprintf( stderr, "camera isn't initialized" );
-		exit( EXIT_FAILURE );
-	}
-
-	// attempt to set the video mode
-	this->result = dc1394_video_set_mode( this->camera, this->videoMode );
-
-	// attempt to set the video mode
-	if( this->result != DC1394_SUCCESS )
-	{
-		fprintf( stderr, "failed to set video mode" );
-		this->printSupportedVideoModes();
-		fprintf( stderr, "message from libdc1394 was: %s", dc1394_error_get_string( this->result ) );
-		exit( EXIT_FAILURE );
-	}
-
-	fprintf( stderr, "video mode set to: %s", newVideoMode );
-
-	if( this->videoMode == DC1394_VIDEO_MODE_FORMAT7_0 )
-	{
-		fprintf( stderr, "Please ask aaron.stafford@unisa.edu.au for this code" );
-		exit( EXIT_FAILURE );
-
-	}
-
-	// attempt to fetch the image properties now that we know the video mode.
-	this->fetchImageProperties();
 }
 
 // method to change to the framerate specified by the string.
@@ -799,71 +779,6 @@ void DC1394::setShutter( char* shutter )
 	}	
 }
 
-void DC1394::setExposure( char* exposure )
-{
-	if( exposure == NULL )
-	{
-		fprintf( stderr, "exposure was null" );
-		// set exposure to automatic
-		// set exposure to manual using the value passed in
-		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_EXPOSURE, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to set the brightness to auto" );
-			exit( EXIT_FAILURE );
-		}
-	}
-	else
-	{
-		// set exposure to manual using the value passed in
-		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_EXPOSURE, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to set the brightness to manual" );
-			exit( EXIT_FAILURE );
-		}
-
-		fprintf( stderr, "attempting to set exposure to %s", exposure );
-
-		// atempt to tweak the exposure :)
-		if( dc1394_feature_set_value( camera, DC1394_FEATURE_EXPOSURE, atoi( exposure ) ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to change the brightness of the camera" );
-			exit( EXIT_FAILURE );
-		}
-	}	
-}
-
-void DC1394::setBrightness( char* brightness )
-{
-	if( brightness == NULL )
-	{
-		// set brightness to automatic
-		// set birghtness to levels specified.
-		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to set the brightness to auto" );
-			exit( EXIT_FAILURE );
-		}
-	}
-	else
-	{
-		// set brightness to levels specified.
-		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to set the brightness to manual" );
-			exit( EXIT_FAILURE );
-		}
-
-		fprintf( stderr, "attempting to set brightness to %s", brightness );
-
-		// atempt to tweak the brightness :)
-		if( dc1394_feature_set_value( camera, DC1394_FEATURE_BRIGHTNESS, atoi( brightness ) ) != DC1394_SUCCESS )
-		{
-			fprintf( stderr, "unable to change the brightness of the camera" );
-			exit( EXIT_FAILURE );
-		}
-
-	}
-}
 
 void DC1394::setGain( char* gain )
 {
@@ -1175,7 +1090,7 @@ void DC1394::setBayerMethod( char* bayerMethod )
 	}
 	else
 	{
-		this->cleanup();
+		this->shutdown();
 
 		fprintf( stderr, "Bayer method is not defined, check out conversions.h for valid bayer modes" );
 		exit( EXIT_FAILURE );
@@ -1189,7 +1104,7 @@ void DC1394::setColorFilter( char* colorFilter )
 	// check to see if the color filter was valid
 	if( colorFilter == NULL )
 	{
-		this->cleanup();
+		this->shutdown();
 		fprintf( stderr, "the bayer color filter is was not defined" );
 		exit( EXIT_FAILURE );
 	}
@@ -1213,7 +1128,7 @@ void DC1394::setColorFilter( char* colorFilter )
 	}
 	else
 	{
-		this->cleanup();
+		this->shutdown();
 		fprintf( stderr, "color filter was not valid, have a look in the control.h file to see the valid color filters." );
 		exit( EXIT_FAILURE );
 	}
@@ -1230,7 +1145,7 @@ void DC1394::fetchImageProperties()
 	// find out if the read was successful
 	if( this->result != DC1394_SUCCESS )
 	{
-		this->cleanup();
+		this->shutdown();
 
 		fprintf( stderr, "failed to fetch the image dimensions. libdc1394 said: %s", dc1394_error_get_string( this->result) );
 		exit( EXIT_FAILURE );
@@ -1239,10 +1154,13 @@ void DC1394::fetchImageProperties()
 	fprintf( stderr, "Image is %dx%d", this->width, this->height );
 }
 
-DC1394::~DC1394()
+
+void DC1394::printDetails()
 {
-	// tidy up 
-	this->cleanup( );
-	fprintf( stderr, "%s:cleanning up after myself", __FILE__ );
+    this->printSupportedVideoModes();
+    this->printSupportedFramerates();
+    this->printFeatureSet();
 }
+
+
 }
