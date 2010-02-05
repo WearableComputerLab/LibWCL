@@ -178,17 +178,17 @@ void OBJParser::addFace(
     face->verts.push_back( v3 );
 
     face->material = this->material;
-    v1->pointIndex = vi1;
-    v1->normalIndex= ni1;
-    v1->uvIndex    = ti1;
+    v1->pointIndex = vi1-1;
+    v1->normalIndex= ni1-1;
+    v1->uvIndex    = ti1-1;
 
-    v2->pointIndex = vi2;
-    v2->normalIndex= ni2;
-    v2->uvIndex    = ti2;
+    v2->pointIndex = vi2-1;
+    v2->normalIndex= ni2-1;
+    v2->uvIndex    = ti2-1;
 
-    v3->pointIndex = vi3;
-    v3->normalIndex= ni3;
-    v3->uvIndex    = ti3;
+    v3->pointIndex = vi3-1;
+    v3->normalIndex= ni3-1;
+    v3->uvIndex    = ti3-1;
 
     this->group->faces.push_back(face);
 }
@@ -214,21 +214,21 @@ void OBJParser::addFace(
     face->verts.push_back( v4 );
 
     face->material = this->material;
-    v1->pointIndex = vi1;
-    v1->normalIndex= ni1;
-    v1->uvIndex    = ti1;
+    v1->pointIndex = vi1-1;
+    v1->normalIndex= ni1-1;
+    v1->uvIndex    = ti1-1;
 
-    v2->pointIndex = vi2;
-    v2->normalIndex= ni2;
-    v2->uvIndex    = ti2;
+    v2->pointIndex = vi2-1;
+    v2->normalIndex= ni2-1;
+    v2->uvIndex    = ti2-1;
 
-    v3->pointIndex = vi3;
-    v3->normalIndex= ni3;
-    v3->uvIndex    = ti3;
+    v3->pointIndex = vi3-1;
+    v3->normalIndex= ni3-1;
+    v3->uvIndex    = ti3-1;
 
-    v4->pointIndex = vi4;
-    v4->normalIndex= ni4;
-    v4->uvIndex    = ti4;
+    v4->pointIndex = vi4-1;
+    v4->normalIndex= ni4-1;
+    v4->uvIndex    = ti4-1;
 
     this->group->faces.push_back(face);
 }
