@@ -266,9 +266,8 @@ fi
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
 AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
 	     AC_MSG_ERROR([You Need to Install ARToolKit Plus. Under ubuntu add
-			http://ppa.launchpad.net/rojtberg/ppa/ubuntu to your
-			sources and to a apt-get update; apt-get install
-			artoolkitplus-dev])
+			deb http://ppa.launchpad.net/rojtberg/ppa/ubuntu karmic main
+			to your sources and to a apt-get update; apt-get install artoolkitplus-dev])
 	    )
 
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
