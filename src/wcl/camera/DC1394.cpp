@@ -39,7 +39,7 @@ using namespace std;
 
 namespace wcl {
 
-DC1394::DC1394():
+DC1394::DC1394(int guid):
     running(false)
 {
 	// initialize some of the variables
@@ -77,13 +77,25 @@ DC1394::DC1394():
 	    exit( EXIT_FAILURE );
 	}
 
-	camera = dc1394_camera_new (d, list->ids[0].guid);
-	/* Work with first camera */
-        if (!camera)
-	{
-	    dc1394_log_error("Failed to initialize camera with guid %llx", list->ids[0].guid);
+	// Use first camera or requested guid
+	if(guid==-1){
+	    camera = dc1394_camera_new (d, list->ids[0].guid);
+	    /* Work with first camera */
+	    if (!camera)
+	    {
+		dc1394_log_error("Failed to initialize camera with guid %llx", list->ids[0].guid);
 
-	    exit( EXIT_FAILURE );
+		exit( EXIT_FAILURE );
+	    }
+	} else {
+	    camera = dc1394_camera_new (d, list->ids[0].guid);
+	    /* Work with first camera */
+	    if (!camera)
+	    {
+		dc1394_log_error("Failed to initialize camera with guid %llx", list->ids[0].guid);
+
+		exit( EXIT_FAILURE );
+	    }
 	}
 
 	dc1394_camera_free_list (list);

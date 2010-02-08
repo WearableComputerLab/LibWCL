@@ -28,17 +28,16 @@
 #define WCL_CAMERA_DC1394_H
 
 #include <wcl/camera/Camera.h>
-
-namespace wcl {
-
 #include <dc1394/control.h>
 #include <dc1394/conversions.h>
+
+namespace wcl {
 
 class DC1394: public Camera
 {
 public:
 	// default constructor
-	DC1394();
+	DC1394(int guid = -1);
 
 	// deconstructor
 	~DC1394();
