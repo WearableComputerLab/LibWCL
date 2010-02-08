@@ -117,6 +117,8 @@ namespace wcl
 				EXPOSURE
 			};
 
+                        virtual ~Camera();
+
 			/**
 			 * Prints useful information about the camera to the console.
 			 *
@@ -180,7 +182,6 @@ namespace wcl
                 protected:
 
                         Camera();
-                        virtual ~Camera();
 
                         void allocateBuffers(const size_t size, const unsigned count);
                         void destroyBuffers();
