@@ -41,7 +41,7 @@ CameraBuffer VirtualCamera::defaultBuffer;
 VirtualCamera::VirtualCamera()
 {
     if(VirtualCamera::defaultBuffer.start==NULL){
-	VirtualCamera::defaultBuffer.start=(void *)gimp_image.pixel_data; // NOTE: CONST LOST
+	VirtualCamera::defaultBuffer.start=(void *)gimp_image.pixel_data[0]; // NOTE: CONST LOST
 	VirtualCamera::defaultBuffer.length=sizeof(gimp_image.pixel_data)/sizeof(gimp_image.pixel_data[0]);
     }
 
@@ -67,8 +67,6 @@ void VirtualCamera::printDetails()
 void VirtualCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
 {
     cout << "VirtualCamera: SetFormat Called - not Virtual Camera only supports RGB" << endl;
-
-    Camera::setFormat(f,width, height);
 }
 
 bool VirtualCamera::setExposureMode(const ExposureMode t)
