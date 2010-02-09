@@ -27,6 +27,7 @@
 
 // include system headers
 #include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include <fstream>
 
@@ -112,7 +113,14 @@ GLvoid display()
 
 	const unsigned char* frame = cam->getFrame();
 
-	convertImage(frame, data, 640, 480);
+	switch(cam->getImageFormat()){
+	    case Camera::YUYV:
+		Camera::convertImageYUVtoRGB(frame, data, 640, 480);
+		break;
+	    case Camera::RGB:
+	    default:
+		memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3);
+	}
 
 	glTexSubImage2D(GL_TEXTURE_2D,
 	                0,
