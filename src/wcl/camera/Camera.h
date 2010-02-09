@@ -179,6 +179,18 @@ namespace wcl
 			 */
 			virtual Distortion getDistortion() const;
 
+			// Helper routines
+
+			/**
+			 * Converts a single pixel from yuv to rgb
+			 */
+			static int convertPixelYUVtoRGB(const int y, const int u, const int v);
+
+			/**
+			 * Converts a YUYV buffer to an RGB buffer
+			 */
+			static void convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
+						    const unsigned int width, const unsigned int height);
                 protected:
 
                         Camera();
@@ -209,6 +221,7 @@ namespace wcl
 		         * Default Distortion parameters
 			 */
 			Distortion distortion;
+
 	};
 
 };
