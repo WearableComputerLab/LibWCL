@@ -27,8 +27,10 @@
 #ifndef WCL_TRACKING_ARTOOLKITPLUSTRACKER_H
 #define WCL_TRACKING_ARTOOLKITPLUSTRACKER_H
 
+#include <stdint.h>
 #include <vector>
 #include <ARToolKitPlus/TrackerSingleMarkerImpl.h>
+#include <ARToolKitPlus/CameraImpl.h>
 
 #include <wcl/camera/Camera.h>
 #include <wcl/tracking/Tracker.h>
@@ -67,6 +69,7 @@ private:
     unsigned markerWidth;
     unsigned markerHeigth;
     Camera *camera;
+    ARToolKitPlus::CameraImpl *c_ptr;
 };
 
 };

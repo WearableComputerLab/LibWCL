@@ -34,45 +34,21 @@ namespace wcl {
 
 
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned width, const unsigned height):
-    markerWidth(width)
+    markerWidth(width),c_ptr(NULL)
 {
+
+    this->c_ptr = new ARToolKitPlus::CameraImpl;
+
     // create a tracker that does:
     //  - 6x6 sized marker images (in pixel)
     //  - samples at a maximum of 6x6
     //  - works with luminance (gray) images
     //  - can load a maximum of 1 pattern
     //  - can detect a maximum of 8 patterns in one image
+
+
+    // TODO XXX Handle camera size changes (This class shouldn't need a width  height ) - benjsc 20100201
     this->tracker= new ARToolKitPlus::TrackerSingleMarkerImpl<6,6,6, 1, 8>(width,height);
-
-    ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraImpl;
-    c_ptr->xsize=width;
-    c_ptr->ysize=height;
-    c_ptr->mat[0][0]=0.0;
-    c_ptr->mat[0][1]=0.0;
-    c_ptr->mat[0][2]=0.0;
-    c_ptr->mat[0][3]=0.0;
-    c_ptr->mat[1][0]=0.0;
-    c_ptr->mat[1][1]=0.0;
-    c_ptr->mat[1][2]=0.0;
-    c_ptr->mat[1][3]=0.0;
-    c_ptr->mat[2][0]=0.0;
-    c_ptr->mat[2][1]=0.0;
-    c_ptr->mat[2][2]=0.0;
-    c_ptr->mat[2][3]=0.0;
-    c_ptr->mat[3][0]=0.0;
-    c_ptr->mat[3][1]=0.0;
-    c_ptr->mat[3][2]=0.0;
-    c_ptr->mat[3][3]=0.0;
-    c_ptr->dist_factor[0]=0.0;
-    c_ptr->dist_factor[1]=0.0;
-    c_ptr->dist_factor[2]=0.0;
-    c_ptr->dist_factor[3]=0.0;
-    this->tracker->setCamera(c_ptr, 1.0, 1000.0f);
-    this->tracker->init(NULL, 1.0, 1000.0f);
-
-
-
-    this->tracker->setPixelFormat(ARToolKitPlus::PIXEL_FORMAT_RGB);
     this->tracker->setPatternWidth(80);
 
     // We use BCH images which have a thinner border
@@ -94,7 +70,18 @@ ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned width, const unsigned
 
 ARToolKitPlusTracker::~ARToolKitPlusTracker()
 {
+
+    // ARToolkitPlus deletes the camera hence we don't
+    // need to call: delete this->c_ptr as it's already done and
+    // would cause a SIGSEGV if we try it
     delete this->tracker;
+
+    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
+	it != this->objects.end();
+	++it ){
+	ARToolKitPlusTrackedObject *object= *it;
+	delete object;
+    }
 }
 
 void ARToolKitPlusTracker::setCamera(Camera *camera)
@@ -118,7 +105,31 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
             break;
     }
 
-    //this->tracker->setPixelFormat(format);
+    // Create a new ARToolkit Camera to
+    // init the tracker
+    c_ptr->xsize=this->camera->getFormatWidth();
+    c_ptr->ysize=this->camera->getFormatHeight();
+    Camera::Distortion d = this->camera->getDistortion();
+    c_ptr->mat[0][0]=d.cameraToWorld[0][0];
+    c_ptr->mat[0][1]=d.cameraToWorld[1][0];
+    c_ptr->mat[0][2]=d.cameraToWorld[2][0];
+    c_ptr->mat[1][0]=d.cameraToWorld[0][1];
+    c_ptr->mat[1][1]=d.cameraToWorld[1][1];
+    c_ptr->mat[1][2]=d.cameraToWorld[2][1];
+    c_ptr->mat[2][0]=d.cameraToWorld[0][2];
+    c_ptr->mat[2][1]=d.cameraToWorld[1][2];
+    c_ptr->mat[2][2]=d.cameraToWorld[2][2];
+    c_ptr->mat[3][0]=d.cameraToWorld[0][3];
+    c_ptr->mat[3][1]=d.cameraToWorld[1][3];
+    c_ptr->mat[3][2]=d.cameraToWorld[2][3];
+    c_ptr->dist_factor[0]=d.factor[0];
+    c_ptr->dist_factor[1]=d.factor[1];
+    c_ptr->dist_factor[2]=d.factor[2];
+    c_ptr->dist_factor[3]=d.factor[3];
+
+    this->tracker->setPixelFormat(format);
+    this->tracker->setCamera(c_ptr, 1.0, 1000.0f);
+    this->tracker->init(NULL, 1.0, 1000.0f);
 }
 
 void ARToolKitPlusTracker::update()
@@ -128,7 +139,7 @@ void ARToolKitPlusTracker::update()
     ARFloat conv[3][4];
     ARFloat center[2]={0.0,0.0};
 
-    this->tracker->calc(this->camera->getFrame());
+    detected=this->tracker->calc(this->camera->getFrame());
 //    this->tracker->calc(this->camera->getFrame(), -1, false, NULL, &detected);
 
     printf("%d detected\n",detected);
@@ -188,6 +199,8 @@ std::vector<TrackedObject *> ARToolKitPlusTracker::getAllObjects()
 void ARToolKitPlusTracker::setUnits(Units u)
 {
 #warning "ARToolKitPlusTracker::setUnits Is not Implemented"
+    /// XXX This should be possible provided we know the
+    /// marker size - benjsc 20100201
     /*
     switch(u)
     {
