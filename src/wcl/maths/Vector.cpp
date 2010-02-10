@@ -354,6 +354,12 @@ T Vector::dot(const Vector& v) const
 	
 }
 
+/**
+ * Calculates the angle, in radians, between two vectors.
+ *
+ * @param v The other vector.
+ * @return the angle between the vectors.
+ */
 T Vector::angle(const Vector& v) const
 {
 	Vector v1 = this->unit();
