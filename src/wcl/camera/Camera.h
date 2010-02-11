@@ -49,6 +49,7 @@ namespace wcl
 	{
 
 		public:
+			typedef std::string CameraID;
 
 			struct Distortion {
 			    SMatrix cameraToWorld;
@@ -101,7 +102,6 @@ namespace wcl
 				AUTO_APERTURE_PRIORITY
 			};
 
-
 			/**
 			 * Control names for controlling various parameters of the camera.
 			 */
@@ -130,6 +130,11 @@ namespace wcl
 			virtual void printDetails() = 0;
 
 			/**
+			 * Obtain the unique identify for this camera
+			 */
+			virtual CameraID getID() const { return this->id; }
+
+			/**
 			 * Sets the image format of the camera.
 			 *
 			 * @param f The data format for the images.
@@ -140,6 +145,7 @@ namespace wcl
                         ImageFormat getImageFormat() const { return this->format; }
                         unsigned getFormatWidth() const { return this->width; }
                         unsigned getFormatHeight() const { return this->height; }
+			unsigned getFormatFPS() const { return this->fps; };
 
 			/**
 			 * Sets the exposure mode of the camera.
@@ -179,6 +185,8 @@ namespace wcl
 			 */
 			virtual Distortion getDistortion() const;
 
+
+
 			// Helper routines
 
 			/**
@@ -216,12 +224,17 @@ namespace wcl
                         ImageFormat format;
                         unsigned height;
                         unsigned width;
+			unsigned fps;
 
 			/**
 		         * Default Distortion parameters
 			 */
 			Distortion distortion;
 
+			/**
+			 * The unique ID for this camera
+			 */
+			CameraID id;
 	};
 
 };
