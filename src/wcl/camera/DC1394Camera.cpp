@@ -28,18 +28,18 @@
 #include <dc1394/dc1394.h>
 #include <dc1394/utils.h>
 #include <stdlib.h>
-#include "DC1394.h"
+#include "DC1394Camera.h"
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
 
-#warning DC1394: Note This class needs some major cleanup -benjsc 20100205
+#warning DC1394Camera: Note This class needs some major cleanup -benjsc 20100205
 
 using namespace std;
 
 namespace wcl {
 
-DC1394::DC1394(int guid):
+DC1394Camera::DC1394Camera(int guid):
     running(false)
 {
 	// initialize some of the variables
@@ -135,12 +135,12 @@ DC1394::DC1394(int guid):
 	 */
 }
 
-DC1394::~DC1394()
+DC1394Camera::~DC1394Camera()
 {
 	this->shutdown ();
 }
 
-void DC1394::setFormat( const ImageFormat format, const unsigned width,
+void DC1394Camera::setFormat( const ImageFormat format, const unsigned width,
 			const unsigned height )
 {
     dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
@@ -217,14 +217,14 @@ void DC1394::setFormat( const ImageFormat format, const unsigned width,
     this->fetchImageProperties();
 }
 
-bool DC1394::setExposureMode( const ExposureMode t )
+bool DC1394Camera::setExposureMode( const ExposureMode t )
 {
     int retval;
     switch( t ){
 	case AUTO_SHUTTER_PRIORITY:
 	case AUTO_APERTURE_PRIORITY:
 	    /* FALL THROUGH */
-	    printf("DC1394: AUTO_SHUTTER_PRIORITY & AUTO_APETURE_PRIORITY Not Supported, defaulting to AUTO\n");
+	    printf("DC1394Camera: AUTO_SHUTTER_PRIORITY & AUTO_APETURE_PRIORITY Not Supported, defaulting to AUTO\n");
 	case AUTO:
 	    retval =dc1394_feature_set_mode( camera, DC1394_FEATURE_EXPOSURE,
 					     DC1394_FEATURE_MODE_AUTO );
@@ -238,7 +238,7 @@ bool DC1394::setExposureMode( const ExposureMode t )
     }
 }
 
-void DC1394::setBrightness( char* brightness )
+void DC1394Camera::setBrightness( char* brightness )
 {
 	if( brightness == NULL )
 	{
@@ -271,14 +271,14 @@ void DC1394::setBrightness( char* brightness )
 	}
 }
 
-bool DC1394::setControlValue(const Control control, const int value )
+bool DC1394Camera::setControlValue(const Control control, const int value )
 {
-#warning DC1394:setControlValue NOTIMP YET
+#warning DC1394Camera:setControlValue NOTIMP YET
     return false;
 }
 
 
-void DC1394::startup()
+void DC1394Camera::startup()
 {
 	fprintf( stderr, "finished configuring" );
 
@@ -343,7 +343,7 @@ void DC1394::startup()
 
 /*
 // configuration method that reads in values from a config file.
-void DC1394::configure()
+void DC1394Camera::configure()
 {
 
 this->setISOSpeed( ConfigurationLoader::getProperty( "ISOSpeed" ) );
@@ -437,7 +437,7 @@ else
 */
 
 // Release the camera.
-void DC1394::shutdown( void )
+void DC1394Camera::shutdown( void )
 {
 	dc1394_video_set_transmission( this->camera, DC1394_OFF );
 	dc1394_capture_stop( this->camera );
@@ -453,7 +453,7 @@ void DC1394::shutdown( void )
 }
 
 // method to get a frame from the camera
-const unsigned char* DC1394::getFrame()
+const unsigned char* DC1394Camera::getFrame()
 {
     if(!this->running)
 	this->startup();
@@ -504,7 +504,7 @@ const unsigned char* DC1394::getFrame()
 	return frame->image;
 }
 
-void DC1394::close_camera( void )
+void DC1394Camera::close_camera( void )
 {
 	fprintf( stderr, "stop transmission" );
 
@@ -519,7 +519,7 @@ void DC1394::close_camera( void )
 }
 
 // method to populate video_modes with data
-void DC1394::getSupportedVideoModes()
+void DC1394Camera::getSupportedVideoModes()
 {
 	// check to see that the camera has been setup okay
 	if( this->camera != NULL )
@@ -538,7 +538,7 @@ void DC1394::getSupportedVideoModes()
 }
 
 // method to populate framerates with data
-void DC1394::getSupportedFramerates()
+void DC1394Camera::getSupportedFramerates()
 {
 
 	// make sure the camera is valid
@@ -563,7 +563,7 @@ void DC1394::getSupportedFramerates()
 }
 
 // method to check to see if a video mode is supported
-bool DC1394::isVideoModeSupported( dc1394video_mode_t videoMode )
+bool DC1394Camera::isVideoModeSupported( dc1394video_mode_t videoMode )
 {
 	// make sure we have the supported video modes
 	this->getSupportedVideoModes();
@@ -585,7 +585,7 @@ bool DC1394::isVideoModeSupported( dc1394video_mode_t videoMode )
 }
 
 // method to check to see if a given framerate is supported
-bool DC1394::isFramerateSupported( dc1394framerate_t framerate )
+bool DC1394Camera::isFramerateSupported( dc1394framerate_t framerate )
 {
 	// make sure we have the supported framerates
 	this->getSupportedFramerates();
@@ -607,12 +607,12 @@ bool DC1394::isFramerateSupported( dc1394framerate_t framerate )
 }
 
 // a method to set the video mode given a string representing the video mode.
-void DC1394::setVideoMode( char* newVideoMode )
+void DC1394Camera::setVideoMode( char* newVideoMode )
 {
 }
 
 // method to change to the framerate specified by the string.
-void DC1394::setFramerate( char* newFramerate )
+void DC1394Camera::setFramerate( char* newFramerate )
 {
 	// make sure the video mode wasn't null
 	if( newFramerate != NULL )
@@ -695,7 +695,7 @@ void DC1394::setFramerate( char* newFramerate )
 }
 
 // method to change to the ISO speed
-void DC1394::setISOSpeed( char* newISOSpeed )
+void DC1394Camera::setISOSpeed( char* newISOSpeed )
 {
 	if( newISOSpeed == NULL )
 	{
@@ -758,7 +758,7 @@ void DC1394::setISOSpeed( char* newISOSpeed )
 	fprintf( stderr, "ISO speed has been set to: %s", newISOSpeed );
 }
 
-void DC1394::setShutter( char* shutter )
+void DC1394Camera::setShutter( char* shutter )
 {
 	if( shutter == NULL )
 	{
@@ -792,7 +792,7 @@ void DC1394::setShutter( char* shutter )
 }
 
 
-void DC1394::setGain( char* gain )
+void DC1394Camera::setGain( char* gain )
 {
 	if( gain == NULL )
 	{
@@ -824,7 +824,7 @@ void DC1394::setGain( char* gain )
 }
 
 // method to display to the user the different video modes available
-void DC1394::printSupportedVideoModes()
+void DC1394Camera::printSupportedVideoModes()
 {
 	// make sure we have a list of the available videoModes
 	this->getSupportedVideoModes();
@@ -940,7 +940,7 @@ void DC1394::printSupportedVideoModes()
 }
 
 // method to display to the user the different framerates available
-void DC1394::printSupportedFramerates()
+void DC1394Camera::printSupportedFramerates()
 {
 	// make sure we have a list of the available videoModes
 	this->getSupportedFramerates();
@@ -984,7 +984,7 @@ void DC1394::printSupportedFramerates()
 }
 
 // display a bunch of info about what the camera is capable of
-void DC1394::printFeatureSet()
+void DC1394Camera::printFeatureSet()
 {
 	dc1394featureset_t features;
 
@@ -1004,7 +1004,7 @@ void DC1394::printFeatureSet()
 }
 
 // tell the camera that it is to work in trigger mode
-void DC1394::useTrigger( bool turnOn )
+void DC1394Camera::useTrigger( bool turnOn )
 {
 	dc1394switch_t mode = DC1394_OFF;
 
@@ -1036,30 +1036,30 @@ void DC1394::useTrigger( bool turnOn )
 }
 
 // returns the width of the image we are working with
-int DC1394::getWidth()
+int DC1394Camera::getWidth()
 {
 	return this->width;
 }
 
 // returns the height of the image we are working with
-int DC1394::getHeight()
+int DC1394Camera::getHeight()
 {
 	return this->height;
 }
 // set the flag that tells us if we need to convert from a bayer image or not
-void DC1394::setUseBayer( bool useBayer )
+void DC1394Camera::setUseBayer( bool useBayer )
 {
 	this->useBayer = useBayer;
 }
 
 // return whether or not we need to convert from bayer or not
-bool DC1394::getUseBayer()
+bool DC1394Camera::getUseBayer()
 {
 	return this->useBayer;
 }
 
 // find out what sort of conversion method to use.
-void DC1394::setBayerMethod( char* bayerMethod )
+void DC1394Camera::setBayerMethod( char* bayerMethod )
 {
 	// check if the bayer method to use is valid
 	if( bayerMethod == NULL )
@@ -1111,7 +1111,7 @@ void DC1394::setBayerMethod( char* bayerMethod )
 	fprintf( stderr, "Will be using bayer method: %s", bayerMethod );
 }
 // find out what sort of bayer color filter to use
-void DC1394::setColorFilter( char* colorFilter )
+void DC1394Camera::setColorFilter( char* colorFilter )
 {
 	// check to see if the color filter was valid
 	if( colorFilter == NULL )
@@ -1149,7 +1149,7 @@ void DC1394::setColorFilter( char* colorFilter )
 }
 
 // fetch the image dimensions based on the camera setup
-void DC1394::fetchImageProperties()
+void DC1394Camera::fetchImageProperties()
 {
 	// attempt to fetch the image dimensions from the camera.
 	this->result = dc1394_get_image_size_from_video_mode( this->camera, this->videoMode, &width, &height );
@@ -1167,7 +1167,7 @@ void DC1394::fetchImageProperties()
 }
 
 
-void DC1394::printDetails()
+void DC1394Camera::printDetails()
 {
     this->printSupportedVideoModes();
     this->printSupportedFramerates();

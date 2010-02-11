@@ -24,8 +24,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef WCL_CAMERA_DC1394_H
-#define WCL_CAMERA_DC1394_H
+#ifndef WCL_CAMERA_DC1394CAMERA_H
+#define WCL_CAMERA_DC1394CAMERA_H
 
 #include <wcl/camera/Camera.h>
 #include <dc1394/control.h>
@@ -33,14 +33,14 @@
 
 namespace wcl {
 
-class DC1394: public Camera
+class DC1394Camera: public Camera
 {
 public:
 	// default constructor
-	DC1394(int guid = -1);
+	DC1394Camera(int guid = -1);
 
 	// deconstructor
-	~DC1394();
+	~DC1394Camera();
 
 	void startup();
 
