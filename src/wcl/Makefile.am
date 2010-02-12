@@ -177,8 +177,11 @@ video_headers=
 video_sources=
 
 if ENABLE_VIDEO
-video_headers+=camera/Camera.h
-video_sources+=camera/Camera.cpp
+video_headers+=camera/Camera.h\
+	       camera/CameraFactory.h
+
+video_sources+=camera/Camera.cpp\
+	       camera/CameraFactory.cpp
 endif
 
 #
@@ -188,8 +191,10 @@ video_1394_headers=
 video_1394_sources=
 
 if ENABLE_VIDEO_1394
-video_1394_headers+=camera/DC1394.h
-video_1394_sources+=camera/DC1394.cpp
+video_1394_headers+=camera/DC1394Camera.h\
+		    camera/DC1394CameraFactory.h
+video_1394_sources+=camera/DC1394Camera.cpp\
+		    camera/DC1394CameraFactory.cpp
 endif
 
 #
