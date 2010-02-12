@@ -173,7 +173,7 @@ void ARToolKitPlusTracker::update()
 
 TrackedObject* ARToolKitPlusTracker::getObject(const std::string name)
 {
-    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it;
+    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it=this->objects.begin();
 	it != this->objects.end();
 	++it )
     {
