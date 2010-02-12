@@ -68,9 +68,20 @@ namespace wcl
 			enum ImageFormat
 			{
 				MJPEG, //Motion JPEG Format.
-				YUYV, // YUYV 4:2:2 format.
-                                RGB,
-                                BGR
+				YUYV422, // YUYV 4:2:2 format.
+				YUYV411, // YUYV 4:2:2 format.
+				RGB8,
+                                RGB16,
+				RGB32,
+                                BGR8,
+				MONO8,
+				MONO16
+				/*
+				   FORMAT7,
+				   BAYER,
+				   EXIF
+				*/
+
 			};
 
 
@@ -107,6 +118,7 @@ namespace wcl
 			 */
 			enum Control
 			{
+				APERTURE,
 				BRIGHTNESS,
 				CONTRAST,
 				SATURATION,
@@ -114,7 +126,10 @@ namespace wcl
 				POWER_FREQUENCY,
 				WHITE_BALANCE,
 				SHARPNESS,
-				EXPOSURE
+				EXPOSURE,
+				FRAMERATE,
+				ISO
+
 			};
 
                         virtual ~Camera();
@@ -140,9 +155,13 @@ namespace wcl
 			 * @param f The data format for the images.
 			 * @param width The width of the image in pixels
 			 * @param height The height of the image in pixels
+			 * @throws Exception if the format can't be set
 			 */
 			virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
                         ImageFormat getImageFormat() const { return this->format; }
+
+			///XXX NOT YET - benjsc 20100211 std::vector<ImageFormat>getSupportedFormats() const;
+			
                         unsigned getFormatWidth() const { return this->width; }
                         unsigned getFormatHeight() const { return this->height; }
 			unsigned getFormatFPS() const { return this->fps; };
@@ -151,16 +170,21 @@ namespace wcl
 			 * Sets the exposure mode of the camera.
 			 *
 			 * @param t The exposure mode to change to.
+			 * @throws Exception if the format can't be set
 			 */
-			virtual bool setExposureMode(const ExposureMode t) = 0;
+			virtual void setExposureMode(const ExposureMode t) = 0;
 
                         /**
                          * Sets the control value for the camera
                          *
                          * TODO This will need more work in the future as some
                          * features can't be set via a single int
+			 *
+			 * @param control The control to set
+			 * @param value The value to set that control to
+			 * @throws Exception if the control fails to set
                          */
-			virtual bool setControlValue(const Control control, const int value) = 0;
+			virtual void setControlValue(const Control control, const int value) = 0;
 
 			/**
 			 * Returns an image buffer for use in a program.
@@ -168,6 +192,11 @@ namespace wcl
 			 * @return a char array containing the image buffer.
 			 */
 			virtual const unsigned char* getFrame() = 0;
+
+			/**
+			 * Start the camera capturing
+			 */
+			virtual void startup() = 0;
 
 			/**
 			 * Closes the connection to the camera, freeing inuse * buffer memory
@@ -186,19 +215,21 @@ namespace wcl
 			virtual Distortion getDistortion() const;
 
 
-
 			// Helper routines
 
 			/**
-			 * Converts a single pixel from yuv to rgb
+			 * Converts a single pixel from yuv422 to rgb8
 			 */
-			static int convertPixelYUVtoRGB(const int y, const int u, const int v);
+			static int convertPixelYUV422toRGB8(const int y, const int u, const int v);
 
 			/**
-			 * Converts a YUYV buffer to an RGB buffer
+			 * Converts a YUYV422 buffer to an RGB8 buffer
 			 */
-			static void convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
+			static void convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 						    const unsigned int width, const unsigned int height);
+
+			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
+							    const unsigned int width, const unsigned int height );
                 protected:
 
                         Camera();

@@ -24,49 +24,54 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_CAMERA_VIRTUALCAMERA_H
-#define WCL_CAMERA_VIRTUALCAMERA_H
+#include <wcl/camera/DC1394CameraFactory.h>
 
-#include <wcl/camera/Camera.h>
+namespace wcl {
 
-namespace wcl
+DC1394CameraFactory *DC1394CameraFactory::instance;
+
+DC1394CameraFactory::DC1394CameraFactory()
 {
+}
 
-	/**
-	 * The virtual camera allows a single frame or list of frames to be used
-	 * to represent a camera. All frames provided to the class are
-	 * maintained untouched. If no frames are provided, a default frame is
-	 * show. Upon a shutdown, the default frame is used again.
-	 */
-	class VirtualCamera: public Camera
-	{
+DC1394CameraFactory::~DC1394CameraFactory()
+{
+}
 
-	   public:
-		    VirtualCamera();
-		    ~VirtualCamera();
+DC1394CameraFactory *DC1394CameraFactory::getInstance()
+{
+    if( DC1394CameraFactory::instance == NULL )
+	DC1394CameraFactory::instance = new DC1394CameraFactory();
 
-		    // Overrides of Camera
-		    virtual void printDetails();
-		    virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
-		    virtual void setExposureMode(const ExposureMode t);
-		    virtual void setControlValue(const Control control, const int value);
-		    virtual const unsigned char* getFrame();
-		    virtual void startup();
-		    virtual void shutdown();
+    return DC1394CameraFactory::instance;
+}
 
-		    /**
-		     * Set the data used by the virtual camera.
-		     * The Virtual Camera doesn't know how to load images
-		     * however it knows about buffer data and hence makes use of
-		     * the buffers to provide frames
-		     */
-		    void setFrames(const CameraBuffer *buffers, const unsigned bufferCount);
 
-	    private:
-		    static CameraBuffer defaultBuffer;
-		    unsigned inUseBuffer;
-	};
+std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
+{
+#warning DC1394CameraFactory:getCameras: Note this has a memory leak at current
+    DC1394CameraFactory *instance = DC1394CameraFactory::getInstance();
+    std::vector<DC1394Camera *> cameras;
 
-};
+    // attempt to located the cameras on the firewire bus
+    dc1394error_t err;
+    dc1394_t * d;
+    dc1394camera_list_t * list;
+    d = dc1394_new ();
+    if( !d )
+	throw std::string("DC139CamearFactory:getCameras: Unable to get DC1394Context");
 
-#endif
+    err=dc1394_camera_enumerate (d, &list);
+
+    for( int i = 0 ; i < list->num; i++ ){
+	DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
+	cameras.push_back(c);
+    }
+
+    dc1394_camera_free_list(list);
+
+    return cameras;
+}
+
+
+}

@@ -45,7 +45,7 @@ VirtualCamera::VirtualCamera()
 	VirtualCamera::defaultBuffer.length=sizeof(gimp_image.pixel_data)/sizeof(gimp_image.pixel_data[0]);
     }
 
-    Camera::setFormat(Camera::RGB,640,480);
+    Camera::setFormat(Camera::RGB8,640,480);
 }
 
 VirtualCamera::~VirtualCamera()
@@ -69,18 +69,16 @@ void VirtualCamera::setFormat(const ImageFormat f, const unsigned width, const u
     cout << "VirtualCamera: SetFormat Called - not Virtual Camera only supports RGB" << endl;
 }
 
-bool VirtualCamera::setExposureMode(const ExposureMode t)
+void VirtualCamera::setExposureMode(const ExposureMode t)
 {
     cout << "VirtualCamera: Confirming Exposure Mode change "
 	 << "(Note: No change to the image will occur)" << endl;
-    return true;
 }
 
-bool VirtualCamera::setControlValue(const Control control, const int value)
+void VirtualCamera::setControlValue(const Control control, const int value)
 {
     cout << "VirtualCamera: Confirming control " << control << "Set to value "
 	 << value << "(Note: No change to the image will occur)" << endl;
-    return true;
 }
 
 const unsigned char* VirtualCamera::getFrame()
@@ -97,6 +95,9 @@ const unsigned char* VirtualCamera::getFrame()
     return (const unsigned char *)defaultBuffer.start;
 }
 
+void VirtualCamera::startup()
+{}
+
 void VirtualCamera::shutdown()
 {
     this->buffers=NULL;
@@ -104,7 +105,7 @@ void VirtualCamera::shutdown()
     this->numBuffers=0;
 
     //Reset the default format, size for the default image
-    Camera::setFormat(Camera::RGB,640,480);
+    Camera::setFormat(Camera::RGB8,640,480);
 }
 
 

@@ -95,7 +95,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
 			break;
 
-		case YUYV:
+		case YUYV422:
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 			break;
 	}
@@ -110,6 +110,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 	}
 
 	bufferSize = newf.fmt.pix.sizeimage;
+
 }
 
 
@@ -136,6 +137,11 @@ const unsigned char* UVCCamera::getFrame()
 	ioctl(cam, VIDIOC_QBUF, &buf);
 
 	return (const unsigned char*) buffers[buf.index].start;
+}
+
+void UVCCamera::startup()
+{
+    UVCCamera::prepareForCapture();
 }
 
 void UVCCamera::prepareForCapture()
@@ -256,7 +262,7 @@ void UVCCamera::printDetails()
 	loadControls();
 }
 
-bool UVCCamera::setExposureMode(const ExposureMode t)
+void UVCCamera::setExposureMode(const ExposureMode t)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -292,13 +298,12 @@ bool UVCCamera::setExposureMode(const ExposureMode t)
 			cout << "What the hell I have no idea whats going on!" << endl;
 			break;
 		}
-		return false;
+		throw std::string("UVCCamera:setExposureMode");
 	}
-	return true;
 }
 
 
-bool UVCCamera::setControlValue(const Control controlName, const int value)
+void UVCCamera::setControlValue(const Control controlName, const int value)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -334,9 +339,8 @@ bool UVCCamera::setControlValue(const Control controlName, const int value)
 			cout << "What the hell I have no idea whats going on!" << endl;
 			break;
 		}
-		return false;
+		throw std::string("UVCCamera:setControlValue:Failed to set Control Value");
 	}
-	return true;
 
 }
 

@@ -75,7 +75,7 @@ Camera::Distortion Camera::getDistortion() const
     return this->distortion;
 }
 
-int Camera::convertPixelYUVtoRGB(const int y, const int u, const int v )
+int Camera::convertPixelYUV422toRGB8(const int y, const int u, const int v )
 {
     unsigned int pixel32 = 0;
     unsigned char *pixel = (unsigned char *)&pixel32;
@@ -99,7 +99,7 @@ int Camera::convertPixelYUVtoRGB(const int y, const int u, const int v )
     return pixel32;
 }
 
-void Camera::convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
+void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 			 const unsigned int width, const unsigned int height)
 {
     unsigned int in, out = 0;
@@ -121,7 +121,7 @@ void Camera::convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
 	y1 = (pixel_16 & 0x00ff0000) >> 16;
 	v  = (pixel_16 & 0xff000000) >> 24;
 
-	pixel32 = Camera::convertPixelYUVtoRGB(y0, u, v);
+	pixel32 = Camera::convertPixelYUV422toRGB8(y0, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
@@ -130,7 +130,7 @@ void Camera::convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
 	rgb[out++] = pixel_24[1];
 	rgb[out++] = pixel_24[2];
 
-	pixel32 = Camera::convertPixelYUVtoRGB(y1, u, v);
+	pixel32 = Camera::convertPixelYUV422toRGB8(y1, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
@@ -138,6 +138,19 @@ void Camera::convertImageYUVtoRGB(const unsigned char *yuv, unsigned char *rgb,
 	rgb[out++] = pixel_24[0];
 	rgb[out++] = pixel_24[1];
 	rgb[out++] = pixel_24[2];
+    }
+}
+
+void Camera::convertImageMONO8toRGB8( const unsigned char *mono, unsigned char *rgb,
+				      const unsigned int width, const unsigned int height )
+{
+    unsigned int in, out=0;
+    for(in = 0; in < width * height; in++ )
+    {
+	rgb[out+0]=mono[in];
+	rgb[out+1]=mono[in];
+	rgb[out+2]=mono[in];
+	out+=3;
     }
 }
 

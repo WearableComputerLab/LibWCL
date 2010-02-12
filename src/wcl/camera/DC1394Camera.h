@@ -37,7 +37,7 @@ class DC1394Camera: public Camera
 {
 public:
 	// default constructor
-	DC1394Camera(int guid = -1);
+	DC1394Camera(const uint64_t);
 
 	// deconstructor
 	~DC1394Camera();
@@ -57,124 +57,46 @@ public:
 
 
 	// method to set exposure
-	bool setExposureMode( const ExposureMode t );
+	void setExposureMode( const ExposureMode t );
 
 	/**
 	 * Sets the control value for the camera
 	 */
-	bool setControlValue(const Control control, const int value);
+	void setControlValue(const Control control, const int value);
 
 private:
-	void close_camera();
+
+	// Set various camera values (-1 = auto)
+	void setBrightness( const int );
+	void setGain( const int  );
+	void setIris( const int );
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
-	//XXX Or the api updated!
-
-	// method to change to the video mode specified by the string.
-	void setVideoMode( char* newVideoMode );
+	//XXX Or the api updated! - benjsc 20100211
 
 	// method to change to the framerate specified by the string.
-	void setFramerate( char* newFramerate );
+	//XXXvoid setFramerate( char* newFramerate );
+	/*
 
 	// method to change to the ISO speed
 	void setISOSpeed( char* newISOSpeed );
 
 	void setShutter( char* shutter );
-	// method to set brightness
-	void setBrightness( char* brightness );
-
-	// method to set the gain
-	void setGain( char* gain );
-
 	// tell the camera that it is to work in trigger mode
 	void useTrigger( bool turnOn );
-
-	// returns the width of the image we are working with
-	int getWidth();
-
-	// returns the height of the image we are working with
-	int getHeight();
-
-	// set the flag that tells us if we need to convert from a bayer image or not
-	void setUseBayer( bool useBayer );
-
-	// return whether or not we need to convert from bayer or not
-	bool getUseBayer();
-
-	// find out what sort of conversion method to use.
-	void setBayerMethod( char* bayerMethod );
-
-	// find out what sort of bayer color filter to use
-	void setColorFilter( char* colorFilter );
-
-	void cleanup( void );
-
-	// method to populate videoModes with data
-	void getSupportedVideoModes();
-
-	// method to populate framerates with data
-	void getSupportedFramerates();
-
-	// method to check to see if a video mode is supported
-	bool isVideoModeSupported( dc1394video_mode_t videoMode );
-
-	// method to check to see if a given framerate is supported
-	bool isFramerateSupported( dc1394framerate_t framerate );
-
-	// configuration method that reads in values from a config file.
-	//void configure();
-
-	// fetch the image dimensions based on the camera setup
-	void fetchImageProperties();
-
-	// method to display to the user the different video modes available
-	void printSupportedVideoModes();
-
-	// method to display to the user the different framerates available
-	void printSupportedFramerates();
-
-	// display a bunch of info about what the camera is capable of
-	void printFeatureSet();
+	*/
 
 	// the camera that we are interested in.
 	dc1394camera_t* camera;
 
-	// an array of all the cameras that are attatched to the system.
-	dc1394camera_t **cameras;
-
-	// the number of cameras that are attached to the system
-	uint32_t numCameras;
-
 	// a frame returned from the dc1394 capture device
+	dc1394_t *d;
 	dc1394video_frame_t* frame;
 	dc1394video_mode_t videoMode;
-	dc1394video_modes_t videoModes;
-	dc1394framerates_t framerates;
 	dc1394framerate_t framerate;
+	uint64_t guid;
 
-	// some memory to hold the error code that is returned from the functions.
-	dc1394error_t result;
-
-	unsigned char* convertedImage;
-
-	// boolean flag that says whether or not we are converting from bayer or not
-	bool useBayer;
-
-	// if we are converting from bayer then use this filter
-	dc1394color_filter_t colorFilter;
-
-	// if we are converting from bayer then use this method
-	dc1394bayer_method_t bayerMethod;
-
-	// the number of pixels wide the image is
-	uint32_t width;
-
-	// the number of pixels high the image is
-	uint32_t height;
-
-	// the depth of the image
-	uint32_t depth;
-
+	/** If the camera is currently capturing */
 	bool running;
 };
 

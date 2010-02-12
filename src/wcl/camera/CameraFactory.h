@@ -30,6 +30,8 @@
 #include <vector>
 #include <wcl/camera/Camera.h>
 
+#warning CameraFactory: Note the *CameraFactoryAPI/Implementation is currently Experimental -benjsc 20100212
+
 namespace wcl
 {
 	/**
@@ -50,7 +52,7 @@ namespace wcl
 			/**
 			 * Obtain the camera with the specified ID
 			 */
-			static Camera *getCamera(const CameraID);
+			static Camera *getCamera(const Camera::CameraID);
 
 			/**
 			 * Obtain a list of all usable cameras

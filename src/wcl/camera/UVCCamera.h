@@ -99,6 +99,7 @@ namespace wcl
 			 * @param f The data format for the images.
 			 * @param width The width of the image in pixels
 			 * @param height The height of the image in pixels
+			 * @throw Exception if the format cannot be set
 			 */
 			void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
 
@@ -117,16 +118,34 @@ namespace wcl
 			 * tries a different one. This is not implemented yet.
 			 *
 			 * @param t The exposure mode to change to.
+			 * @throws Exception if the exposure mode can't be set
 			 */
-			bool setExposureMode(const ExposureMode t);
+			void setExposureMode(const ExposureMode t);
 
-
-			bool setControlValue(const Control control, const int value);
 
 			/**
-			 * Returns an image buffer for use in a program.
+			 * Set the given control to the specified value
+			 *
+			 * @param control The control to setup
+			 * @param value The value to set the control to
+			 * @throws exception if the value can't be set
+			 */
+			void setControlValue(const Control control, const int value);
+
+			/**
+			 * Sets the camera up ready for capture
+			 *
+			 * @throws exception if the camera can't be setup
+			 */
+			void startup();
+
+			/**
+			 * Returns an image buffer for use in a program if the
+			 * camera is not already setup for capture this will
+			 * also initialise the camera for capture
 			 *
 			 * @return a char array containing the image buffer.
+			 * @throw exception if a frame cannot be grabbed or the setup fails
 			 */
 			const unsigned char* getFrame();
 

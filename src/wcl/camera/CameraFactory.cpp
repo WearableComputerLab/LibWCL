@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/Camera/CameraFactory.h>
-#include <wcl/Camera/DC1394CameraFactory.h>
+#include <wcl/camera/CameraFactory.h>
+#include <wcl/camera/DC1394CameraFactory.h>
 
 namespace wcl
 {
@@ -36,7 +36,7 @@ CameraFactory::CameraFactory()
 {}
 
 
-Camera *CameraFactort::getCamera()
+Camera *CameraFactory::getCamera()
 {
     std::vector<Camera *> cameras = CameraFactory::getCameras();
     if( cameras.size() > 0 )
@@ -45,22 +45,21 @@ Camera *CameraFactort::getCamera()
     return NULL;
 }
 
-Camera *CameraFactory::getCamera(const CameraID id)
+Camera *CameraFactory::getCamera(const Camera::CameraID id)
 {
-    if
-    std::vector<Camera *> cameras = this->getCameras();
-    for(std::vector<Camera *>::iterator it = cameras->begin();
-	it!= cameras->end();
+    std::vector<Camera *> cameras = CameraFactory::getCameras();
+    for(std::vector<Camera *>::iterator it = cameras.begin();
+	it!= cameras.end();
 	++it ){
 	Camera *c = *it;
-	if( c == id )
+	if( c->getID() == id )
 	    return c;
     }
 
     return NULL;
 }
 
-std::vector<Camera *>getCameras()
+std::vector<Camera *> CameraFactory::getCameras()
 {
     std::vector<Camera *>all;
 
@@ -87,7 +86,7 @@ Camera *CameraFactory::findCamera(const Camera::ImageFormat f,
 				  const unsigned width, const unsigned height,
 				  const unsigned fps )
 {
-    std::vector<Camera *> cameras =  this->findCameras(f, width, height, fps );
+    std::vector<Camera *> cameras =  CameraFactory::findCameras(f, width, height, fps );
     if( cameras.size() > 0 ){
 	return cameras[0];
     }
@@ -101,8 +100,8 @@ std::vector<Camera *> CameraFactory::findCameras(const Camera::ImageFormat f,
     std::vector<Camera *> cameras = getCameras();
     std::vector<Camera *> matches;
 
-    for(std::vector<Camera *>::iterator it = cameras->begin();
-	it!= cameras->end();
+    for(std::vector<Camera *>::iterator it = cameras.begin();
+	it!= cameras.end();
 	++it ){
 	Camera *c = *it;
 
@@ -120,7 +119,7 @@ std::vector<Camera *> CameraFactory::findCameras(const Camera::ImageFormat f,
 
 	matches.push_back(c);
 
-	}
+    }
 
     return matches;
 }
@@ -134,3 +133,4 @@ CameraFactory * CameraFactory::getInstance()
 };
 
 
+}; //namespace
