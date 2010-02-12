@@ -66,7 +66,11 @@ void VirtualCamera::printDetails()
 
 void VirtualCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
 {
-    cout << "VirtualCamera: SetFormat Called - not Virtual Camera only supports RGB" << endl;
+    if( this->buffers )
+	Camera::setFormat(f,width, height);
+
+    else
+	cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
 }
 
 void VirtualCamera::setExposureMode(const ExposureMode t)
