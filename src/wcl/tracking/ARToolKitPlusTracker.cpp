@@ -93,14 +93,14 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     // Set the format based on what the camera is using
     switch (this->camera->getImageFormat()){
 	case Camera::MJPEG:
-	case Camera::YUYV:
+	case Camera::YUYV422:
         default:
             printf("ARToolKitPlusTracker::Unknown/Unsupported Camera Image Format Assuming RGB\n");
             /* Fallthrough */
-	case Camera::RGB:
+	case Camera::RGB8:
             format=ARToolKitPlus::PIXEL_FORMAT_RGB;
             break;
-	case Camera::BGR:
+	case Camera::BGR8:
             format=ARToolKitPlus::PIXEL_FORMAT_BGR;
             break;
     }
