@@ -37,8 +37,9 @@
 #include <GL/glut.h>
 
 #include <wcl/camera/UVCCamera.h>
-#include <wcl/camera/DC1394.h>
+#include <wcl/camera/DC1394Camera.h>
 #include <wcl/camera/VirtualCamera.h>
+#include <wcl/camera/CameraFactory.h>
 
 using namespace std;
 using namespace wcl;
@@ -114,10 +115,13 @@ GLvoid display()
 	const unsigned char* frame = cam->getFrame();
 
 	switch(cam->getImageFormat()){
-	    case Camera::YUYV:
-		Camera::convertImageYUVtoRGB(frame, data, 640, 480);
+	    case Camera::YUYV422:
+		Camera::convertImageYUV422toRGB8(frame, data, 640, 480);
 		break;
-	    case Camera::RGB:
+	    case Camera::MONO8:
+		Camera::convertImageMONO8toRGB8(frame,data,640,480);
+		break;
+	    case Camera::RGB8:
 	    default:
 		memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3);
 	}
@@ -204,7 +208,14 @@ int main(int argc, char** argv)
 					usage();
 					return 1;
 				}
-				cam = new DC1394(atoi(argv[2]));
+				{
+				    long int value = atol(argv[2]);
+				    if( value < 0 ){
+					cam = CameraFactory::getCamera();
+				    } else {
+					cam = new DC1394Camera(value);
+				    }
+				}
 				break;
 			case 3: //Virtual Camera
 				cam = new VirtualCamera();
@@ -229,17 +240,10 @@ int main(int argc, char** argv)
 		 * - benjsc 20100208
 		 */
 		cout << "Setting camera format... ";
-		cam->setFormat(Camera::YUYV, 640, 480);
+		cam->setFormat(Camera::MONO8, 640, 480);
 		cout << "Done!" << endl;
 
-		if (cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY))
-		{
-			cout << "Set exposure mode!" << endl;
-		}
-		else
-		{
-			cout << "Unable to set exposure mode!" << endl;
-		}
+		cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY);
 
 		//set power frequency compensation to 50 Hz
 		cam->setControlValue(Camera::POWER_FREQUENCY, 1);
