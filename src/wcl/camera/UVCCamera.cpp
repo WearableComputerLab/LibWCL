@@ -49,8 +49,6 @@ UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 		throw string(strerror(errno));
 	}
 
-	numBuffers = 0;
-
 	loadCapabilities();
 }
 
@@ -84,7 +82,7 @@ void UVCCamera::loadCapabilities()
 
 }
 
-void UVCCamera::setFormat(ImageFormat f, unsigned width, unsigned height)
+void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
 {
 	v4l2_format newf;
 	newf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -97,7 +95,7 @@ void UVCCamera::setFormat(ImageFormat f, unsigned width, unsigned height)
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
 			break;
 
-		case YUYV:
+		case YUYV422:
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 			break;
 	}
@@ -112,10 +110,11 @@ void UVCCamera::setFormat(ImageFormat f, unsigned width, unsigned height)
 	}
 
 	bufferSize = newf.fmt.pix.sizeimage;
+
 }
 
 
-unsigned char* UVCCamera::getFrame()
+const unsigned char* UVCCamera::getFrame()
 {
 	if (!isReadyForCapture)
 	{
@@ -137,7 +136,12 @@ unsigned char* UVCCamera::getFrame()
 	// requeue buffer
 	ioctl(cam, VIDIOC_QBUF, &buf);
 
-	return (unsigned char*) buffers[buf.index].start;
+	return (const unsigned char*) buffers[buf.index].start;
+}
+
+void UVCCamera::startup()
+{
+    UVCCamera::prepareForCapture();
 }
 
 void UVCCamera::prepareForCapture()
@@ -155,8 +159,7 @@ void UVCCamera::prepareForCapture()
 
 	// create an array for our buffers
 	// The buffer count may be less than we asked for
-	buffers = new bufferT[reqbuf.count];
-	numBuffers = reqbuf.count;
+	this->allocateBuffers(sizeof(CameraBuffer),  reqbuf.count);
 
 	for (int i=0;i<reqbuf.count; i++)
 	{
@@ -206,8 +209,7 @@ void UVCCamera::shutdown()
 	for (int i=0; i<numBuffers; i++)
 		munmap(buffers[i].start, buffers[i].length);
 
-	if (numBuffers > 0)
-		delete[] buffers;
+	this->destroyBuffers();
 	close(cam);
 }
 
@@ -260,7 +262,7 @@ void UVCCamera::printDetails()
 	loadControls();
 }
 
-bool UVCCamera::setExposureMode(ExposureMode t)
+void UVCCamera::setExposureMode(const ExposureMode t)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -296,13 +298,12 @@ bool UVCCamera::setExposureMode(ExposureMode t)
 			cout << "What the hell I have no idea whats going on!" << endl;
 			break;
 		}
-		return false;
+		throw std::string("UVCCamera:setExposureMode");
 	}
-	return true;
 }
 
 
-bool UVCCamera::setControlValue(Control controlName, int value)
+void UVCCamera::setControlValue(const Control controlName, const int value)
 {
 	//the actual control we are setting
 	struct v4l2_ext_control control;
@@ -311,7 +312,7 @@ bool UVCCamera::setControlValue(Control controlName, int value)
 	struct v4l2_ext_controls box;
 
 	//setup the control
-	control.id = controlName;
+	control.id = mapControlToV4L2(controlName);
 	control.value = value;
 	
 	//setup the container
@@ -338,14 +339,13 @@ bool UVCCamera::setControlValue(Control controlName, int value)
 			cout << "What the hell I have no idea whats going on!" << endl;
 			break;
 		}
-		return false;
+		throw std::string("UVCCamera:setControlValue:Failed to set Control Value");
 	}
-	return true;
 
 }
 
 
-int UVCCamera::getBufferSize()
+int UVCCamera::getBufferSize() const
 {
 	return bufferSize;
 }
@@ -387,5 +387,21 @@ void UVCCamera::loadControls()
 		ctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 	}
 
+}
+
+
+uint32_t UVCCamera::mapControlToV4L2( const Control c ) const
+{
+    switch( c )
+    {
+	case Camera::BRIGHTNESS: return V4L2_CID_BRIGHTNESS;
+	case Camera::CONTRAST: return V4L2_CID_CONTRAST;
+	case Camera::SATURATION:return V4L2_CID_SATURATION;
+	case Camera::GAIN:return V4L2_CID_GAIN;
+	case Camera::POWER_FREQUENCY:return V4L2_CID_POWER_LINE_FREQUENCY;
+	case Camera::WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
+	case Camera::SHARPNESS:return V4L2_CID_SHARPNESS;
+	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE;
+    }
 }
 

@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,87 +24,49 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_TRACKING_TRACKEDOBJECT_H
-#define WCL_TRACKING_TRACKEDOBJECT_H
+#ifndef WCL_CAMERA_VIRTUALCAMERA_H
+#define WCL_CAMERA_VIRTUALCAMERA_H
 
-#include <string>
-
-#include <wcl/maths/Matrix.h>
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
+#include <wcl/camera/Camera.h>
 
 namespace wcl
 {
-	/**
-	 * The type of object that we are tracking.
-	 * Markers simply have position.
-	 * Six DOF objects have position and rotation.
-	 */
-	enum ObjectType
-	{
-		/**
-		 * A 3DOF Marker
-		 */
-		POSITION,
-
-		/**
-		 * Orientation marker only
-		 */
-		ORIENTATION,
-
-		/**
-		 * A 6DOF object
-		 */
-		SIX_DOF
-	};
 
 	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 *
+	 * The virtual camera allows a single frame or list of frames to be used
+	 * to represent a camera. All frames provided to the class are
+	 * maintained untouched. If no frames are provided, a default frame is
+	 * show. Upon a shutdown, the default frame is used again.
 	 */
-	class TrackedObject
+	class VirtualCamera: public Camera
 	{
-		public:
-			/**
-			 * Destructor.
-			 */
-			virtual ~TrackedObject(){}
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() = 0;
+	   public:
+		    VirtualCamera();
+		    ~VirtualCamera();
 
-			/**
-			 * Returns the name of the object.
-			 */
-			virtual std::string getName() { return name;}
+		    // Overrides of Camera
+		    virtual void printDetails();
+		    virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
+		    virtual void setExposureMode(const ExposureMode t);
+		    virtual void setControlValue(const Control control, const int value);
+		    virtual const unsigned char* getFrame();
+		    virtual void startup();
+		    virtual void shutdown();
 
-			/**
-			 * Returns this object's type.
-			 */
-			virtual ObjectType getType() { return type;}
+		    /**
+		     * Set the data used by the virtual camera.
+		     * The Virtual Camera doesn't know how to load images
+		     * however it knows about buffer data and hence makes use of
+		     * the buffers to provide frames
+		     */
+		    void setFrames(const CameraBuffer *buffers, const unsigned bufferCount);
 
-			virtual SMatrix getTransform() = 0;
-
-			virtual Vector getTranslation() = 0;
-
-			virtual SMatrix getRotation() = 0;
-
-
-		protected:
-			/**
-			 * The name of this object.
-			 */
-			std::string name;
-
-			/**
-			 * The type of object.
-			 */
-			ObjectType type;
+	    private:
+		    static CameraBuffer defaultBuffer;
+		    unsigned inUseBuffer;
 	};
 
 };
 
-#endif /*WCL_TRACKING_TRACKEDOBJECT_H_*/
-
+#endif

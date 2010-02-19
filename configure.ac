@@ -30,6 +30,9 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR([cfg])
 LT_INIT()
 
+# tell autoconf that we are using CPP libraries
+AC_LANG([C++])
+
 #
 # Setup Options
 #
@@ -90,7 +93,15 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 
 # Support for parsers
 #
-AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parserx="yes" , enable_parsers="no")
+AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
+
+# Support for Virtual Video
+#
+AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
+
+# Support for ARToolkitPlus Tracking
+#
+AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), enable_tracking_artoolkitplus="yes" , enable_tracking_artoolkitplus="no")
 
 # 
 #  Enable All Options
@@ -100,11 +111,13 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_1394="yes";
 	     enable_rawports="yes" ;
 	     enable_video_uvc="yes";
-		 enable_gestures="yes";
-		 enable_vicon="yes";
-		 enable_geometry="yes";
-		 enable_x11="yes";
-		 enable_parsers="yes";
+	     enable_gestures="yes";
+	     enable_vicon="yes";
+	     enable_geometry="yes";
+	     enable_x11="yes";
+	     enable_parsers="yes";
+	     enable_video_virtual="yes";
+	     enable_tracking_artoolkitplus="yes";
 	     )
 
 #
@@ -120,6 +133,8 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
    test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
+   test "x$enable_video_virtual" = "xno" && \
+   test "x$enable_tracking_artoolkitplus" = "xno" && \
    test "x$enable_parsers" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
@@ -133,6 +148,15 @@ AC_MSG_RESULT([yes])
 if test "x$enable_vicon" = "xyes"; then
 	enable_network="yes";
 	echo "*** Vicon Module selected, automatically enabling Network ***";
+fi
+
+#
+# Auto turn on the common video support if any video option is enabled
+#
+if test "x$enable_video_uvc" = "xyes" || \
+   test "x$enable_video_1394" = "xyes" ||
+   test "x$enable_video_virutal" = "xyes"; then
+	enable_video="yes";
 fi
 
 
@@ -149,6 +173,9 @@ AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO_VIRTUAL, test "x$enable_video_virtual" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
 
 
 #
@@ -157,19 +184,13 @@ AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
 #######################################
 
 #
-# Check which system we are on
-#  	This sets: host variable
-
-# Aaron put this in as a quick hack to test something, shouldn't really be here though
-_AM_DEPENDENCIES([OBJC])
-
-
-#
 # The vicon system ignorantly assumes that data is in Intel format (little endian)
 # meaning we can't use network byte order. Therefore, we treat things differently
 # if we're on PowerPC
 #
+AC_LANG_PUSH([C])
 AC_C_BIGENDIAN
+AC_LANG_POP()
 
 
 #
@@ -238,6 +259,20 @@ if test "x$enable_video_1394" = "xyes"; then
     fi
 fi
 
+if test "x$enable_video_virtual" = "xyes"; then
+:
+fi
+	
+if test "x$enable_tracking_artoolkitplus" = "xyes"; then
+AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
+	     AC_MSG_ERROR([You Need to Install ARToolKit Plus. Under ubuntu add
+			deb http://ppa.launchpad.net/rojtberg/ppa/ubuntu karmic main
+			to your sources and to a apt-get update; apt-get install artoolkitplus-dev])
+	    )
+
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
+fi
+
 if test "x$enable_x11" = "xyes"; then
     PKG_CHECK_MODULES(X11, x11 xext )
     PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
@@ -270,17 +305,19 @@ AC_CHECK_FUNCS([memset])
 echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "network support          : $enable_network"
-echo "1394 (Firewire) Video    : $enable_video_1394"
-echo "Gesture recognition      : $enable_gestures"
-echo "Geometry classes         : $enable_geometry"
-echo "Vicon MoCap Support      : $enable_vicon"
-echo "X11 Support              : $enable_x11"
-echo "Rawports Support(com/lpt): $enable_rawports"
-echo "UVC Video support        : $enable_video_uvc"
-echo "Parser Support           : $enable_parsers"
-echo "Maths Support            : Enabled (default)"
-echo "-------------------------------"
+echo "network support               : $enable_network"
+echo "1394 (Firewire) Video         : $enable_video_1394"
+echo "Gesture recognition           : $enable_gestures"
+echo "Geometry classes              : $enable_geometry"
+echo "Vicon MoCap Support           : $enable_vicon"
+echo "X11 Support                   : $enable_x11"
+echo "Rawports Support(com/lpt)     : $enable_rawports"
+echo "UVC Video support             : $enable_video_uvc"
+echo "Parser Support                : $enable_parsers"
+echo "Virtual Video Support         : $enable_video_virtual"
+echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
+echo "Maths Support                 : Enabled (default)"
+echo "-------------------------------------------------"
 
 #
 # Tell automake to substitute the values for 

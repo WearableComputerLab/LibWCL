@@ -28,6 +28,8 @@
 #ifndef TRACKER_H
 #define TRACKER_H
 
+#include <vector>
+
 #include <wcl/tracking/TrackedObject.h>
 
 namespace wcl
@@ -77,10 +79,17 @@ namespace wcl
 			/**
 			 * Returns the tracked object with the specified name.
 			 *
-			 * Note, the only valid names are sensor1 or sensor2
+			 * Note, the only valid names are sensor1 or sensor2 for
+			 * vicon & polhemus
 			 *
 			 */
 			virtual TrackedObject* getObject(std::string name) = 0;
+
+			/**
+			 * Returns all the avaliable Tracked objects
+			 */
+			virtual std::vector<TrackedObject *> getAllObjects() = 0;
+
 
 			/**
 			 * Sets the units of measurements used by the tracker.

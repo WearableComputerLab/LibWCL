@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,87 +24,37 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_TRACKING_TRACKEDOBJECT_H
-#define WCL_TRACKING_TRACKEDOBJECT_H
+#ifndef WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
+#define WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
 
-#include <string>
-
-#include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
+#include <wcl/tracking/TrackedObject.h>
 
-namespace wcl
+namespace wcl {
+
+class ARToolKitPlusTrackedObject: public TrackedObject
 {
-	/**
-	 * The type of object that we are tracking.
-	 * Markers simply have position.
-	 * Six DOF objects have position and rotation.
-	 */
-	enum ObjectType
-	{
-		/**
-		 * A 3DOF Marker
-		 */
-		POSITION,
+public:
+    ARToolKitPlusTrackedObject(const unsigned width, const unsigned height,
+                               const unsigned id);
 
-		/**
-		 * Orientation marker only
-		 */
-		ORIENTATION,
+    virtual ~ARToolKitPlusTrackedObject();
+    virtual std::string toString();
+    virtual SMatrix getTransform();
+    virtual Vector getTranslation();
+    virtual SMatrix getRotation();
+    virtual unsigned getID();
 
-		/**
-		 * A 6DOF object
-		 */
-		SIX_DOF
-	};
+    virtual void setTransform(const SMatrix &);
 
-	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 *
-	 */
-	class TrackedObject
-	{
-		public:
-			/**
-			 * Destructor.
-			 */
-			virtual ~TrackedObject(){}
+private:
+        unsigned id;
+        unsigned width;
+        unsigned height;
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() = 0;
-
-			/**
-			 * Returns the name of the object.
-			 */
-			virtual std::string getName() { return name;}
-
-			/**
-			 * Returns this object's type.
-			 */
-			virtual ObjectType getType() { return type;}
-
-			virtual SMatrix getTransform() = 0;
-
-			virtual Vector getTranslation() = 0;
-
-			virtual SMatrix getRotation() = 0;
-
-
-		protected:
-			/**
-			 * The name of this object.
-			 */
-			std::string name;
-
-			/**
-			 * The type of object.
-			 */
-			ObjectType type;
-	};
+	SMatrix transform;
+};
 
 };
 
-#endif /*WCL_TRACKING_TRACKEDOBJECT_H_*/
-
+#endif // WCL_TRACKING_ARTOOLKTIPLUSTRACKEDOBJECT_H

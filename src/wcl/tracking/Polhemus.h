@@ -77,6 +77,11 @@ namespace wcl
 			virtual TrackedObject* getObject(std::string name);
 
 			/**
+			 * Return every possible object 
+			 */
+			virtual std::vector<TrackedObject *> getAllObjects();
+
+			/**
 			 * Set the hemisphere of operation for the system.
 			 * The Patriot can only track in a hemisphere around the origin,
 			 * this function sets the hemisphere. For example, 

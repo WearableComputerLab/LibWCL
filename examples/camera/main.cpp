@@ -26,6 +26,8 @@
 
 
 // include system headers
+#include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include <fstream>
 
@@ -34,86 +36,28 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <wcl/uvccam/UVCCamera.h>
+#include <wcl/camera/UVCCamera.h>
+#include <wcl/camera/DC1394Camera.h>
+#include <wcl/camera/VirtualCamera.h>
+#include <wcl/camera/CameraFactory.h>
 
 using namespace std;
 using namespace wcl;
 
-UVCCamera* cam;
+Camera *cam;
 unsigned char* data;
 
-
-/**
- * Converts a single pixel from yuv to rgb
- */
-int convertPixel(int y, int u, int v)
+void usage()
 {
-	unsigned int pixel32 = 0;
-	unsigned char *pixel = (unsigned char *)&pixel32;
-	int r, g, b;
-
-	r = y + (1.370705 * (v-128));
-	g = y - (0.698001 * (v-128)) - (0.337633 * (u-128));
-	b = y + (1.732446 * (u-128));
-
-	if(r > 255) r = 255;
-	if(g > 255) g = 255;
-	if(b > 255) b = 255;
-	if(r < 0) r = 0;
-	if(g < 0) g = 0;
-	if(b < 0) b = 0;
-
-	pixel[0] = r * 220 / 256;
-	pixel[1] = g * 220 / 256;
-	pixel[2] = b * 220 / 256;
-
-	return pixel32;
-}
-
-/**
- * Converts a YUYV buffer to an RGB buffer
- */
-int convertImage(unsigned char *yuv, unsigned char *rgb, unsigned int width, unsigned int height)
-{
-	unsigned int in, out = 0;
-	unsigned int pixel_16;
-	unsigned char pixel_24[3];
-	unsigned int pixel32;
-	int y0, u, y1, v;
-
-	for(in = 0; in < width * height * 2; in += 4)
-	{
-		pixel_16 =
-			yuv[in + 3] << 24 |
-			yuv[in + 2] << 16 |
-			yuv[in + 1] <<  8 |
-			yuv[in + 0];
-
-		y0 = (pixel_16 & 0x000000ff);
-		u  = (pixel_16 & 0x0000ff00) >>  8;
-		y1 = (pixel_16 & 0x00ff0000) >> 16;
-		v  = (pixel_16 & 0xff000000) >> 24;
-
-		pixel32 = convertPixel(y0, u, v);
-		pixel_24[0] = (pixel32 & 0x000000ff);
-		pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
-		pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
-
-		rgb[out++] = pixel_24[0];
-		rgb[out++] = pixel_24[1];
-		rgb[out++] = pixel_24[2];
-
-		pixel32 = convertPixel(y1, u, v);
-		pixel_24[0] = (pixel32 & 0x000000ff);
-		pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
-		pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
-
-		rgb[out++] = pixel_24[0];
-		rgb[out++] = pixel_24[1];
-		rgb[out++] = pixel_24[2];
-	}
-
-	return 0;
+    printf("Usage: camera type [devicenode]\n"
+	   "\n"
+	   "eg: camera 1 /dev/video0\n"
+	   "\n"
+	   "Where type is:\n"
+	   "	1. UVCCamera\n"
+	   "	2. DC1394 Camera\n"
+	   "	3. Virtual Camera\n"
+	  );
 }
 
 
@@ -168,9 +112,19 @@ GLvoid display()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	unsigned char* frame = cam->getFrame();
+	const unsigned char* frame = cam->getFrame();
 
-	convertImage(frame, data, 640, 480);
+	switch(cam->getImageFormat()){
+	    case Camera::YUYV422:
+		Camera::convertImageYUV422toRGB8(frame, data, 640, 480);
+		break;
+	    case Camera::MONO8:
+		Camera::convertImageMONO8toRGB8(frame,data,640,480);
+		break;
+	    case Camera::RGB8:
+	    default:
+		memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3);
+	}
 
 	glTexSubImage2D(GL_TEXTURE_2D,
 	                0,
@@ -224,38 +178,75 @@ GLvoid reshape(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+void keyboard(unsigned char key, int w, int h)
+{
+    if(key==27)
+	exit(EXIT_SUCCESS);
+}
 
 int main(int argc, char** argv)
 {
+    if(argc < 2 ){
+		usage();
+		return 1;
+    }
+
 	try {
-		// Open the camera
 		cout << "Opening Camera... ";
-		cam = new UVCCamera("/dev/video0");
+
+		// Open the camera
+		switch( atoi(argv[1])){
+			case 1: //UVCamera
+				if(argc< 3 ){
+					usage();
+					return 1;
+				}
+				cam = new UVCCamera(argv[2]);
+				break;
+			case 2: //DC1394
+				if(argc< 3 ){
+					usage();
+					return 1;
+				}
+				{
+				    long int value = atol(argv[2]);
+				    if( value < 0 ){
+					cam = CameraFactory::getCamera();
+				    } else {
+					cam = new DC1394Camera(value);
+				    }
+				}
+				break;
+			case 3: //Virtual Camera
+				cam = new VirtualCamera();
+				break;
+			default:
+				usage();
+				return 1;
+		}
+
 		cout << "Done!" << endl;
 
 		/*
 		 * Print out camera details
 		 */
-		//cam.printDetails();
+		cam->printDetails();
 
 		/*
 		 * set the video format...
+		 *
+		 * XXX TODO, get the available formats
+		 * select one and use it, teaching GL to use it as well
+		 * - benjsc 20100208
 		 */
 		cout << "Setting camera format... ";
-		cam->setFormat(UVCCamera::YUYV, 640, 480);
+		cam->setFormat(Camera::MONO8, 640, 480);
 		cout << "Done!" << endl;
 
-		if (cam->setExposureMode(UVCCamera::AUTO_APERTURE_PRIORITY))
-		{
-			cout << "Set exposure mode!" << endl;
-		}
-		else
-		{
-			cout << "Unable to set exposure mode!" << endl;
-		}
+		cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY);
 
 		//set power frequency compensation to 50 Hz
-		cam->setControlValue(UVCCamera::POWER_FREQUENCY, 1);
+		cam->setControlValue(Camera::POWER_FREQUENCY, 1);
 
 		//cout << "about to grab frame, length is: " << cam.getBufferSize() << endl;
 
@@ -271,6 +262,7 @@ int main(int argc, char** argv)
 		// register callbacks
 		glutDisplayFunc(display);
 		glutReshapeFunc(reshape);
+		glutKeyboardFunc(keyboard);
 		glutIdleFunc(idle);
 
 		// GO!
