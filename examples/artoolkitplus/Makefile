@@ -1,4 +1,4 @@
-LDFLAGS=	`pkg-config --libs libwcl`
+LDFLAGS=	`pkg-config --libs libwcl` -lglut -lGLU -lGL -lX11
 CXXFLAGS=       -I../../src -Wall -g3
 
 

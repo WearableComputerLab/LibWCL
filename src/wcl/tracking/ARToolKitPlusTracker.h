@@ -30,24 +30,33 @@
 #include <stdint.h>
 #include <vector>
 #include <ARToolKitPlus/TrackerSingleMarkerImpl.h>
-#include <ARToolKitPlus/CameraImpl.h>
 
 #include <wcl/camera/Camera.h>
 #include <wcl/tracking/Tracker.h>
 #include <wcl/tracking/ARToolKitPlusTrackedObject.h>
+
+/**
+ * The maximum amount of markers that are detected in any one frame
+ */
+#ifndef WCL_ARTOOLKITPLUSTRACKER_MARKER_DETECTION_COUNT
+#define WCL_ARTOOLKITPLUSTRACKER_MARKER_DETECTION_COUNT 8
+#endif
 
 namespace wcl
 {
 
 /**
  * The ARToolKitPlusTracker class integrates ARToolKitPlus
- * with libWCL.
+ * with libWCL. By default ARToolkitPlus is setup to use BCH markers (up to
+ * 1024) and detects a maximum of WCL_ARTOOLKITPLUSTRACKER_MARKER_DETECTION_COUNT marker
  */
 class ARToolKitPlusTracker: public Tracker
 {
 public:
-    ARToolKitPlusTracker(const unsigned w,
-                         const unsigned h);
+    ARToolKitPlusTracker(const unsigned imageWidth,
+                         const unsigned imageHeight,
+			 const unsigned markerWidth = 80,
+			 const int thresholdValue = -1 /* -1 = AUTO */	);
     virtual ~ARToolKitPlusTracker();
     virtual void setCamera(Camera *);
 
@@ -55,6 +64,14 @@ public:
     virtual TrackedObject* getObject(const std::string name);
     virtual std::vector<TrackedObject *> getAllObjects();
     virtual void setUnits(const Units u);
+    SMatrix getProjectionMatrix();
+    SMatrix getModelViewMatrix();
+
+    /**
+     * Set the threshold to use when processing images. A value of
+     * <=-1 indicates automatic thresholding should be used
+     */
+    void setThreshold( const int value );
 
     /**
      * Give details about the tracker, version of artoolKitplus
@@ -67,9 +84,11 @@ private:
 
     ARToolKitPlus::TrackerSingleMarker *tracker;
     unsigned markerWidth;
-    unsigned markerHeigth;
     Camera *camera;
-    ARToolKitPlus::CameraImpl *c_ptr;
+
+    float confidence;
+    int bestMarker;
+    int markersFound;
 };
 
 };
