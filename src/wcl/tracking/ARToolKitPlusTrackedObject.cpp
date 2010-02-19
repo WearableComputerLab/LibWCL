@@ -44,6 +44,7 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
     sid<< id;
     this->name=sid.str();
     this->type=SIX_DOF;
+    this->id =id;
 }
 
 ARToolKitPlusTrackedObject::~ARToolKitPlusTrackedObject()
