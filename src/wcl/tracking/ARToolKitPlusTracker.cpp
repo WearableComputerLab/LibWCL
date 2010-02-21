@@ -305,7 +305,7 @@ SMatrix ARToolKitPlusTracker::getProjectionMatrix()
     int i=0;
     for( int r=0; r<4;r++ ){
 	for ( int c=0; c<4; c++)
-	    m[r][c]=f[i++];
+	    m[c][r]=f[i++];
 
     }
 
@@ -324,7 +324,7 @@ SMatrix ARToolKitPlusTracker::getModelViewMatrix()
     int i=0;
     for( int r=0; r<4;r++ ){
 	for ( int c=0; c<4; c++)
-	    m[r][c]=f[i++];
+	    m[c][r]=f[i++];
 
     }
 
