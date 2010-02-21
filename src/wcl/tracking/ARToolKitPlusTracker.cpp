@@ -65,10 +65,12 @@ ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned iscreenWidth, const u
     // Use the updated pose estimator (Robust Pose Estimation From a Planar Target)
     this->tracker->setPoseEstimator(POSE_ESTIMATOR_RPP);
 
-    // Create 1024 base markers as we use BCH.
+    // Create 1024 base markers as we use BCH, and also populate the map
     for(unsigned i=0; i < 1024; i++ ){
 	ARToolKitPlusTrackedObject *o = new ARToolKitPlusTrackedObject(imarkerWidth, i);
 	this->objects.push_back(o);
+
+	this->mapping[i] = o;
     }
 }
 
@@ -185,6 +187,16 @@ void ARToolKitPlusTracker::update()
     this->bestMarker=this->tracker->calc(this->camera->getFrame(), -1, true, &markers, &this->markersFound);
     this->confidence = (float)tracker->getConfidence();
 
+
+    // set all markers to not visable
+    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
+	it != this->objects.end();
+	++it ){
+	ARToolKitPlusTrackedObject *marker=*it;
+	marker->setVisible(false);
+    }
+
+    // Update the found markers
     while( i < this->markersFound ){
 	SMatrix m(4);
 	m.storeIdentity();
@@ -193,19 +205,16 @@ void ARToolKitPlusTracker::update()
 							this->markerWidth,
 							conv );
 
-	for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
-	    it != this->objects.end();
-	    ++it ){
 
-	    ARToolKitPlusTrackedObject *marker=*it;
 
-	    if ( marker->getID() == markers[i].id ){
-		for(unsigned row=0; row < 3; row++ )
-		    for(unsigned c =0; c < 4; c++)
-			m[c][row]=conv[row][c];
+	if( markers[i].id > -1 ){
+	    ARToolKitPlusTrackedObject *marker = this->mapping[markers[i].id];
+	    for(unsigned row=0; row < 3; row++ )
+		for(unsigned c =0; c < 4; c++)
+		    m[c][row]=conv[row][c];
 
 		marker->setTransform(m);
-	    }
+		marker->setVisible(true);
 	}
 	i++;
     }
@@ -232,7 +241,8 @@ std::vector<TrackedObject *> ARToolKitPlusTracker::getAllObjects()
 	this->objects.begin();
 	it!=this->objects.end();
 	++it)
-	v.push_back(*it);
+	if( (*it)->isVisible())
+	    v.push_back(*it);
     return v;
 }
 

@@ -81,6 +81,7 @@ public:
 
 private:
     std::vector<ARToolKitPlusTrackedObject *>objects;
+    std::map<unsigned, ARToolKitPlusTrackedObject *> mapping;
 
     ARToolKitPlus::TrackerSingleMarker *tracker;
     unsigned markerWidth;
