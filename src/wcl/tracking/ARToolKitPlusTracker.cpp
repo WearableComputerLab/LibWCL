@@ -67,7 +67,7 @@ ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned iscreenWidth, const u
 
     // Create 1024 base markers as we use BCH.
     for(unsigned i=0; i < 1024; i++ ){
-	ARToolKitPlusTrackedObject *o = new ARToolKitPlusTrackedObject(iscreenWidth, iscreenHeight, i);
+	ARToolKitPlusTrackedObject *o = new ARToolKitPlusTrackedObject(imarkerWidth, i);
 	this->objects.push_back(o);
     }
 }

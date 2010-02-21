@@ -35,8 +35,7 @@ namespace wcl {
 class ARToolKitPlusTrackedObject: public TrackedObject
 {
 public:
-    ARToolKitPlusTrackedObject(const unsigned width, const unsigned height,
-                               const unsigned id);
+    ARToolKitPlusTrackedObject(const unsigned width, const unsigned id);
 
     virtual ~ARToolKitPlusTrackedObject();
     virtual std::string toString();
@@ -45,12 +44,16 @@ public:
     virtual SMatrix getRotation();
     virtual unsigned getID();
 
-    virtual void setTransform(const SMatrix &);
+    void setTransform(const SMatrix &);
+    void setVisible( const bool state);
+    bool isVisible() const;
+    unsigned getWidth() const;
+
 
 private:
         unsigned id;
         unsigned width;
-        unsigned height;
+	bool visible;
 
 	SMatrix transform;
 };

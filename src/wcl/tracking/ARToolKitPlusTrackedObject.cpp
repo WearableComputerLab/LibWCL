@@ -33,11 +33,10 @@ namespace wcl {
 
 ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
     const unsigned w,
-    const unsigned h,
     const unsigned id):
     width(w),
-    height(h),
-    transform(4)
+    transform(4),
+    visible(false)
 {
     std::stringstream sid;
     sid<< "Marker";
@@ -94,5 +93,21 @@ void ARToolKitPlusTrackedObject::setTransform(const SMatrix &s )
 {
     this->transform=s;
 }
+
+void ARToolKitPlusTrackedObject::setVisible ( const bool state )
+{
+    this->visible = state;
+}
+
+bool ARToolKitPlusTrackedObject::isVisible() const
+{
+    return this->visible;
+}
+
+unsigned ARToolKitPlusTrackedObject::getWidth() const
+{
+    return this->width;
+}
+
 
 }
