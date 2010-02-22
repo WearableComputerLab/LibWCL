@@ -55,8 +55,8 @@ class ARToolKitPlusTracker: public Tracker
 public:
     ARToolKitPlusTracker( const unsigned markerWidth = 80,
                           const int thresholdValue = -1 /* -1 = AUTO */,
-                          const screenWidth = 800,   /* ScreenWidth/screenHeight are used for getProjectionMatrix */
-                          const screenHeight = 600);
+                          const unsigned screenWidth = 800,   /* ScreenWidth/screenHeight are used for getProjectionMatrix */
+                          const unsigned screenHeight = 600);
     virtual ~ARToolKitPlusTracker();
     virtual void setCamera(Camera *);
 
