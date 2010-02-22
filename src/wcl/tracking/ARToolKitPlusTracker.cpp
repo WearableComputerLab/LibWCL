@@ -211,7 +211,7 @@ void ARToolKitPlusTracker::update()
 	    ARToolKitPlusTrackedObject *marker = this->mapping[markers[i].id];
 	    for(unsigned row=0; row < 3; row++ )
 		for(unsigned c =0; c < 4; c++)
-		    m[c][row]=conv[row][c];
+		    m[row][c]=conv[row][c];
 
 	    marker->setTransform(m);
 	    marker->setVisible(true);
