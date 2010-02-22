@@ -70,6 +70,7 @@ private:
 	void setBrightness( const int );
 	void setGain( const int  );
 	void setIris( const int );
+	void getCurrentConfig();
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
 	//XXX Or the api updated! - benjsc 20100211

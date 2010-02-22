@@ -55,6 +55,8 @@ DC1394Camera::DC1394Camera(const uint64_t myguid):
 
 	// Just a safety thing, 1394 is a little touchy
 	dc1394_reset_bus (this->camera);
+
+	this->getCurrentConfig();
 }
 
 DC1394Camera::~DC1394Camera()
@@ -613,6 +615,51 @@ void DC1394Camera::setColorFilter( char* colorFilter )
 	fprintf( stderr, "Will be using color filter: %s", colorFilter );
 }
 */
+
+void DC1394Camera::getCurrentConfig()
+{
+    dc1394video_mode_t mode;
+    dc1394_video_get_mode(this->camera, &mode);
+
+    // Map the libdc mode back to the local setup
+    switch( mode )
+    {
+	case DC1394_VIDEO_MODE_320x240_YUV422:  Camera::setFormat(YUYV422, 320, 240 ); break;
+	case DC1394_VIDEO_MODE_640x480_YUV411:  Camera::setFormat(YUYV411, 640, 480); break;
+	case DC1394_VIDEO_MODE_640x480_YUV422:  Camera::setFormat(YUYV422, 640, 480); break;
+	case DC1394_VIDEO_MODE_640x480_RGB8:    Camera::setFormat(RGB8, 640, 480); break;
+	case DC1394_VIDEO_MODE_640x480_MONO8:   Camera::setFormat(MONO8,640, 480); break;
+	case DC1394_VIDEO_MODE_640x480_MONO16:  Camera::setFormat(MONO16, 640, 480); break;
+	case DC1394_VIDEO_MODE_800x600_YUV422:  Camera::setFormat(YUYV422, 800, 600); break;
+	case DC1394_VIDEO_MODE_800x600_RGB8:    Camera::setFormat(RGB8, 800, 600); break;
+	case DC1394_VIDEO_MODE_800x600_MONO8:   Camera::setFormat(MONO8, 800, 600); break;
+	case DC1394_VIDEO_MODE_1024x768_YUV422: Camera::setFormat(YUYV422, 1024, 768); break;
+	case DC1394_VIDEO_MODE_1024x768_RGB8:   Camera::setFormat(RGB8, 1024, 768); break;
+	case DC1394_VIDEO_MODE_1024x768_MONO8:  Camera::setFormat(MONO8, 1024, 786); break;
+	case DC1394_VIDEO_MODE_800x600_MONO16:  Camera::setFormat(MONO16, 800, 600); break;
+	case DC1394_VIDEO_MODE_1024x768_MONO16: Camera::setFormat(MONO16, 1024, 768); break;
+	case DC1394_VIDEO_MODE_1280x960_YUV422: Camera::setFormat(YUYV422, 1280, 960); break;
+	case DC1394_VIDEO_MODE_1280x960_RGB8:   Camera::setFormat(RGB8, 1280, 960); break;
+	case DC1394_VIDEO_MODE_1280x960_MONO8:  Camera::setFormat(MONO8, 1280, 960); break;
+	case DC1394_VIDEO_MODE_1600x1200_YUV422:Camera::setFormat(YUYV422, 1600, 1200);break;
+	case DC1394_VIDEO_MODE_1600x1200_RGB8:  Camera::setFormat(RGB8, 1600, 1200);break;
+	case DC1394_VIDEO_MODE_1600x1200_MONO8: Camera::setFormat(MONO8, 1600, 1200);break;
+	case DC1394_VIDEO_MODE_1280x960_MONO16: Camera::setFormat(MONO16, 1280, 960);break;
+	case DC1394_VIDEO_MODE_1600x1200_MONO16:Camera::setFormat(MONO16, 1600, 1200);break;
+#if 0
+	case DC1394_VIDEO_MODE_EXIF:
+	case DC1394_VIDEO_MODE_160x120_YUV444:
+	case DC1394_VIDEO_MODE_FORMAT7_0:
+	case DC1394_VIDEO_MODE_FORMAT7_1:
+	case DC1394_VIDEO_MODE_FORMAT7_2:
+	case DC1394_VIDEO_MODE_FORMAT7_3:
+	case DC1394_VIDEO_MODE_FORMAT7_4:
+	case DC1394_VIDEO_MODE_FORMAT7_5:
+	case DC1394_VIDEO_MODE_FORMAT7_6:
+	case DC1394_VIDEO_MODE_FORMAT7_7:
+#endif
+    }
+}
 
 void DC1394Camera::printDetails()
 {
