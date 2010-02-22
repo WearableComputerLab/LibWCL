@@ -109,5 +109,14 @@ unsigned ARToolKitPlusTrackedObject::getWidth() const
     return this->width;
 }
 
+float ARToolKitPlusTrackedObject::getConfidence() const
+{
+    return this->confidence;
+}
+
+void ARToolKitPlusTrackedObject::setConfidence( const float value )
+{
+    this->confidence = value;
+}
 
 }

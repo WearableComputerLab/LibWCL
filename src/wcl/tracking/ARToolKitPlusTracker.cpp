@@ -213,8 +213,9 @@ void ARToolKitPlusTracker::update()
 		for(unsigned c =0; c < 4; c++)
 		    m[c][row]=conv[row][c];
 
-		marker->setTransform(m);
-		marker->setVisible(true);
+	    marker->setTransform(m);
+	    marker->setVisible(true);
+	    marker->setConfidence(markers[i].cf);
 	}
 	i++;
     }
@@ -288,6 +289,14 @@ void ARToolKitPlusTracker::toString()
 	   this->markersFound,
 	   this->bestMarker,
 	   this->confidence);
+
+    std::vector<TrackedObject *> allobjects = this->getAllObjects();
+    for(std::vector<TrackedObject *>::iterator it = allobjects.begin();
+	it != allobjects.end();
+	++it ){
+	ARToolKitPlusTrackedObject *marker = (ARToolKitPlusTrackedObject *)*it;
+	printf("%5d : Confidence %f\n", marker->getID(), marker->getConfidence());
+    }
     if( this->markersFound > 0 ){
 	printf("Best Marker Matrix:\n");
 	for(int i=0; i<16; i++)

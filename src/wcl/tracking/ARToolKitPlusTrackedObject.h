@@ -46,14 +46,17 @@ public:
 
     void setTransform(const SMatrix &);
     void setVisible( const bool state);
+    void setConfidence( const float value );
+
     bool isVisible() const;
     unsigned getWidth() const;
-
+    float getConfidence() const;
 
 private:
         unsigned id;
         unsigned width;
 	bool visible;
+	float confidence;
 
 	SMatrix transform;
 };
