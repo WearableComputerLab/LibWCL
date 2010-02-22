@@ -100,6 +100,8 @@ std::vector<Camera *> CameraFactory::findCameras(const Camera::ImageFormat f,
     std::vector<Camera *> cameras = getCameras();
     std::vector<Camera *> matches;
 
+    // FIXME Check each camera that supports this...
+
     for(std::vector<Camera *>::iterator it = cameras.begin();
 	it!= cameras.end();
 	++it ){
