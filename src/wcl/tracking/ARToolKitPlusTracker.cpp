@@ -34,8 +34,8 @@ using namespace ARToolKitPlus;
 namespace wcl {
 
 
-ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned iscreenWidth, const unsigned iscreenHeight,
-					    const unsigned imarkerWidth, const int thresholdValue ):
+ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
+					    const unsigned iscreenWidth, const unsigned iscreenHeight):
     markerWidth(imarkerWidth)
 {
 

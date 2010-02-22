@@ -53,10 +53,10 @@ namespace wcl
 class ARToolKitPlusTracker: public Tracker
 {
 public:
-    ARToolKitPlusTracker(const unsigned imageWidth,
-                         const unsigned imageHeight,
-			 const unsigned markerWidth = 80,
-			 const int thresholdValue = -1 /* -1 = AUTO */	);
+    ARToolKitPlusTracker( const unsigned markerWidth = 80,
+                          const int thresholdValue = -1 /* -1 = AUTO */,
+                          const screenWidth = 800,   /* ScreenWidth/screenHeight are used for getProjectionMatrix */
+                          const screenHeight = 600);
     virtual ~ARToolKitPlusTracker();
     virtual void setCamera(Camera *);
 
