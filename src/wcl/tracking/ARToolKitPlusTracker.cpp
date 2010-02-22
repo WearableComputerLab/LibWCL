@@ -205,17 +205,23 @@ void ARToolKitPlusTracker::update()
 							this->markerWidth,
 							conv );
 
+	//
+	// ARToolkit may return marker ids not in the map in the case of
+	// invalid detection. We hence search here for a valid id
+	//
+	std::map<unsigned, ARToolKitPlusTrackedObject *>::iterator it = this->mapping.find(markers[i].id);
+	if( it != this->mapping.end()){
+	    ARToolKitPlusTrackedObject *marker = it->second;
+	    if( marker != NULL ){
 
+		for(unsigned row=0; row < 3; row++ )
+		    for(unsigned c =0; c < 4; c++)
+			m[row][c]=conv[row][c];
 
-	if( markers[i].id > -1 ){
-	    ARToolKitPlusTrackedObject *marker = this->mapping[markers[i].id];
-	    for(unsigned row=0; row < 3; row++ )
-		for(unsigned c =0; c < 4; c++)
-		    m[row][c]=conv[row][c];
-
-	    marker->setTransform(m);
-	    marker->setVisible(true);
-	    marker->setConfidence(markers[i].cf);
+		marker->setTransform(m);
+		marker->setVisible(true);
+		marker->setConfidence(markers[i].cf);
+	    }
 	}
 	i++;
     }
