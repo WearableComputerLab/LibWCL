@@ -36,8 +36,10 @@ namespace wcl {
 
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
 					    const unsigned iscreenWidth, const unsigned iscreenHeight):
-    markerWidth(imarkerWidth)
+    markerWidth(imarkerWidth), scale(MM)
 {
+
+    assert( imarkerWidth != 0 && "Using ARToolKitPlus with a marker width of zero doesn't make sense");
 
     // create a tracker that does:
     //  - 6x6 sized marker images (in bch pixel) - we hard code this as 1024 images is huge
@@ -218,6 +220,24 @@ void ARToolKitPlusTracker::update()
 		    for(unsigned c =0; c < 4; c++)
 			m[row][c]=conv[row][c];
 
+
+		//
+		// Apply scaling if required
+		//
+		switch(this->scale)
+		{
+		    case MM: break; // No Scaling Needed, ARToolKit Default
+		    case CM:
+			    m[0][3]/=10.0;
+			    m[1][3]/=10.0;
+			    m[2][3]/=10.0;
+			    break;
+		    case INCHES:
+			    m[0][3]/=25.4;
+			    m[1][3]/=25.4;
+			    m[2][3]/=25.4;
+		}
+
 		marker->setTransform(m);
 		marker->setVisible(true);
 		marker->setConfidence(markers[i].cf);
@@ -255,22 +275,7 @@ std::vector<TrackedObject *> ARToolKitPlusTracker::getAllObjects()
 
 void ARToolKitPlusTracker::setUnits(Units u)
 {
-#warning "ARToolKitPlusTracker::setUnits Is not Implemented"
-    /// XXX This should be possible provided we know the
-    /// marker size - benjsc 20100201
-    /*
-    switch(u)
-    {
-        case INCHES:
-	    ;
-        case CM:
-	    ;
-        case MM:
-	    ;
-    ;
-
-    /// XXX Implement Me
-    */
+    this->scale = u;
 }
 
 void ARToolKitPlusTracker::setThreshold(const int value )
