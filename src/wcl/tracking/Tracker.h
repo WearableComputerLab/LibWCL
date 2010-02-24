@@ -25,8 +25,8 @@
  */
 
 
-#ifndef TRACKER_H
-#define TRACKER_H
+#ifndef WCL_TRACKING_TRACKER_H
+#define WCL_TRACKING_TRACKER_H
 
 #include <vector>
 
