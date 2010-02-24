@@ -36,7 +36,7 @@ namespace wcl {
 
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
 					    const unsigned iscreenWidth, const unsigned iscreenHeight):
-    markerWidth(imarkerWidth), scale(MM)
+    markerWidth(imarkerWidth), scale(CM)
 {
 
     assert( imarkerWidth != 0 && "Using ARToolKitPlus with a marker width of zero doesn't make sense");
@@ -226,16 +226,18 @@ void ARToolKitPlusTracker::update()
 		//
 		switch(this->scale)
 		{
-		    case MM: break; // No Scaling Needed, ARToolKit Default
-		    case CM:
-			    m[0][3]/=10.0;
-			    m[1][3]/=10.0;
-			    m[2][3]/=10.0;
+		    case MM:
+			    m[0][3]*=10.0;
+			    m[1][3]*=10.0;
+			    m[2][3]*=10.0;
 			    break;
+		    case CM:
+			    break; // No Scaling Needed, ARToolKit Default
 		    case INCHES:
 			    m[0][3]/=25.4;
 			    m[1][3]/=25.4;
 			    m[2][3]/=25.4;
+			    break;
 		}
 
 		marker->setTransform(m);
