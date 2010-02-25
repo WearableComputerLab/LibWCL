@@ -67,8 +67,12 @@ SMatrix ARToolKitPlusTrackedObject::getTransform()
 
 Vector ARToolKitPlusTrackedObject::getTranslation()
 {
+    Vector v(3);
     SMatrix s = this->getTransform();
-    return *s[2];
+    v[0]=s[0][3];
+    v[1]=s[1][3];
+    v[2]=s[2][3];
+    return v;
 }
 
 SMatrix ARToolKitPlusTrackedObject::getRotation()
