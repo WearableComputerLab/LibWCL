@@ -42,7 +42,7 @@ ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const i
     assert( imarkerWidth != 0 && "Using ARToolKitPlus with a marker width of zero doesn't make sense");
 
     // create a tracker that does:
-    //  - 6x6 sized marker images (in bch pixel) - we hard code this as 1024 images is huge
+    //  - 6x6 sized marker images (in bch pixel) - we hard code this as 4096 images is huge
     //  - samples at a maximum of 6x6 -??? Seems to relate to image division maximum
     //  - can load a maximum of 0 pattern - not required as we use BCH patterns
     //  - can detect a maximum of imaxMarkserPerImage patterns in one image
@@ -67,8 +67,8 @@ ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const i
     // Use the updated pose estimator (Robust Pose Estimation From a Planar Target)
     this->tracker->setPoseEstimator(POSE_ESTIMATOR_RPP);
 
-    // Create 1024 base markers as we use BCH, and also populate the map
-    for(unsigned i=0; i < 1024; i++ ){
+    // Create 4096 base markers as we use BCH, and also populate the map
+    for(unsigned i=0; i < 4096; i++ ){
 	ARToolKitPlusTrackedObject *o = new ARToolKitPlusTrackedObject(imarkerWidth, i);
 	this->objects.push_back(o);
 
