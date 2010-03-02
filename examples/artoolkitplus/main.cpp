@@ -99,6 +99,20 @@ GLvoid init()
 	glClearColor(0,0,0,0);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_LIGHTING);
+	glEnable(GL_LIGHT0);
+
+	// Create light components
+	float ambientLight[] = { 0.2f, 0.2f, 0.2f, 1.0f };
+	float diffuseLight[] = { 0.8f, 0.8f, 0.8, 1.0f };
+	float specularLight[] = { 0.5f, 0.5f, 0.5f, 1.0f };
+	float position[] = { -1.5f, 1.0f, -4.0f, 1.0f };
+
+	// Assign created components to GL_LIGHT0
+	glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
 	data = new unsigned char[IMAGE_WIDTH*IMAGE_HEIGHT*3];
 }
@@ -160,6 +174,9 @@ GLvoid display()
 	tracker.toString();
 	vector<TrackedObject *> objects = tracker.getAllObjects();
 	glDisable(GL_TEXTURE_2D);
+	float mcolor[] = { 1.0, 1.0, 0.0f, 1.0f };
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mcolor);
+
 
 	for(vector<TrackedObject *>::iterator it = objects.begin();
 	    it != objects.end();
