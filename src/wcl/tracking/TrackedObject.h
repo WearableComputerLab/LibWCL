@@ -91,6 +91,7 @@ namespace wcl
 
 			virtual SMatrix getRotation() = 0;
 
+			virtual bool isVisible() const = 0;
 
 		protected:
 			/**

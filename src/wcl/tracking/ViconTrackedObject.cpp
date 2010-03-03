@@ -38,6 +38,9 @@ ViconTrackedObject::ViconTrackedObject(std::string name, ObjectType type)
 {
 	this->name = name;
 	this->type = type;
+
+	if (SIX_DOF == type)
+		visible = true; 
 	
 	x = 0;
 	y = 0;
@@ -232,6 +235,13 @@ void ViconTrackedObject::setUnits(Tracker::Units u)
 	this->units = u;
 }
 
+bool ViconTrackedObject::isVisible() const
+{
+	//TODO is it possible to figure out if a Vicon 6dof is visible?
+	return visible;
+}
+
+
 void ViconTrackedObject::updateData(double* array, int &offset)
 {
 	//Six dof objects also have rotation
@@ -264,10 +274,10 @@ void ViconTrackedObject::updateData(double* array, int &offset)
 	if (this->type == POSITION)
 	{
 		double o = array[offset++];
-		if (o != 0)
-			occluded = true;
+		if (o == 0)
+			visible = true;
 		else
-			occluded = false;
+			visible = false;
 	}
 
 }

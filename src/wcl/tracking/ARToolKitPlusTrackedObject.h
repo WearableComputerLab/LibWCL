@@ -48,7 +48,7 @@ public:
     void setVisible( const bool state);
     void setConfidence( const float value );
 
-    bool isVisible() const;
+    virtual bool isVisible() const;
     unsigned getWidth() const;
     float getConfidence() const;
 

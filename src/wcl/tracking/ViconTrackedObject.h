@@ -79,6 +79,8 @@ namespace wcl
 
 			void setUnits(Tracker::Units u);
 
+			virtual bool isVisible() const;
+
 		protected:
 			/**
 			 * Location of this object in x.
@@ -104,7 +106,7 @@ namespace wcl
 			 * This only applies to Markers, 6DOF objects do not
 			 * receive this information from the server.
 			 */
-			bool occluded;
+			bool visible;
 
 			Tracker::Units units;
 	};

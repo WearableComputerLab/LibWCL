@@ -79,5 +79,11 @@ namespace wcl
 
 		orientation.set(rw, rx, ry, rz);
 	}
+
+	bool PolhemusTrackedObject::isVisible() const
+	{
+		//TODO Does the polhemus make it possible to actually check for visibility?
+		return true;
+	}
 }
 

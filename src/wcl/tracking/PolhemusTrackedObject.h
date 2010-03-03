@@ -63,6 +63,8 @@ namespace wcl
 			
 			virtual SMatrix getRotation();
 
+			virtual bool isVisible() const;
+
 			void update(T x, T y, T z, T rw, T rx, T ry, T rz);
 		private:
 			wcl::Vector position;

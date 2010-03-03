@@ -72,6 +72,8 @@ namespace wcl
 						 const double& ry,
 						 const double& rz);
 
+			virtual bool isVisible() const;
+
 		private:
 			wcl::Quaternion orientation;
 			wcl::Vector translation;

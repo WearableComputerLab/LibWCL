@@ -90,5 +90,9 @@ namespace wcl
 		return orientation;
 	}
 
+	bool VirtualTrackedObject::isVisible() const
+	{
+		return true;
+	}
 }
 
