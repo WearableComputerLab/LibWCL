@@ -39,13 +39,14 @@
 #include <wcl/tracking/ARToolKitPlusTracker.h>
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
+#define MARKER_SIZE  134
 
 using namespace std;
 using namespace wcl;
 
 Camera *cam;
 unsigned char* data;
-ARToolKitPlusTracker tracker(100,-1,IMAGE_WIDTH,IMAGE_HEIGHT);
+ARToolKitPlusTracker tracker(MARKER_SIZE,-1,IMAGE_WIDTH,IMAGE_HEIGHT);
 
 /*
  * OpenGL implementation of glWindowPos*MESA()
@@ -188,8 +189,20 @@ GLvoid display()
 
 	    m = object->getTransform();
 	    glLoadMatrixd(toGL(m));
+	    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
+	    glEnable(GL_LIGHTING);
 	    glColor3f(1.0,1.0, 0.0);
 	    glutSolidCube(40.0);
+	    glDisable(GL_LIGHTING);
+	    glColor3f(0.0,0.0,1.0);
+	    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
+	    glBegin(GL_QUADS);
+	    float size=MARKER_SIZE/2.0;
+	    glVertex3f(-size,-size,0.0);
+	    glVertex3f(-size,size,0.0);
+	    glVertex3f(size,size,0.0);
+	    glVertex3f(size,-size,0.0);
+	    glEnd();
 	}
 
 	glFlush();
