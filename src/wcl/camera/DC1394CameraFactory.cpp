@@ -29,6 +29,7 @@
 namespace wcl {
 
 DC1394CameraFactory *DC1394CameraFactory::instance;
+std::vector<DC1394Camera *> DC1394CameraFactory::cameras;
 
 DC1394CameraFactory::DC1394CameraFactory()
 {
@@ -36,12 +37,21 @@ DC1394CameraFactory::DC1394CameraFactory()
 
 DC1394CameraFactory::~DC1394CameraFactory()
 {
+    for(std::vector<DC1394Camera *>::iterator it = this->cameras.begin();
+	it != this->cameras.end();
+	++it )
+    {
+	DC1394Camera *c = *it;
+	delete c;
+    }
 }
 
 DC1394CameraFactory *DC1394CameraFactory::getInstance()
 {
-    if( DC1394CameraFactory::instance == NULL )
+    if( DC1394CameraFactory::instance == NULL ){
 	DC1394CameraFactory::instance = new DC1394CameraFactory();
+	instance->probeCameras();
+    }
 
     return DC1394CameraFactory::instance;
 }
@@ -49,10 +59,13 @@ DC1394CameraFactory *DC1394CameraFactory::getInstance()
 
 std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
 {
-#warning DC1394CameraFactory:getCameras: Note this has a memory leak at current
     DC1394CameraFactory *instance = DC1394CameraFactory::getInstance();
-    std::vector<DC1394Camera *> cameras;
+    return instance->cameras;
+}
 
+
+void DC1394CameraFactory::probeCameras()
+{
     // attempt to located the cameras on the firewire bus
     dc1394error_t err;
     dc1394_t * d;
@@ -65,13 +78,10 @@ std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
 
     for( int i = 0 ; i < list->num; i++ ){
 	DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
-	cameras.push_back(c);
+	this->cameras.push_back(c);
     }
 
     dc1394_camera_free_list(list);
-
-    return cameras;
 }
-
 
 }

@@ -40,8 +40,11 @@ private:
     DC1394CameraFactory();
     ~DC1394CameraFactory();
 
+    void probeCameras();
+
     static DC1394CameraFactory *instance;
     static DC1394CameraFactory *getInstance();
+    static std::vector<DC1394Camera *> cameras;
 };
 
 };
