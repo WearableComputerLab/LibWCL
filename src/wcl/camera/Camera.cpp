@@ -75,7 +75,7 @@ Camera::Distortion Camera::getDistortion() const
     return this->distortion;
 }
 
-int Camera::convertPixelYUV422toRGB8(const int y, const int u, const int v )
+int Camera::convertPixelYUYV422toRGB8(const int y, const int u, const int v )
 {
     unsigned int pixel32 = 0;
     unsigned char *pixel = (unsigned char *)&pixel32;
@@ -99,7 +99,7 @@ int Camera::convertPixelYUV422toRGB8(const int y, const int u, const int v )
     return pixel32;
 }
 
-void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
+void Camera::convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 			 const unsigned int width, const unsigned int height)
 {
     unsigned int in, out = 0;
@@ -121,7 +121,7 @@ void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *r
 	y1 = (pixel_16 & 0x00ff0000) >> 16;
 	v  = (pixel_16 & 0xff000000) >> 24;
 
-	pixel32 = Camera::convertPixelYUV422toRGB8(y0, u, v);
+	pixel32 = Camera::convertPixelYUYV422toRGB8(y0, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
@@ -130,7 +130,7 @@ void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *r
 	rgb[out++] = pixel_24[1];
 	rgb[out++] = pixel_24[2];
 
-	pixel32 = Camera::convertPixelYUV422toRGB8(y1, u, v);
+	pixel32 = Camera::convertPixelYUYV422toRGB8(y1, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;

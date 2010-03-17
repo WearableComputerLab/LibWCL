@@ -220,12 +220,12 @@ namespace wcl
 			/**
 			 * Converts a single pixel from yuv422 to rgb8
 			 */
-			static int convertPixelYUV422toRGB8(const int y, const int u, const int v);
+			static int convertPixelYUYV422toRGB8(const int y, const int u, const int v);
 
 			/**
 			 * Converts a YUYV422 buffer to an RGB8 buffer
 			 */
-			static void convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
+			static void convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 						    const unsigned int width, const unsigned int height);
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
