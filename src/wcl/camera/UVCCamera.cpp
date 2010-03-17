@@ -34,6 +34,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <stdlib.h>
 #include "UVCCamera.h"
 
 using namespace wcl;
@@ -90,6 +91,7 @@ void UVCCamera::loadCapabilities()
 	    case V4L2_PIX_FMT_YUYV: f=YUYV422; break;
 	}
 
+	this->setFormat(f, format.fmt.pix.width, format.fmt.pix.height);
 }
 
 void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
