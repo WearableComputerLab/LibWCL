@@ -216,6 +216,12 @@ void UVCCamera::shutdown()
 void UVCCamera::printDetails()
 {
 
+	v4l2_capability info;
+	ioctl(cam, VIDIOC_QUERYCAP, &info);
+
+	cout << "Camera: " << info.card << endl;
+	cout << "Bus: " << info.bus_info << endl;
+
 	//query image formats...
 	v4l2_fmtdesc format;
 	format.index = 0;
