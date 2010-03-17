@@ -24,8 +24,10 @@
  * SUCH DAMAGE.
  */
 
+#include <iostream>
 #include <wcl/camera/CameraFactory.h>
 #include <wcl/camera/DC1394CameraFactory.h>
+#include <wcl/camera/UVCCameraFactory.h>
 
 namespace wcl
 {
@@ -63,6 +65,8 @@ std::vector<Camera *> CameraFactory::getCameras()
 {
     std::vector<Camera *>all;
 
+    try {
+
     std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
 
     for(std::vector<DC1394Camera *>::iterator it = dc1394.begin();
@@ -70,13 +74,15 @@ std::vector<Camera *> CameraFactory::getCameras()
 	++it )
 	all.push_back( *it );
 
-    /*std::vector<UVCCameraCamera *> uvc = UVCCameraFactory::getCameras();
+    } catch ( std::string s ){
+	std::cout << "DC1394Cameras Unavailable:" << s << std::endl;
+    }
 
+    std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
     for(std::vector<UVCCamera *>::iterator it = uvc.begin();
 	it != uvc.end();
 	++it )
 	all.push_back( *it );
-	*/
 
     return all;
 }
