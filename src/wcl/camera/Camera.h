@@ -193,9 +193,19 @@ namespace wcl
 			/**
 			 * Returns an image buffer for use in a program.
 			 *
-			 * @return a char array containing the image buffer.
+			 * @return an unsigned char array containing the image buffer.
 			 */
 			virtual const unsigned char* getFrame() = 0;
+
+			/**
+			 * Return an image buffer in the specified format. The
+			 * camera format is unchanged, and software is used
+			 * to convert the format to the requested format
+			 *
+			 * @param f The format the frame should be returned in
+			 * @return an unsigned char array in the requested format (Note the datasize of this frame may be larger)
+			 */
+			virtual const unsigned char *getFrame(const ImageFormat f);
 
 			/**
 			 * Start the camera capturing
@@ -270,6 +280,11 @@ namespace wcl
 			 * The unique ID for this camera
 			 */
 			CameraID id;
+
+		private:
+			CameraBuffer *conversionBuffer;
+
+			void setupConversionBuffer( const size_t buffersize );
 	};
 
 };
