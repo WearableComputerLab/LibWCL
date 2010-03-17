@@ -154,4 +154,45 @@ void Camera::convertImageMONO8toRGB8( const unsigned char *mono, unsigned char *
     }
 }
 
+unsigned Camera::getFormatBytesPerPixel() const
+{
+    return Camera::getFormatBytesPerPixel(this->getImageFormat());
+}
+
+unsigned Camera::getFormatBytesPerPixel(const ImageFormat f ) const
+{
+    switch( f ){
+	case RGB8:
+	    return 3;
+	case RGB16:
+	    return 6;
+	case RGB32:
+	    return 12;
+	case BGR8:
+	    return 3;
+	case MONO8:
+	    return 1;
+	case MONO16:
+	    return 2;
+	case YUYV422:
+	    return 4;
+	case YUYV411:
+	    return 4;
+	case MJPEG:
+	    return 12;
+    }
+}
+
+unsigned Camera::getFormatBufferSize() const
+{
+    return  Camera::getFormatBufferSize( this->getImageFormat());
+}
+
+unsigned Camera::getFormatBufferSize(const ImageFormat f ) const
+{
+    return (this->getFormatBytesPerPixel(f) *
+	    this->getFormatWidth() *
+	    this->getFormatHeight());
+}
+
 }

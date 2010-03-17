@@ -161,10 +161,14 @@ namespace wcl
                         ImageFormat getImageFormat() const { return this->format; }
 
 			///XXX NOT YET - benjsc 20100211 std::vector<ImageFormat>getSupportedFormats() const;
-			
+
                         unsigned getFormatWidth() const { return this->width; }
                         unsigned getFormatHeight() const { return this->height; }
 			unsigned getFormatFPS() const { return this->fps; };
+			unsigned getFormatBytesPerPixel() const;
+			unsigned getFormatBytesPerPixel(const ImageFormat ) const;
+			unsigned getFormatBufferSize() const;
+			unsigned getFormatBufferSize(const ImageFormat) const;
 
 			/**
 			 * Sets the exposure mode of the camera.
