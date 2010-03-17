@@ -111,6 +111,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 
 	bufferSize = newf.fmt.pix.sizeimage;
 
+	Camera::setFormat(f, width, height);
 }
 
 
