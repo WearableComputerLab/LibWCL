@@ -30,6 +30,7 @@
 #include <string.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 
 // include openGL headers
 #include <GL/gl.h>
@@ -54,9 +55,8 @@ void usage()
 	   "eg: camera 1 /dev/video0\n"
 	   "\n"
 	   "Where type is:\n"
-	   "	1. UVCCamera\n"
-	   "	2. DC1394 Camera\n"
-	   "	3. Virtual Camera\n"
+	   "	1. UVC/Firewire\n"
+	   "	2. Virtual Camera\n"
 	  );
 }
 
@@ -71,14 +71,14 @@ GLvoid init()
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	data = new unsigned char[640*480*3];
+	data = new unsigned char[cam->getFormatBufferSize(Camera::RGB8)];
 
 	// create a texture for the image...
 	glTexImage2D(GL_TEXTURE_2D,             //target
 				 0,                         //level of detail
 				 3,                         //colour components
-				 640,                       //width
-				 480,                       //height
+				 cam->getFormatWidth(),     //width
+				 cam->getFormatHeight(),    //height
 				 0,                         //border
 				 GL_RGB,                    //image format
 				 GL_UNSIGNED_BYTE,
@@ -112,29 +112,16 @@ GLvoid display()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	const unsigned char* frame = cam->getFrame();
-
-	switch(cam->getImageFormat()){
-	    case Camera::YUYV422:
-		Camera::convertImageYUV422toRGB8(frame, data, 640, 480);
-		break;
-	    case Camera::MONO8:
-		Camera::convertImageMONO8toRGB8(frame,data,640,480);
-		break;
-	    case Camera::RGB8:
-	    default:
-		memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3);
-	}
-
+	const unsigned char* frame = cam->getFrame(Camera::RGB8);
 	glTexSubImage2D(GL_TEXTURE_2D,
 	                0,
 					0,
 					0,
-					640,
-					480,
+					cam->getFormatWidth(),
+					cam->getFormatHeight(),
 					GL_RGB,
 					GL_UNSIGNED_BYTE,
-					data);
+					frame);
 
 	glMatrixMode(GL_MODELVIEW);
 
@@ -196,28 +183,28 @@ int main(int argc, char** argv)
 
 		// Open the camera
 		switch( atoi(argv[1])){
-			case 1: //UVCamera
-				if(argc< 3 ){
-					usage();
-					return 1;
-				}
-				cam = new UVCCamera(argv[2]);
-				break;
-			case 2: //DC1394
-				if(argc< 3 ){
-					usage();
-					return 1;
-				}
-				{
+			case 1:
+			    {
+				cam = CameraFactory::getCamera();
+				long int value = -1;
+				if( argc > 2 ){
 				    long int value = atol(argv[2]);
-				    if( value < 0 ){
-					cam = CameraFactory::getCamera();
-				    } else {
-					cam = new DC1394Camera(value);
-				    }
 				}
-				break;
-			case 3: //Virtual Camera
+				if( value < 0 ){
+				    cam = CameraFactory::getCamera();
+				} else {
+				    std::stringstream s;
+				    s<< value;
+				    cam = CameraFactory::getCamera(s.str());
+				}
+
+				if (cam == NULL ){
+				    std::cout << "No usable cameras found" << std::endl;
+				    exit(0);
+				}
+			    }
+			    break;
+			case 2: //Virtual Camera
 				cam = new VirtualCamera();
 				break;
 			default:
@@ -232,17 +219,6 @@ int main(int argc, char** argv)
 		 */
 		cam->printDetails();
 
-		/*
-		 * set the video format...
-		 *
-		 * XXX TODO, get the available formats
-		 * select one and use it, teaching GL to use it as well
-		 * - benjsc 20100208
-		 */
-		cout << "Setting camera format... ";
-		cam->setFormat(Camera::MONO8, 640, 480);
-		cout << "Done!" << endl;
-
 		cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY);
 
 		//set power frequency compensation to 50 Hz
@@ -253,8 +229,7 @@ int main(int argc, char** argv)
 		// Create GLUT window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-		glutInitWindowSize(640, 480);
-		glutInitWindowPosition(100,100);
+		glutInitWindowSize(cam->getFormatWidth(), cam->getFormatHeight());
 		glutCreateWindow(argv[0]);
 
 		init();
