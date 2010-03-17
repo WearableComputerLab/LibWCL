@@ -80,6 +80,16 @@ void UVCCamera::loadCapabilities()
 	else
 		mode = CALL_READ;
 
+
+	v4l2_format format;
+	format.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	ioctl(cam, VIDIOC_G_FMT, &format);
+	ImageFormat f;
+	switch(format.fmt.pix.pixelformat){
+	    case V4L2_PIX_FMT_RGB32: f=MJPEG; break;
+	    case V4L2_PIX_FMT_YUYV: f=YUYV422; break;
+	}
+
 }
 
 void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
