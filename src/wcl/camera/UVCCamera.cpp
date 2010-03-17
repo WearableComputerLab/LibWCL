@@ -351,7 +351,7 @@ void UVCCamera::setControlValue(const Control controlName, const int value)
 }
 
 
-int UVCCamera::getBufferSize() const
+unsigned UVCCamera::getFormatBufferSize() const
 {
 	return bufferSize;
 }
