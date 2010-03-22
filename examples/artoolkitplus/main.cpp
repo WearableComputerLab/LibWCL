@@ -37,8 +37,6 @@
 #include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
 #include <wcl/tracking/ARToolKitPlusTracker.h>
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 480
 #define MARKER_SIZE  134
 
 using namespace std;
@@ -46,7 +44,7 @@ using namespace wcl;
 
 Camera *cam;
 unsigned char* data;
-ARToolKitPlusTracker tracker(MARKER_SIZE,-1,IMAGE_WIDTH,IMAGE_HEIGHT);
+ARToolKitPlusTracker *tracker;
 
 /*
  * OpenGL implementation of glWindowPos*MESA()
@@ -115,7 +113,7 @@ GLvoid init()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-	data = new unsigned char[IMAGE_WIDTH*IMAGE_HEIGHT*3];
+	data = new unsigned char[cam->getFormatWidth() * cam->getFormatHeight() * 3/*RGB*/];
 }
 
 GLvoid reshape(int width, int height)
@@ -133,27 +131,18 @@ GLvoid display()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
-	const unsigned char* frame = cam->getFrame();
-	switch(cam->getImageFormat()){
-	    case Camera::YUYV422:
-		Camera::convertImageYUV422toRGB8(frame, data, IMAGE_WIDTH, IMAGE_HEIGHT);
-		break;
-	    case Camera::MONO8:
-		Camera::convertImageMONO8toRGB8(frame,data, IMAGE_WIDTH, IMAGE_HEIGHT);
-		break;
-	    case Camera::RGB8:
-	    default:
-		memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3);
-	}
-
+	const unsigned char* frame = cam->getFrame(Camera::RGB8);
+	memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3 /*RGB*/);
 
 	// Flip the image, glPixelZoom should do this but for some reason
 	// I can't get it to work
 	unsigned i=0;
-	for(unsigned rows=IMAGE_HEIGHT; rows > IMAGE_HEIGHT/2; rows--){
-	    for(unsigned cols=0; cols < IMAGE_WIDTH*3; cols++){
-		int source = (rows*IMAGE_WIDTH*3) + cols;
-		int dest = (i * IMAGE_WIDTH*3) + cols;
+	unsigned height = cam->getFormatHeight();
+	unsigned width = cam->getFormatWidth();
+	for(unsigned rows=height; rows > height/2; rows--){
+	    for(unsigned cols=0; cols < width*3; cols++){
+		int source = (rows*width*3) + cols;
+		int dest = (i * width*3) + cols;
 		unsigned char c = data[dest];
 		data[dest]=data[source];
 		data[source]=c;
@@ -162,18 +151,18 @@ GLvoid display()
 	}
 
 	glWindowPos4fMESA(1.0, 1.0, 1.0, 1.0);
-	glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, data );
+	glDrawPixels( width, height, GL_RGB, GL_UNSIGNED_BYTE, data );
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glLoadMatrixd(toGL(tracker.getProjectionMatrix()));
+	glLoadMatrixd(toGL(tracker->getProjectionMatrix()));
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	// Find objects in the scene and render a cube on it
-	tracker.update();
-	tracker.toString();
-	vector<TrackedObject *> objects = tracker.getAllObjects();
+	tracker->update();
+	tracker->toString();
+	vector<TrackedObject *> objects = tracker->getAllObjects();
 	glDisable(GL_TEXTURE_2D);
 	float mcolor[] = { 1.0, 1.0, 0.0f, 1.0f };
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, mcolor);
@@ -225,14 +214,13 @@ int main(int argc, char** argv)
 	return 1;
     }
 
-    cam->setFormat(Camera::MONO8, IMAGE_WIDTH, IMAGE_HEIGHT);
     cam->printDetails();
-
-    tracker.setCamera(cam);
+    tracker = new ARToolKitPlusTracker(MARKER_SIZE,-1,cam->getFormatWidth(), cam->getFormatHeight());
+    tracker->setCamera(cam);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);
+    glutInitWindowSize(cam->getFormatWidth(), cam->getFormatHeight());
     glutInitWindowPosition(100,100);
     glutCreateWindow(argv[0]);
     init();
