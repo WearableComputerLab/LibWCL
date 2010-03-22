@@ -48,7 +48,6 @@ DC1394Camera::DC1394Camera(const uint64_t myguid):
 	this->d = dc1394_new ();
 	if( !this->d )
 	    throw std::string("DC1394Camera:DC1394Camera: Failed to init DC1394 Library");
-	printf("%lu\n", guid);
 	this->camera = dc1394_camera_new( this->d, myguid );
 	if( !this->camera )
 	    throw std::string("DC1394Camera:DC1394Camera: Unknown Camera");
