@@ -62,7 +62,7 @@ int main( int argc, char **args )
 	exit(EXIT_FAILURE);
     }
 
-    printf("You got a message: %*s\n",  buffer );
+    printf("You got a message: %s\n",  buffer );
 
     // Close the serial port and restore the previous state of the port
     s.close();
