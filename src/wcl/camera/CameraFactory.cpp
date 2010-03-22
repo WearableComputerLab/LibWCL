@@ -78,6 +78,7 @@ std::vector<Camera *> CameraFactory::getCameras()
 	std::cout << "DC1394Cameras Unavailable:" << s << std::endl;
     }
 
+    printf("Searching for USB Cameras...\n");
     std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
     for(std::vector<UVCCamera *>::iterator it = uvc.begin();
 	it != uvc.end();

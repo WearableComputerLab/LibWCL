@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <stdio.h>
 #include <iostream>
 #include <sstream>
 #include <wcl/camera/UVCCameraFactory.h>
@@ -72,6 +73,7 @@ void UVCCameraFactory::probeCameras()
     // attempt to located the cameras on the USB Bus
     // to do this we walk throught the device nodes in /dev
     // until we get a node we can't open/doesn't exist
+    printf("Probing UVC Cameras\n");
     for( unsigned i=0; i < MAX_DEVICES; i++){
 	std::stringstream device;
 	device<<"/dev/video";
@@ -81,6 +83,7 @@ void UVCCameraFactory::probeCameras()
 	    this->cameras.push_back( c );
 	} catch (std::string s )
 	{
+	    printf("Exception Raised: %s\n", s.c_str());
 	    // Exception raised, hence there's no device, or some other issue
 	    // we simply break the loop at this point
 	    break;
