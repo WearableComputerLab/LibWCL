@@ -37,8 +37,6 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <wcl/camera/UVCCamera.h>
-#include <wcl/camera/DC1394Camera.h>
 #include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
 
