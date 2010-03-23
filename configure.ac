@@ -281,6 +281,15 @@ fi
 
 
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
+if test "x$enable_video_uvc" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_UVC, 1, [Enable UVC Video Camera Support])
+fi
+if test "x$enable_video_1394" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_DC1394, 1, [Enable IEEE1394 Camera Support])
+fi
+if test "x$enable_video_virtual" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_VIRTUAL, 1, [Enable Virtual Camera Support])
+fi
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
