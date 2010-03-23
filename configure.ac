@@ -66,6 +66,9 @@ AC_ARG_ENABLE(video-1394, AC_HELP_STRING([--enable-video-1394], [Enable 1394/Fir
 #
 AC_ARG_ENABLE(video-uvc, AC_HELP_STRING([--enable-video-uvc], [Enable UVC Video Support]), enable_video_uvc="yes" , enable_video_uvc="no")
 
+# Support for Virtual Video
+#
+AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
 #
 # Gesture recognition support
@@ -95,9 +98,6 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 #
 AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
 
-# Support for Virtual Video
-#
-AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
 # Support for ARToolkitPlus Tracking
 #
@@ -155,7 +155,7 @@ fi
 #
 if test "x$enable_video_uvc" = "xyes" || \
    test "x$enable_video_1394" = "xyes" ||
-   test "x$enable_video_virutal" = "xyes"; then
+   test "x$enable_video_virtual" = "xyes"; then
 	enable_video="yes";
 fi
 
