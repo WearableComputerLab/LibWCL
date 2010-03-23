@@ -59,7 +59,7 @@ AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP 
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
+AC_ARG_ENABLE(video-1394, AC_HELP_STRING([--enable-video-1394], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
 #
 # UVC Video Support 
