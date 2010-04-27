@@ -102,6 +102,11 @@ bool Serial::setBlockingMode( const BlockingMode mode )
                 flags &=~O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
 		    this->blocking=mode;
+                    // If we are in raw mode we must also set
+                    // the wait timers
+                    this->currstate.c_cc[VMIN]=1;
+                    this->currstate.c_cc[VTIME]=0;
+                    this->apply();
 		    return true;
                 }
                 break;
