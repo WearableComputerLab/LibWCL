@@ -97,20 +97,21 @@ bool Serial::setBlockingMode( const BlockingMode mode )
         // we obtain all the flags and adjust the blocking flag only
         flags = ::fcntl(this->fd, F_GETFL, 0 /* ALLFLAGS */);
 
-        switch( blocking ) {
+        switch( mode ) {
             case BLOCKING:
                 flags &=~O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
-                    return true;
+		    this->blocking=mode;
+		    return true;
                 }
                 break;
             case NONBLOCKING:
                 flags |= O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
+		    this->blocking=mode;
                     return true;
                 }
                 break;
-
     }
 
     return false;
@@ -175,7 +176,7 @@ Serial::open( const char *device,
     // was low and an open was called, the open call would hang until DCD was
     // present
     if ( ! (signals & DCD) )
-	mask |= O_NDELAY;
+	mask |= O_NONBLOCK; //Note: O_NDELAY=O_NONBLOCK
 
     this->fd = ::open( device, mask );
     if ( this->fd == -1){
