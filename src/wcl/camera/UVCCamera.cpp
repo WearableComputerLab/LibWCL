@@ -104,7 +104,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 	switch (f)
 	{
 		case MJPEG:
-			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
 			break;
 
 		case YUYV422:
