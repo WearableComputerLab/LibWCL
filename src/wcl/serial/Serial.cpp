@@ -102,11 +102,14 @@ bool Serial::setBlockingMode( const BlockingMode mode )
                 flags &=~O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
 		    this->blocking=mode;
-                    // If we are in raw mode we must also set
-                    // the wait timers
-                    this->currstate.c_cc[VMIN]=1;
-                    this->currstate.c_cc[VTIME]=0;
-                    this->apply();
+		    if( this->inputmode == RAW ){
+			// If we are in raw mode, then we must also set the minimum characters
+			// we must receive before a read will return else we do not
+			// block. We also disable the read timer.
+			this->currstate.c_cc[VMIN]=1;
+			this->currstate.c_cc[VTIME]=0;
+			this->apply();
+		    }
 		    return true;
                 }
                 break;
@@ -181,7 +184,7 @@ Serial::open( const char *device,
     // was low and an open was called, the open call would hang until DCD was
     // present
     if ( ! (signals & DCD) )
-	mask |= O_NONBLOCK; //Note: O_NDELAY=O_NONBLOCK
+	mask |= O_NONBLOCK; //Note: O_NDELAY=O_NONBLOCK (except under HPUnix)
 
     this->fd = ::open( device, mask );
     if ( this->fd == -1){
