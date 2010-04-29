@@ -624,6 +624,13 @@ Serial::setFlowControl( const FlowControl flow)
     return false;
 }
 
+/**
+ * Set the input mode to use. In both modes we disable echo and signal
+ * generation to the program.
+ *
+ * @param state The input mode to use
+ * @return True if the new input mode applied correctly, otherwise false.
+ */
 bool
 Serial::setInputMode( const InputMode state)
 {
@@ -632,8 +639,8 @@ Serial::setInputMode( const InputMode state)
         // Setup the input mode correctly
         this->input = state;
         switch ( state ){
-            case LINE: this->currstate.c_lflag |= ( ICANON | ECHO | ECHOE ); break;
-            case RAW: this->currstate.c_lflag &= ~(  ICANON | ECHO |ECHOE | ISIG ); break;
+            case LINE: this->currstate.c_lflag = ICANON; break;
+            case RAW: this->currstate.c_lflag = 0; break;
         }
         return this->apply();
     }
