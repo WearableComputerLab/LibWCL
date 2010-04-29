@@ -102,7 +102,7 @@ bool Serial::setBlockingMode( const BlockingMode mode )
                 flags &=~O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
 		    this->blocking=mode;
-		    if( this->inputmode == RAW ){
+		    if( this->input == RAW ){
 			// If we are in raw mode, then we must also set the minimum characters
 			// we must receive before a read will return else we do not
 			// block. We also disable the read timer.
