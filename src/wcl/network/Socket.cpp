@@ -347,6 +347,22 @@ int Socket::operator *() const
     return this->sockfd;
 }
 
+/**
+ * Obtain the amount of bytes currently available for reading
+ *
+ * @return The amount of bytes available or 0 if the socket is closed
+ * @throws SocketException if the remote has closed the socket
+ */
+ssize_t Socket::getAvailableCount()
+{
+    ssize_t bytesAvailable;
+    int status = ioctl (this->socketfd, FIONREAD, &bytesAvailable);
+    if ( status == -1 && errno == ECONNRESET){
+	throw new SocketException(this);
+    }
+    return bytesAvailable;
+}
+
 
 
 /*==============================================================================
