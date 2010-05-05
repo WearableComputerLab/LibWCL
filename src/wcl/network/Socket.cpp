@@ -34,6 +34,7 @@
 	#include <sys/socket.h>
 	#include <fcntl.h>
 	#include <errno.h>
+	#include <sys/ioctl.h>
 #endif
 
 #include "Socket.h"
@@ -356,7 +357,7 @@ int Socket::operator *() const
 ssize_t Socket::getAvailableCount()
 {
     ssize_t bytesAvailable;
-    int status = ioctl (this->socketfd, FIONREAD, &bytesAvailable);
+    int status = ioctl (this->sockfd, FIONREAD, &bytesAvailable);
     if ( status == -1 && errno == ECONNRESET){
 	throw new SocketException(this);
     }
