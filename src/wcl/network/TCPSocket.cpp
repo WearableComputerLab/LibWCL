@@ -140,12 +140,27 @@ bool TCPSocket::create()
 }
 
 
-void TCPSocket::setFileDescriptor( int input)
+/**
+ * Update the file descriptor that the TCPSocket uses. This call will also
+ * update the blocking state of the descriptor to what the TCPSocket blocking
+ * state currently is set to.
+ *
+ * @param input The new file descriptor to use as a TCPSocket
+ */
+void TCPSocket::setFileDescriptor( const int input)
 {
     this->sockfd = input;
+
+    // We must update the blocking state of the input descriptor else
+    this->setBlockingMode( this->blocking );
 }
 
-void TCPSocket::setRemoteAddress( sockaddr_in address)
+/**
+ * Set the remote address represented by this socket
+ *
+ * @param address The new address this socket should represent
+ */
+void TCPSocket::setRemoteAddress( const sockaddr_in address)
 {
     this->address = address;
 }

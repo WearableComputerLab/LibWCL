@@ -41,8 +41,8 @@ class TCPSocket: public Socket
 		TCPSocket();
 		TCPSocket ( const std::string, const unsigned port );
 		void connect();
-		void setFileDescriptor( int );
-		void setRemoteAddress( sockaddr_in );
+		void setFileDescriptor( const int );
+		void setRemoteAddress( const sockaddr_in );
 
 	protected: 
 		virtual bool create();
