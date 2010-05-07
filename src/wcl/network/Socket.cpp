@@ -356,7 +356,7 @@ int Socket::operator *() const
  */
 ssize_t Socket::getAvailableCount()
 {
-    ssize_t bytesAvailable;
+    int bytesAvailable;
     int status = ioctl (this->sockfd, FIONREAD, &bytesAvailable);
     if ( status == -1 && errno == ECONNRESET){
 	throw new SocketException(this);
