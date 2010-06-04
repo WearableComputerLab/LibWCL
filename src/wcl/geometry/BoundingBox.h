@@ -95,7 +95,7 @@ namespace wcl
 			 */
 			wcl::Vector getCentroid();
 
-		private:
+		protected:
 			/**
 			 * the minimum x,y and z
 			 */
