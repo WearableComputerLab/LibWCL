@@ -34,6 +34,7 @@
 #include <iostream>
 #include <fstream>
 #include <string.h>
+#include <stdlib.h>
 #include "UVCCamera.h"
 
 using namespace wcl;
@@ -80,6 +81,17 @@ void UVCCamera::loadCapabilities()
 	else
 		mode = CALL_READ;
 
+
+	v4l2_format format;
+	format.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
+	ioctl(cam, VIDIOC_G_FMT, &format);
+	ImageFormat f;
+	switch(format.fmt.pix.pixelformat){
+	    case V4L2_PIX_FMT_RGB32: f=MJPEG; break;
+	    case V4L2_PIX_FMT_YUYV: f=YUYV422; break;
+	}
+
+	this->setFormat(f, format.fmt.pix.width, format.fmt.pix.height);
 }
 
 void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
@@ -92,7 +104,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 	switch (f)
 	{
 		case MJPEG:
-			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB32;
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
 			break;
 
 		case YUYV422:
@@ -111,6 +123,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 
 	bufferSize = newf.fmt.pix.sizeimage;
 
+	Camera::setFormat(f, width, height);
 }
 
 
@@ -215,6 +228,12 @@ void UVCCamera::shutdown()
 
 void UVCCamera::printDetails()
 {
+
+	v4l2_capability info;
+	ioctl(cam, VIDIOC_QUERYCAP, &info);
+
+	cout << "Camera: " << info.card << endl;
+	cout << "Bus: " << info.bus_info << endl;
 
 	//query image formats...
 	v4l2_fmtdesc format;
@@ -345,7 +364,7 @@ void UVCCamera::setControlValue(const Control controlName, const int value)
 }
 
 
-int UVCCamera::getBufferSize() const
+unsigned UVCCamera::getFormatBufferSize() const
 {
 	return bufferSize;
 }

@@ -153,7 +153,7 @@ namespace wcl
 			/**
 			 * Returns the size of the image buffer, in bytes.
 			 */
-			int getBufferSize() const ;
+			unsigned getFormatBufferSize() const ;
 
 
 			/**

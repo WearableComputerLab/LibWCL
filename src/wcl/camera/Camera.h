@@ -161,10 +161,14 @@ namespace wcl
                         ImageFormat getImageFormat() const { return this->format; }
 
 			///XXX NOT YET - benjsc 20100211 std::vector<ImageFormat>getSupportedFormats() const;
-			
+
                         unsigned getFormatWidth() const { return this->width; }
                         unsigned getFormatHeight() const { return this->height; }
 			unsigned getFormatFPS() const { return this->fps; };
+			unsigned getFormatBytesPerPixel() const;
+			unsigned getFormatBytesPerPixel(const ImageFormat ) const;
+			unsigned getFormatBufferSize() const;
+			unsigned getFormatBufferSize(const ImageFormat) const;
 
 			/**
 			 * Sets the exposure mode of the camera.
@@ -189,9 +193,19 @@ namespace wcl
 			/**
 			 * Returns an image buffer for use in a program.
 			 *
-			 * @return a char array containing the image buffer.
+			 * @return an unsigned char array containing the image buffer.
 			 */
 			virtual const unsigned char* getFrame() = 0;
+
+			/**
+			 * Return an image buffer in the specified format. The
+			 * camera format is unchanged, and software is used
+			 * to convert the format to the requested format
+			 *
+			 * @param f The format the frame should be returned in
+			 * @return an unsigned char array in the requested format (Note the datasize of this frame may be larger)
+			 */
+			virtual const unsigned char *getFrame(const ImageFormat f);
 
 			/**
 			 * Start the camera capturing
@@ -220,12 +234,12 @@ namespace wcl
 			/**
 			 * Converts a single pixel from yuv422 to rgb8
 			 */
-			static int convertPixelYUV422toRGB8(const int y, const int u, const int v);
+			static int convertPixelYUYV422toRGB8(const int y, const int u, const int v);
 
 			/**
 			 * Converts a YUYV422 buffer to an RGB8 buffer
 			 */
-			static void convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
+			static void convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 						    const unsigned int width, const unsigned int height);
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
@@ -266,6 +280,11 @@ namespace wcl
 			 * The unique ID for this camera
 			 */
 			CameraID id;
+
+		private:
+			CameraBuffer *conversionBuffer;
+
+			void setupConversionBuffer( const size_t buffersize );
 	};
 
 };

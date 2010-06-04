@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,50 +23,29 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#ifndef WCL_CAMERA_UVCCAMERAFACTORY_H
+#define WCL_CAMERA_UVCCAMERAACTORY_H
 
+#include <vector>
+#include <wcl/camera/UVCCamera.h>
 
-/**
- * This simple program will output hello world to the serial port
- * and read back a line of input from the port
- */
-#include <stdio.h>
-#include <stdlib.h>
-#include <wcl/serial/Serial.h>
+namespace wcl {
 
-#define DEVICE "/dev/ttyS0"
-#define BUFSIZE 4096
-
-using namespace wcl;
-
-int main( int argc, char **args )
+class UVCCameraFactory
 {
-    // Create a serial object
-    char buffer[BUFSIZE+1] = {0};
-    Serial s;
+public:
+    static std::vector<UVCCamera *> getCameras();
 
-    // Open the serial port, checking that it opened
-    if ( s.open( DEVICE, Serial::BAUD_115200 /* Use default for all other arguments */) == false ){
-	printf("Failed to open serial port\n");
-	exit(EXIT_FAILURE);
-    }
+private:
+    UVCCameraFactory();
+    ~UVCCameraFactory();
 
-    // Send hello world down the serial line
-    if ( s.write( "Hello World!") == false ){
-	printf("Failed to write hello world\n");
-	exit(EXIT_FAILURE);
-    }
+    void probeCameras();
 
-    // Read back a line (about BUFSIZE characters from the port)
-    if ( s.read( buffer, BUFSIZE )){
-	printf("Failed to read from device\n");
-	exit(EXIT_FAILURE);
-    }
+    static UVCCameraFactory *instance;
+    static UVCCameraFactory *getInstance();
+    static std::vector<UVCCamera *> cameras;
+};
 
-    printf("You got a message: %s\n",  buffer );
-
-    // Close the serial port and restore the previous state of the port
-    s.close();
-
-    return 0;
-}
-
+};
+#endif

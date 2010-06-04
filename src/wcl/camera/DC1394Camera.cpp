@@ -48,7 +48,6 @@ DC1394Camera::DC1394Camera(const uint64_t myguid):
 	this->d = dc1394_new ();
 	if( !this->d )
 	    throw std::string("DC1394Camera:DC1394Camera: Failed to init DC1394 Library");
-	printf("%lu\n", guid);
 	this->camera = dc1394_camera_new( this->d, myguid );
 	if( !this->camera )
 	    throw std::string("DC1394Camera:DC1394Camera: Unknown Camera");
@@ -119,6 +118,54 @@ void DC1394Camera::setFormat( const ImageFormat format, const unsigned width,
 	    { mode = DC1394_VIDEO_MODE_FORMAT7_7; break; }
 	case EXIF:
 	    { mode = DC1394_VIDEO_MODE_EXIF; break; }
+
+
+/*
+On 05/02/10 14:04, Aaron Stafford wrote:
+err, its all a bit complicated. Does someone need to use this?
+
+If you are using format 7 you have to also set the region of interest,
+so you need to get the desired width and height in pixels from somewhere
+and then call the appropriate dc1394 functions e.g.:
+
+dc1394_format7_set_image_size( this->camera, this->videoMode, width,
+height );
+
+dc1394_format7_set_roi( this->camera, this->videoMode,
+DC1394_COLOR_CODING_MONO8, DC1394_USE_MAX_AVAIL, 0, 0, width, height );
+
+Also if you set FORMAT7_0 or FORMAT7_1 you can't or shouldn't set the
+frame rate manually as you will not get the desired result, or the
+camera will just barf or something.
+
+The actual code I used is:
+
+// do not set the framerate if using FORMAT7_0 or FORMAT7_1
+if (this->videoMode != DC1394_VIDEO_MODE_FORMAT7_0 && this->videoMode !=
+DC1394_VIDEO_MODE_FORMAT7_1) {
+  this->setFramerate (ConfigurationLoader::getProperty("framerate"));
+}
+
+...
+
+// set the region of interest
+if (this->videoMode == DC1394_VIDEO_MODE_FORMAT7_0) {
+  int width = atoi (ConfigurationLoader::getProperty("format7_width"));
+
+  int height = atoi
+(ConfigurationLoader::getProperty("format7_height"));
+
+  dc1394_format7_set_image_size (this->camera, this->videoMode,
+                                 width, height);
+
+  dc1394_format7_set_roi (this->camera, this->videoMode,
+                          DC1394_COLOR_CODING_MONO8, 
+                          DC1394_USE_MAX_AVAIL, 0, 0, width, height);
+}
+
+Hope this helps.
+*/
+
 #endif
 	case BGR8:
 	case MJPEG:

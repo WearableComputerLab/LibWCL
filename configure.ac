@@ -59,13 +59,16 @@ AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP 
 # Firewire/1394 Video Support 
 # 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
+AC_ARG_ENABLE(video-1394, AC_HELP_STRING([--enable-video-1394], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
 
 #
 # UVC Video Support 
 #
 AC_ARG_ENABLE(video-uvc, AC_HELP_STRING([--enable-video-uvc], [Enable UVC Video Support]), enable_video_uvc="yes" , enable_video_uvc="no")
 
+# Support for Virtual Video
+#
+AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
 #
 # Gesture recognition support
@@ -95,9 +98,6 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 #
 AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
 
-# Support for Virtual Video
-#
-AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
 
 # Support for ARToolkitPlus Tracking
 #
@@ -155,7 +155,7 @@ fi
 #
 if test "x$enable_video_uvc" = "xyes" || \
    test "x$enable_video_1394" = "xyes" ||
-   test "x$enable_video_virutal" = "xyes"; then
+   test "x$enable_video_virtual" = "xyes"; then
 	enable_video="yes";
 fi
 
@@ -281,6 +281,15 @@ fi
 
 
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
+if test "x$enable_video_uvc" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_UVC, 1, [Enable UVC Video Camera Support])
+fi
+if test "x$enable_video_1394" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_DC1394, 1, [Enable IEEE1394 Camera Support])
+fi
+if test "x$enable_video_virtual" = "xyes" ; then
+AC_DEFINE(ENABLE_VIDEO_VIRTUAL, 1, [Enable Virtual Camera Support])
+fi
 
 #
 # Checks for typedefs, structures, and compiler characteristics.

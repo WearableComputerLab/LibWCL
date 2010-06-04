@@ -24,8 +24,15 @@
  * SUCH DAMAGE.
  */
 
+#include <config.h>
+#include <iostream>
 #include <wcl/camera/CameraFactory.h>
+#ifdef ENABLE_VIDEO_1394
 #include <wcl/camera/DC1394CameraFactory.h>
+#endif
+#ifdef ENABLE_VIDEO_UVC
+#include <wcl/camera/UVCCameraFactory.h>
+#endif
 
 namespace wcl
 {
@@ -63,6 +70,9 @@ std::vector<Camera *> CameraFactory::getCameras()
 {
     std::vector<Camera *>all;
 
+#ifdef ENABLE_VIDEO_1394
+    try {
+
     std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
 
     for(std::vector<DC1394Camera *>::iterator it = dc1394.begin();
@@ -70,13 +80,19 @@ std::vector<Camera *> CameraFactory::getCameras()
 	++it )
 	all.push_back( *it );
 
-    /*std::vector<UVCCameraCamera *> uvc = UVCCameraFactory::getCameras();
+    } catch ( std::string s ){
+	std::cout << "DC1394Cameras Unavailable:" << s << std::endl;
+    }
+#endif
 
+#ifdef ENABLE_VIDEO_UVC
+    std::cout << "Searching for USB Cameras...\n" << endl;
+    std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
     for(std::vector<UVCCamera *>::iterator it = uvc.begin();
 	it != uvc.end();
 	++it )
 	all.push_back( *it );
-	*/
+#endif
 
     return all;
 }

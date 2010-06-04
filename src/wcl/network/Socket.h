@@ -58,6 +58,7 @@ class Socket
 		virtual ssize_t write( const std::string & );
 		virtual void readUntil ( void *buffer, size_t size );
 		virtual void writeUntil ( void *buffer, size_t size );
+		virtual ssize_t getAvailableCount();
 		virtual void close();
 		virtual bool isValid() const;
 		virtual bool setBlockingMode( const BlockingMode );

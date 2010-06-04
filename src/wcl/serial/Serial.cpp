@@ -97,20 +97,29 @@ bool Serial::setBlockingMode( const BlockingMode mode )
         // we obtain all the flags and adjust the blocking flag only
         flags = ::fcntl(this->fd, F_GETFL, 0 /* ALLFLAGS */);
 
-        switch( blocking ) {
+        switch( mode ) {
             case BLOCKING:
                 flags &=~O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
-                    return true;
+		    this->blocking=mode;
+		    if( this->input == RAW ){
+			// If we are in raw mode, then we must also set the minimum characters
+			// we must receive before a read will return else we do not
+			// block. We also disable the read timer.
+			this->currstate.c_cc[VMIN]=1;
+			this->currstate.c_cc[VTIME]=0;
+			this->apply();
+		    }
+		    return true;
                 }
                 break;
             case NONBLOCKING:
                 flags |= O_NONBLOCK;
                 if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
+		    this->blocking=mode;
                     return true;
                 }
                 break;
-
     }
 
     return false;
@@ -175,7 +184,7 @@ Serial::open( const char *device,
     // was low and an open was called, the open call would hang until DCD was
     // present
     if ( ! (signals & DCD) )
-	mask |= O_NDELAY;
+	mask |= O_NONBLOCK; //Note: O_NDELAY=O_NONBLOCK (except under HPUnix)
 
     this->fd = ::open( device, mask );
     if ( this->fd == -1){
@@ -615,6 +624,13 @@ Serial::setFlowControl( const FlowControl flow)
     return false;
 }
 
+/**
+ * Set the input mode to use. In both modes we disable echo and signal
+ * generation to the program.
+ *
+ * @param state The input mode to use
+ * @return True if the new input mode applied correctly, otherwise false.
+ */
 bool
 Serial::setInputMode( const InputMode state)
 {
@@ -623,8 +639,8 @@ Serial::setInputMode( const InputMode state)
         // Setup the input mode correctly
         this->input = state;
         switch ( state ){
-            case LINE: this->currstate.c_lflag |= ( ICANON | ECHO | ECHOE ); break;
-            case RAW: this->currstate.c_lflag &= ~(  ICANON | ECHO |ECHOE | ISIG ); break;
+            case LINE: this->currstate.c_lflag = ICANON; break;
+            case RAW: this->currstate.c_lflag = 0; break;
         }
         return this->apply();
     }

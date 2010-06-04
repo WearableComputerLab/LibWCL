@@ -46,6 +46,10 @@ class TCPServer: private TCPSocket
 
 		bool accept( TCPSocket *);
 
+		/**
+		 * These members are pulled into public scope. They
+		 * are private initially due to private inheritance
+		 */
 		TCPSocket::setBlockingMode;
 		TCPSocket::getBlockingMode;
 		TCPSocket::operator *;

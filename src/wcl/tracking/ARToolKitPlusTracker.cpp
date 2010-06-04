@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2009 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2009-2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,10 @@ namespace wcl {
 
 
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
-					    const unsigned iscreenWidth, const unsigned iscreenHeight):
-    markerWidth(imarkerWidth), scale(CM)
+					    const unsigned iscreenWidth, const unsigned iscreenHeight,
+					    const float inearplane, const float ifarplane):
+    markerWidth(imarkerWidth), scale(CM), cameraFormat(Camera::RGB8),
+    nearplane(inearplane), farplane(ifarplane),inited(false)
 {
 
     assert( imarkerWidth != 0 && "Using ARToolKitPlus with a marker width of zero doesn't make sense");
@@ -103,80 +105,54 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
 
     // Set the format based on what the camera is using
     switch (this->camera->getImageFormat()){
-	case Camera::MJPEG:
-	case Camera::YUYV422:
-        default:
-            printf("ARToolKitPlusTracker:SetCamera: Unknown/Unsupported Camera Image Format Assuming RGB8\n");
-            /* Fallthrough */
 	case Camera::RGB8:
             format=ARToolKitPlus::PIXEL_FORMAT_RGB;
+	    this->cameraFormat = Camera::RGB8;
             break;
 	case Camera::BGR8:
             format=ARToolKitPlus::PIXEL_FORMAT_BGR;
+	    this->cameraFormat = Camera::BGR8;
 	case Camera::MONO8:
 	    format=ARToolKitPlus::PIXEL_FORMAT_LUM;
+	    this->cameraFormat = Camera::MONO8;
             break;
+        default:
+	case Camera::MJPEG:
+	case Camera::YUYV422:
+            printf("ARToolKitPlusTracker:SetCamera: Unsupported Camera Image Format converting to RGB8 via software\n");
+	    this->cameraFormat = Camera::RGB8;
+            format=ARToolKitPlus::PIXEL_FORMAT_RGB;
+	    break;
     }
 
     // Create a new ARToolkit Camera to
-    // init the tracker, not ARToolKitPlus will remove
+    // init the tracker, note ARToolKitPlus will remove
     // delete the last camera hence we never need to free this camera
     ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraImpl;
-    /*
     c_ptr->xsize=this->camera->getFormatWidth();
     c_ptr->ysize=this->camera->getFormatHeight();
-    Camera::Distortion d = this->camera->getDistortion();
+    Camera::Distortion d = this->getDistortion();
     c_ptr->mat[0][0]=d.cameraToWorld[0][0];
-    c_ptr->mat[0][1]=d.cameraToWorld[1][0];
-    c_ptr->mat[0][2]=d.cameraToWorld[2][0];
-    c_ptr->mat[1][0]=d.cameraToWorld[0][1];
+    c_ptr->mat[0][1]=d.cameraToWorld[0][1];
+    c_ptr->mat[0][2]=d.cameraToWorld[0][2];
+    c_ptr->mat[1][0]=d.cameraToWorld[1][0];
     c_ptr->mat[1][1]=d.cameraToWorld[1][1];
-    c_ptr->mat[1][2]=d.cameraToWorld[2][1];
-    c_ptr->mat[2][0]=d.cameraToWorld[0][2];
-    c_ptr->mat[2][1]=d.cameraToWorld[1][2];
+    c_ptr->mat[1][2]=d.cameraToWorld[1][2];
+    c_ptr->mat[2][0]=d.cameraToWorld[2][0];
+    c_ptr->mat[2][1]=d.cameraToWorld[2][1];
     c_ptr->mat[2][2]=d.cameraToWorld[2][2];
-    c_ptr->mat[3][0]=d.cameraToWorld[0][3];
-    c_ptr->mat[3][1]=d.cameraToWorld[1][3];
-    c_ptr->mat[3][2]=d.cameraToWorld[2][3];
+    c_ptr->mat[3][0]=d.cameraToWorld[3][0];
+    c_ptr->mat[3][1]=d.cameraToWorld[3][1];
+    c_ptr->mat[3][2]=d.cameraToWorld[3][2];
     c_ptr->dist_factor[0]=d.factor[0];
     c_ptr->dist_factor[1]=d.factor[1];
     c_ptr->dist_factor[2]=d.factor[2];
     c_ptr->dist_factor[3]=d.factor[3];
-    */
-
-    c_ptr->xsize=320;
-    c_ptr->ysize=240;
-    c_ptr->mat[0][0]=406.040405;
-    c_ptr->mat[0][1]=0.;
-    c_ptr->mat[0][2]=154.0;
-    c_ptr->mat[0][3]=0.;
-    c_ptr->mat[1][0]=0.;
-    c_ptr->mat[1][1]=404.388489;
-    c_ptr->mat[1][2]=115;
-    c_ptr->mat[1][3]=0;
-    c_ptr->mat[2][0]=0.;
-    c_ptr->mat[2][1]=0.;
-    c_ptr->mat[2][2]=1.;
-    c_ptr->mat[2][3]=0.;
-    c_ptr->dist_factor[0]=159.;
-    c_ptr->dist_factor[1]=139.;
-    c_ptr->dist_factor[2]=-84.9000015;
-    c_ptr->dist_factor[3]=0.979329705;
-
-    /*
-    ARToolKitPlus::CameraAdvImpl *c_ptr = new ARToolKitPlus::CameraAdvImpl;
-    c_ptr->cc[0]=(ARFloat)320;
-    c_ptr->cc[1]=(ARFloat)240;
-    c_ptr->fc[0]=(ARFloat)1500.0;
-    c_ptr->fc[1]=(ARFloat)1500.0;
-    for(int i=0; i< 6;i++)
-	c_ptr->kc[i]=(ARFloat)0.0;
-    c_ptr->undist_iterations=0;
-    */
 
     this->tracker->setPixelFormat(format);
-    this->tracker->init(NULL, 100.0, 10000.0f);
-    this->tracker->setCamera(c_ptr, 100.0, 10000.0f);
+    this->tracker->init(NULL, this->nearplane, this->farplane);
+    this->tracker->setCamera(c_ptr, this->nearplane, this->farplane);
+    this->inited = true;
 }
 
 void ARToolKitPlusTracker::update()
@@ -186,7 +162,9 @@ void ARToolKitPlusTracker::update()
     ARFloat conv[3][4];
     ARFloat center[2]={0.0,0.0};// XXX Hard coded as per ARToolKitPlus::TrackerSingleMarkerImpl.cxx
 
-    this->bestMarker=this->tracker->calc(this->camera->getFrame(), -1, true, &markers, &this->markersFound);
+    assert( this->inited && "ARToolKitPlusTracker:update() : The tracker has not yet been inited, please call setCamera First" );
+
+    this->bestMarker=this->tracker->calc(this->camera->getFrame(this->cameraFormat), -1, true, &markers, &this->markersFound);
     this->confidence = (float)tracker->getConfidence();
 
 
@@ -352,5 +330,36 @@ SMatrix ARToolKitPlusTracker::getModelViewMatrix()
 
     return m;
 };
+
+
+Camera::Distortion ARToolKitPlusTracker::getDistortion()
+{
+    if( this->camera->hasDistortionMatrix())
+	return this->camera->getDistortion();
+
+    printf("ARToolKitPlusTracker::getDistortion: There is no distortion matrix available for your camera\n"
+	   "                      using a default, things may go strange near the edge of the image\n");
+
+    Camera::Distortion d;
+
+    d.cameraToWorld[0][0]=406.040405;
+    d.cameraToWorld[0][1]=0.;
+    d.cameraToWorld[0][2]=154.0;
+    d.cameraToWorld[0][3]=0.;
+    d.cameraToWorld[1][0]=0.;
+    d.cameraToWorld[1][1]=404.388489;
+    d.cameraToWorld[1][2]=115;
+    d.cameraToWorld[1][3]=0;
+    d.cameraToWorld[2][0]=0.;
+    d.cameraToWorld[2][1]=0.;
+    d.cameraToWorld[2][2]=1.;
+    d.cameraToWorld[2][3]=0.;
+    d.factor[0]=159.;
+    d.factor[1]=139.;
+    d.factor[2]=-84.9000015;
+    d.factor[3]=0.979329705;
+
+    return d;
+}
 
 }; // namespace wcl

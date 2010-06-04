@@ -52,7 +52,7 @@ TCPServer::TCPServer( const unsigned port, const unsigned queuelength )
     if ( this->bind(port) == false ){
 	throw new SocketException(this);
     }
-    
+
     if ( ::listen( this->sockfd, queuelength ) < 0 ){
 	throw new SocketException(this);
     }
@@ -60,15 +60,15 @@ TCPServer::TCPServer( const unsigned port, const unsigned queuelength )
 
 /**
  * Accept a connection on the setup socket. How the accept works depends on the blocking mode
- * of the socket. If the socket is in blocking mode, then accept will wait until a connection
- * is available. If the socket in non blocking mode, then accept will check to see if there is
- * a connection waiting, if there is not, it will return with status of false, else it 
+ * of the server. If the server is in blocking mode, then accept will wait until a connection
+ * is available. If the server in non blocking mode, then accept will check to see if there is
+ * a connection waiting, if there is not, it will return with status of false, else it
  * will return with a status of true and modify the input socket.
- * 
- * @param socket A socket that can be modified to indicate the new client
+ *
+ * @param socket A socket that can be modified to indicate the new client. If the socket is already valid, it will first be closed
  * @return true on a successful client connection, false if in non blocking mode and no clients waiting
- */ 
-bool TCPServer::accept( TCPSocket *socket ) 
+ */
+bool TCPServer::accept( TCPSocket *socket )
 {
     assert( socket != NULL );
 

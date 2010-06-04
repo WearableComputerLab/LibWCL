@@ -204,8 +204,11 @@ video_uvc_headers=
 video_uvc_sources=
 
 if ENABLE_VIDEO_UVC
-video_uvc_headers+=camera/UVCCamera.h
-video_uvc_sources+=camera/UVCCamera.cpp
+video_uvc_headers+=camera/UVCCamera.h\
+		   camera/UVCCameraFactory.h
+video_uvc_sources+=camera/UVCCamera.cpp\
+		   camera/UVCCameraFactory.cpp
+
 endif
 
 #

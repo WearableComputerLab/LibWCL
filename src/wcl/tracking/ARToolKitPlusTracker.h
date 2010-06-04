@@ -56,7 +56,9 @@ public:
     ARToolKitPlusTracker( const unsigned markerWidth = 80,
                           const int thresholdValue = -1 /* -1 = AUTO */,
                           const unsigned screenWidth = 640,   /* ScreenWidth/screenHeight are used for getProjectionMatrix */
-                          const unsigned screenHeight = 480);
+                          const unsigned screenHeight = 480,
+			  const float nearplane = 100.0,
+			  const float farplane = 10000.0 );
     virtual ~ARToolKitPlusTracker();
     virtual void setCamera(Camera *);
 
@@ -88,10 +90,15 @@ private:
     Camera *camera;
 
     float confidence;
+    float nearplane;
+    float farplane;
     int bestMarker;
     int markersFound;
+    bool inited;
 
     Units scale;
+    Camera::ImageFormat cameraFormat;
+    Camera::Distortion getDistortion();
 
 };
 

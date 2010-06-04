@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <assert.h>
 #include "Camera.h"
 
 namespace wcl
@@ -38,7 +39,8 @@ CameraBuffer::CameraBuffer():
 Camera::Camera() :
     buffers(NULL),
     bufferSize(0),
-    numBuffers(0)
+    numBuffers(0),
+    conversionBuffer(NULL)
 {
     distortion.cameraToWorld.storeIdentity();
 }
@@ -46,13 +48,18 @@ Camera::Camera() :
 Camera::~Camera()
 {
     this->destroyBuffers();
+    if(this->conversionBuffer != NULL){
+	delete (unsigned char *)this->conversionBuffer->start;
+	delete this->conversionBuffer;
+    }
 }
 
 void Camera::allocateBuffers(const size_t size, const unsigned count)
 {
     this->destroyBuffers();
     this->buffers = new CameraBuffer[count];
-
+    for(unsigned i =0; i < count; i++)
+	this->buffers[i].length = size;
 }
 
 void Camera::destroyBuffers()
@@ -75,7 +82,7 @@ Camera::Distortion Camera::getDistortion() const
     return this->distortion;
 }
 
-int Camera::convertPixelYUV422toRGB8(const int y, const int u, const int v )
+int Camera::convertPixelYUYV422toRGB8(const int y, const int u, const int v )
 {
     unsigned int pixel32 = 0;
     unsigned char *pixel = (unsigned char *)&pixel32;
@@ -99,7 +106,7 @@ int Camera::convertPixelYUV422toRGB8(const int y, const int u, const int v )
     return pixel32;
 }
 
-void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
+void Camera::convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 			 const unsigned int width, const unsigned int height)
 {
     unsigned int in, out = 0;
@@ -121,7 +128,7 @@ void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *r
 	y1 = (pixel_16 & 0x00ff0000) >> 16;
 	v  = (pixel_16 & 0xff000000) >> 24;
 
-	pixel32 = Camera::convertPixelYUV422toRGB8(y0, u, v);
+	pixel32 = Camera::convertPixelYUYV422toRGB8(y0, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
@@ -130,7 +137,7 @@ void Camera::convertImageYUV422toRGB8(const unsigned char *yuv, unsigned char *r
 	rgb[out++] = pixel_24[1];
 	rgb[out++] = pixel_24[2];
 
-	pixel32 = Camera::convertPixelYUV422toRGB8(y1, u, v);
+	pixel32 = Camera::convertPixelYUYV422toRGB8(y1, u, v);
 	pixel_24[0] = (pixel32 & 0x000000ff);
 	pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
 	pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
@@ -152,6 +159,118 @@ void Camera::convertImageMONO8toRGB8( const unsigned char *mono, unsigned char *
 	rgb[out+2]=mono[in];
 	out+=3;
     }
+}
+
+/**
+ * Perform a software conversion of the frame to the requested format.
+ * The first call to this function is expensive as an internal buffer must be
+ * setup to support the conversion. Successive calls with the same format
+ * only incur the performance hit of the conversion. Changing image formats
+ * will also incurr an reallocation performance hit.
+ *
+ * @param f The format to convert the frame too
+ * @return A pointer to the converted frame
+ */
+const unsigned char *Camera::getFrame(const ImageFormat f )
+{
+    const unsigned char *frame = this->getFrame();
+
+    // Handle the same image format being requested
+    if( this->getImageFormat() == f )
+	return frame;
+
+    unsigned width = this->getFormatWidth();
+    unsigned height = this->getFormatHeight();
+
+    this->setupConversionBuffer(this->getFormatBufferSize(f));
+    unsigned char *buffer=(unsigned char *)this->conversionBuffer->start;
+
+    switch( f ){
+	case RGB8:
+	    {
+		switch( this->getImageFormat()){
+		    case MONO8:
+			convertImageMONO8toRGB8(frame, buffer, width, height);
+			return buffer;
+
+		    case YUYV422:
+			convertImageYUYV422toRGB8( frame, buffer, width, height);
+			return buffer;
+
+		    default:
+			;
+		}
+		goto NOTIMP;
+	    }
+	case MJPEG:
+	case YUYV422:
+	case YUYV411:
+	case RGB16:
+	case RGB32:
+	case BGR8:
+	case MONO8:
+	case MONO16:
+	default:
+NOTIMP:
+	assert(0 && "Camera::getFrame(const ImageFormat) - Requested Conversion Not Implemented");
+    }
+
+    return NULL;
+}
+
+unsigned Camera::getFormatBytesPerPixel() const
+{
+    return Camera::getFormatBytesPerPixel(this->getImageFormat());
+}
+
+unsigned Camera::getFormatBytesPerPixel(const ImageFormat f ) const
+{
+    switch( f ){
+	case RGB8:
+	    return 3;
+	case RGB16:
+	    return 6;
+	case RGB32:
+	    return 12;
+	case BGR8:
+	    return 3;
+	case MONO8:
+	    return 1;
+	case MONO16:
+	    return 2;
+	case YUYV422:
+	    return 4;
+	case YUYV411:
+	    return 4;
+	case MJPEG:
+	    return 12;
+    }
+}
+
+unsigned Camera::getFormatBufferSize() const
+{
+    return  Camera::getFormatBufferSize( this->getImageFormat());
+}
+
+unsigned Camera::getFormatBufferSize(const ImageFormat f ) const
+{
+    return (this->getFormatBytesPerPixel(f) *
+	    this->getFormatWidth() *
+	    this->getFormatHeight());
+}
+
+void Camera::setupConversionBuffer( const size_t buffersize )
+{
+    if( this->conversionBuffer ){
+	if( this->conversionBuffer->length == buffersize )
+	    return;
+
+	delete this->conversionBuffer;
+    }
+
+    this->conversionBuffer = new CameraBuffer;
+    this->conversionBuffer->length = buffersize;
+    this->conversionBuffer->start = (void *)new unsigned char[buffersize];
 }
 
 }

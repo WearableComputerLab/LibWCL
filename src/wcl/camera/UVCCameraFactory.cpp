@@ -24,64 +24,72 @@
  * SUCH DAMAGE.
  */
 
-#include <wcl/camera/DC1394CameraFactory.h>
+#include <stdio.h>
+#include <iostream>
+#include <sstream>
+#include <wcl/camera/UVCCameraFactory.h>
+
+#define MAX_DEVICES 64
 
 namespace wcl {
 
-DC1394CameraFactory *DC1394CameraFactory::instance;
-std::vector<DC1394Camera *> DC1394CameraFactory::cameras;
+UVCCameraFactory *UVCCameraFactory::instance;
+std::vector<UVCCamera *> UVCCameraFactory::cameras;
 
-DC1394CameraFactory::DC1394CameraFactory()
-{
-}
+UVCCameraFactory::UVCCameraFactory()
+{}
 
-DC1394CameraFactory::~DC1394CameraFactory()
+UVCCameraFactory::~UVCCameraFactory()
 {
-    for(std::vector<DC1394Camera *>::iterator it = this->cameras.begin();
+    for(std::vector<UVCCamera *>::iterator it = this->cameras.begin();
 	it != this->cameras.end();
 	++it )
     {
-	DC1394Camera *c = *it;
+	UVCCamera *c = *it;
 	delete c;
     }
 }
 
-DC1394CameraFactory *DC1394CameraFactory::getInstance()
+UVCCameraFactory *UVCCameraFactory::getInstance()
 {
-    if( DC1394CameraFactory::instance == NULL ){
-	DC1394CameraFactory::instance = new DC1394CameraFactory();
-	instance->probeCameras();
+    if( UVCCameraFactory::instance == NULL ){
+	UVCCameraFactory::instance = new UVCCameraFactory();
+	UVCCameraFactory::instance->probeCameras();
     }
 
-    return DC1394CameraFactory::instance;
+    return UVCCameraFactory::instance;
 }
 
 
-std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
+std::vector<UVCCamera *> UVCCameraFactory::getCameras()
 {
-    DC1394CameraFactory *instance = DC1394CameraFactory::getInstance();
+    UVCCameraFactory *instance = UVCCameraFactory::getInstance();
     return instance->cameras;
 }
 
 
-void DC1394CameraFactory::probeCameras()
+void UVCCameraFactory::probeCameras()
 {
-    // attempt to located the cameras on the firewire bus
-    dc1394error_t err;
-    dc1394_t * d;
-    dc1394camera_list_t * list;
-    d = dc1394_new ();
-    if( !d )
-	throw std::string("DC139CamearFactory:getCameras: Unable to get DC1394Context");
+    // attempt to located the cameras on the USB Bus
+    // to do this we walk throught the device nodes in /dev
+    // until we get a node we can't open/doesn't exist
+    printf("Probing UVC Cameras\n");
+    for( unsigned i=0; i < MAX_DEVICES; i++){
+	std::stringstream device;
+	device<<"/dev/video";
+	device<<i;
+	try {
+	    UVCCamera *c = new UVCCamera( device.str().c_str());
+	    this->cameras.push_back( c );
+	} catch (std::string s )
+	{
+	    printf("Exception Raised: %s\n", s.c_str());
+	    // Exception raised, hence there's no device, or some other issue
+	    // we simply break the loop at this point
+	    break;
+	}
 
-    err=dc1394_camera_enumerate (d, &list);
-
-    for( int i = 0 ; i < list->num; i++ ){
-	DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
-	this->cameras.push_back(c);
     }
-
-    dc1394_camera_free_list(list);
 }
 
 }

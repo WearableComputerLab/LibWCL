@@ -34,6 +34,7 @@
 	#include <sys/socket.h>
 	#include <fcntl.h>
 	#include <errno.h>
+	#include <sys/ioctl.h>
 #endif
 
 #include "Socket.h"
@@ -345,6 +346,22 @@ Socket::BlockingMode Socket::getBlockingMode() const
 int Socket::operator *() const
 {
     return this->sockfd;
+}
+
+/**
+ * Obtain the amount of bytes currently available for reading
+ *
+ * @return The amount of bytes available or 0 if the socket is closed
+ * @throws SocketException if the remote has closed the socket
+ */
+ssize_t Socket::getAvailableCount()
+{
+    int bytesAvailable;
+    int status = ioctl (this->sockfd, FIONREAD, &bytesAvailable);
+    if ( status == -1 && errno == ECONNRESET){
+	throw new SocketException(this);
+    }
+    return bytesAvailable;
 }
 
 
