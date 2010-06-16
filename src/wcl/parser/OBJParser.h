@@ -42,7 +42,16 @@ namespace wcl {
 class OBJParser: public Parser
 {
     public:
-        OBJParser(std::istream &);
+	/**
+	 * Callback Function supported by the parser to translate a relative path
+	 * into a fully qualified path
+	 *
+	 * @param relpath The relative path
+	 * @return The fully qualified path
+	 */
+	typedef const std::string (*RelativeToAbsolute)(const std::string &);
+
+        OBJParser(std::istream &, RelativeToAbsolute=NULL);
         ~OBJParser();
 
         void parse();
@@ -79,6 +88,7 @@ class OBJParser: public Parser
         static int scanner(OBJParser *);
 
     private:
+	RelativeToAbsolute func;
         std::istream *input;
         OBJGeometry data;
         OBJMaterial *material;

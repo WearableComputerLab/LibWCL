@@ -43,8 +43,8 @@ using namespace std;
 namespace wcl {
 
 
-OBJParser::OBJParser(istream &stream):
-    input(&stream), material(NULL), group(NULL)
+OBJParser::OBJParser(istream &stream, RelativeToAbsolute ifunc):
+    input(&stream), func(ifunc), material(NULL), group(NULL)
 {
 }
 
@@ -115,7 +115,16 @@ void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)
      // return things back to normal and continue parsing the original input
      // XXX/TODO: This is really nasty how it opens a new file for the material
      // a better approach would be to use the exising itstream - benjsc 20090828
-     ifstream s(lib.c_str());
+     string path=lib;
+
+     // Convert the relative path to an absolute path
+     // if the conversion function exists
+     if( this->func )
+	 path=(*this->func)(lib);
+
+     ifstream s(path.c_str());
+     if(!s.is_open())
+        this->parseError(ParserException::IOERROR,string("Unable To Open Material Library File:")+lib);
      istream *old = this->input;
      this->input= &s;
      this->parse();
