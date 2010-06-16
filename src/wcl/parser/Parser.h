@@ -39,7 +39,7 @@ namespace wcl
     class ParserException
     {
     public:
-        enum ParserExceptionCause { INVALID_INPUT, UNKNOWN_ERROR };
+        enum ParserExceptionCause { INVALID_INPUT, IOERROR, UNKNOWN_ERROR };
 
         ParserExceptionCause cause;
         std::string reason;
