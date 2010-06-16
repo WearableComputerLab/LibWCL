@@ -66,7 +66,7 @@ extern void doFatal( const char *);
 }
 
  /* string */
-[a-zA-Z][a-zA-Z0-9\._-]+ {
+[a-zA-Z][a-zA-Z0-9\._/-]+ {
 	strcpy(yylval.str,yytext);
 	return STRING;
 }
