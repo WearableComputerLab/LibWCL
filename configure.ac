@@ -265,8 +265,8 @@ fi
 	
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
 AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
-	     AC_MSG_ERROR([You Need to Install ARToolKit Plus. Under ubuntu add
-			deb http://ppa.launchpad.net/rojtberg/ppa/ubuntu karmic main
+	     AC_MSG_ERROR([You Need to Install ARToolKitPlus. Under ubuntu add
+			deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main
 			to your sources and to a apt-get update; apt-get install artoolkitplus-dev])
 	    )
 
