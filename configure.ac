@@ -98,6 +98,9 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 #
 AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
 
+# Support for bluetooth 
+#
+AC_ARG_ENABLE(bluetooth, AC_HELP_STRING([--enable-bluetooth], [Enable Bluetooth IO Support]), enable_bluetooth="yes" , enable_bluetooth="no")
 
 # Support for ARToolkitPlus Tracking
 #
@@ -113,6 +116,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video_uvc="yes";
 	     enable_gestures="yes";
 	     enable_vicon="yes";
+	     enable_bluetooth="yes";
 	     enable_geometry="yes";
 	     enable_x11="yes";
 	     enable_parsers="yes";
@@ -131,6 +135,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_geometry" = "xno" && \
    test "x$enable_gestures" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
+   test "x$enable_bluetooth" = "xno" && \ 
    test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
    test "x$enable_video_virtual" = "xno" && \
@@ -171,6 +176,7 @@ AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
+AM_CONDITIONAL(ENABLE_BLUETOOTH, test "x$enable_bluetooth" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO_VIRTUAL, test "x$enable_video_virtual" = "xyes")
@@ -279,6 +285,11 @@ if test "x$enable_x11" = "xyes"; then
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi
 
+if test "x$enable_bluetooth" = "xyes"; then
+    PKG_CHECK_MODULES(BLUETOOTH, bluez)
+    PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $BLUETOOTH_LIBS"
+    PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $BLUETOOTH_CFLAGS"
+fi
 
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
 if test "x$enable_video_uvc" = "xyes" ; then
@@ -321,6 +332,7 @@ echo "Geometry classes              : $enable_geometry"
 echo "Vicon MoCap Support           : $enable_vicon"
 echo "X11 Support                   : $enable_x11"
 echo "Rawports Support(com/lpt)     : $enable_rawports"
+echo "Bluetooth Support             : $enable_bluetooth"
 echo "UVC Video support             : $enable_video_uvc"
 echo "Parser Support                : $enable_parsers"
 echo "Virtual Video Support         : $enable_video_virtual"

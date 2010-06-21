@@ -254,6 +254,18 @@ rawports_sources+=parallel/Parallel.cpp\
 endif
 
 
+#######################################################################
+#
+# Raw ports
+#
+bluetooth_headers=
+bluetooth_sources=
+if ENABLE_BLUETOOTH
+bluetooth_headers+=bluetooth/Bluetooth.h
+bluetooth_sources+=bluetooth/Bluetooth.cpp
+endif
+
+
 #####################################################################
 #
 # X11 Specific 
@@ -287,6 +299,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(geometry_headers)\
 				$(rawports_headers)\
 				$(x11_headers)\
+				$(bluetooth_headers)\
 				$(parser_headers)
 
 
@@ -302,5 +315,6 @@ libwcl_la_SOURCES=$(network_sources)\
 		 $(geometry_sources)\
 		 $(rawports_sources)\
 		 $(x11_sources)\
+		 $(bluetooth_sources)\
 		 $(parser_sources)
 
