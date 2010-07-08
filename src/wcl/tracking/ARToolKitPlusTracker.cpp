@@ -128,7 +128,7 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     // Create a new ARToolkit Camera to
     // init the tracker, note ARToolKitPlus will remove
     // delete the last camera hence we never need to free this camera
-    ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraImpl;
+    ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraAdvImpl;
     c_ptr->xsize=this->camera->getFormatWidth();
     c_ptr->ysize=this->camera->getFormatHeight();
     Camera::CameraParameters d = this->getParameters();
@@ -148,6 +148,7 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     c_ptr->dist_factor[1]=d.distortion[1];
     c_ptr->dist_factor[2]=d.distortion[2];
     c_ptr->dist_factor[3]=d.distortion[3];
+    c_ptr->dist_factor[4]=0;
 
     this->tracker->setPixelFormat(format);
     this->tracker->init(NULL, this->nearplane, this->farplane);
