@@ -37,7 +37,7 @@
 #include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
 #include <wcl/tracking/ARToolKitPlusTracker.h>
-#define MARKER_SIZE  134
+#define MARKER_SIZE 80 
 
 using namespace std;
 using namespace wcl;
@@ -181,7 +181,10 @@ GLvoid display()
 	    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	    glEnable(GL_LIGHTING);
 	    glColor3f(1.0,1.0, 0.0);
+		glPushMatrix();
+		glTranslatef(0,0,20);
 	    glutSolidCube(40.0);
+		glPopMatrix();
 	    glDisable(GL_LIGHTING);
 	    glColor3f(0.0,0.0,1.0);
 	    glPolygonMode(GL_FRONT_AND_BACK,GL_LINE);
@@ -214,7 +217,52 @@ int main(int argc, char** argv)
 	return 1;
     }
 
+	float flx;
+	float fly;
+	float ppx;
+	float ppy;
+
+	float k1;
+	float k2;
+	float p1;
+	float p2;
+
+	if (argc > 1)
+	{
+		cout << "Using camera parameters from command line" << endl;
+
+		if (argc == 9)
+		{
+			flx = atol(argv[1]);
+			fly = atol(argv[2]);
+			ppx = atol(argv[3]);
+			ppy = atol(argv[4]);
+			k1  = atol(argv[5]);
+			k2  = atol(argv[6]);
+			p1  = atol(argv[7]);
+			p2  = atol(argv[8]);
+		}
+		else
+		{
+			cout << "Not enough parameters!" << endl;
+			cout << "Usage: ./artoolkittest flx fly ppx ppy k1 k2 p1 p2" <<endl;
+			return 1;
+		}
+	}
+	else
+	{
+		cout << "using default parameters, be careful now ya' hear!" <<endl;
+	}
+
     cam->printDetails();
+	cam->setFormat(Camera::YUYV422, 640, 480);
+
+	if (argc == 9)
+	{
+		wcl::Camera::CameraParameters p(flx, fly, ppx, ppy, k1, k2, p1, p2);
+		cam->setParameters(p);
+	}
+
     tracker = new ARToolKitPlusTracker(MARKER_SIZE,-1,cam->getFormatWidth(), cam->getFormatHeight());
     tracker->setCamera(cam);
 
