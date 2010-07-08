@@ -51,14 +51,63 @@ namespace wcl
 		public:
 			typedef std::string CameraID;
 
-			struct Distortion {
-			    SMatrix cameraToWorld;
-			    float factor[4];
+			struct CameraParameters {
+			    SMatrix intrinsicMatrix;
+			    float distortion[4];
 
-			    Distortion():
-				cameraToWorld(4)
+				/**
+				 * A useful constructor.
+				 *
+				 * @param focalLengthX The horizontal focal length, in pixels.
+				 * @param focalLengthY The vertical focal length, in pixels.
+				 * @param principlePointX The principle point (true centrepoint of the lens)
+				 * @param principlePointY The principle point (true centrepoint of the lens)
+				 * @param k1 Radial distortion coefficient 1.
+				 * @param k2 Radial distortion coefficient 2.
+				 * @param p1 Tangential distortion coefficient 1.
+				 * @param p2 Tangential distortion coefficient 2.
+				 */
+				CameraParameters(float focalLengthX,
+						         float focalLengthY,
+								 float principalPointX,
+								 float principalPointY,
+								 float k1,
+								 float k2,
+								 float p1,
+								 float p2) 
+					: intrinsicMatrix(4)
+				{
+					/**
+					 * Generate an intrinsic matrix. For mor information
+					 * on how this is done, see the following URL:
+					 *
+					 * http://www.vision.caltech.edu/bouguetj/calib_doc/htmls/parameters.html
+					 */
+					intrinsicMatrix[0][0]=focalLengthX;
+					intrinsicMatrix[0][1]=0.;
+					intrinsicMatrix[0][2]=principalPointX;
+					intrinsicMatrix[0][3]=0.;
+					intrinsicMatrix[1][0]=0.;
+					intrinsicMatrix[1][1]=focalLengthY;
+					intrinsicMatrix[1][2]=principalPointY;
+					intrinsicMatrix[1][3]=0;
+					intrinsicMatrix[2][0]=0.;
+					intrinsicMatrix[2][1]=0.;
+					intrinsicMatrix[2][2]=1.;
+					intrinsicMatrix[2][3]=0.;
+
+
+					// set the distortion array. easy
+					distortion[0] = k1;
+					distortion[1] = k2;
+					distortion[2] = p1;
+					distortion[3] = p2;
+				}
+
+			    CameraParameters():
+				intrinsicMatrix(4)
 			    {
-				factor[0]=factor[1]=factor[2]=factor[3]=0.0;
+				distortion[0]=distortion[1]=distortion[2]=distortion[3]=0.0f;
 			    }
 			};
 
@@ -132,7 +181,7 @@ namespace wcl
 
 			};
 
-                        virtual ~Camera();
+			virtual ~Camera();
 
 			/**
 			 * Prints useful information about the camera to the console.
@@ -221,12 +270,13 @@ namespace wcl
 			 * Indicates if there is a known undistortion matrix for
 			 * the camera
 			 */
-			virtual bool hasDistortionMatrix() const { return false; }
+			virtual bool hasParameters() const;
 
 			/**
 		         * Obtain the distortion Matrix for the camera
 			 */
-			virtual Distortion getDistortion() const;
+			virtual CameraParameters getParameters() const;
+			virtual void setParameters(const CameraParameters& p);
 
 
 			// Helper routines
@@ -274,7 +324,8 @@ namespace wcl
 			/**
 		         * Default Distortion parameters
 			 */
-			Distortion distortion;
+			CameraParameters parameters;
+			bool areParametersSet;
 
 			/**
 			 * The unique ID for this camera
@@ -285,6 +336,7 @@ namespace wcl
 			CameraBuffer *conversionBuffer;
 
 			void setupConversionBuffer( const size_t buffersize );
+
 	};
 
 };
