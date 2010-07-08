@@ -131,23 +131,23 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraImpl;
     c_ptr->xsize=this->camera->getFormatWidth();
     c_ptr->ysize=this->camera->getFormatHeight();
-    Camera::Distortion d = this->getDistortion();
-    c_ptr->mat[0][0]=d.cameraToWorld[0][0];
-    c_ptr->mat[0][1]=d.cameraToWorld[0][1];
-    c_ptr->mat[0][2]=d.cameraToWorld[0][2];
-    c_ptr->mat[1][0]=d.cameraToWorld[1][0];
-    c_ptr->mat[1][1]=d.cameraToWorld[1][1];
-    c_ptr->mat[1][2]=d.cameraToWorld[1][2];
-    c_ptr->mat[2][0]=d.cameraToWorld[2][0];
-    c_ptr->mat[2][1]=d.cameraToWorld[2][1];
-    c_ptr->mat[2][2]=d.cameraToWorld[2][2];
-    c_ptr->mat[3][0]=d.cameraToWorld[3][0];
-    c_ptr->mat[3][1]=d.cameraToWorld[3][1];
-    c_ptr->mat[3][2]=d.cameraToWorld[3][2];
-    c_ptr->dist_factor[0]=d.factor[0];
-    c_ptr->dist_factor[1]=d.factor[1];
-    c_ptr->dist_factor[2]=d.factor[2];
-    c_ptr->dist_factor[3]=d.factor[3];
+    Camera::CameraParameters d = this->getParameters();
+    c_ptr->mat[0][0]=d.intrinsicMatrix[0][0];
+    c_ptr->mat[0][1]=d.intrinsicMatrix[0][1];
+    c_ptr->mat[0][2]=d.intrinsicMatrix[0][2];
+    c_ptr->mat[1][0]=d.intrinsicMatrix[1][0];
+    c_ptr->mat[1][1]=d.intrinsicMatrix[1][1];
+    c_ptr->mat[1][2]=d.intrinsicMatrix[1][2];
+    c_ptr->mat[2][0]=d.intrinsicMatrix[2][0];
+    c_ptr->mat[2][1]=d.intrinsicMatrix[2][1];
+    c_ptr->mat[2][2]=d.intrinsicMatrix[2][2];
+    c_ptr->mat[3][0]=d.intrinsicMatrix[3][0];
+    c_ptr->mat[3][1]=d.intrinsicMatrix[3][1];
+    c_ptr->mat[3][2]=d.intrinsicMatrix[3][2];
+    c_ptr->dist_factor[0]=d.distortion[0];
+    c_ptr->dist_factor[1]=d.distortion[1];
+    c_ptr->dist_factor[2]=d.distortion[2];
+    c_ptr->dist_factor[3]=d.distortion[3];
 
     this->tracker->setPixelFormat(format);
     this->tracker->init(NULL, this->nearplane, this->farplane);
@@ -332,32 +332,32 @@ SMatrix ARToolKitPlusTracker::getModelViewMatrix()
 };
 
 
-Camera::Distortion ARToolKitPlusTracker::getDistortion()
+Camera::CameraParameters ARToolKitPlusTracker::getParameters()
 {
-    if( this->camera->hasDistortionMatrix())
-	return this->camera->getDistortion();
+    if( this->camera->hasParameters())
+	return this->camera->getParameters();
 
     printf("ARToolKitPlusTracker::getDistortion: There is no distortion matrix available for your camera\n"
 	   "                      using a default, things may go strange near the edge of the image\n");
 
-    Camera::Distortion d;
+    Camera::CameraParameters d;
 
-    d.cameraToWorld[0][0]=406.040405;
-    d.cameraToWorld[0][1]=0.;
-    d.cameraToWorld[0][2]=154.0;
-    d.cameraToWorld[0][3]=0.;
-    d.cameraToWorld[1][0]=0.;
-    d.cameraToWorld[1][1]=404.388489;
-    d.cameraToWorld[1][2]=115;
-    d.cameraToWorld[1][3]=0;
-    d.cameraToWorld[2][0]=0.;
-    d.cameraToWorld[2][1]=0.;
-    d.cameraToWorld[2][2]=1.;
-    d.cameraToWorld[2][3]=0.;
-    d.factor[0]=159.;
-    d.factor[1]=139.;
-    d.factor[2]=-84.9000015;
-    d.factor[3]=0.979329705;
+    d.intrinsicMatrix[0][0]=406.040405;
+    d.intrinsicMatrix[0][1]=0.;
+    d.intrinsicMatrix[0][2]=154.0;
+    d.intrinsicMatrix[0][3]=0.;
+    d.intrinsicMatrix[1][0]=0.;
+    d.intrinsicMatrix[1][1]=404.388489;
+    d.intrinsicMatrix[1][2]=115;
+    d.intrinsicMatrix[1][3]=0;
+    d.intrinsicMatrix[2][0]=0.;
+    d.intrinsicMatrix[2][1]=0.;
+    d.intrinsicMatrix[2][2]=1.;
+    d.intrinsicMatrix[2][3]=0.;
+    d.distortion[0]=159.;
+    d.distortion[1]=139.;
+    d.distortion[2]=-84.9000015;
+    d.distortion[3]=0.979329705;
 
     return d;
 }

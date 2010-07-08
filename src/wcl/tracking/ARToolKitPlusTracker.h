@@ -98,7 +98,7 @@ private:
 
     Units scale;
     Camera::ImageFormat cameraFormat;
-    Camera::Distortion getDistortion();
+    Camera::CameraParameters getParameters();
 
 };
 
