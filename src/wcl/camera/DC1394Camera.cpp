@@ -33,7 +33,7 @@
 #include <string.h>
 #include <iostream>
 
-#warning DC1394Camera: Note This class needs some major cleanup -benjsc 20100205
+//#warning DC1394Camera: Note This class needs some major cleanup -benjsc 20100205
 
 using namespace std;
 
@@ -70,7 +70,7 @@ void DC1394Camera::setFormat( const ImageFormat format, const unsigned width,
 {
     dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
 
-#warning DC1349:setFormat This methods needs work.. benjsc - 20100205
+//#warning DC1349:setFormat This methods needs work.. benjsc - 20100205
     //XXX This needs to be redone
     switch( format ){
 	case YUYV422:
@@ -179,7 +179,12 @@ notfound:
     if( result != DC1394_SUCCESS )
 	throw std::string("DC1394Camera:setFormat: Failed to set Format");
 
-    Camera::setFormat( format, width, height );
+	Configuration c;
+	c.format = format;
+	c.width = width;
+	c.height = height;
+
+    Camera::setConfiguration(c);
 
     dc1394_video_set_framerate( this->camera, DC1394_FRAMERATE_15 );
 }
@@ -668,6 +673,11 @@ void DC1394Camera::getCurrentConfig()
     dc1394video_mode_t mode;
     dc1394_video_get_mode(this->camera, &mode);
 
+	/*
+	 * XXX Michael Commented this out!
+	 */
+#warning Not implemented!
+	/*
     // Map the libdc mode back to the local setup
     switch( mode )
     {
@@ -706,6 +716,7 @@ void DC1394Camera::getCurrentConfig()
 	case DC1394_VIDEO_MODE_FORMAT7_7:
 #endif
     }
+	*/
 }
 
 void DC1394Camera::printDetails()

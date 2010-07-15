@@ -75,8 +75,8 @@ GLvoid init()
 	glTexImage2D(GL_TEXTURE_2D,             //target
 				 0,                         //level of detail
 				 3,                         //colour components
-				 cam->getFormatWidth(),     //width
-				 cam->getFormatHeight(),    //height
+				 cam->getActiveConfiguration().width,     //width
+				 cam->getActiveConfiguration().height,    //height
 				 0,                         //border
 				 GL_RGB,                    //image format
 				 GL_UNSIGNED_BYTE,
@@ -115,8 +115,8 @@ GLvoid display()
 	                0,
 					0,
 					0,
-					cam->getFormatWidth(),
-					cam->getFormatHeight(),
+					cam->getActiveConfiguration().width,
+					cam->getActiveConfiguration().height,
 					GL_RGB,
 					GL_UNSIGNED_BYTE,
 					frame);
@@ -218,6 +218,10 @@ int main(int argc, char** argv)
 		cam->printDetails();
 
 		cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY);
+		Camera::Configuration c;
+		c.format = Camera::YUYV422;
+		c.width = 640;
+		cam->setConfiguration(cam->findConfiguration(c));
 
 		//set power frequency compensation to 50 Hz
 		cam->setControlValue(Camera::POWER_FREQUENCY, 1);
@@ -227,7 +231,7 @@ int main(int argc, char** argv)
 		// Create GLUT window
 		glutInit(&argc, argv);
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-		glutInitWindowSize(cam->getFormatWidth(), cam->getFormatHeight());
+		glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
 		glutCreateWindow(argv[0]);
 
 		init();

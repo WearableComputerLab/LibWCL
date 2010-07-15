@@ -101,7 +101,7 @@ namespace wcl
 			 * @param height The height of the image in pixels
 			 * @throw Exception if the format cannot be set
 			 */
-			void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
+			void setConfiguration(Configuration c);
 
 
 			/**

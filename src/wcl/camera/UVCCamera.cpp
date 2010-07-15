@@ -51,6 +51,8 @@ UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 	}
 
 	loadCapabilities();
+
+	setConfiguration(supportedConfigurations[0]);
 }
 
 
@@ -82,26 +84,86 @@ void UVCCamera::loadCapabilities()
 		mode = CALL_READ;
 
 
-	v4l2_format format;
-	format.type=V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	ioctl(cam, VIDIOC_G_FMT, &format);
-	ImageFormat f;
-	switch(format.fmt.pix.pixelformat){
-	    case V4L2_PIX_FMT_RGB32: f=MJPEG; break;
-	    case V4L2_PIX_FMT_YUYV: f=YUYV422; break;
-	}
+	//query image formats...
+	v4l2_fmtdesc format;
+	format.index = 0;
+	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
-	this->setFormat(f, format.fmt.pix.width, format.fmt.pix.height);
+	//enumerate image formats
+	while (0 == ioctl(cam, VIDIOC_ENUM_FMT, &format))
+	{
+
+		ImageFormat f;
+
+		switch(format.pixelformat)
+		{
+			case V4L2_PIX_FMT_MJPEG:
+				f=MJPEG;
+				break;
+			case V4L2_PIX_FMT_YUYV:
+				f=YUYV422;
+				break;
+			case V4L2_PIX_FMT_RGB24:
+				f=RGB8;
+				break;
+			case V4L2_PIX_FMT_BGR24:
+				f=BGR8;
+				break;
+			case V4L2_PIX_FMT_GREY:
+				f=MONO8;
+				break;
+			case V4L2_PIX_FMT_Y16:
+				f=MONO16;
+				break;
+			default:
+				cerr << "oh oh, they support a format we don't know about..." << endl;
+				break;
+		}
+
+		v4l2_frmsizeenum size;
+		size.index = 0;
+		size.pixel_format = format.pixelformat;
+
+		//enumerate image sizes for the image format
+		while (0 == ioctl(cam, VIDIOC_ENUM_FRAMESIZES, &size))
+		{
+			int width = size.discrete.width;
+			int height = size.discrete.height;
+
+			//enumerate framerates at current format and resolution
+			v4l2_frmivalenum frame;
+			frame.index = 0;
+			frame.pixel_format = format.pixelformat;
+			frame.width = width;
+			frame.height = height;
+
+			while (0 == ioctl(cam, VIDIOC_ENUM_FRAMEINTERVALS, &frame))
+			{
+				cout << frame.discrete.denominator <<  ", ";
+				Configuration c;
+				c.format = f;
+				c.fps = frame.discrete.denominator;
+				c.width = width;
+				c.height = height;
+				this->supportedConfigurations.push_back(c);
+				frame.index++;
+			}
+			cout << endl;
+			size.index++;
+		}
+
+		format.index++;
+	}
 }
 
-void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
+void UVCCamera::setConfiguration(Configuration c)
 {
 	v4l2_format newf;
 	newf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	newf.fmt.pix.width = width;
-	newf.fmt.pix.height = height;
+	newf.fmt.pix.width = c.width;
+	newf.fmt.pix.height = c.height;
 
-	switch (f)
+	switch (c.format)
 	{
 		case MJPEG:
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_MJPEG;
@@ -109,6 +171,19 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 
 		case YUYV422:
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
+			break;
+
+		case RGB8: 
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_RGB24;
+			break;
+		case BGR8:
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_BGR24;
+			break;
+		case MONO8:
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_GREY;
+			break;
+		case MONO16:
+			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;
 			break;
 	}
 
@@ -123,7 +198,7 @@ void UVCCamera::setFormat(const ImageFormat f, const unsigned width, const unsig
 
 	bufferSize = newf.fmt.pix.sizeimage;
 
-	Camera::setFormat(f, width, height);
+	Camera::setConfiguration(c);
 }
 
 

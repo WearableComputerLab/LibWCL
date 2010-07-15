@@ -30,7 +30,7 @@
 #include <vector>
 #include <wcl/camera/Camera.h>
 
-#warning CameraFactory: Note the *CameraFactoryAPI/Implementation is currently Experimental -benjsc 20100212
+//#warning CameraFactory: Note the *CameraFactoryAPI/Implementation is currently Experimental -benjsc 20100212
 
 namespace wcl
 {
@@ -64,18 +64,13 @@ namespace wcl
 			 * optionally restricting the matched camera by widht,
 			 * height or fps if that parameter is not zero
 			 */
-			static Camera *findCamera(const Camera::ImageFormat f,
-						  const unsigned width=0, const
-						  unsigned height=0,
-						  const unsigned fps=0);
+			static Camera *findCamera(Camera::Configuration partialConfig);
 
 			/**
 			 * Find all cameras matching the specified critieria
 			 */
-			static std::vector<Camera *> findCameras(const Camera::ImageFormat f,
-								 const unsigned width=0,
-								 const unsigned height=0,
-								 const unsigned fps=-1);
+			static std::vector<Camera *> findCameras(Camera::Configuration partialConfig);
+
 		private:
 			CameraFactory();
 			static CameraFactory *getInstance();

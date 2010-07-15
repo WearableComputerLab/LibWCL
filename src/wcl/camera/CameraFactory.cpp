@@ -98,45 +98,32 @@ std::vector<Camera *> CameraFactory::getCameras()
 }
 
 
-Camera *CameraFactory::findCamera(const Camera::ImageFormat f,
-				  const unsigned width, const unsigned height,
-				  const unsigned fps )
+Camera *CameraFactory::findCamera(Camera::Configuration partialConfig)
 {
-    std::vector<Camera *> cameras =  CameraFactory::findCameras(f, width, height, fps );
+    std::vector<Camera *> cameras =  CameraFactory::findCameras(partialConfig);
     if( cameras.size() > 0 ){
 	return cameras[0];
     }
     return NULL;
 }
 
-std::vector<Camera *> CameraFactory::findCameras(const Camera::ImageFormat f,
-				  const unsigned width, const unsigned height,
-				  const unsigned fps )
+std::vector<Camera *> CameraFactory::findCameras(Camera::Configuration partialConfig)
 {
     std::vector<Camera *> cameras = getCameras();
     std::vector<Camera *> matches;
 
-    // FIXME Check each camera that supports this...
-
     for(std::vector<Camera *>::iterator it = cameras.begin();
 	it!= cameras.end();
 	++it ){
-	Camera *c = *it;
 
-	if ( c->getImageFormat() != f )
-	    continue;
-
-	if( width > 0 && c->getFormatWidth() != width )
-	    continue;
-
-	if( height > 0 && c->getFormatHeight() != height )
-	    continue;
-
-	if( fps > 0 && c->getFormatFPS() != fps )
-	    continue;
-
-	matches.push_back(c);
-
+		Camera *c = *it;
+		try
+		{
+			Camera::Configuration config = c->findConfiguration(partialConfig);
+			c->setConfiguration(config);
+			matches.push_back(c);
+		}
+		catch (...) {}
     }
 
     return matches;

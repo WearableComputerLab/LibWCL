@@ -104,7 +104,7 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     ARToolKitPlus::PIXEL_FORMAT format;
 
     // Set the format based on what the camera is using
-    switch (this->camera->getImageFormat()){
+    switch (this->camera->getActiveConfiguration().format){
 	case Camera::RGB8:
             format=ARToolKitPlus::PIXEL_FORMAT_RGB;
 	    this->cameraFormat = Camera::RGB8;
@@ -129,8 +129,8 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
     // init the tracker, note ARToolKitPlus will remove
     // delete the last camera hence we never need to free this camera
     ARToolKitPlus::Camera *c_ptr = new ARToolKitPlus::CameraAdvImpl;
-    c_ptr->xsize=this->camera->getFormatWidth();
-    c_ptr->ysize=this->camera->getFormatHeight();
+    c_ptr->xsize=this->camera->getActiveConfiguration().width;
+    c_ptr->ysize=this->camera->getActiveConfiguration().height;
     Camera::CameraParameters d = this->getParameters();
     c_ptr->mat[0][0]=d.intrinsicMatrix[0][0];
     c_ptr->mat[0][1]=d.intrinsicMatrix[0][1];

@@ -30,6 +30,7 @@
 
 #include <wcl/maths/SMatrix.h>
 #include <string>
+#include <vector>
 
 namespace wcl
 {
@@ -39,11 +40,12 @@ namespace wcl
 		void* start;
 		size_t length;
 
-                CameraBuffer();
+		CameraBuffer();
 	};
 
+
 	/**
-         * An abstract base class representing a camera
+	 * An abstract base class representing a camera
 	 */
 	class Camera
 	{
@@ -52,8 +54,8 @@ namespace wcl
 			typedef std::string CameraID;
 
 			struct CameraParameters {
-			    SMatrix intrinsicMatrix;
-			    float distortion[4];
+				SMatrix intrinsicMatrix;
+				float distortion[4];
 
 				/**
 				 * A useful constructor.
@@ -68,13 +70,13 @@ namespace wcl
 				 * @param p2 Tangential distortion coefficient 2.
 				 */
 				CameraParameters(float focalLengthX,
-						         float focalLengthY,
-								 float principalPointX,
-								 float principalPointY,
-								 float k1,
-								 float k2,
-								 float p1,
-								 float p2) 
+						float focalLengthY,
+						float principalPointX,
+						float principalPointY,
+						float k1,
+						float k2,
+						float p1,
+						float p2) 
 					: intrinsicMatrix(4)
 				{
 					/**
@@ -104,11 +106,11 @@ namespace wcl
 					distortion[3] = p2;
 				}
 
-			    CameraParameters():
-				intrinsicMatrix(4)
-			    {
-				distortion[0]=distortion[1]=distortion[2]=distortion[3]=0.0f;
-			    }
+				CameraParameters():
+					intrinsicMatrix(4)
+				{
+					distortion[0]=distortion[1]=distortion[2]=distortion[3]=0.0f;
+				}
 			};
 
 			/**
@@ -116,21 +118,33 @@ namespace wcl
 			 */
 			enum ImageFormat
 			{
+				ANY,
 				MJPEG, //Motion JPEG Format.
 				YUYV422, // YUYV 4:2:2 format.
 				YUYV411, // YUYV 4:2:2 format.
-				RGB8,
-                                RGB16,
-				RGB32,
-                                BGR8,
-				MONO8,
-				MONO16
-				/*
-				   FORMAT7,
-				   BAYER,
-				   EXIF
-				*/
+				RGB8, //  8 8 8
+				RGB16, // 16 16 16
+				RGB32, // 32 32 32
+				BGR8, // 8 8 8
+				MONO8, //greyscale 8bpp
+				MONO16 // greyscale 16bpp
+					/*
+					   FORMAT7,
+					   BAYER,
+					   EXIF
+					   */
 
+			};
+
+			struct Configuration
+			{
+				unsigned fps;
+				unsigned width;
+				unsigned height;
+				ImageFormat format;
+
+				Configuration()
+					: fps(0), width(0), height(0), format(ANY) {}
 			};
 
 
@@ -206,18 +220,17 @@ namespace wcl
 			 * @param height The height of the image in pixels
 			 * @throws Exception if the format can't be set
 			 */
-			virtual void setFormat(const ImageFormat f, const unsigned width, const unsigned height);
-                        ImageFormat getImageFormat() const { return this->format; }
+			virtual void setConfiguration(Configuration c);
+			Configuration getActiveConfiguration() const { return this->activeConfiguration; }
 
-			///XXX NOT YET - benjsc 20100211 std::vector<ImageFormat>getSupportedFormats() const;
-
-                        unsigned getFormatWidth() const { return this->width; }
-                        unsigned getFormatHeight() const { return this->height; }
-			unsigned getFormatFPS() const { return this->fps; };
 			unsigned getFormatBytesPerPixel() const;
 			unsigned getFormatBytesPerPixel(const ImageFormat ) const;
 			unsigned getFormatBufferSize() const;
 			unsigned getFormatBufferSize(const ImageFormat) const;
+
+			std::vector<Configuration> getSupportedConfigurations() const;
+
+			Configuration findConfiguration(Configuration partialConfig) const;
 
 			/**
 			 * Sets the exposure mode of the camera.
@@ -227,16 +240,16 @@ namespace wcl
 			 */
 			virtual void setExposureMode(const ExposureMode t) = 0;
 
-                        /**
-                         * Sets the control value for the camera
-                         *
-                         * TODO This will need more work in the future as some
-                         * features can't be set via a single int
+			/**
+			 * Sets the control value for the camera
+			 *
+			 * TODO This will need more work in the future as some
+			 * features can't be set via a single int
 			 *
 			 * @param control The control to set
 			 * @param value The value to set that control to
 			 * @throws Exception if the control fails to set
-                         */
+			 */
 			virtual void setControlValue(const Control control, const int value) = 0;
 
 			/**
@@ -273,7 +286,7 @@ namespace wcl
 			virtual bool hasParameters() const;
 
 			/**
-		         * Obtain the distortion Matrix for the camera
+			 * Obtain the distortion Matrix for the camera
 			 */
 			virtual CameraParameters getParameters() const;
 			virtual void setParameters(const CameraParameters& p);
@@ -290,16 +303,16 @@ namespace wcl
 			 * Converts a YUYV422 buffer to an RGB8 buffer
 			 */
 			static void convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
-						    const unsigned int width, const unsigned int height);
+					const unsigned int width, const unsigned int height);
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
-							    const unsigned int width, const unsigned int height );
-                protected:
+					const unsigned int width, const unsigned int height );
+		protected:
 
-                        Camera();
+			Camera();
 
-                        void allocateBuffers(const size_t size, const unsigned count);
-                        void destroyBuffers();
+			void allocateBuffers(const size_t size, const unsigned count);
+			void destroyBuffers();
 
 			/**
 			 * Array of buffers we are using.
@@ -313,16 +326,13 @@ namespace wcl
 			 */
 			int numBuffers;
 
-                        /**
-                         * The Current Camera related parameters
-                         */
-                        ImageFormat format;
-                        unsigned height;
-                        unsigned width;
-			unsigned fps;
+			/**
+			 * The Current Camera related parameters
+			 */
+			Configuration activeConfiguration;
 
 			/**
-		         * Default Distortion parameters
+			 * Default Distortion parameters
 			 */
 			CameraParameters parameters;
 			bool areParametersSet;
@@ -331,6 +341,8 @@ namespace wcl
 			 * The unique ID for this camera
 			 */
 			CameraID id;
+
+			std::vector<Configuration> supportedConfigurations;
 
 		private:
 			CameraBuffer *conversionBuffer;

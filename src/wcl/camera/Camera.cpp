@@ -70,13 +70,6 @@ namespace wcl
 		this->numBuffers=0;
 	}
 
-	void Camera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
-	{
-		this->format = f;
-		this->width = width;
-		this->height = height;
-	}
-
 	Camera::CameraParameters Camera::getParameters() const
 	{
 		return this->parameters;
@@ -161,6 +154,46 @@ namespace wcl
 		}
 	}
 
+
+	void Camera::setConfiguration(Configuration c)
+	{
+		assert (c.width != 0);
+		assert (c.height != 0);
+		assert (c.fps != 0);
+
+		this->activeConfiguration = c;
+	}
+
+	std::vector<Camera::Configuration> Camera::getSupportedConfigurations() const
+	{
+		return this->supportedConfigurations;
+	}
+
+
+	Camera::Configuration Camera::findConfiguration(Camera::Configuration partialConfig) const
+	{
+		for (std::vector<Configuration>::const_iterator it = supportedConfigurations.begin(); it < supportedConfigurations.end(); ++it)
+		{
+			// does this config match what we are looking for?
+			if (partialConfig.format != ANY && (*it).format != partialConfig.format)
+				continue;
+
+			if (partialConfig.width != 0 && (*it).width != partialConfig.width)
+				continue;
+
+			if (partialConfig.height != 0 && (*it).height != partialConfig.height)
+				continue;
+
+			if (partialConfig.fps != 0 && (*it).fps != partialConfig.fps)
+				continue;
+
+			// matches everything we asked for!
+			return *it;
+		}
+		throw std::string("Could not find configuration that met the criteria.");
+	}
+
+
 	/**
 	 * Perform a software conversion of the frame to the requested format.
 	 * The first call to this function is expensive as an internal buffer must be
@@ -176,11 +209,11 @@ namespace wcl
 		const unsigned char *frame = this->getFrame();
 
 		// Handle the same image format being requested
-		if( this->getImageFormat() == f )
+		if( this->activeConfiguration.format == f )
 			return frame;
 
-		unsigned width = this->getFormatWidth();
-		unsigned height = this->getFormatHeight();
+		unsigned width = this->activeConfiguration.width;
+		unsigned height = this->activeConfiguration.height;
 
 		this->setupConversionBuffer(this->getFormatBufferSize(f));
 		unsigned char *buffer=(unsigned char *)this->conversionBuffer->start;
@@ -188,7 +221,7 @@ namespace wcl
 		switch( f ){
 			case RGB8:
 				{
-					switch( this->getImageFormat()){
+					switch( this->activeConfiguration.format){
 						case MONO8:
 							convertImageMONO8toRGB8(frame, buffer, width, height);
 							return buffer;
@@ -220,7 +253,7 @@ NOTIMP:
 
 	unsigned Camera::getFormatBytesPerPixel() const
 	{
-		return Camera::getFormatBytesPerPixel(this->getImageFormat());
+		return Camera::getFormatBytesPerPixel(this->activeConfiguration.format);
 	}
 
 	unsigned Camera::getFormatBytesPerPixel(const ImageFormat f ) const
@@ -249,14 +282,14 @@ NOTIMP:
 
 	unsigned Camera::getFormatBufferSize() const
 	{
-		return  Camera::getFormatBufferSize( this->getImageFormat());
+		return  Camera::getFormatBufferSize( this->activeConfiguration.format);
 	}
 
 	unsigned Camera::getFormatBufferSize(const ImageFormat f ) const
 	{
 		return (this->getFormatBytesPerPixel(f) *
-				this->getFormatWidth() *
-				this->getFormatHeight());
+				this->getActiveConfiguration().width *
+				this->activeConfiguration.height);
 	}
 
 	void Camera::setupConversionBuffer( const size_t buffersize )
