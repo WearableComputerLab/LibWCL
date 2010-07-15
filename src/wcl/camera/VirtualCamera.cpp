@@ -45,7 +45,13 @@ VirtualCamera::VirtualCamera()
 	VirtualCamera::defaultBuffer.length=sizeof(gimp_image.pixel_data)/sizeof(gimp_image.pixel_data[0]);
     }
 
-    Camera::setFormat(Camera::RGB8,640,480);
+	Configuration c;
+	c.format=Camera::RGB8;
+	c.width=640;
+	c.height=480;
+	c.fps=1;
+	supportedConfigurations.push_back(c);
+    setConfiguration(c);
 }
 
 VirtualCamera::~VirtualCamera()
@@ -64,13 +70,12 @@ void VirtualCamera::printDetails()
     }
 }
 
-void VirtualCamera::setFormat(const ImageFormat f, const unsigned width, const unsigned height)
+void VirtualCamera::setConfiguration(Configuration c)
 {
-    if( this->buffers )
-	Camera::setFormat(f,width, height);
-
-    else
-	cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
+	if(c.format = Camera::RGB8)
+		Camera::setConfiguration(c);
+	else
+		cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
 }
 
 void VirtualCamera::setExposureMode(const ExposureMode t)
@@ -107,9 +112,6 @@ void VirtualCamera::shutdown()
     this->buffers=NULL;
     this->inUseBuffer=0;
     this->numBuffers=0;
-
-    //Reset the default format, size for the default image
-    Camera::setFormat(Camera::RGB8,640,480);
 }
 
 
