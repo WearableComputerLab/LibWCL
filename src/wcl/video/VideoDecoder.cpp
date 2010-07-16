@@ -23,12 +23,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <assert.h>
 #include "VideoDecoder.h"
 
 namespace wcl
 {
 
 VideoDecoder::VideoDecoder(const std::string &path )
+    throw( const std::string &): isvalid(false)
 {
     int index;
 
@@ -45,19 +47,19 @@ VideoDecoder::VideoDecoder(const std::string &path )
 	throw std::string("No Video Streams Exist");
 
     // Store the codec context
-    this->codecContext = &this->formatContext->streams[index]->codec;
+    this->codecContext = this->formatContext->streams[index]->codec;
 
     this->allocateConversionBuffer( this->codecContext->width,
 				    this->codecContext->height );
 }
 
 VideoDecoder::VideoDecoder(const unsigned width, const unsigned height, const CodecID codec):
-    formatContext(NULL)
+    formatContext(NULL), isvalid(false)
 {
     VideoDecoder::libraryInit();
 
     this->codecContext = avcodec_alloc_context();
-    this->findDecoder(codec)
+    this->findDecoder(codec);
     this->allocateConversionBuffer( width, height );
 }
 
@@ -73,11 +75,11 @@ int VideoDecoder::findVideoStream(const int nth)
     assert( this->formatContext != NULL );
 
     for( i = 0, vstreams=0; i < this->formatContext->nb_streams; i++ ){
-	if( formatContext->streams[i]->codec.codec_type ==CODEC_TYPE_VIDEO){
+	if( this->formatContext->streams[i]->codec->codec_type ==CODEC_TYPE_VIDEO){
 	    if( vstreams == nth )
 		return i;
 	    else {
-		vstream++;
+		vstreams++;
 	    }
 	}
     }
@@ -86,6 +88,7 @@ int VideoDecoder::findVideoStream(const int nth)
 }
 
 void VideoDecoder::findDecoder(const enum CodecID id)
+    throw (const std::string &)
 {
     AVCodec *codec = avcodec_find_decoder(id);
     if( codec == NULL )
@@ -112,28 +115,27 @@ VideoDecoder::~VideoDecoder()
 
 void VideoDecoder::nextFrame(const unsigned char *ibuffer, const unsigned buffersize)
 {
-    avcodec_decode_video(this->codecContext, this->someFrame, &this->isvalid, &ibuffer, buffersize);
+    avcodec_decode_video(this->codecContext, this->someFrame, &this->isvalid,
+			 (uint8_t *)ibuffer, buffersize);
 }
 
 const unsigned char *VideoDecoder::getFrame()
 {
-    if( this->isValid )
-	img_convert(this->RGBframe, PIX_FMT_RGB24, this->SomeFrame,
+#warning FIXME - Image conversion is broken
+    if( this->isvalid ){
+	/*
+	sws_scale(CONTEXT, 
+	img_convert(this->RGBFrame, PIX_FMT_RGB24, this->someFrame,
 		    this->codecContext->pix_fmt, this->codecContext->width,
 		    this->codecContext->height);
+	*/
+    }
 
-    return this->RGBFrame;
+    return (unsigned char *)this->RGBFrame->data;
 }
 
-VideoDecoder &VideoDecoder::createFromFile(const std::string &path)
-{
-   AVFormatContext *pFormatCtx;
-    VideoDecoder decoder(const std::string &path);
 
-    return VideoDecoder;
-}
-
-void VidoeDecoder::libraryInit()
+void VideoDecoder::libraryInit()
 {
     static int init;
     if(!init){
@@ -146,7 +148,7 @@ void VidoeDecoder::libraryInit()
 void VideoDecoder::allocateConversionBuffer(const unsigned width, const unsigned height)
 {
     this->someFrame = avcodec_alloc_frame();
-    this->RGBframe = avcodec_alloc_frame();
+    this->RGBFrame = avcodec_alloc_frame();
     int size = avpicture_get_size(PIX_FMT_RGB24, width, height);
     this->buffer = new uint8_t[size];
 }
@@ -155,7 +157,7 @@ void VideoDecoder::destroyConversionBuffer()
 {
     delete [] this->buffer;
 
-    av_free(this->RGBframe);
+    av_free(this->RGBFrame);
     av_free(this->someFrame);
 }
 

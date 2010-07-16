@@ -27,7 +27,8 @@
 #define WCL_VIDEO_VIDEODECODER_H
 
 #include <string>
-#include <ffmpeg/avcodec.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
 
 namespace wcl
 {
@@ -35,8 +36,8 @@ namespace wcl
     class VideoDecoder
     {
     public:
-	VideoDecoder(const std::string &path) throws (std::string &);
-	VideoDecoder(const unsigned width, const unsigned height, const CodecID codec )
+	VideoDecoder(const std::string &path) throw (const std::string &);
+	VideoDecoder(const unsigned width, const unsigned height, const CodecID codec );
 	~VideoDecoder();
 
 	void nextFrame(const unsigned char *inputbuffer, const unsigned buffersize);
@@ -49,12 +50,11 @@ namespace wcl
 
     private:
 	uint8_t *buffer;
-	FrameForamt format;
 	AVFrame *someFrame;
 	AVFrame *RGBFrame;
 	AVCodecContext *codecContext;
 	AVFormatContext *formatContext;
-	bool isvalid;
+	int isvalid;
 
 
 	/**
@@ -65,12 +65,12 @@ namespace wcl
 	 * @return -1 if the video stream is not found or a avcoded stream  context numberk
 	 */
 	int findVideoStream(const int nth = 0);
-	void findDecoder(const enum CodecID id);
+	void findDecoder(const enum CodecID id) throw (const std::string &);
 
 	/**
 	 * Routines to aid in converting from format X to RGB
 	 */
-	void allocateConvertionBuffer(const unsigned width, const unsigned height);
+	void allocateConversionBuffer(const unsigned width, const unsigned height);
 	void destroyConversionBuffer();
 
 	/**
@@ -81,3 +81,5 @@ namespace wcl
     };
 
 };
+
+#endif
