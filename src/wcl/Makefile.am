@@ -311,7 +311,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(rawports_headers)\
 				$(x11_headers)\
 				$(bluetooth_headers)\
-				$(parser_headers)
+				$(parser_headers)\
+				$(video_headers)
 
 
 libwcl_la_SOURCES=$(network_sources)\
@@ -327,5 +328,6 @@ libwcl_la_SOURCES=$(network_sources)\
 		 $(rawports_sources)\
 		 $(x11_sources)\
 		 $(bluetooth_sources)\
-		 $(parser_sources)
+		 $(parser_sources)\
+		 $(video_sources)
 

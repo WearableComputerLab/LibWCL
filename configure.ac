@@ -176,6 +176,8 @@ fi
 #
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
@@ -185,9 +187,8 @@ AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_BLUETOOTH, test "x$enable_bluetooth" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
 AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
 
 
 #
@@ -271,12 +272,10 @@ if test "x$enable_camera_1394" = "xyes"; then
     fi
 fi
 
-if test "x$enable_camera_virtual" = "xyes"; then
-:
-fi
-
 if test "x$enable_video" = "xyes"; then
-	
+	PKG_CHECK_MODULES(LIBAVCODEC,libavcodec);
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBAVCODEC_LIBS"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBAVCODEC_CFLAGS"
 fi
 	
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
@@ -347,6 +346,7 @@ echo "UVC Camera support            : $enable_camera_uvc"
 echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
+echo "Video Encoder/Decoder Support : $enable_video"
 echo "Maths Support                 : Enabled (default)"
 echo "-------------------------------------------------"
 
