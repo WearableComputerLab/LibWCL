@@ -163,50 +163,61 @@ tracking_sources+=tracking/ARToolKitPlusTracker.cpp\
 endif
 
 
+##################################################################
+# 
+# Video Support
+# 
+# 
+video_headers=
+video_sources=
+if ENABLE_VIDEO
+video_headers+=video/VideoDecoder.h
+video_sources+=video/VideoDecoder.cpp
+endif
 
 ##################################################################
 # 
-# Video/Camera Support
+# Camera Support
 # 
 # 
 
 #
-# Common Video
+# Common camera
 # 
-video_headers=
-video_sources=
+camera_headers=
+camera_sources=
 
-if ENABLE_VIDEO
-video_headers+=camera/Camera.h\
+if ENABLE_CAMERA
+camera_headers+=camera/Camera.h\
 	       camera/CameraFactory.h
 
-video_sources+=camera/Camera.cpp\
+camera_sources+=camera/Camera.cpp\
 	       camera/CameraFactory.cpp
 endif
 
 #
 # 1394 Camera Support
 #
-video_1394_headers=
-video_1394_sources=
+camera_1394_headers=
+camera_1394_sources=
 
-if ENABLE_VIDEO_1394
-video_1394_headers+=camera/DC1394Camera.h\
+if ENABLE_CAMERA_1394
+camera_1394_headers+=camera/DC1394Camera.h\
 		    camera/DC1394CameraFactory.h
-video_1394_sources+=camera/DC1394Camera.cpp\
+camera_1394_sources+=camera/DC1394Camera.cpp\
 		    camera/DC1394CameraFactory.cpp
 endif
 
 #
 # UVC Camera Support
 #
-video_uvc_headers=
-video_uvc_sources=
+camera_uvc_headers=
+camera_uvc_sources=
 
-if ENABLE_VIDEO_UVC
-video_uvc_headers+=camera/UVCCamera.h\
+if ENABLE_CAMERA_UVC
+camera_uvc_headers+=camera/UVCCamera.h\
 		   camera/UVCCameraFactory.h
-video_uvc_sources+=camera/UVCCamera.cpp\
+camera_uvc_sources+=camera/UVCCamera.cpp\
 		   camera/UVCCameraFactory.cpp
 
 endif
@@ -214,12 +225,12 @@ endif
 #
 # Virtual Camera Support
 # 
-video_virtualcamera_headers=
-video_virtualcamera_sources=
+camera_virtualcamera_headers=
+camera_virtualcamera_sources=
 
-if ENABLE_VIDEO_VIRTUAL
-video_virtualcamera_headers+=camera/VirtualCamera.h
-video_virtualcamera_sources+=camera/VirtualCamera.cpp
+if ENABLE_CAMERA_VIRTUAL
+camera_virtualcamera_headers+=camera/VirtualCamera.h
+camera_virtualcamera_sources+=camera/VirtualCamera.cpp
 endif
 
 #######################################################################
@@ -288,10 +299,10 @@ endif
 lib_LTLIBRARIES=libwcl.la
 nobase_libwcl_la_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
-				$(video_headers)\
-				$(video_1394_headers)\
-				$(video_uvc_headers)\
-				$(video_virtualcamera_headers)\
+				$(camera_headers)\
+				$(camera_1394_headers)\
+				$(camera_uvc_headers)\
+				$(camera_virtualcamera_headers)\
 				$(gestures_headers)\
 				$(tracking_headers)\
 				$(maths_headers)\
@@ -304,10 +315,10 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 
 
 libwcl_la_SOURCES=$(network_sources)\
-		 $(video_sources)\
-		 $(video_1394_sources)\
-		 $(video_uvc_sources)\
-		 $(video_virtualcamera_sources)\
+		 $(camera_sources)\
+		 $(camera_1394_sources)\
+		 $(camera_uvc_sources)\
+		 $(camera_virtualcamera_sources)\
 		 $(gestures_sources)\
 		 $(tracking_sources)\
 		 $(maths_sources)\
