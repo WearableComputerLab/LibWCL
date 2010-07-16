@@ -28,45 +28,138 @@
 namespace wcl
 {
 
-VideoDecoder::VideoDecoder(const unsigned iwidth, const unsigned iheight):
-    width(iwidth),height(iheight)
+VideoDecoder::VideoDecoder(const std::string &path )
 {
-    avcodec_init();
-    avcodec_register_all();
+    int index;
 
-    AVCodec *codec = avcodec_find_decoder(CODC_ID_MPEG1VIDEO);
+    VideoDecoder::libraryInit();
 
-    this->context = avcodec_alloc_context();
-    this->YUVframe = avcodec_alloc_frame();
-    this->RGBframe = avcodec_alloc_frame();
-    int size = avpicture_get_size(PIX_FMT_RGB24,this->width, this->height);
+    if( av_open_input_file( &this->formatContext, path.c_str(), NULL, 0, NULL) != 0){
+	throw std::string("Unable To Open Video File");
+    }
 
-    this->buffer = new uint8_t[size];
+    if(av_find_stream_info(this->formatContext) < 0 )
+	throw std::string("No Video Stream Information Exists");
 
-    avcodec_open(context, codec);
+    if( (index = this->findVideoStream()) == -1 )
+	throw std::string("No Video Streams Exist");
+
+    // Store the codec context
+    this->codecContext = &this->formatContext->streams[index]->codec;
+
+    this->allocateConversionBuffer( this->codecContext->width,
+				    this->codecContext->height );
+}
+
+VideoDecoder::VideoDecoder(const unsigned width, const unsigned height, const CodecID codec):
+    formatContext(NULL)
+{
+    VideoDecoder::libraryInit();
+
+    this->codecContext = avcodec_alloc_context();
+    this->findDecoder(codec)
+    this->allocateConversionBuffer( width, height );
+}
+
+
+int VideoDecoder::findVideoStream(const int nth)
+{
+    int i;
+    int vstreams;
+
+    // In order to find a stream the formatContext must already be initialised
+    // this currently only happens for file loads, not when the user specifies 
+    // the input format
+    assert( this->formatContext != NULL );
+
+    for( i = 0, vstreams=0; i < this->formatContext->nb_streams; i++ ){
+	if( formatContext->streams[i]->codec.codec_type ==CODEC_TYPE_VIDEO){
+	    if( vstreams == nth )
+		return i;
+	    else {
+		vstream++;
+	    }
+	}
+    }
+
+    return -1;
+}
+
+void VideoDecoder::findDecoder(const enum CodecID id)
+{
+    AVCodec *codec = avcodec_find_decoder(id);
+    if( codec == NULL )
+	throw std::string("Decoding Codec not found");
+
+    // Handle partial frames
+    if(codec->capabilities & CODEC_CAP_TRUNCATED)
+	this->codecContext->flags |=CODEC_FLAG_TRUNCATED;
+
+
+    if(avcodec_open(this->codecContext, codec)<0)
+	throw std::string("Unable to open decoding Codec");
 }
 
 VideoDecoder::~VideoDecoder()
 {
-    avcodec_close(context);
-    av_free(RGBframe);
-    av_free(YUVframe);
-    delete [] this->buffer;
+    this->destroyConversionBuffer();
+    avcodec_close(this->codecContext);
+
+    if( this->formatContext )
+	av_close_input_file(this->formatContext);
 }
+
 
 void VideoDecoder::nextFrame(const unsigned char *ibuffer, const unsigned buffersize)
 {
-    bool isvalid;
-
-    avcodec_decode_video(this->context, this->YUVframe, &isvalid, &ibuffer, buffersize);
+    avcodec_decode_video(this->codecContext, this->someFrame, &this->isvalid, &ibuffer, buffersize);
 }
 
 const unsigned char *VideoDecoder::getFrame()
 {
-    // Output yuv
-    img_convert(this->RGBframe, PIX_FMT_RGB24, this->YUVFrame, PIX_FMT_YUV420P, this->width, this->height );
+    if( this->isValid )
+	img_convert(this->RGBframe, PIX_FMT_RGB24, this->SomeFrame,
+		    this->codecContext->pix_fmt, this->codecContext->width,
+		    this->codecContext->height);
 
-    return image;
+    return this->RGBFrame;
+}
+
+VideoDecoder &VideoDecoder::createFromFile(const std::string &path)
+{
+   AVFormatContext *pFormatCtx;
+    VideoDecoder decoder(const std::string &path);
+
+    return VideoDecoder;
+}
+
+void VidoeDecoder::libraryInit()
+{
+    static int init;
+    if(!init){
+	avcodec_init();
+	avcodec_register_all();
+	init=1;
+    }
+}
+
+void VideoDecoder::allocateConversionBuffer(const unsigned width, const unsigned height)
+{
+    this->someFrame = avcodec_alloc_frame();
+    this->RGBframe = avcodec_alloc_frame();
+    int size = avpicture_get_size(PIX_FMT_RGB24, width, height);
+    this->buffer = new uint8_t[size];
+}
+
+void VideoDecoder::destroyConversionBuffer()
+{
+    delete [] this->buffer;
+
+    av_free(this->RGBframe);
+    av_free(this->someFrame);
 }
 
 };
+
+
+
