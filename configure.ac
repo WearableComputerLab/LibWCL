@@ -56,19 +56,19 @@ AM_MAINTAINER_MODE
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
 
 #
-# Firewire/1394 Video Support 
-# 	When enabled: enable_video_1394 is defined to 'yes' or 'no'
+# Firewire/1394 Camera Support 
+# 	When enabled: enable_camera_1394 is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(video-1394, AC_HELP_STRING([--enable-video-1394], [Enable 1394/Firewire Video Support]), enable_video_1394="yes" , enable_video_1394="no")
+AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/Firewire Camera Support]), enable_camera_1394="yes" , enable_camera_1394="no")
 
 #
-# UVC Video Support 
+# UVC Camera Support 
 #
-AC_ARG_ENABLE(video-uvc, AC_HELP_STRING([--enable-video-uvc], [Enable UVC Video Support]), enable_video_uvc="yes" , enable_video_uvc="no")
+AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), enable_camera_uvc="yes" , enable_camera_uvc="no")
 
-# Support for Virtual Video
+# Support for Virtual Camera
 #
-AC_ARG_ENABLE(video-virtual, AC_HELP_STRING([--enable-video-virtual], [Enable Virutal Video Support]), enable_video_virtual="yes" , enable_video_virtual="no")
+AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), enable_camera_virtual="yes" , enable_camera_virtual="no")
 
 #
 # Gesture recognition support
@@ -103,21 +103,26 @@ AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Sup
 #
 AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), enable_tracking_artoolkitplus="yes" , enable_tracking_artoolkitplus="no")
 
+# Support for Videos
+#
+AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-parsers], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
+
 # 
 #  Enable All Options
 # 	This simply enables each option
 AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
 	     enable_network="yes";
-	     enable_video_1394="yes";
+	     enable_camera_1394="yes";
 	     enable_rawports="yes" ;
-	     enable_video_uvc="yes";
+	     enable_camera_uvc="yes";
 	     enable_gestures="yes";
 	     enable_vicon="yes";
 	     enable_geometry="yes";
 	     enable_x11="yes";
 	     enable_parsers="yes";
-	     enable_video_virtual="yes";
+	     enable_camera_virtual="yes";
 	     enable_tracking_artoolkitplus="yes";
+	     enable_video="yes";
 	     )
 
 #
@@ -125,17 +130,18 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 #
 AC_MSG_CHECKING([Checking we need to build something]);
 if test "x$enable_network" = "xno" && \
-   test "x$enable_video_1394" = "xno" && \
+   test "x$enable_camera_1394" = "xno" && \
    test "x$enable_vicon" = "xno" && \
    test "x$enable_osg" = "xno" && \
    test "x$enable_geometry" = "xno" && \
    test "x$enable_gestures" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
-   test "x$enable_video_uvc" = "xno" && \
+   test "x$enable_camera_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
-   test "x$enable_video_virtual" = "xno" && \
+   test "x$enable_camera_virtual" = "xno" && \
    test "x$enable_tracking_artoolkitplus" = "xno" && \
    test "x$enable_parsers" = "xno" ; then
+   test "x$enable_video" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
 fi
@@ -151,12 +157,12 @@ if test "x$enable_vicon" = "xyes"; then
 fi
 
 #
-# Auto turn on the common video support if any video option is enabled
+# Auto turn on the common camera support if any camera option is enabled
 #
-if test "x$enable_video_uvc" = "xyes" || \
-   test "x$enable_video_1394" = "xyes" ||
-   test "x$enable_video_virtual" = "xyes"; then
-	enable_video="yes";
+if test "x$enable_camera_uvc" = "xyes" || \
+   test "x$enable_camera_1394" = "xyes" ||
+   test "x$enable_camera_virtual" = "xyes"; then
+	enable_camera="yes";
 fi
 
 
@@ -165,16 +171,16 @@ fi
 #
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO_1394, test "x$enable_video_1394" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO_UVC, test "x$enable_video_uvc" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
 AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO_VIRTUAL, test "x$enable_video_virtual" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
 AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
 
 
@@ -245,7 +251,7 @@ WCL_PLATFORM_SETUP
 # Check for libraries
 #
 #############################
-if test "x$enable_video_1394" = "xyes"; then
+if test "x$enable_camera_1394" = "xyes"; then
     if test "x$platform_linux" = "xyes"; then
 	PKG_CHECK_MODULES(LIBRAW1394, libraw1394 >= 1.0.0)
 	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
@@ -255,12 +261,16 @@ if test "x$enable_video_1394" = "xyes"; then
 	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2)
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
     else
-	AC_MSG_ERROR([Video Support Is Not Available on your platform])
+	AC_MSG_ERROR([Camera Support Is Not Available on your platform])
     fi
 fi
 
-if test "x$enable_video_virtual" = "xyes"; then
+if test "x$enable_camera_virtual" = "xyes"; then
 :
+fi
+
+if test "x$enable_video" = "xyes"; then
+	
 fi
 	
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
@@ -281,14 +291,14 @@ fi
 
 
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
-if test "x$enable_video_uvc" = "xyes" ; then
-AC_DEFINE(ENABLE_VIDEO_UVC, 1, [Enable UVC Video Camera Support])
+if test "x$enable_camera_uvc" = "xyes" ; then
+AC_DEFINE(ENABLE_camera_UVC, 1, [Enable UVC Camera Camera Support])
 fi
-if test "x$enable_video_1394" = "xyes" ; then
-AC_DEFINE(ENABLE_VIDEO_DC1394, 1, [Enable IEEE1394 Camera Support])
+if test "x$enable_camera_1394" = "xyes" ; then
+AC_DEFINE(ENABLE_camera_DC1394, 1, [Enable IEEE1394 Camera Support])
 fi
-if test "x$enable_video_virtual" = "xyes" ; then
-AC_DEFINE(ENABLE_VIDEO_VIRTUAL, 1, [Enable Virtual Camera Support])
+if test "x$enable_camera_virtual" = "xyes" ; then
+AC_DEFINE(ENABLE_camera_VIRTUAL, 1, [Enable Virtual Camera Support])
 fi
 
 #
@@ -315,15 +325,15 @@ echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
 echo "network support               : $enable_network"
-echo "1394 (Firewire) Video         : $enable_video_1394"
+echo "1394 (Firewire) Camera        : $enable_camera_1394"
 echo "Gesture recognition           : $enable_gestures"
 echo "Geometry classes              : $enable_geometry"
 echo "Vicon MoCap Support           : $enable_vicon"
 echo "X11 Support                   : $enable_x11"
 echo "Rawports Support(com/lpt)     : $enable_rawports"
-echo "UVC Video support             : $enable_video_uvc"
+echo "UVC Camera support            : $enable_camera_uvc"
 echo "Parser Support                : $enable_parsers"
-echo "Virtual Video Support         : $enable_video_virtual"
+echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
 echo "Maths Support                 : Enabled (default)"
 echo "-------------------------------------------------"
