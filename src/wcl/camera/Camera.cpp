@@ -230,6 +230,14 @@ namespace wcl
 							convertImageYUYV422toRGB8( frame, buffer, width, height);
 							return buffer;
 
+#if ENABLE_VIDEO
+						case MJPEG:{
+						    static VideoDecoder decoder(width, height);
+						    decoder->nextFrame( frame, this->getFormatBufferSize());
+						    convertImageYUYV422toRGB8(decoder->getFrame(), buffer, width, height);
+						    return buffer;
+						}
+#endif
 						default:
 							;
 					}
