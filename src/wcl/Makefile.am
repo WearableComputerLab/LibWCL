@@ -298,7 +298,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(geometry_headers)\
 				$(rawports_headers)\
 				$(x11_headers)\
-				$(parser_headers)
+				$(parser_headers)\
+				$(video_headers)
 
 
 libwcl_la_SOURCES=$(network_sources)\
@@ -313,5 +314,6 @@ libwcl_la_SOURCES=$(network_sources)\
 		 $(geometry_sources)\
 		 $(rawports_sources)\
 		 $(x11_sources)\
-		 $(parser_sources)
+		 $(parser_sources)\
+		 $(video_sources)
 
