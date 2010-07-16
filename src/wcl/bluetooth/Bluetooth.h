@@ -14,24 +14,25 @@
 #include <sys/file.h>
 
 #include <string>
+#include <vector>
 
 
 namespace wcl
 {
+	struct BluetoothDevice
+	{
+		std::string name;
+		std::string mac;
+
+		BluetoothDevice() {}
+
+		BluetoothDevice(std::string n, std::string m)
+			: name(n), mac(m) {}
+	};
 
 	class Bluetooth {
 		public:
 
-			struct BluetoothDevice
-			{
-				std::string name;
-				std::string mac;
-
-				BluetoothDevice() {}
-
-				BluetoothDevice(std::string n, std::string m)
-					: name(n), mac(m) {}
-			};
 
 			Bluetooth();
 			virtual ~Bluetooth();

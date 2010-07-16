@@ -16,6 +16,14 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/select.h> 
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <bluetooth/bluetooth.h>
+#include <bluetooth/hci.h>
+#include <bluetooth/hci_lib.h>
+
 
 #include "Bluetooth.h"
 
@@ -203,7 +211,6 @@ namespace wcl
 		return this->devName;
 	}
 
-	}
 
 	std::vector<BluetoothDevice> Bluetooth::scanForDevices()
 	{
@@ -243,7 +250,7 @@ namespace wcl
 		}
 
 		free( ii );
-		close( sock );
+		::close( sock );
 
 		return devices;
 	}
