@@ -73,7 +73,6 @@ void UVCCameraFactory::probeCameras()
     // attempt to located the cameras on the USB Bus
     // to do this we walk throught the device nodes in /dev
     // until we get a node we can't open/doesn't exist
-    printf("Probing UVC Cameras\n");
     for( unsigned i=0; i < MAX_DEVICES; i++){
 	std::stringstream device;
 	device<<"/dev/video";
