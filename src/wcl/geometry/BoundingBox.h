@@ -33,7 +33,6 @@
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
-#include <config.h>
 
 namespace wcl
 {
