@@ -102,6 +102,11 @@ GLvoid display()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	const unsigned char* frame = decoder->getFrame();
+	if( frame == NULL ){
+	    // No more frames
+	    exit(1);
+	}
+
 	glTexSubImage2D(GL_TEXTURE_2D,
 	                0,
 					0,
@@ -115,7 +120,6 @@ GLvoid display()
 	glMatrixMode(GL_MODELVIEW);
 
 	glLoadIdentity();
-		glColor3f(1,0,0);
 		glBegin(GL_QUADS);
 
 		glTexCoord2f(0,1);
@@ -130,6 +134,18 @@ GLvoid display()
 		glTexCoord2f(0,0);
 		glVertex2f(0,1);
 	glEnd();
+
+
+	glRasterPos2d( 0, 0);
+
+	glDisable(GL_TEXTURE_2D);
+	char buffer[100];
+	sprintf(buffer, "[Video Test] Frame: %lld - %2.2f FPS", 
+		decoder->getCurrentFrame(),
+		decoder->getFPS());
+	for(char *c=buffer; *c != '\0'; c++)
+	    glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18,*c);
+	glEnable(GL_TEXTURE_2D);
 
 	glFlush();
 	glutSwapBuffers();
