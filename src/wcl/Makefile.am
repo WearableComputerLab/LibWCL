@@ -171,8 +171,8 @@ endif
 video_headers=
 video_sources=
 if ENABLE_VIDEO
-#video_headers+=video/VideoDecoder.h
-#video_sources+=video/VideoDecoder.cpp
+video_headers+=video/VideoDecoder.h
+video_sources+=video/VideoDecoder.cpp
 endif
 
 ##################################################################
