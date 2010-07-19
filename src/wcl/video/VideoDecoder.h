@@ -27,12 +27,22 @@
 #define WCL_VIDEO_VIDEODECODER_H
 
 #include <string>
+extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
+};
 
 namespace wcl
 {
 
+    /**
+     * VideoDecoder provides the means to decode a video off disk or from memory
+     * which has been created with any codec that libAVCodec supports and get a
+     * frame from the video. The class does it's own internal timing if a disk
+     * video is used so the next frame obtained is correct in the sequence of
+     * the video.
+     */
     class VideoDecoder
     {
     public:
@@ -43,10 +53,15 @@ namespace wcl
 	void nextFrame(const unsigned char *inputbuffer, const unsigned buffersize);
 
 	/**
-         * Obtain a pointer to the next frame of the video
+         * Obtain a pointer to the next frame of the video. This frame will
+	 * always be returned in RGB24 (R8,G8,B8) format.
+	 *
+	 * @return A pointer to the current frame
 	 */
 	const unsigned char *getFrame();
 
+	unsigned getHeight() const;
+	unsigned getWidth() const;
 
     private:
 	uint8_t *buffer;
@@ -54,8 +69,11 @@ namespace wcl
 	AVFrame *RGBFrame;
 	AVCodecContext *codecContext;
 	AVFormatContext *formatContext;
+	SwsContext *imageConvertContext;
 	int isvalid;
-
+	unsigned width;
+	unsigned height;
+	int index;
 
 	/**
 	 * Find the nth video stream in the avcodec context and return the
