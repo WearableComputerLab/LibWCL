@@ -183,6 +183,11 @@ int main(int argc, char** argv)
 		switch( atoi(argv[1])){
 			case 1:
 			    {
+				std::vector<Camera *> cameras =
+				    CameraFactory::getCameras();
+
+				std::cout << cameras.size() << " Camera's Detected" << std::endl;
+
 				cam = CameraFactory::getCamera();
 				long int value = -1;
 				if( argc > 2 ){
@@ -217,9 +222,7 @@ int main(int argc, char** argv)
 		 */
 		cam->printDetails();
 
-		cam->setExposureMode(Camera::AUTO_APERTURE_PRIORITY);
 		Camera::Configuration c;
-		c.format = Camera::YUYV422;
 		c.width = 640;
 		cam->setConfiguration(cam->findConfiguration(c));
 
