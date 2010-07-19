@@ -142,8 +142,6 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
    test "x$enable_bluetooth" = "xno" && \ 
    test "x$enable_camera_uvc" = "xno" && \
-   test "x$enable_bluetooth" = "xno" && \ 
-   test "x$enable_video_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
    test "x$enable_camera_virtual" = "xno" && \
    test "x$enable_tracking_artoolkitplus" = "xno" && \
@@ -348,8 +346,6 @@ echo "X11 Support                   : $enable_x11"
 echo "Rawports Support(com/lpt)     : $enable_rawports"
 echo "Bluetooth Support             : $enable_bluetooth"
 echo "UVC Camera support            : $enable_camera_uvc"
-echo "Bluetooth Support             : $enable_bluetooth"
-echo "UVC Video support             : $enable_video_uvc"
 echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
