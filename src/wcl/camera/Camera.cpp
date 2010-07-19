@@ -25,7 +25,12 @@
  */
 
 #include <assert.h>
+#include <config.h>
 #include "Camera.h"
+
+#if ENABLE_VIDEO
+    #include <video/VideoDecoder.h>
+#endif
 
 namespace wcl
 {
@@ -232,10 +237,10 @@ namespace wcl
 
 #if ENABLE_VIDEO
 						case MJPEG:{
-						    static VideoDecoder decoder(width, height);
-						    decoder->nextFrame( frame, this->getFormatBufferSize());
-						    convertImageYUYV422toRGB8(decoder->getFrame(), buffer, width, height);
-						    return buffer;
+						    static VideoDecoder
+							decoder(width, height, CODEC_ID_MJPEG);
+						    decoder.nextFrame( frame, this->getFormatBufferSize());
+						    return decoder.getFrame();
 						}
 #endif
 						default:
