@@ -43,7 +43,6 @@ using namespace std;
 using namespace wcl;
 
 VideoDecoder *decoder;
-unsigned char* data;
 
 void usage()
 {
@@ -56,19 +55,18 @@ void usage()
  */
 GLvoid init()
 {
+	unsigned char *data = new unsigned char[decoder->getWidth() * decoder->getHeight() * 3 /* RGB */];
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0,0,0,0);
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
-	data = new unsigned char[cam->getFormatBufferSize(Camera::RGB8)];
-
 	// create a texture for the image...
 	glTexImage2D(GL_TEXTURE_2D,             //target
 				 0,                         //level of detail
 				 3,                         //colour components
-				 cam->getFormatWidth(),     //width
-				 cam->getFormatHeight(),    //height
+				 decoder->getWidth(),     //width
+				 decoder->getHeight(),    //height
 				 0,                         //border
 				 GL_RGB,                    //image format
 				 GL_UNSIGNED_BYTE,
@@ -83,6 +81,7 @@ GLvoid init()
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,1,0,1);
 	glMatrixMode(GL_MODELVIEW);
+	delete data;
 }
 
 
@@ -107,8 +106,8 @@ GLvoid display()
 	                0,
 					0,
 					0,
-					decoder->getWidth();
-					decoder->getHeight();
+					decoder->getWidth(),
+					decoder->getHeight(),
 					GL_RGB,
 					GL_UNSIGNED_BYTE,
 					frame);
