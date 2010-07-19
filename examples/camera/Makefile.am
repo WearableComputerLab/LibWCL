@@ -3,15 +3,15 @@
 # missing files should be automatically created
 AUTOMAKE_OPTIONS=foreign
 
-videotestdir=../
-videotest_PROGRAMS = videotest 
-videotest_LDADD = @PKGCONFIG_OTHERLIBS@
+cameratestdir=../
+cameratest_PROGRAMS = cameratest 
+cameratest_LDADD = @PKGCONFIG_OTHERLIBS@
 
 # Headers that have to be compiled
-videotest_HEADERS = 
+cameratest_HEADERS = 
 
 
 # Sources that have to be compiled
-videotest_SOURCES = \
+cameratest_SOURCES = \
 					main.cpp
 
