@@ -72,6 +72,17 @@ VideoDecoder::VideoDecoder(const unsigned iwidth, const unsigned iheight,
     VideoDecoder::libraryInit();
 
     this->codecContext = avcodec_alloc_context();
+    this->codecContext->width = iwidth;
+    this->codecContext->height = iheight;
+
+    /**
+     * XXX This is not right. How can we guarentee that the input format is
+     * YUV422 - this should be able to be either specified in the constructor
+     * else av* should be able to work it out. For now we hard code it
+     * - benjsc 20100719 
+     */
+    this->codecContext->pix_fmt= PIX_FMT_YUV422P;
+
     this->findDecoder(codec);
     this->allocateConversionBuffer( this->width, this->height );
 
@@ -133,6 +144,8 @@ VideoDecoder::~VideoDecoder()
     if( this->formatContext ){
 	av_close_input_file(this->formatContext);
     }
+    else
+	av_free(this->codecContext);
 }
 
 
