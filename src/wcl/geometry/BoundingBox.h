@@ -92,7 +92,7 @@ namespace wcl
 			/**
 			 * Returns the centroid of the bounding box.
 			 */
-			wcl::Vector getCentroid();
+			wcl::Vector getCentroid() const;
 
 		protected:
 			/**

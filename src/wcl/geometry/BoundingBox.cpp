@@ -58,7 +58,7 @@ namespace wcl
 		max = wcl::Vector(minDouble,minDouble,minDouble);
 	}
 
-	wcl::Vector BoundingBox::getCentroid()
+	wcl::Vector BoundingBox::getCentroid() const
 	{
 		return (min + max) / 2;
 	}
