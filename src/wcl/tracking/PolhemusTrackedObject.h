@@ -62,6 +62,8 @@ namespace wcl
 			virtual Vector getTranslation();
 			
 			virtual SMatrix getRotation();
+			
+			inline const Quaternion& getOrientation() const { return orientation; }
 
 			virtual bool isVisible() const;
 

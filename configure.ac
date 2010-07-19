@@ -279,6 +279,10 @@ if test "x$enable_video" = "xyes"; then
 	PKG_CHECK_MODULES(LIBAVFORMAT,libavformat);
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBAVFORMAT_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBAVFORMAT_CFLAGS"
+	PKG_CHECK_MODULES(LIBSWSCALE,libswscale);
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBSWSCALE_LIBS"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBSWSCALE_CFLAGS"
+	AC_DEFINE(ENABLE_VIDEO, 1, [Enable VideoDecoding/Encoding Support])
 fi
 	
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
@@ -305,13 +309,13 @@ fi
 
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
 if test "x$enable_camera_uvc" = "xyes" ; then
-AC_DEFINE(ENABLE_camera_UVC, 1, [Enable UVC Camera Camera Support])
+AC_DEFINE(ENABLE_CAMERA_UVC, 1, [Enable UVC Camera Camera Support])
 fi
 if test "x$enable_camera_1394" = "xyes" ; then
-AC_DEFINE(ENABLE_camera_DC1394, 1, [Enable IEEE1394 Camera Support])
+AC_DEFINE(ENABLE_CAMERA_DC1394, 1, [Enable IEEE1394 Camera Support])
 fi
 if test "x$enable_camera_virtual" = "xyes" ; then
-AC_DEFINE(ENABLE_camera_VIRTUAL, 1, [Enable Virtual Camera Support])
+AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
 fi
 
 #
