@@ -31,14 +31,13 @@
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Plane.h>
 #include <wcl/geometry/Vertex.h>
-#include <config.h>
 
 namespace wcl
 {
 	/**
 	 * A single face of a polygon.
 	 */
-	class Face 
+	class Face
 	{
 		public:
 

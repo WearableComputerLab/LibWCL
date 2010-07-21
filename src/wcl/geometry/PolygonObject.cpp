@@ -28,6 +28,7 @@
 #include <limits>
 #include <math.h>
 #include <iostream>
+#include <config.h>
 
 #include "PolygonObject.h"
 

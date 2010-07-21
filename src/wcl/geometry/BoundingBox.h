@@ -33,7 +33,6 @@
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
-#include <config.h>
 
 namespace wcl
 {
@@ -93,7 +92,7 @@ namespace wcl
 			/**
 			 * Returns the centroid of the bounding box.
 			 */
-			wcl::Vector getCentroid();
+			wcl::Vector getCentroid() const;
 
 		protected:
 			/**

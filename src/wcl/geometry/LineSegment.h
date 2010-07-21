@@ -30,8 +30,6 @@
 
 #include <string>
 
-#include <config.h>
-
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Line.h>
 
@@ -49,8 +47,6 @@ namespace wcl
 			wcl::Vector endPos;
 
 			std::string toString();
-
-		private:
 	};
 }
 
