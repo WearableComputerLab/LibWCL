@@ -32,7 +32,6 @@
 #include <vector>
 
 #include <wcl/maths/Vector.h>
-#include <config.h>
 
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
