@@ -727,7 +727,7 @@ void DC1394Camera::printDetails()
 
     dc1394_video_get_supported_modes( camera, &videoModes );
 
-    fprintf( stderr, "1394 Camera GUID: %lu\n", this->guid);
+    fprintf( stderr, "1394 Camera GUID: %llu\n", this->guid);
     fprintf( stderr, "available video modes:\n" );
 
     for( int i = 0; i < videoModes.num; i++ )
