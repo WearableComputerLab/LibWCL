@@ -238,7 +238,7 @@ void UVCCamera::prepareForCapture()
 	reqbuf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	reqbuf.memory = V4L2_MEMORY_MMAP;
 	//we are going to try for 20 buffers
-	reqbuf.count = 20;
+	reqbuf.count = 2;
 
 	if (-1 == ioctl(cam, VIDIOC_REQBUFS, &reqbuf))
 	{
