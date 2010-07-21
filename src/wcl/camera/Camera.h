@@ -44,6 +44,7 @@ namespace wcl
 	};
 
 
+
 	/**
 	 * An abstract base class representing a camera
 	 */
@@ -347,8 +348,11 @@ namespace wcl
 		private:
 			CameraBuffer *conversionBuffer;
 
-			void setupConversionBuffer( const size_t buffersize );
+			// Forward declaration of internal camera struct;
+			struct Priv;
+			Priv *internal;
 
+			void setupConversionBuffer( const size_t buffersize );
 	};
 
 };

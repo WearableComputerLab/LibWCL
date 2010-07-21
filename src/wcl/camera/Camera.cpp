@@ -32,8 +32,15 @@
     #include <video/VideoDecoder.h>
 #endif
 
+
 namespace wcl
 {
+	struct Camera::Priv
+	{
+#if ENABLE_VIDEO
+	VideoDecoder *decoder;
+#endif
+	};
 
 	CameraBuffer::CameraBuffer():
 		start(0)
@@ -46,7 +53,8 @@ namespace wcl
 		bufferSize(0),
 		numBuffers(0),
 		conversionBuffer(NULL),
-		areParametersSet(false)
+		areParametersSet(false),
+		internal(NULL)
 	{
 	}
 
@@ -56,6 +64,10 @@ namespace wcl
 		if(this->conversionBuffer != NULL){
 			delete (unsigned char *)this->conversionBuffer->start;
 			delete this->conversionBuffer;
+		}
+		if(this->internal){
+		    delete this->internal->decoder;
+		    delete this->internal;
 		}
 	}
 
@@ -237,10 +249,13 @@ namespace wcl
 
 #if ENABLE_VIDEO
 						case MJPEG:{
-						    static VideoDecoder
-							decoder(width, height, CODEC_ID_MJPEG);
-						    decoder.nextFrame( frame, this->getFormatBufferSize());
-						    return decoder.getFrame();
+						    // Init the video decoder on the first MJPEG decoding frame
+						    if( this->internal == NULL){
+							this->internal = new Priv;
+							this->internal->decoder = new VideoDecoder(width, height,CODEC_ID_MJPEG);
+						    }
+						    internal->decoder->nextFrame(frame, this->getFormatBufferSize());
+						    return internal->decoder->getFrame();
 						}
 #endif
 						default:
