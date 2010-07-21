@@ -252,7 +252,7 @@ namespace wcl
 						    // Init the video decoder on the first MJPEG decoding frame
 						    if( this->internal == NULL){
 							this->internal = new Priv;
-							this->internal->decoder = new VideoDecoder(width, height,CODEC_ID_MJPEG);
+							this->internal->decoder = new VideoDecoder(width, height,CODEC_ID_MJPEG, false );
 						    }
 						    internal->decoder->nextFrame(frame, this->getFormatBufferSize());
 						    return internal->decoder->getFrame();
