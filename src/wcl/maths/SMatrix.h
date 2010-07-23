@@ -62,7 +62,7 @@ public:
 
 private:
     SMatrix();
-    Matrix::setSize;
+    using Matrix::setSize;
 };
 
 // Global operators

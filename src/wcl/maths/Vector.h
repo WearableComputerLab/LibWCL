@@ -74,8 +74,8 @@ public:
 	T dot(const Vector&) const;
 
 private:
-    Matrix::setSize;
-    Matrix::getCols;
+    using Matrix::setSize;
+    using Matrix::getCols;
 };
 
 // Global Operators
