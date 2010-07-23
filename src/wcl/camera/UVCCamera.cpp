@@ -139,7 +139,6 @@ void UVCCamera::loadCapabilities()
 
 			while (0 == ioctl(cam, VIDIOC_ENUM_FRAMEINTERVALS, &frame))
 			{
-				cout << frame.discrete.denominator <<  ", ";
 				Configuration c;
 				c.format = f;
 				c.fps = frame.discrete.denominator;
