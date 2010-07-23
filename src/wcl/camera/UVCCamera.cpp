@@ -147,7 +147,6 @@ void UVCCamera::loadCapabilities()
 				this->supportedConfigurations.push_back(c);
 				frame.index++;
 			}
-			cout << endl;
 			size.index++;
 		}
 
