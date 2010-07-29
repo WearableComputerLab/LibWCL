@@ -66,7 +66,9 @@ namespace wcl
 			delete this->conversionBuffer;
 		}
 		if(this->internal){
+#if ENABLE_VIDEO
 		    delete this->internal->decoder;
+#endif
 		    delete this->internal;
 		}
 	}
