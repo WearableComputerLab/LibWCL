@@ -35,16 +35,6 @@
 namespace wcl
 {
 
-	//struct for information about the image buffers we create
-	struct CameraBuffer {
-		void* start;
-		size_t length;
-
-		CameraBuffer();
-	};
-
-
-
 	/**
 	 * An abstract base class representing a camera
 	 */
@@ -309,6 +299,14 @@ namespace wcl
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
 					const unsigned int width, const unsigned int height );
 		protected:
+			//struct for information about the image buffers we create
+			struct CameraBuffer {
+			    void* start;
+			    size_t length;
+
+			    CameraBuffer();
+			};
+
 
 			Camera();
 

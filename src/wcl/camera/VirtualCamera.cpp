@@ -36,7 +36,7 @@ using namespace std;
 namespace wcl
 {
 
-CameraBuffer VirtualCamera::defaultBuffer;
+Camera::CameraBuffer VirtualCamera::defaultBuffer;
 
 VirtualCamera::VirtualCamera()
 {

@@ -42,7 +42,7 @@ namespace wcl
 #endif
 	};
 
-	CameraBuffer::CameraBuffer():
+	Camera::CameraBuffer::CameraBuffer():
 		start(0)
 	{}
 
