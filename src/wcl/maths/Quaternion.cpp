@@ -31,7 +31,7 @@
 #include <cassert>
 
 template<typename T>
-static inline max(T a, T b)
+static inline const T& max(const T& a, const T& b)
 {
 	return (a > b ? a : b);
 }
