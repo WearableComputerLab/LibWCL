@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Markus Broecker <mbrckr@googlemail.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,40 +32,26 @@
 #include <wcl/maths/Vector.h>
 #include <string>
 #include <sstream>
+#include <iostream>
 
 namespace wcl
 {
 	/**
 	 * A Quaternion!
 	 */
-	class Quaternion
+	struct Quaternion
 	{
-		public:
+			T 	w, x, y, z;
+		
+			/// \name Construction
+			/// \{
+
 			/**
-			 * Default constructor, sets xyzw to 0.
+			 * Default constructor, creates the identity quaternion, w=1, xyz=0
 			 * Probably don't want to use this one.
 			 */
 			Quaternion();
 
-			/**
-			 * Copy Constructor.
-			 */
-			Quaternion(const wcl::Quaternion& q);
-
-			/**
-			 * Equals operator.
-			 */
-			Quaternion& operator=(const wcl::Quaternion& rhs);
-
-			/**
-			 * Constructor.
-			 * Sets xyzw to the parameters passed in.
-			 *
-			 * @param _w The w component.
-			 * @param _x The x component.
-			 * @param _y The y component.
-			 * @param _z The z component.
-			 */
 			Quaternion(T _w, T _x, T _y, T _z);
 
 			/**
@@ -78,34 +65,53 @@ namespace wcl
 
 			Quaternion(const wcl::Vector& v1, const wcl::Vector& v2);
 
+			/// Creates a quaternion from a rotation matrix
+			Quaternion(const wcl::SMatrix& m);
+			
+			/// \}
+			
+			/// \name Transformations
+			/// \{
+			
+			/// Returns a 4x4 rotation matrix
 			wcl::SMatrix getRotation() const;
 
-			T x() const;
-			T y() const;
-			T z() const;
-			T w() const;
-
+			/// Rotates a given vector
 			wcl::Vector rotate(const wcl::Vector& v) const;
 
-			/**
-			 * Returns a string representation of the quaternion.
-			 */
-			std::string toString();
+			/// \}
+
+			inline Quaternion getConjugate() const
+			{
+				return wcl::Quaternion(w, -x, -y, -z);
+			}
 			
 			/**
 			 * Sets the values of the quaternion.
 			 */
-			void set(T w, T x, T y, T z);
+			inline void set(T w_, T x_, T y_, T z_)
+			{
+				w = w_;
+				x = x_;
+				y = y_;
+				z = z_;
+			}
+			
+			
+			/**
+			 * Returns a string representation of the quaternion.
+			 */
+			std::string toString();
 
-			~Quaternion(){}
-
-		private:
-			T m_X;
-			T m_Y;
-			T m_Z;
-			T m_W;
 
 	};
 }
+
+
+inline std::ostream& operator << (std::ostream& os, const wcl::Quaternion& q)
+{
+	return os << "<Quaternion w" << q.w << " x" << q.x << " y" << q.y << " z" << q.z << ">"; 
+}
+
 #endif
 
