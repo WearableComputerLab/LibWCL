@@ -133,6 +133,24 @@ namespace wcl
 						   pMult*v[2] + vMult*z + crossMult*(x*v[1] - y*v[0]));
 	}
 
+	wcl::Quaternion Quaternion::rotate(wcl::Quaternion q) const
+	{
+		// this follows closely realtime rendering, 2nd ed. pg75ff
+		return *this * q * this->getConjugate();
+	}
+	
+	wcl::Quaternion Quaternion::operator * (const Quaternion& r) const
+	{
+		// this follows closely realtime rendering, 2nd ed. pg72ff
+		
+		wcl::Vector qv = wcl::Vector(x, y, z);
+		wcl::Vector rv = wcl::Vector(r.x, r.y, r.z);
+		
+		wcl::Vector vr = qv.crossProduct(rv) + r.w*qv + w*rv;
+				
+		double W = this->w * r.w - qv.dot(rv);
+		return wcl::Quaternion(W, vr[0], vr[1], vr[2]);
+	}
 
 
 	std::string Quaternion::toString()

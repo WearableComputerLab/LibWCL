@@ -80,9 +80,11 @@ namespace wcl
 			Vector rotate(const Vector& v) const;
 			
 			/// Rotates a quaternion
-			Quaternion rotate(const Quaternion& q) const;
+			Quaternion rotate(Quaternion q) const;
 
 			/// \}
+
+			Quaternion operator * (const Quaternion& rhs) const;
 
 			inline Quaternion getConjugate() const
 			{
