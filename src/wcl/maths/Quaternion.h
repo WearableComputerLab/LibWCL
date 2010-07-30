@@ -61,12 +61,12 @@ namespace wcl
 			 * @param axis The vector representing the axis of rotation.
 			 * @param the amount of rotation, in radians.
 			 */
-			Quaternion(const wcl::Vector& axis, T angle);
+			Quaternion(const Vector& axis, T angle);
 
-			Quaternion(const wcl::Vector& v1, const wcl::Vector& v2);
+			Quaternion(const Vector& v1, const Vector& v2);
 
 			/// Creates a quaternion from a rotation matrix
-			Quaternion(const wcl::SMatrix& m);
+			Quaternion(const SMatrix& m);
 			
 			/// \}
 			
@@ -74,10 +74,13 @@ namespace wcl
 			/// \{
 			
 			/// Returns a 4x4 rotation matrix
-			wcl::SMatrix getRotation() const;
+			SMatrix getRotation() const;
 
 			/// Rotates a given vector
-			wcl::Vector rotate(const wcl::Vector& v) const;
+			Vector rotate(const Vector& v) const;
+			
+			/// Rotates a quaternion
+			Quaternion rotate(const Quaternion& q) const;
 
 			/// \}
 

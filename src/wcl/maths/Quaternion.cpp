@@ -26,9 +26,15 @@
 
 
 #include <wcl/maths/Quaternion.h>
-#include <math.h>
+#include <cmath>
 
-#include <assert.h>
+#include <cassert>
+
+template<typename T>
+static inline max(T a, T b)
+{
+	return (a > b ? a : b);
+}
 
 namespace wcl
 {
@@ -44,13 +50,18 @@ namespace wcl
 	{
 	}
 
-	Quaternion& Quaternion::operator=(const wcl::Quaternion& rhs)
+	Quaternion::Quaternion(const SMatrix& m)
 	{
-		x = rhs.x;
-		y = rhs.y;
-		z = rhs.z;
-		w = rhs.w;
-		return *this;
+		assert (m.getRows() >= 3);
+		
+		w = sqrt( max( 0.0, 1 + m[0][0] + m[1][1] + m[2][2] ) ) / 2;
+		x = sqrt( max( 0.0, 1 + m[0][0] - m[1][1] - m[2][2] ) ) / 2;
+		y = sqrt( max( 0.0, 1 - m[0][0] + m[1][1] - m[2][2] ) ) / 2;
+		z = sqrt( max( 0.0, 1 - m[0][0] - m[1][1] + m[2][2] ) ) / 2;
+		                                             
+		x = copysign( x, m[2][1] - m[1][2] );
+		y = copysign( y, m[0][2] - m[2][0] );
+		z = copysign( z, m[1][0] - m[0][1] );
 	}
 
 	/**
