@@ -57,16 +57,19 @@ VirtualCamera::VirtualCamera()
 VirtualCamera::~VirtualCamera()
 {}
 
-void VirtualCamera::printDetails()
+void VirtualCamera::printDetails(bool state)
 {
-    cout << "WCL Virtual Camera" << endl;
-    if ( this->buffers ){
-	cout << "Using Provided Frames" << endl;
-	cout << "| Current Frame: " << inUseBuffer << endl;
-	cout << "| Total Frames: " << this->numBuffers << endl;
-    } else {
+    Camera::printDetails(state);
 
-	cout << "Using Default Frame" << endl;
+    if ( state ){
+	if ( this->buffers ){
+	    cout << "Using Provided Frames" << endl;
+	    cout << "| Current Frame: " << inUseBuffer << endl;
+	    cout << "| Total Frames: " << this->numBuffers << endl;
+	} else {
+
+	    cout << "Using Default Frame" << endl;
+	}
     }
 }
 

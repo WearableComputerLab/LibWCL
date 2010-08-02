@@ -136,5 +136,26 @@ CameraFactory * CameraFactory::getInstance()
     return CameraFactory::instance;
 };
 
+void CameraFactory::printDetails(bool state)
+{
+    CameraFactory *f = CameraFactory::getInstance();
+    std::vector<Camera *>cameras = f->getCameras();
+
+    cout << cameras.size() << " Cameras Found" <<endl;
+
+    if ( cameras.size() ){
+	cout << "-----------------------------------" <<endl;
+
+	for(std::vector<Camera *>::iterator it = cameras.begin();
+	    it != cameras.end();
+	    ++it ) {
+	    Camera *c = *it;
+	    c->printDetails(state);
+	}
+
+	cout << "-----------------------------------" <<endl;
+    }
+}
+
 
 }; //namespace

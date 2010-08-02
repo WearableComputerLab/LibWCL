@@ -88,9 +88,8 @@ namespace wcl
 			 *  o Supported image modes
 			 *  o Supported resolutions and framerates
 			 *  o Available controls
-			 *
 			 */
-			void printDetails();
+			void printDetails(bool);
 
 
 			/**
@@ -160,6 +159,10 @@ namespace wcl
 			 * Closes the connection to the camera and deletes any mmap'd buffers.
 			 */
 			void shutdown();
+
+		protected:
+			const char *getTypeIdentifier() const { return "USB"; }
+
 
 		private:
 			/**

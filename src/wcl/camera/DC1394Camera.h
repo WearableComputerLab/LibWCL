@@ -50,7 +50,7 @@ public:
 	// method to shut down the camera.
 	void shutdown();
 
-	void printDetails();
+	void printDetails(bool);
 
 	void setFormat( const ImageFormat f, const unsigned width, const
 			unsigned height );
@@ -64,13 +64,16 @@ public:
 	 */
 	void setControlValue(const Control control, const int value);
 
+protected:
+	const char *getTypeIdentifier() const { return "1394"; }
+
 private:
 
 	// Set various camera values (-1 = auto)
 	void setBrightness( const int );
 	void setGain( const int  );
 	void setIris( const int );
-	void getCurrentConfig();
+	void loadCapabilities();
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
 	//XXX Or the api updated! - benjsc 20100211

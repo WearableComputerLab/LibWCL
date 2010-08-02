@@ -82,8 +82,8 @@ void UVCCameraFactory::probeCameras()
 	    this->cameras.push_back( c );
 	} catch (std::string s )
 	{
-	    printf("Exception Raised: %s\n", s.c_str());
-	    // Exception raised, hence there's no device, or some other issue
+	    printf("UVCCameraFactory:Exception Raised: %s\n", s.c_str());
+	    // Exception raised device creation failed for some reason
 	    // we simply break the loop at this point
 	    break;
 	}

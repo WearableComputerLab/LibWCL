@@ -172,93 +172,91 @@ void keyboard(unsigned char key, int w, int h)
 int main(int argc, char** argv)
 {
     if(argc < 2 ){
-		usage();
-		return 1;
+	usage();
+	return 1;
     }
 
-	try {
-		cout << "Opening Camera... ";
+    try {
+	// Display info about all cameras
+	CameraFactory::printDetails(false);
+	std::vector<Camera *> cameras =
+	    CameraFactory::getCameras();
 
-		// Open the camera
-		switch( atoi(argv[1])){
-			case 1:
-			    {
-				std::vector<Camera *> cameras =
-				    CameraFactory::getCameras();
+	if( cameras.size() == 0 ){
+	    return 0;
+	}
 
-				std::cout << cameras.size() << " Camera's Detected" << std::endl;
 
-				cam = CameraFactory::getCamera();
-				long int value = -1;
-				if( argc > 2 ){
-				    long int value = atol(argv[2]);
-				}
-				if( value < 0 ){
-				    cam = CameraFactory::getCamera();
-				} else {
-				    std::stringstream s;
-				    s<< value;
-				    cam = CameraFactory::getCamera(s.str());
-				}
+	cout << "Opening Camera... ";
 
-				if (cam == NULL ){
-				    std::cout << "No usable cameras found" << std::endl;
-				    exit(0);
-				}
-			    }
-			    break;
-			case 2: //Virtual Camera
-				cam = new VirtualCamera();
-				break;
-			default:
-				usage();
-				return 1;
+	// Open the camera
+	switch( atoi(argv[1])){
+	    case 1:
+		{
+		    if( argc < 2 ){
+			cam = CameraFactory::getCamera();
+		    } else {
+			cam = CameraFactory::getCamera(argv[2]);
+		    }
+
+		    if (cam == NULL ){
+			std::cout << "No usable cameras found" << std::endl;
+			exit(0);
+		    }
 		}
-
-		cout << "Done!" << endl;
-
-		/*
-		 * Print out camera details
-		 */
-		cam->printDetails();
-
-		Camera::Configuration c;
-		c.width = 640;
-		cam->setConfiguration(cam->findConfiguration(c));
-
-		//set power frequency compensation to 50 Hz
-		cam->setControlValue(Camera::POWER_FREQUENCY, 1);
-
-		//cout << "about to grab frame, length is: " << cam.getBufferSize() << endl;
-
-		// Create GLUT window
-		glutInit(&argc, argv);
-		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-		glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
-		glutCreateWindow(argv[0]);
-
-		init();
-
-		// register callbacks
-		glutDisplayFunc(display);
-		glutReshapeFunc(reshape);
-		glutKeyboardFunc(keyboard);
-		glutIdleFunc(idle);
-
-		// GO!
-		glutMainLoop();
-
-		cout << "Deleting Cam" << endl;
-
-		cam->shutdown();
-		delete cam;
-
-	}
-	catch (std::string s)
-	{
-		cout << "Exception Occured: " << s << endl;
+		break;
+	    case 2: //Virtual Camera
+		cam = new VirtualCamera();
+		break;
+	    default:
+		usage();
+		return 1;
 	}
 
-	return 0;
+	cout << "Done!" << endl;
+
+	/*
+	 * Print out camera details
+	 */
+	cam->printDetails();
+
+	Camera::Configuration c;
+	c.width = 640;
+	cam->setConfiguration(cam->findConfiguration(c));
+
+	//set power frequency compensation to 50 Hz
+	cam->setControlValue(Camera::POWER_FREQUENCY, 1);
+
+	//cout << "about to grab frame, length is: " << cam.getBufferSize() << endl;
+
+	// Create GLUT window
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
+	glutCreateWindow(argv[0]);
+
+	init();
+
+	// register callbacks
+	glutDisplayFunc(display);
+	glutReshapeFunc(reshape);
+	glutKeyboardFunc(keyboard);
+	glutIdleFunc(idle);
+
+	// GO!
+	glutMainLoop();
+
+	cout << "Deleting Cam" << endl;
+
+	cam->shutdown();
+	delete cam;
+
+    }
+    catch (std::string s)
+    {
+	cout << "Exception Occured: " << s << endl;
+    }
+
+    return 0;
 }
 

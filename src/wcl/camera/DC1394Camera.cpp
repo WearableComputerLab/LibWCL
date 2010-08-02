@@ -55,7 +55,8 @@ DC1394Camera::DC1394Camera(const uint64_t myguid):
 	// Just a safety thing, 1394 is a little touchy
 	dc1394_reset_bus (this->camera);
 
-	this->getCurrentConfig();
+
+	this->loadCapabilities();
 }
 
 DC1394Camera::~DC1394Camera()
@@ -668,216 +669,227 @@ void DC1394Camera::setColorFilter( char* colorFilter )
 }
 */
 
-void DC1394Camera::getCurrentConfig()
+void DC1394Camera::loadCapabilities()
 {
+    /*
     dc1394video_mode_t mode;
     dc1394_video_get_mode(this->camera, &mode);
-
-	/*
-	 * XXX Michael Commented this out!
-	 */
-#warning Not implemented!
-	/*
-    // Map the libdc mode back to the local setup
-    switch( mode )
-    {
-	case DC1394_VIDEO_MODE_320x240_YUV422:  Camera::setFormat(YUYV422, 320, 240 ); break;
-	case DC1394_VIDEO_MODE_640x480_YUV411:  Camera::setFormat(YUYV411, 640, 480); break;
-	case DC1394_VIDEO_MODE_640x480_YUV422:  Camera::setFormat(YUYV422, 640, 480); break;
-	case DC1394_VIDEO_MODE_640x480_RGB8:    Camera::setFormat(RGB8, 640, 480); break;
-	case DC1394_VIDEO_MODE_640x480_MONO8:   Camera::setFormat(MONO8,640, 480); break;
-	case DC1394_VIDEO_MODE_640x480_MONO16:  Camera::setFormat(MONO16, 640, 480); break;
-	case DC1394_VIDEO_MODE_800x600_YUV422:  Camera::setFormat(YUYV422, 800, 600); break;
-	case DC1394_VIDEO_MODE_800x600_RGB8:    Camera::setFormat(RGB8, 800, 600); break;
-	case DC1394_VIDEO_MODE_800x600_MONO8:   Camera::setFormat(MONO8, 800, 600); break;
-	case DC1394_VIDEO_MODE_1024x768_YUV422: Camera::setFormat(YUYV422, 1024, 768); break;
-	case DC1394_VIDEO_MODE_1024x768_RGB8:   Camera::setFormat(RGB8, 1024, 768); break;
-	case DC1394_VIDEO_MODE_1024x768_MONO8:  Camera::setFormat(MONO8, 1024, 786); break;
-	case DC1394_VIDEO_MODE_800x600_MONO16:  Camera::setFormat(MONO16, 800, 600); break;
-	case DC1394_VIDEO_MODE_1024x768_MONO16: Camera::setFormat(MONO16, 1024, 768); break;
-	case DC1394_VIDEO_MODE_1280x960_YUV422: Camera::setFormat(YUYV422, 1280, 960); break;
-	case DC1394_VIDEO_MODE_1280x960_RGB8:   Camera::setFormat(RGB8, 1280, 960); break;
-	case DC1394_VIDEO_MODE_1280x960_MONO8:  Camera::setFormat(MONO8, 1280, 960); break;
-	case DC1394_VIDEO_MODE_1600x1200_YUV422:Camera::setFormat(YUYV422, 1600, 1200);break;
-	case DC1394_VIDEO_MODE_1600x1200_RGB8:  Camera::setFormat(RGB8, 1600, 1200);break;
-	case DC1394_VIDEO_MODE_1600x1200_MONO8: Camera::setFormat(MONO8, 1600, 1200);break;
-	case DC1394_VIDEO_MODE_1280x960_MONO16: Camera::setFormat(MONO16, 1280, 960);break;
-	case DC1394_VIDEO_MODE_1600x1200_MONO16:Camera::setFormat(MONO16, 1600, 1200);break;
-#if 0
-	case DC1394_VIDEO_MODE_EXIF:
-	case DC1394_VIDEO_MODE_160x120_YUV444:
-	case DC1394_VIDEO_MODE_FORMAT7_0:
-	case DC1394_VIDEO_MODE_FORMAT7_1:
-	case DC1394_VIDEO_MODE_FORMAT7_2:
-	case DC1394_VIDEO_MODE_FORMAT7_3:
-	case DC1394_VIDEO_MODE_FORMAT7_4:
-	case DC1394_VIDEO_MODE_FORMAT7_5:
-	case DC1394_VIDEO_MODE_FORMAT7_6:
-	case DC1394_VIDEO_MODE_FORMAT7_7:
-#endif
-    }
-	*/
-}
-
-void DC1394Camera::printDetails()
-{
+    */
     dc1394video_modes_t videoModes;
     dc1394framerates_t framerates;
-    dc1394featureset_t features;
-
     dc1394_video_get_supported_modes( camera, &videoModes );
-
-    fprintf( stderr, "1394 Camera GUID: %llu\n", this->guid);
-    fprintf( stderr, "available video modes:\n" );
+    Camera::Configuration c;
 
     for( int i = 0; i < videoModes.num; i++ )
     {
-	switch( videoModes.modes[ i ] )
+	switch( videoModes.modes[i] )
 	{
-	    case DC1394_VIDEO_MODE_160x120_YUV444:
-		fprintf( stderr, "DC1394_VIDEO_MODE_160X120_YUV444\n" );
-		break;
 	    case DC1394_VIDEO_MODE_320x240_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_320x240_YUV422\n" );
-		break;
+		{
+		    c.width = 320;
+		    c.height= 240;
+		    c.format = YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_640x480_YUV411:
-		fprintf( stderr, "DC1394_VIDEO_MODE_640x480_YUV411\n" );
-		break;
+		{
+		    c.width=640;
+		    c.height=480;
+		    c.format=YUYV411;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_640x480_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_640x480_YUV422\n" );
-		break;
+		{
+		    c.width=640;
+		    c.height=480;
+		    c.format=YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_640x480_RGB8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_640x480_RGB8\n" );
-		break;
+		{
+		    c.width=640;
+		    c.height=480;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_640x480_MONO8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_640x480_MONO8\n" );
-		break;
+		{
+		    c.width=640;
+		    c.height=480;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_640x480_MONO16:
-		fprintf( stderr, "DC1394_VIDEO_MODE_640x480_MONO16\n" );
-		break;
+		{
+		    c.width=640;
+		    c.height=480;
+		    c.format=MONO16;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_800x600_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_800x600_YUV422\n" );
-		break;
+		{
+		    c.width=800;
+		    c.height=600;
+		    c.format=YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_800x600_RGB8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_800x600_RGB8\n" );
-		break;
+		{
+		    c.width=800;
+		    c.height=600;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_800x600_MONO8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_800x600_MONO8\n" );
-		break;
+		{
+		    c.width=800;
+		    c.height=600;
+		    c.format=MONO8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1024x768_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1024x768_YUV422\n" );
-		break;
+		{
+		    c.width=1024;
+		    c.height=768;
+		    c.format=YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1024x768_RGB8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1024x768_RGB8\n" );
-		break;
+		{
+		    c.width=1024;
+		    c.height=768;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1024x768_MONO8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1024x768_MONO8\n" );
-		break;
+		{
+		    c.width=1024;
+		    c.height=768;
+		    c.format = MONO8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_800x600_MONO16:
-		fprintf( stderr, "DC1394_VIDEO_MODE_800x600_MONO16\n" );
-		break;
+		{
+		    c.width=800;
+		    c.height=600;
+		    c.format=MONO16;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1024x768_MONO16:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1024x768_MONO16\n" );
-		break;
+		{
+		    c.width=1024;
+		    c.height=768;
+		    c.format=MONO16;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1280x960_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1280x960_YUV422\n" );
-		break;
+	        {
+		    c.width=1280;
+		    c.height=960;
+		    c.format=YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1280x960_RGB8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1280x960_RGB8\n" );
-		break;
+		{
+		    c.width=1280;
+		    c.height=960;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1280x960_MONO8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1280x960_MONO8\n" );
-		break;
+		{
+		    c.width=1280;
+		    c.height=960;
+		    c.format=MONO8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1600x1200_YUV422:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1600x1200_YUV422\n" );
-		break;
+		{
+		    c.width=1600;
+		    c.height=1200;
+		    c.format=YUYV422;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1600x1200_RGB8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1600x1200_RGB8\n" );
-		break;
+		{
+		    c.width=1600;
+		    c.height=1200;
+		    c.format=RGB8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1600x1200_MONO8:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1600x1200_MONO8\n" );
-		break;
+		{
+		    c.width=1600;
+		    c.height=1200;
+		    c.format=MONO8;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1280x960_MONO16:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1280x960_MONO16\n" );
-		break;
+		{
+		    c.width=1280;
+		    c.height=960;
+		    c.format=MONO16;
+		    break;
+		}
 	    case DC1394_VIDEO_MODE_1600x1200_MONO16:
-		fprintf( stderr, "DC1394_VIDEO_MODE_1600x1200_MONO16\n" );
-		break;
+		{
+		    c.width=1600;
+		    c.height=1200;
+		    c.format=MONO16;
+		    break;
+		}
+#if 0
 	    case DC1394_VIDEO_MODE_EXIF:
-		fprintf( stderr, "DC1394_VIDEO_MODE_EXIF\n" );
-		break;
+	    case DC1394_VIDEO_MODE_160x120_YUV444:
 	    case DC1394_VIDEO_MODE_FORMAT7_0:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_0\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_1:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_1\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_2:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_2\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_3:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_3\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_4:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_4\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_5:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_5\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_6:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_6\n" );
-		break;
 	    case DC1394_VIDEO_MODE_FORMAT7_7:
-		fprintf( stderr, "DC1394_VIDEO_MODE_FORMAT7_7\n" );
-		break;
-
+#endif
 	    default:
-		fprintf( stderr, "Unknown video format\n" );
+		throw std::string("DC1394: Unknown Video Mode\n");
 	}
 
 	dc1394_video_get_supported_framerates( this->camera, videoModes.modes[i], &framerates );
-
 	// loop through all of the framerates and print them as we come to them.
 	for( uint32_t i = 0; i <= framerates.num - 1; i++ )
 	{
 	    switch( framerates.framerates[ i ] )
 	    {
-		case DC1394_FRAMERATE_1_875:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_1_875\n" );
-		    break;
-		case DC1394_FRAMERATE_3_75:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_3_75\n" );
-		    break;
-		case DC1394_FRAMERATE_7_5:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_7_5\n" );
-		    break;
-		case DC1394_FRAMERATE_15:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_15\n" );
-		    break;
-		case DC1394_FRAMERATE_30:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_30\n" );
-		    break;
-		case DC1394_FRAMERATE_60:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_60\n" );
-		    break;
-		case DC1394_FRAMERATE_120:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_120\n" );
-		    break;
-		case DC1394_FRAMERATE_240:
-		    fprintf( stderr, "\tDC1394_FRAMERATE_240\n" );
-		    break;
+		case DC1394_FRAMERATE_1_875: c.fps=1.875; break;
+		case DC1394_FRAMERATE_3_75: c.fps=3.75; break;
+		case DC1394_FRAMERATE_7_5: c.fps=7.5; break;
+		case DC1394_FRAMERATE_15: c.fps=15.0; break;
+		case DC1394_FRAMERATE_30: c.fps=30.0; break;
+		case DC1394_FRAMERATE_60: c.fps=60.0; break;
+		case DC1394_FRAMERATE_120: c.fps=120.0; break;
+		case DC1394_FRAMERATE_240: c.fps=240.0; break;
 		default:
-		    fprintf( stderr, "Unknown video format\n" );
+		  throw std::string("DC1394::Unknown Frame Rate");
 	    }
+
+	    this->supportedConfigurations.push_back(c);
 	}
     }
+}
 
+void DC1394Camera::printDetails(bool state)
+{
+    Camera::printDetails(state);
 
-    // grab the set of features from the camera.
-    dc1394_feature_get_all( this->camera, &features );
+    if ( state ) {
+	dc1394featureset_t features;
 
-    // display the features
-    dc1394_feature_print_all(&features, stderr );
+	// grab the set of features from the camera.
+	dc1394_feature_get_all( this->camera, &features );
+
+	// display the features
+	dc1394_feature_print_all(&features, stderr );
+    }
 }
 
 

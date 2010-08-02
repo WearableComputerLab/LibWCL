@@ -129,7 +129,7 @@ namespace wcl
 
 			struct Configuration
 			{
-				unsigned fps;
+				float fps;
 				unsigned width;
 				unsigned height;
 				ImageFormat format;
@@ -195,8 +195,9 @@ namespace wcl
 			 *  o Supported resolutions and framerates
 			 *  o Available controls
 			 *
+			 * @param full If true display full details about the camera else id type and current mode
 			 */
-			virtual void printDetails() = 0;
+			virtual void printDetails(bool full = true);
 
 			/**
 			 * Obtain the unique identify for this camera
@@ -343,6 +344,8 @@ namespace wcl
 
 			std::vector<Configuration> supportedConfigurations;
 
+			virtual const char *getTypeIdentifier() const = 0;
+
 		private:
 			CameraBuffer *conversionBuffer;
 
@@ -351,6 +354,7 @@ namespace wcl
 			Priv *internal;
 
 			void setupConversionBuffer( const size_t buffersize );
+			const char *imageFormatToString( const ImageFormat );
 	};
 
 };

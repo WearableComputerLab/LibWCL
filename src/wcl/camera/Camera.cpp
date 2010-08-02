@@ -26,12 +26,14 @@
 
 #include <assert.h>
 #include <config.h>
+#include <iostream>
 #include "Camera.h"
 
 #if ENABLE_VIDEO
     #include <video/VideoDecoder.h>
 #endif
 
+using namespace std;
 
 namespace wcl
 {
@@ -343,4 +345,42 @@ NOTIMP:
 		this->parameters = p;
 	}
 
+	void Camera::printDetails(bool state)
+	{
+
+	    Configuration a = this->getActiveConfiguration();
+	    cout << "Camera: " << this->id << " (" << this->getTypeIdentifier() << ")"
+		 << this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps << endl;
+
+	    if ( state ){
+		cout << "Features/Modes" << endl;
+		for(std::vector<Configuration>::iterator it =
+		    supportedConfigurations.begin(); it !=
+		    supportedConfigurations.end(); ++it ){
+
+		    Configuration c = *it;
+		    cout << "\t" << this->imageFormatToString(c.format) << " "
+			 << c.width << "x" << c.height << " @" << c.fps << endl;
+		}
+	    }
+	}
+
+	const char *Camera::imageFormatToString(const ImageFormat f )
+	{
+	    switch(f)
+	    {
+		case MJPEG: return "MJPEG";
+		case YUYV422: return "YUYV422";
+		case YUYV411: return "YUYV411";
+		case RGB8: return "RGB8";
+		case RGB16: return "RGB16";
+		case RGB32: return "RGB32";
+		case BGR8: return "BGR8";
+		case MONO8: return "MONO8";
+		case MONO16: return "MONO16";
+		case ANY:
+		default:
+		    return "UNKNOWN:";
+	    };
+	}
 }
