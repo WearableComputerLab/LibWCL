@@ -41,8 +41,10 @@
 #include <signal.h>
 
 // include our headers
-#include <wcl/vicon/ViconClient.h>
-#include <wcl/vicon/TrackedObject.h>
+#include <wcl/tracking/ViconClient.h>
+#include <wcl/tracking/TrackedObject.h>
+
+#define MARKER 1  // XXX At present the value for Marker is not known -benjsc 20100802 (Micheal should know it)
 
 using namespace std;
 using namespace wcl;
@@ -112,7 +114,7 @@ int main(int argc, char** argv)
 
 
 		// lets print out the list of objects
-		vector<TrackedObject> &objects = client->objects;
+		vector<ViconTrackedObject> &objects = client->objects;
 
 		cout << endl << "*** Available Tracked Objects ***" << endl << endl;
 
