@@ -96,6 +96,25 @@ namespace wcl
 		this->z = r[2];
 	}
 
+	void Quaternion::setRotation(const wcl::SMatrix& mat)
+	{
+		/* 	Courtesy of Martin Baker, euclidean space:
+			http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+		*/
+		
+		assert(mat.getRows() >= 3);
+		assert( det(mat)  == 1);
+				
+		T trace = mat[0][0] + mat[1][1] + mat[2][2] + 1.0;
+		assert(trace > 0);
+				
+		w = sqrt(trace) * 0.5;
+		x = (mat[2][1] - mat[1][2])/(4 * w);
+		y = (mat[0][2] - mat[2][0])/(4 * w);
+		z = (mat[1][0] - mat[0][1])/(4 * w);
+	}
+	
+
 	wcl::SMatrix Quaternion::getRotation() const
 	{
 		T s, xs, ys, zs, wx, wy, wz, xx, xy, xz, yy, yz, zz;

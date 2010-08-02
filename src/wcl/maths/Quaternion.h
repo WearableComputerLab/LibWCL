@@ -79,6 +79,9 @@ namespace wcl
 			
 			/// Returns a 4x4 rotation matrix
 			SMatrix getRotation() const;
+			
+			/// Sets this quaternion from a rotation matrix
+			void setRotation(const wcl::SMatrix& mat);
 
 			/// Rotates a given vector
 			Vector rotate(const Vector& v) const;
