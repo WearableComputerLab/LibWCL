@@ -13,7 +13,7 @@ ACLOCAL_AMFLAGS=-I cfg
 #
 # Indicate which directories to process
 #
-SUBDIRS=src
+SUBDIRS=src examples
 
 #
 # Package config information

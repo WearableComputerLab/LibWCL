@@ -1,16 +1,6 @@
-# 
-# Indicate this is not a GNU project and that 
-# missing files should be automatically created
-AUTOMAKE_OPTIONS=foreign
+AM_LDFLAGS=@top_srcdir@/src/wcl/libwcl.la @PKGCONFIG_OTHERLIBS@ @EXAMPLE_LIBS@
+AM_CXXFLAGS=@PKGCONFIG_OTHERINCLUDES@ -I@top_srcdir@/src/ @EXAMPLE_INCLUDES@
 
-videodir=../
-video_PROGRAMS = video
-video_LDADD = @PKGCONFIG_OTHERLIBS@
-
-# Headers that have to be compiled
-video_HEADERS = 
-
-
-# Sources that have to be compiled
+noinst_PROGRAMS = video
 video_SOURCES = main.cpp
 
