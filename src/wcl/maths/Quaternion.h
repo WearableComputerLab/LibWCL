@@ -68,6 +68,10 @@ namespace wcl
 			/// Creates a quaternion from a rotation matrix
 			Quaternion(const SMatrix& m);
 			
+			/// Create a 'pure' quaternion from a vector. Used for rotations
+			Quaternion(const Vector& v);
+			
+			
 			/// \}
 			
 			/// \name Transformations
@@ -81,6 +85,12 @@ namespace wcl
 			
 			/// Rotates a quaternion
 			Quaternion rotate(Quaternion q) const;
+
+
+			/** Rotation quaternions are supposed to be of unit length. This
+				method normalised the quaternion.
+			*/
+			void normalise();
 
 			/// \}
 

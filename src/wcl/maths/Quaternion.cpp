@@ -63,6 +63,10 @@ namespace wcl
 		y = copysign( y, m[0][2] - m[2][0] );
 		z = copysign( z, m[1][0] - m[0][1] );
 	}
+	
+	Quaternion::Quaternion(const Vector& v) : w(0.0), x(v[0]), y(v[1]), z(v[2])
+	{		
+	}
 
 	/**
 	 * Constructs a quaternion from an axis and angle of rotation.
@@ -72,14 +76,13 @@ namespace wcl
 	 */
 	Quaternion::Quaternion(const wcl::Vector& axis, T angle)
 	{
+		Vector v = axis.unit();
+		
 		w = cos(angle/2.0);
 		T scale = sin(angle/2.0);
-
-		wcl::Vector v(axis);
-		v * scale;
-		x = v[0];
-		y = v[1];
-		z = v[2];
+		x = v[0] * scale;
+		y = v[1] * scale;
+		z = v[2] * scale;
 	}
 
 	Quaternion::Quaternion(const wcl::Vector& v1, const wcl::Vector& v2)
@@ -139,17 +142,23 @@ namespace wcl
 		return *this * q * this->getConjugate();
 	}
 	
-	wcl::Quaternion Quaternion::operator * (const Quaternion& r) const
+	void Quaternion::normalise()
+	{
+		T imag = 1.0 / sqrt(w*w + x*x + y*y + z*z);
+		w *= imag;
+		x *= imag;
+		y *= imag;
+		z *= imag;
+	}
+	
+	wcl::Quaternion Quaternion::operator * (const Quaternion& B) const
 	{
 		// this follows closely realtime rendering, 2nd ed. pg72ff
-		
-		wcl::Vector qv = wcl::Vector(x, y, z);
-		wcl::Vector rv = wcl::Vector(r.x, r.y, r.z);
-		
-		wcl::Vector vr = qv.crossProduct(rv) + r.w*qv + w*rv;
-				
-		double W = this->w * r.w - qv.dot(rv);
-		return wcl::Quaternion(W, vr[0], vr[1], vr[2]);
+		return Quaternion(
+				w*B.x + x*B.w + y*B.z - z*B.y,
+				w*B.y - x*B.z + y*B.w + z*B.x,
+				w*B.z + x*B.y - y*B.x + z*B.w,
+				w*B.w - x*B.x - y*B.y - z*B.z);
 	}
 
 
