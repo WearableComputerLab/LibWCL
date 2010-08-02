@@ -19,7 +19,7 @@
 
 #include <wcl/gestures/Gestures.h>
 
-using namespace gestures;
+using namespace wcl;
 using namespace std;
 
 /**

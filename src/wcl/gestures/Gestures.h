@@ -50,6 +50,10 @@
 
 namespace wcl 
 {
+	/**
+	 * Definition of a point
+	 */
+	typedef wcl::Vector Point;
 
 	/**
 	 * Type used for storing a list of Points.
