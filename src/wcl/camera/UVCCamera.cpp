@@ -39,7 +39,8 @@
 
 using namespace wcl;
 
-UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
+UVCCamera::UVCCamera(string filename) :
+    isReadyForCapture(false)
 {
 	// Camera to open
 	cam = open(filename.c_str(), O_RDWR);
@@ -53,6 +54,9 @@ UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 	loadCapabilities();
 
 	setConfiguration(supportedConfigurations[0]);
+
+	// For now the id of a UVCCamera is it's device node
+	this->id = filename;
 }
 
 

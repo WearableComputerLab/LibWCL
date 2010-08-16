@@ -193,9 +193,11 @@ int main(int argc, char** argv)
 	switch( atoi(argv[1])){
 	    case 1:
 		{
-		    if( argc < 2 ){
+		    if( argc < 3 ){
+			cout << "Using Camera factory" << endl;
 			cam = CameraFactory::getCamera();
 		    } else {
+			cout << argv[2] <<endl;
 			cam = CameraFactory::getCamera(argv[2]);
 		    }
 
