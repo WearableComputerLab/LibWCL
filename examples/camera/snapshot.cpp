@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#define MAX_RES 1600
 
 // include system headers
 #include <stdlib.h>
@@ -37,25 +38,20 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
 
 using namespace std;
 using namespace wcl;
 
 Camera *cam;
-unsigned char* data;
 
 void usage()
 {
-    printf("Usage: camera type [devicenode]\n"
-	   "\n"
-	   "eg: camera 1 /dev/video0\n"
-	   "\n"
-	   "Where type is:\n"
-	   "	1. UVC/Firewire\n"
-	   "	2. Virtual Camera\n"
-	  );
+    printf("snapshot devicenode [filename]\n"
+	   "Snapshot takes a image from a camera and displays it to the screen\n"
+	   "or saves it to a file if a filename is given. It uses image magic to\n"
+	   "convert the image from a rgb image to a jpg"
+	   );
 }
 
 
@@ -64,6 +60,7 @@ void usage()
  */
 GLvoid init()
 {
+	unsigned char* data;
 	glShadeModel(GL_SMOOTH);
 	glClearColor(0,0,0,0);
 	glEnable(GL_DEPTH_TEST);
@@ -91,6 +88,7 @@ GLvoid init()
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,1,0,1);
 	glMatrixMode(GL_MODELVIEW);
+	delete data;
 }
 
 
@@ -171,92 +169,104 @@ void keyboard(unsigned char key, int w, int h)
 
 int main(int argc, char** argv)
 {
-    if(argc < 2 ){
-	usage();
-	return 1;
+    bool dodisplay = false;
+    const char *filename = NULL;
+
+    switch( argc ){
+	case 2: dodisplay = true; break;
+	case 3: filename=argv[2]; break;
+	case 1: /* fallthrough */
+	default:
+		usage();
+		return 1;
     }
 
     try {
-	// Display info about all cameras
-	CameraFactory::printDetails(false);
 	std::vector<Camera *> cameras =
 	    CameraFactory::getCameras();
 
 	if( cameras.size() == 0 ){
+	    cout << "No Camera's found" << endl;
 	    return 0;
 	}
 
-
-	cout << "Opening Camera... ";
-
-	// Open the camera
-	switch( atoi(argv[1])){
-	    case 1:
-		{
-		    if( argc < 3 ){
-			cout << "Using Camera factory" << endl;
-			cam = CameraFactory::getCamera();
-		    } else {
-			cout << argv[2] <<endl;
-			cam = CameraFactory::getCamera(argv[2]);
-		    }
-
-		    if (cam == NULL ){
-			std::cout << "No usable cameras found" << std::endl;
-			exit(0);
-		    }
-		}
-		break;
-	    case 2: //Virtual Camera
-		cam = new VirtualCamera();
-		break;
-	    default:
-		usage();
-		return 1;
-	}
-
-	cout << "Done!" << endl;
-
-	/*
-	 * Print out camera details
-	 */
-	cam->printDetails();
-
+	cam = CameraFactory::getCamera(argv[1]);
 	Camera::Configuration c;
-	c.width = 640;
-	cam->setConfiguration(cam->findConfiguration(c));
+	c.width = MAX_RES;
+	c = cam->findConfiguration(c);
+	cam->setConfiguration(c);
 
-	//set power frequency compensation to 50 Hz
-	cam->setControlValue(Camera::POWER_FREQUENCY, 1);
+	if( dodisplay ){
+	    // Create GLUT window
+	    glutInit(&argc, argv);
+	    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	    glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
+	    glutCreateWindow(argv[0]);
 
-	//cout << "about to grab frame, length is: " << cam.getBufferSize() << endl;
+	    init();
 
-	// Create GLUT window
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
-	glutCreateWindow(argv[0]);
+	    // register callbacks
+	    glutDisplayFunc(display);
+	    glutReshapeFunc(reshape);
+	    glutKeyboardFunc(keyboard);
+	    glutIdleFunc(idle);
 
-	init();
+	    // GO!
+	    glutMainLoop();
 
-	// register callbacks
-	glutDisplayFunc(display);
-	glutReshapeFunc(reshape);
-	glutKeyboardFunc(keyboard);
-	glutIdleFunc(idle);
+	} else {
 
-	// GO!
-	glutMainLoop();
+	    cout << "Writing Camera Image to: " << filename << endl;
 
-	cout << "Deleting Cam" << endl;
+	    stringstream name;
+	    name << filename;
+	    name << ".rgb";
+
+	    FILE *f = fopen(name.str().c_str(), "w");
+	    if ( f == NULL ){
+		perror("Failed to open output file");
+		return 1;
+	    }
+
+	    const unsigned char * frame = cam->getFrame(Camera::RGB8);
+
+	    if(fwrite(frame, cam->getFormatBufferSize(Camera::RGB8), 1, f) <= 0){
+		perror("Failed to write output file");
+		return 1;
+	    }
+
+
+	    fclose(f);
+
+	    stringstream s;
+	    s << "convert ";
+	    s << "-size ";
+	    s << c.width;
+	    s << "x";
+	    s << c.height;
+	    s << " -depth 8 ";
+	    s << name.str();
+	    s << " ";
+	    s << filename;
+	    s << ".jpg";
+
+	    cout << s.str() << endl;
+
+	    if( system(s.str().c_str()) < 0 ){
+		cerr << "Failed to convert to jpg: " << s.str().c_str() << endl;
+		return 1;
+	    }
+
+	    unlink( name.str().c_str() );
+	}
 
 	cam->shutdown();
 	delete cam;
-
     }
     catch (std::string s)
     {
 	cout << "Exception Occured: " << s << endl;
+	return 1;
     }
 
     return 0;

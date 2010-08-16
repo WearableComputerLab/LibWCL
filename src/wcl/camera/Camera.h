@@ -35,16 +35,6 @@
 namespace wcl
 {
 
-	//struct for information about the image buffers we create
-	struct CameraBuffer {
-		void* start;
-		size_t length;
-
-		CameraBuffer();
-	};
-
-
-
 	/**
 	 * An abstract base class representing a camera
 	 */
@@ -139,7 +129,7 @@ namespace wcl
 
 			struct Configuration
 			{
-				unsigned fps;
+				float fps;
 				unsigned width;
 				unsigned height;
 				ImageFormat format;
@@ -205,8 +195,9 @@ namespace wcl
 			 *  o Supported resolutions and framerates
 			 *  o Available controls
 			 *
+			 * @param full If true display full details about the camera else id type and current mode
 			 */
-			virtual void printDetails() = 0;
+			virtual void printDetails(bool full = true);
 
 			/**
 			 * Obtain the unique identify for this camera
@@ -309,6 +300,14 @@ namespace wcl
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
 					const unsigned int width, const unsigned int height );
 		protected:
+			//struct for information about the image buffers we create
+			struct CameraBuffer {
+			    void* start;
+			    size_t length;
+
+			    CameraBuffer();
+			};
+
 
 			Camera();
 
@@ -345,6 +344,8 @@ namespace wcl
 
 			std::vector<Configuration> supportedConfigurations;
 
+			virtual const char *getTypeIdentifier() const = 0;
+
 		private:
 			CameraBuffer *conversionBuffer;
 
@@ -353,6 +354,7 @@ namespace wcl
 			Priv *internal;
 
 			void setupConversionBuffer( const size_t buffersize );
+			const char *imageFormatToString( const ImageFormat );
 	};
 
 };

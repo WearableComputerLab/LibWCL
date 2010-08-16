@@ -19,6 +19,8 @@ sh autogen.sh
 make
 make install
 
+Note that the templates currently crash clang++
+
 
 * DOCUMENTATION
 ********************

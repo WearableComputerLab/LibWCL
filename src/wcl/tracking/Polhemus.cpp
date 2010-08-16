@@ -84,8 +84,9 @@ namespace wcl
 	void Polhemus::clearInput()
 	{
 		int bytesAvailable = connection.getAvailableCount();
-		char* rubbish[bytesAvailable];
+		char* rubbish = new char[bytesAvailable];
 		connection.read((void*) rubbish, bytesAvailable);
+		delete[] rubbish;
 	}
 
 	void Polhemus::update()

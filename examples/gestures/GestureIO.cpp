@@ -13,8 +13,6 @@
 #include "GestureIO.h"
 
 
-using namespace gestures;
-
 bool GestureIO::saveGesture(PointList p, string name)
 {
 	qDebug("Saving gesture");

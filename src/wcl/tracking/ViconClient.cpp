@@ -321,7 +321,7 @@ void ViconClient::update()
 		count = reverseByteOrder(count);
 		#endif
 
-		double values[count];
+		double* values = new double[count];
 
 		// read all values in one big block
 		socket->readUntil(values, 8*count);
@@ -330,6 +330,8 @@ void ViconClient::update()
 		for (unsigned int i=0;i<objects.size();i++) {
 			objects[i].updateData(values, offset);
 		}
+		
+		delete values;
 	}
 	else 
 	{
@@ -350,10 +352,12 @@ std::string ViconClient::readChannel()
 		letterCount = reverseByteOrder(letterCount);
 		#endif
 
-		char name[letterCount+1];
+		char *name = new char[letterCount+1];
 
 		socket->readUntil(name, letterCount);
 		name[letterCount] = '\0';
+		
+		delete name;
 		
 		//cout << "New channel is " << std::string(name) << endl;
 		return std::string(name);

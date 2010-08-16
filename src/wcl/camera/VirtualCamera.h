@@ -46,7 +46,7 @@ namespace wcl
 		    ~VirtualCamera();
 
 		    // Overrides of Camera
-		    virtual void printDetails();
+		    virtual void printDetails(bool);
 		    virtual void setConfiguration(Configuration c);
 		    virtual void setExposureMode(const ExposureMode t);
 		    virtual void setControlValue(const Control control, const int value);
@@ -61,6 +61,9 @@ namespace wcl
 		     * the buffers to provide frames
 		     */
 		    void setFrames(const CameraBuffer *buffers, const unsigned bufferCount);
+
+	    protected:
+		    const char *getTypeIdentifier() const { return "VIRTUAL"; }
 
 	    private:
 		    static CameraBuffer defaultBuffer;
