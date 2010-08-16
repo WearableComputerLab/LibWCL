@@ -88,6 +88,7 @@ namespace wcl
 		if( this->buffers )
 			delete [] this->buffers;
 
+		this->buffers = NULL;
 		this->numBuffers=0;
 	}
 
