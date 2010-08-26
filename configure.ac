@@ -175,25 +175,6 @@ if test "x$enable_camera_uvc" = "xyes" || \
 	enable_camera="yes";
 fi
 
-#
-# Automake Substitution Variables
-#
-
-AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
-AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
-AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
-AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
-AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
-AM_CONDITIONAL(ENABLE_BLUETOOTH, test "x$enable_bluetooth" = "xyes")
-AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
-AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
-AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
-AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 
 #
 # System Checks
@@ -311,16 +292,6 @@ if test "x$enable_bluetooth" = "xyes"; then
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $BLUETOOTH_CFLAGS"
 fi
 
-AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
-if test "x$enable_camera_uvc" = "xyes" ; then
-AC_DEFINE(ENABLE_CAMERA_UVC, 1, [Enable UVC Camera Camera Support])
-fi
-if test "x$enable_camera_1394" = "xyes" ; then
-AC_DEFINE(ENABLE_CAMERA_DC1394, 1, [Enable IEEE1394 Camera Support])
-fi
-if test "x$enable_camera_virtual" = "xyes" ; then
-AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
-fi
 
 # 
 # If examples are enabled we need to check for other options
@@ -339,6 +310,11 @@ if test "x$enable_examples" = "xyes" ; then
 		# These also need glut which isn't pkg-config supported
 		# XXX Really need a test for glut -benjsc 20100802
 		EXAMPLE_LIBS="$EXAMPLE_LIBS -lglut"
+
+		# Many camera examples require the virtual camera so we enable that here as well
+		if test "x$enable_camera" = "xyes"; then
+			enable_camera_virtual="yes"
+		fi
 	fi
 	if test "x$enable_gestures" = "xyes" ; then
 		PKG_CHECK_MODULES(QT, QtGui);
@@ -348,6 +324,17 @@ if test "x$enable_examples" = "xyes" ; then
 	fi
 fi
 
+
+AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
+if test "x$enable_camera_uvc" = "xyes" ; then
+AC_DEFINE(ENABLE_CAMERA_UVC, 1, [Enable UVC Camera Camera Support])
+fi
+if test "x$enable_camera_1394" = "xyes" ; then
+AC_DEFINE(ENABLE_CAMERA_DC1394, 1, [Enable IEEE1394 Camera Support])
+fi
+if test "x$enable_camera_virtual" = "xyes" ; then
+AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
+fi
 
 #
 # Checks for typedefs, structures, and compiler characteristics.
@@ -398,6 +385,26 @@ AC_SUBST(PKGCONFIG_OTHERINCLUDES)
 AC_SUBST(PKGCONFIG_LIBDIR)
 AC_SUBST(EXAMPLE_LIBS)
 AC_SUBST(EXAMPLE_INCLUDES)
+
+#
+# Automake Substitution Variables
+#
+
+AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
+AM_CONDITIONAL(ENABLE_BLUETOOTH, test "x$enable_bluetooth" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
+AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
+AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
+AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
+AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
+AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 
 #
 # Files to create
