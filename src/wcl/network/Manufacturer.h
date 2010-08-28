@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_MANUFACTURER_H
-#define WCL_MANUFACTURER_H
+#ifndef WCL_NETWORK_MANUFACTURER_H
+#define WCL_NETWORK_MANUFACTURER_H
 
 #include <wcl/network/Network.h>
 

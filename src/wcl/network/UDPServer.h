@@ -23,8 +23,8 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef WCL_UDPSERVER_H
-#define WCL_UDPSERVER_H
+#ifndef WCL_NETWORK_UDPSERVER_H
+#define WCL_NETWORK_UDPSERVER_H
 
 #include <wcl/network/UDPSocket.h>
 #include <wcl/network/UDPPacket.h>

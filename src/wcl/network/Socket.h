@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_SOCKET_H
-#define WCL_SOCKET_H
+#ifndef WCL_NETWORK_SOCKET_H
+#define WCL_NETWORK_SOCKET_H
 
 #include <string>
 

@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_TCPSERVERSOCKET_H
-#define WCL_TCPSERVERSOCKET_H
+#ifndef WCL_NETWORK_TCPSERVERSOCKET_H
+#define WCL_NETWORK_TCPSERVERSOCKET_H
 
 #include <wcl/network/TCPSocket.h>
 

@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_UDPSOCKET_H
-#define WCL_UDPSOCKET_H
+#ifndef WCL_NETWORK_UDPSOCKET_H
+#define WCL_NETWORK_UDPSOCKET_H
 
 #include <string>
 #include <wcl/network/Socket.h>
