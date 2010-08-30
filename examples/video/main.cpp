@@ -168,6 +168,7 @@ GLvoid reshape(int width, int height)
 	glLoadIdentity();
 	gluOrtho2D(0,1,0,1);
 	glMatrixMode(GL_MODELVIEW);
+	glViewport(0,0, (GLsizei)width, (GLsizei)height);
 }
 
 void keyboard(unsigned char key, int w, int h)
@@ -186,7 +187,7 @@ int main(int argc, char** argv)
 	try {
 		cout << "Opening Video... ";
 
-		decoder = new VideoDecoder(argv[1]);
+		decoder = new VideoDecoder(argv[1],true);
 
 		cout << "Done!" << endl;
 
