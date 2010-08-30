@@ -158,6 +158,7 @@ GLvoid reshape(int width, int height)
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluOrtho2D(0,1,0,1);
+	glViewport(0,0, (GLsizei)width, (GLsizei)height);
 	glMatrixMode(GL_MODELVIEW);
 }
 
