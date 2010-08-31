@@ -33,15 +33,15 @@ namespace wcl {
 /**
  * Base exception type for the library
  */
-class WCLException: public std::exception
+class Exception: public std::exception
 {
     public:
-	const char *what() const throw();
+	virtual const char *what() const throw() = 0;
 
     protected:
-	WCLException() throw() {}
+	Exception() throw() {}
+	virtual ~Exception() throw() {};
 };
-
 
 };  // namespace wcl
 
