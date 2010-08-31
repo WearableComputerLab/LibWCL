@@ -37,7 +37,7 @@ const char *CameraException::BUFFERERROR="Error Setting up/using buffer";
 const char *CameraException::EXPOSUREERROR="Error Setting up exposure mode";
 const char *CameraException::CONTROLERROR="Control error";
 
-CameraException::CameraException(const char *why)
+CameraException::CameraException(const char *why):
     reason(why)
 {}
 

@@ -28,9 +28,10 @@
 #define WCL_CAMERA_UVCCAMERA_H
 
 #include <stdint.h>
-#include <wcl/camera/Camera.h>
-#include <linux/videodev2.h>
 #include <string>
+#include <linux/videodev2.h>
+#include <wcl/Exception.h>
+#include <wcl/camera/Camera.h>
 
 #define AUTO_EXPOSURE_CTRL 10094849
 
@@ -210,6 +211,7 @@ namespace wcl
 			uint32_t mapControlToV4L2( const Control ) const ;
 
 	};
+
 
 };
 

@@ -34,6 +34,8 @@
 #include <wcl/camera/UVCCameraFactory.h>
 #endif
 
+using namespace std;
+
 namespace wcl
 {
 

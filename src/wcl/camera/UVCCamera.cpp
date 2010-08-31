@@ -36,6 +36,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "UVCCamera.h"
+#include "CameraException.h"
 
 using namespace wcl;
 
@@ -48,7 +49,12 @@ UVCCamera::UVCCamera(string filename) :
 	// Bail if we can't open the device...
 	if (cam == -1)
 	{
-		throw string(strerror(errno));
+	    switch(errno)
+	    {
+		case EACCES: throw CameraException(CameraException::EACCESS);
+		case ENOENT: throw CameraException(CameraException::NOTFOUND);
+		default: throw CameraException(CameraException::UNKNOWN);
+	    }
 	}
 
 	loadCapabilities();
@@ -72,7 +78,7 @@ void UVCCamera::loadCapabilities()
 	 */
 	if (info.capabilities & V4L2_CAP_VIDEO_CAPTURE != 1)
 	{
-		throw string("Device is not a camera!");
+		throw CameraException(CameraException::NOCAPTURE);
 	}
 	
 	// mmap streaming check
@@ -223,7 +229,7 @@ void UVCCamera::setConfiguration(Configuration c)
 
 	if (-1 == ioctl(cam, VIDIOC_S_FMT, &newf))
 	{
-		throw string(strerror(errno));
+		throw CameraException(CameraException::INVALIDFORMAT);
 	}
 
 	bufferSize = newf.fmt.pix.sizeimage;
@@ -236,9 +242,7 @@ const unsigned char* UVCCamera::getFrame()
 {
 	if (!isReadyForCapture)
 	{
-		cout << "Preparing" << endl;
 		prepareForCapture();
-		cout << "Ready" << endl;
 	}
 
 	//grab frame...
@@ -248,7 +252,7 @@ const unsigned char* UVCCamera::getFrame()
 
 	if (-1 == ioctl(cam, VIDIOC_DQBUF, &buf))
 	{
-		throw string("can't dequeue buffer, bailing");
+		throw CameraException(CameraException::BUFFERERROR);
 	}
 
 	// requeue buffer
@@ -272,7 +276,7 @@ void UVCCamera::prepareForCapture()
 
 	if (-1 == ioctl(cam, VIDIOC_REQBUFS, &reqbuf))
 	{
-		throw string("can't allocate buffers. bailing");
+		throw CameraException(CameraException::BUFFERERROR);
 	}
 
 	// create an array for our buffers
@@ -288,7 +292,7 @@ void UVCCamera::prepareForCapture()
 
 		if (-1 == ioctl(cam, VIDIOC_QUERYBUF, &buffer))
 		{
-			throw string("Fail");
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 		buffers[i].length = buffer.length;
 		buffers[i].start = mmap(NULL, buffer.length,
@@ -298,22 +302,21 @@ void UVCCamera::prepareForCapture()
 
 		if (MAP_FAILED == buffers[i].start)
 		{
-			cout << "mmap failed" << endl;
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 
 		//enqueue the buffer for use by the driver
 		if (-1 == ioctl(cam, VIDIOC_QBUF, &buffer))
 		{
-			throw string("enqueueing buffer failed. bailing");
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 	}
-	cout << "mmap'd all the buffers" << endl;
 
 	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	// turn on streaming.
 	if (-1 == ioctl(cam, VIDIOC_STREAMON, &type))
 	{
-		throw string(strerror(errno));
+	    throw CameraException(CameraException::BUFFERERROR);
 	}
 
 
@@ -365,24 +368,8 @@ void UVCCamera::setExposureMode(const ExposureMode t)
 	//normally this a pointer to an array of controls, but we are only setting 1
 	box.controls = &control;
 
-	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box))
-	{
-		switch (errno)
-		{
-			case EINVAL:
-			cout << "id is invalid or ctrl_class is invalid or controls are in conflict" << endl;
-			break;
-			case ERANGE:
-			cout << "value is out of bounds" << endl;
-			break;
-			case EBUSY:
-			cout << "control temporarily unavailable" << endl;
-			break;
-			default:
-			cout << "What the hell I have no idea whats going on!" << endl;
-			break;
-		}
-		throw std::string("UVCCamera:setExposureMode");
+	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box)) {
+		throw CameraException(CameraException::EXPOSUREERROR);
 	}
 }
 
@@ -408,22 +395,7 @@ void UVCCamera::setControlValue(const Control controlName, const int value)
 
 	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box))
 	{
-		switch (errno)
-		{
-			case EINVAL:
-			cout << "id is invalid or ctrl_class is invalid or controls are in conflict" << endl;
-			break;
-			case ERANGE:
-			cout << "value is out of bounds" << endl;
-			break;
-			case EBUSY:
-			cout << "control temporarily unavailable" << endl;
-			break;
-			default:
-			cout << "What the hell I have no idea whats going on!" << endl;
-			break;
-		}
-		throw std::string("UVCCamera:setControlValue:Failed to set Control Value");
+		throw CameraException(CameraException::CONTROLERROR);
 	}
 
 }
