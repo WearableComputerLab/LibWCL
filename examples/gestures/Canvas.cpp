@@ -54,7 +54,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
 		//recognise gesture
 		std::string gesture = gEngine.recognise(points);
 		emit gestureRecognised(QString(gesture.c_str()));
-		qDebug(gesture.c_str());
+		qDebug("%s",gesture.c_str());
 	}
 	//clear our line list and repaint
 	lineList.clear();
