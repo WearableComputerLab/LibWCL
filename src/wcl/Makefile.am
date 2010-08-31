@@ -26,7 +26,8 @@ BUILT_SOURCES=
 common_headers=\
 	      debug.h\
 		  CircularQueue\
-		  Singleton
+		  Singleton\
+		  Exception.h
 
 parser_headers=
 parser_sources=
@@ -189,9 +190,11 @@ camera_sources=
 
 if ENABLE_CAMERA
 camera_headers+=camera/Camera.h\
+		camera/CameraException.h\
 	       camera/CameraFactory.h
 
 camera_sources+=camera/Camera.cpp\
+		camera/CameraException.cpp\
 	       camera/CameraFactory.cpp
 endif
 
