@@ -42,6 +42,10 @@ public:
     static const char *BUFFERERROR;
     static const char *EXPOSUREERROR;
     static const char *CONTROLERROR;
+    static const char *BRIGHTNESSERROR;
+    static const char *IRISERROR;
+    static const char *GAINERROR;
+    static const char *FRAMERATEERROR;
 
     CameraException(const char *);
     virtual const char *what() const throw();

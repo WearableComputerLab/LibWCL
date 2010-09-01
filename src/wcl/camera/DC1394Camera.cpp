@@ -25,15 +25,15 @@
  * SUCH DAMAGE.
  */
 #include <stdio.h>
-#include <dc1394/dc1394.h>
-#include <dc1394/utils.h>
 #include <stdlib.h>
-#include "DC1394Camera.h"
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
+#include <dc1394/dc1394.h>
+#include <dc1394/utils.h>
 
-//#warning DC1394Camera: Note This class needs some major cleanup -benjsc 20100205
+#include "CameraException.h"
+#include "DC1394Camera.h"
 
 using namespace std;
 
@@ -47,10 +47,10 @@ DC1394Camera::DC1394Camera(const uint64_t myguid):
 {
 	this->d = dc1394_new ();
 	if( !this->d )
-	    throw std::string("DC1394Camera:DC1394Camera: Failed to init DC1394 Library");
+	    throw CameraException(CameraException::EACCESS);
 	this->camera = dc1394_camera_new( this->d, myguid );
 	if( !this->camera )
-	    throw std::string("DC1394Camera:DC1394Camera: Unknown Camera");
+	    throw CameraException(CameraException::NOTFOUND);
 
 	// Just a safety thing, 1394 is a little touchy
 	dc1394_reset_bus (this->camera);
@@ -172,13 +172,13 @@ Hope this helps.
 	case MJPEG:
 notfound:
 	default:
-	    throw std::string("DC1394Camera:setFormat:Unknown/Unsupported Format");
+	    throw CameraException(CameraException::INVALIDFORMAT);
     }
     this->videoMode = mode;
 
     dc1394error_t result = dc1394_video_set_mode( this->camera, this->videoMode );
     if( result != DC1394_SUCCESS )
-	throw std::string("DC1394Camera:setFormat: Failed to set Format");
+	throw CameraException(CameraException::CONTROLERROR);
 
 	Configuration c;
 	c.format = format;
@@ -198,12 +198,12 @@ void DC1394Camera::setExposureMode( const ExposureMode t )
 	    retval = dc1394_feature_set_mode( camera, DC1394_FEATURE_IRIS,
 					      DC1394_FEATURE_MODE_AUTO );
 	    if( retval != DC1394_SUCCESS)
-		throw std::string("DC1394Camera:setExposure: Failed to set Auto IRIS");
+		throw CameraException(CameraException::EXPOSUREERROR);
 
 	    retval = dc1394_feature_set_mode( camera, DC1394_FEATURE_SHUTTER,
 					      DC1394_FEATURE_MODE_AUTO );
 	    if ( retval != DC1394_SUCCESS )
-		throw std::string("DC1394Camera:setExposure: Failed to set AUTO SHUTTEr");
+		throw CameraException(CameraException::EXPOSUREERROR);
 
 	    break;
 
@@ -211,13 +211,13 @@ void DC1394Camera::setExposureMode( const ExposureMode t )
 	    retval = dc1394_feature_set_mode( camera, DC1394_FEATURE_IRIS,
 					      DC1394_FEATURE_MODE_MANUAL );
 	    if( retval != DC1394_SUCCESS)
-		throw std::string("DC1394Camera:setExposure: Failed to set Manual IRIS");
+		throw CameraException(CameraException::EXPOSUREERROR);
 
 	    retval = dc1394_feature_set_mode( camera, DC1394_FEATURE_SHUTTER,
 					      DC1394_FEATURE_MODE_AUTO );
 
 	    if( retval != DC1394_SUCCESS)
-		throw std::string("DC1394Camera:setExposure: Failed to set AUTO Shutter");
+		throw CameraException(CameraException::EXPOSUREERROR);
 
 	    break;
 
@@ -225,8 +225,7 @@ void DC1394Camera::setExposureMode( const ExposureMode t )
 	    retval =dc1394_feature_set_mode( camera, DC1394_FEATURE_EXPOSURE,
 					     DC1394_FEATURE_MODE_AUTO );
 	    if( retval != DC1394_SUCCESS)
-		throw std::string("DC1394Camera:setExposure: Failed to set AUTO EXPOSURE");
-
+		throw CameraException(CameraException::EXPOSUREERROR);
 	    break;
 
 	case MANUAL:
@@ -234,7 +233,7 @@ void DC1394Camera::setExposureMode( const ExposureMode t )
 					      DC1394_FEATURE_EXPOSURE,
 					      DC1394_FEATURE_MODE_MANUAL );
 	    if( retval != DC1394_SUCCESS)
-		throw std::string("DC1394Camera:setExposure: Failed to set Manual EXPOSURE");
+		throw CameraException(CameraException::EXPOSUREERROR);
 	    break;
     }
 }
@@ -246,17 +245,17 @@ void DC1394Camera::setBrightness( const int value )
 		// set brightness to automatic
 		// set birghtness to levels specified.
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setBrightness: Failed to set Auto Brightness");
+		    throw CameraException(CameraException::BRIGHTNESSERROR);
 	}
 	else
 	{
 		// set brightness to levels specified.
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_BRIGHTNESS, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setBrightness: Failed to set Manual Brightness");
+		    throw CameraException(CameraException::BRIGHTNESSERROR);
 
 		// atempt to tweak the brightness :)
 		if( dc1394_feature_set_value( camera, DC1394_FEATURE_BRIGHTNESS, value ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setBrightness: Failed to set Manual Brightness to requested value");
+		    throw CameraException(CameraException::BRIGHTNESSERROR);
 
 	}
 }
@@ -284,12 +283,12 @@ void DC1394Camera::startup()
 {
 	// setup up the capture and define the number of DMA buffers to use.
 	if( dc1394_capture_setup( this->camera, 4, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
-	    throw std::string("DC1394Camera:startup: Failed to init the DMA buffers for capture");
+	    throw CameraException(CameraException::BUFFERERROR);
 
 	//  have the camera start sending us data?
 	if( dc1394_video_set_transmission( this->camera, DC1394_ON ) != DC1394_SUCCESS ){
 	    this->shutdown();
-	    throw std::string("DC1394Camera:startup: Failed to start iso transmition starting (ie camera capture)");
+	    throw CameraException(CameraException::BUFFERERROR);
 	}
 
 	this->running = true;
@@ -320,13 +319,13 @@ const unsigned char* DC1394Camera::getFrame()
     {
 	result = dc1394_capture_enqueue( this->camera, this->frame );
 	if( result != DC1394_SUCCESS )
-	    throw std::string("DC1394Camera:getFrame:Failed to remove previous captured frame");
+	    throw CameraException(CameraException::BUFFERERROR);
     }
 
     // capture one frame
     result = dc1394_capture_dequeue( this->camera, DC1394_CAPTURE_POLICY_WAIT, &this->frame );
     if( result != DC1394_SUCCESS )
-	    throw std::string("DC1394Camera:getFrame:Failed to capture frame");
+	    throw CameraException(CameraException::BUFFERERROR);
 
     /* XXX - fixup, bayer conversion should live partly in Camera class. - benjsc
      * 20100211
@@ -508,17 +507,17 @@ void DC1394Camera::setIris( const int value)
 	{
 		// set gain to automatic
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_IRIS, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set IRIS to auto mode");
+		    throw CameraException(CameraException::IRISERROR);
 	}
 	else
 	{
 		// set birghtness to levels specified.
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_IRIS, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set IRIS to manual mode");
+		    throw CameraException(CameraException::IRISERROR);
 
 		// atempt to tweak the gain :)
 		if( dc1394_feature_set_value( camera, DC1394_FEATURE_IRIS, value ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set IRIS to requested value");
+		    throw CameraException(CameraException::IRISERROR);
 	}
 
 }
@@ -529,17 +528,17 @@ void DC1394Camera::setGain( const int gain)
 	{
 		// set gain to automatic
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_GAIN, DC1394_FEATURE_MODE_AUTO ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set gain to auto mode");
+		    throw CameraException(CameraException::GAINERROR);
 	}
 	else
 	{
 		// set birghtness to levels specified.
 		if( dc1394_feature_set_mode( camera, DC1394_FEATURE_GAIN, DC1394_FEATURE_MODE_MANUAL ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set gain to manual mode");
+		    throw CameraException(CameraException::GAINERROR);
 
 		// atempt to tweak the gain :)
 		if( dc1394_feature_set_value( camera, DC1394_FEATURE_GAIN, gain ) != DC1394_SUCCESS )
-		    throw std::string("DC1394Camera:setIris: Failed to set gain to requested value");
+		    throw CameraException(CameraException::GAINERROR);
 	}
 }
 
@@ -851,7 +850,7 @@ void DC1394Camera::loadCapabilities()
 	    case DC1394_VIDEO_MODE_FORMAT7_7:
 #endif
 	    default:
-		throw std::string("DC1394: Unknown Video Mode\n");
+		throw CameraException(CameraException::INVALIDFORMAT);
 	}
 
 	dc1394_video_get_supported_framerates( this->camera, videoModes.modes[i], &framerates );
@@ -869,7 +868,7 @@ void DC1394Camera::loadCapabilities()
 		case DC1394_FRAMERATE_120: c.fps=120.0; break;
 		case DC1394_FRAMERATE_240: c.fps=240.0; break;
 		default:
-		  throw std::string("DC1394::Unknown Frame Rate");
+		  throw CameraException(CameraException::FRAMERATEERROR);
 	    }
 
 	    this->supportedConfigurations.push_back(c);

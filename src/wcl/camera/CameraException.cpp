@@ -36,6 +36,10 @@ const char *CameraException::INVALIDFORMAT="Invalid Image Format requested";
 const char *CameraException::BUFFERERROR="Error Setting up/using buffer";
 const char *CameraException::EXPOSUREERROR="Error Setting up exposure mode";
 const char *CameraException::CONTROLERROR="Control error";
+const char *CameraException::FRAMERATEERROR="Unknown FrameRate";
+const char *CameraException::IRISERROR="Invalid IRIS Setting";
+const char *CameraException::GAINERROR="Invalid GAIN Setting";
+const char *CameraException::BRIGHTNESSERROR="Invalid Brightness Setting";
 
 CameraException::CameraException(const char *why):
     reason(why)
