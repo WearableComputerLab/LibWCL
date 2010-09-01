@@ -30,7 +30,7 @@
 
 #include <set>
 #include <string>
-
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl
@@ -38,7 +38,7 @@ namespace wcl
 	/**
 	 * Structure of a single vertex.
 	 */
-	class Vertex
+	class WCL_API Vertex
 	{
 		public:
 			Vertex(const wcl::Vector& position, const wcl::Vector& normal, const wcl::Vector& texCoord);

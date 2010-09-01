@@ -29,6 +29,7 @@
 #define POLHEMUS_H
 
 #include <string>
+#include <wcl/api.h>
 #include <wcl/tracking/PolhemusTrackedObject.h>
 #include <wcl/tracking/Tracker.h>
 #include <wcl/serial/Serial.h>
@@ -41,7 +42,7 @@ namespace wcl
 	 * This class connects to the hardware via RS232 serial connection,
 	 * and provides two tracked objects.
 	 */
-	class Polhemus : public Tracker
+	class WCL_API Polhemus : public Tracker
 	{
 		public:
 			enum TrackerType

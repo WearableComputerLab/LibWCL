@@ -9,7 +9,7 @@
 #
 INCLUDES= -I@top_srcdir@/src/
 libwcl_la_includedir=$(includedir)/wcl
-AM_CPPFLAGS=
+AM_CPPFLAGS=-DWCL_DLL -DWCL_DLL_EXPORTS -fvisibility=hidden
 AM_LDFLAGS=
 AM_YFLAGS=-d
 
@@ -25,9 +25,10 @@ BUILT_SOURCES=
 # 
 common_headers=\
 	      debug.h\
-		  CircularQueue\
-		  Singleton\
-		  Exception.h
+	      CircularQueue\
+	      Singleton\
+	      Exception.h\
+	      api.h
 
 parser_headers=
 parser_sources=

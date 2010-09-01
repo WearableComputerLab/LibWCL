@@ -41,12 +41,14 @@
 	#include <cstring>
 #endif
 
+#include <wcl/api.h>
+
 namespace wcl {
 
 /**
  * Classes and defines for creating and maintaining networking
  */
-class Socket
+class WCL_API Socket
 {
 
 	public:
@@ -77,7 +79,7 @@ class Socket
 };
 
 
-class SocketException
+class WCL_API SocketException
 {
 public:
     SocketException(const Socket *);

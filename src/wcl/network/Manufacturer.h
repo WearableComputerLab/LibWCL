@@ -27,6 +27,7 @@
 #ifndef WCL_NETWORK_MANUFACTURER_H
 #define WCL_NETWORK_MANUFACTURER_H
 
+#include <wcl/api.h>
 #include <wcl/network/Network.h>
 
 namespace wcl {
@@ -36,7 +37,7 @@ namespace wcl {
  * a list of MAC->Manufacturer names tuples.
  * The class provides specific details to deal with tuples
  */
-class Manufacturer
+class WCL_API Manufacturer
 {
 public:
 

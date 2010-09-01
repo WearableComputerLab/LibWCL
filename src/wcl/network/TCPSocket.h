@@ -28,6 +28,7 @@
 
 #include <string>
 
+#include <wcl/api.h>
 #include <wcl/network/Socket.h>
 
 namespace wcl {
@@ -35,7 +36,7 @@ namespace wcl {
 /**
  * A TCP Socket can be created to connect to a remote TCP port.
  */
-class TCPSocket: public Socket
+class WCL_API TCPSocket: public Socket
 {
 	public:
 		TCPSocket();

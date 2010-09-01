@@ -27,13 +27,14 @@
 #define WCL_EXCEPTION_H
 
 #include <exception>
+#include <wcl/api.h>
 
 namespace wcl {
 
 /**
  * Base exception type for the library
  */
-class Exception: public std::exception
+class WCL_API Exception: public std::exception
 {
     public:
 	virtual const char *what() const throw() = 0;

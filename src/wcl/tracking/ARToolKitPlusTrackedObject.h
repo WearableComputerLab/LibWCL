@@ -27,12 +27,13 @@
 #ifndef WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
 #define WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
 
+#include <wcl/api.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/tracking/TrackedObject.h>
 
 namespace wcl {
 
-class ARToolKitPlusTrackedObject: public TrackedObject
+class WCL_API ARToolKitPlusTrackedObject: public TrackedObject
 {
 public:
     ARToolKitPlusTrackedObject(const unsigned width, const unsigned id);

@@ -31,12 +31,13 @@
 #include <iostream>
 #include <sstream>
 
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Line.h>
 
 namespace wcl
 {
-	struct HNF
+	struct WCL_API HNF
 	{
 		wcl::Vector n;
 		double p;
@@ -47,7 +48,7 @@ namespace wcl
 	/**
 	 * A 3 dimensional, infinite plane.
 	 */
-	class Plane
+	class WCL_API Plane
 	{
 		public:
 			/**

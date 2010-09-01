@@ -30,18 +30,19 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl
 {
-	struct OBJVertex
+	struct WCL_API OBJVertex
 	{
 		int pointIndex;
 		int normalIndex;
 		int uvIndex;
 	};
 
-	struct OBJMaterial
+	struct WCL_API OBJMaterial
 	{
                 enum _valid { M_NONE=0,
                        M_DIFFUSE=1,
@@ -61,19 +62,19 @@ namespace wcl
                 // Diffusionmap???
 	};
 
-	struct OBJFace
+	struct WCL_API OBJFace
 	{
                 OBJMaterial *material;
 		std::vector<OBJVertex *> verts;
 	};
 
-        struct OBJGroup
+        struct WCL_API OBJGroup
         {
                 std::string name;
                 std::vector<OBJFace *> faces;
         };
 
-	struct OBJGeometry
+	struct WCL_API OBJGeometry
 	{
 		std::vector<wcl::Vector> points;
 		std::vector<wcl::Vector> normals;

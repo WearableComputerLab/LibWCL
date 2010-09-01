@@ -29,6 +29,7 @@
 
 #include <string>
 
+#include <wcl/api.h>
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/Quaternion.h>
 #include <wcl/maths/SMatrix.h>
@@ -41,7 +42,7 @@ namespace wcl
 	 * Represents an object that can be tracked by the Vicon system.
 	 * 
 	 */
-	class VirtualTrackedObject : public TrackedObject
+	class WCL_API VirtualTrackedObject : public TrackedObject
 	{
 		public:
 			VirtualTrackedObject(std::string _name);

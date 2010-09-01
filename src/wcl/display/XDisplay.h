@@ -28,6 +28,7 @@
 
 #include <string>
 #include <X11/Xlib.h>
+#include <wcl/api.h>
 
 namespace wcl {
 
@@ -35,7 +36,7 @@ namespace wcl {
  * This class provides simple routines for
  * Interating with an X11 Display
  */
-class XDisplay
+class WCL_API XDisplay
 {
     public:
 	XDisplay(const char *displaynameandport);
@@ -58,7 +59,7 @@ class XDisplay
 
 };
 
-class XException
+class WCL_API XException
 {
 public:
     XException(const XDisplay *){};

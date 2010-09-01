@@ -31,8 +31,8 @@
 #include <string>
 #include <vector>
 
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
-
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
 #include <wcl/geometry/LineSegment.h>
@@ -43,7 +43,7 @@ namespace wcl
 	/**
 	 * Representation of a polygonal object made of 1 or more polygons.
 	 */
-	class PolygonObject
+	class WCL_API PolygonObject
 	{
 		public:
 			/**

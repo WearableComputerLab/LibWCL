@@ -29,6 +29,7 @@
 
 #include <string>
 #include <stdio.h>
+#include <wcl/api.h>
 
 namespace wcl
 {
@@ -36,7 +37,7 @@ namespace wcl
      * A parser exception is used to indicate an error that occurred during
      * parsing. 
      */
-    class ParserException
+    class WCL_API ParserException
     {
     public:
         enum ParserExceptionCause { INVALID_INPUT, IOERROR, UNKNOWN_ERROR };
@@ -53,7 +54,7 @@ namespace wcl
      * All parsers must implement the 'parse' method that
      * does the actual gurnt work. Upon an error a ParserException is thrown.
      */
-    class Parser
+    class WCL_API Parser
     {
     public:
         virtual ~Parser();

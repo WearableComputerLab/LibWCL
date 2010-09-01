@@ -30,6 +30,7 @@
 
 #include <vector>
 
+#include <wcl/api.h>
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
@@ -39,7 +40,7 @@ namespace wcl
 	/**
 	 * An axis aligned bounding box for some object.
 	 */
-	class BoundingBox
+	class WCL_API BoundingBox
 	{
 		public:
 			/**

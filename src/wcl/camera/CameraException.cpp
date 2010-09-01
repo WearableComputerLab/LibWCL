@@ -45,6 +45,9 @@ CameraException::CameraException(const char *why):
     reason(why)
 {}
 
+CameraException::~CameraException() throw()
+{}
+
 const char *CameraException::what() const throw ()
 {
     return this->reason;

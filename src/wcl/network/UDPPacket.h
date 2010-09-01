@@ -32,12 +32,14 @@
 #include <stdlib.h>
 #endif
 
+#include <wcl/api.h>
+
 namespace wcl {
 
 // Forward Declaration
 class UDPSocket;
 
-class UDPPacket
+class WCL_API UDPPacket
 {
 
     public:

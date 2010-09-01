@@ -27,11 +27,12 @@
 #define WCL_CAMERA_DC1394FACTORY_H
 
 #include <vector>
+#include <wcl/api.h>
 #include <wcl/camera/DC1394Camera.h>
 
 namespace wcl {
 
-class DC1394CameraFactory
+class WCL_API DC1394CameraFactory
 {
 public:
     static std::vector<DC1394Camera *> getCameras();

@@ -29,6 +29,7 @@
 #include <sys/types.h>
 #include <termios.h>
 #include <string>
+#include <wcl/api.h>
 
 namespace wcl {
 
@@ -75,7 +76,7 @@ namespace wcl {
  *  also include the RING Signal line.
  *
  */
-class Serial
+class WCL_API Serial
 {
 public:
     enum BlockingMode { BLOCKING,

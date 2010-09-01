@@ -28,18 +28,19 @@
 #ifndef QUATERNION_H
 #define QUATERNION_H
 
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
 #include <string>
 #include <sstream>
 #include <iostream>
+#include <wcl/api.h>
+#include <wcl/maths/SMatrix.h>
+#include <wcl/maths/Vector.h>
 
 namespace wcl
 {
 	/**
 	 * A Quaternion!
 	 */
-	struct Quaternion
+	struct WCL_API Quaternion
 	{
 			T 	w, x, y, z;
 		

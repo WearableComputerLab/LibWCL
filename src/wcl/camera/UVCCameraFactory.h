@@ -27,11 +27,12 @@
 #define WCL_CAMERA_UVCCAMERAACTORY_H
 
 #include <vector>
+#include <wcl/api.h>
 #include <wcl/camera/UVCCamera.h>
 
 namespace wcl {
 
-class UVCCameraFactory
+class WCL_API UVCCameraFactory
 {
 public:
     static std::vector<UVCCamera *> getCameras();

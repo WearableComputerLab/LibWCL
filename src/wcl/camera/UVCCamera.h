@@ -30,6 +30,7 @@
 #include <stdint.h>
 #include <string>
 #include <linux/videodev2.h>
+#include <wcl/api.h>
 #include <wcl/Exception.h>
 #include <wcl/camera/Camera.h>
 
@@ -45,7 +46,7 @@ namespace wcl
 	 * This might actually work for any camera that has a Video4Linux2
 	 * driver, but untested.
 	 */
-	class UVCCamera: public Camera
+	class WCL_API UVCCamera: public Camera
 	{
 
 		public:
@@ -81,6 +82,11 @@ namespace wcl
 			 * @param filename The path to the camera device.
 			 */
 			UVCCamera(string filename = "/dev/video0");
+
+			/**
+			 * Close down the camera
+			 */
+			virtual ~UVCCamera();
 
 
 			/**

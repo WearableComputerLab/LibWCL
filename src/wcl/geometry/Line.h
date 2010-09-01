@@ -30,6 +30,7 @@
 
 #include <string>
 
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Plane.h>
 
@@ -37,7 +38,7 @@ namespace wcl
 {
 	class Plane;
 
-	class Line
+	class WCL_API Line
 	{
 		public:
 			Line(const wcl::Vector& position, const wcl::Vector& direction);
