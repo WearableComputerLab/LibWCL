@@ -24,17 +24,15 @@
  * SUCH DAMAGE.
  */
 #include <assert.h>
-#include <wcl/network/UDPSocket.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <fcntl.h>
 
-#ifndef WIN32 /* UNIX */
-	#include <sys/types.h>
-	#include <sys/socket.h>
-	#include <unistd.h>
-	#include <netdb.h>
-	#include <netinet/in.h>
-	#include <arpa/inet.h>
-	#include <fcntl.h>
-#endif
+#include <wcl/network/UDPSocket.h>
 
 namespace wcl {
 
@@ -58,16 +56,6 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 {
     struct hostent *he;
 
-#ifdef WIN32
-	// If we can't do a quick conversion, try the long way
-	he = gethostbyname( server.c_str());
-	if ( he == NULL ){
-	    throw new SocketException(this);
-	}
-
-	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
-#else
-
     // Lookup the address of the remote machine
     // Attempt to perform a quick conversion, this only works provided the server string
     // passed in is a fully qualified name/ip. 
@@ -81,7 +69,6 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port )
 
 	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
     }
-#endif
     // Store the port add set the address type
     raddress.sin_family = AF_INET;
     raddress.sin_port=htons(port);
@@ -129,11 +116,7 @@ bool UDPSocket::create()
 
 ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
 {
-#ifdef WIN32
-    ssize_t retval = recv(this->sockfd, (char *)buffer, size, 0x0);
-#else 
     ssize_t retval = recv(this->sockfd, buffer, size, 0x0);
-#endif
     if ( retval == -1 ){
 	throw new SocketException(this);
     }
@@ -142,12 +125,8 @@ ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
 	
 ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException)
 {
-#ifdef WIN32
-    ssize_t retval = sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
-#else
     ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
 
-#endif
     if (retval == -1 ){
 	throw new SocketException(this);
     }
@@ -167,21 +146,12 @@ ssize_t UDPSocket::write( const UDPPacket *packet )
 
     raddress = packet->getRecipient();
 
-#ifdef WIN32
-    ssize_t retval = sendto( this->sockfd, 
-		    (const char *)packet->getData(), 
-		    packet->getSize(), 
-		    0x0, 
-		    (struct sockaddr *)&raddress, 
-		    sizeof(raddress));
-#else
     ssize_t retval = sendto( this->sockfd, 
 		    packet->getData(), 
 		    packet->getSize(), 
 		    0x0, 
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
-#endif
     if ( retval == -1 ){
 	throw new SocketException(this);
     }
@@ -201,21 +171,12 @@ ssize_t UDPSocket::read( UDPPacket *packet )
     struct sockaddr_in clientAddress;
     size_t clientAddressLen = sizeof(clientAddress);
 
-#ifdef WIN32
-    ssize_t result =  recvfrom( this->sockfd, 
-			(char *)packet->getData(), 
-			packet->getSize(), 
-			0x0,
-			(struct sockaddr *)&clientAddress, 
-			(socklen_t*)&clientAddressLen);
-#else /* UNIX */
     ssize_t result =  recvfrom( this->sockfd, 
 			packet->getData(), 
 			packet->getSize(), 
 			0x0,
 			(struct sockaddr *)&clientAddress, 
 			(socklen_t*)&clientAddressLen);
-#endif
     if ( result == -1 ){
 	throw new SocketException(this);
     }

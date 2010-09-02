@@ -26,11 +26,9 @@
 #ifndef WCL_NETWORK_UDPPACKET_H
 #define WCL_NETWORK_UDPPACKET_H
 
-#ifndef WIN32
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#endif
 
 #include <wcl/api.h>
 

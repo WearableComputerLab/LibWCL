@@ -38,11 +38,7 @@ SocketException::SocketException( const Socket *s )
 {
     this->sockid = **s;
 
-#ifdef WIN32
-    this->errornumber  = WSAGetLastError();
-#else
     this->errornumber  = errno; /* errno defined in errno.h */
-#endif
 }
 
 SocketException::~SocketException() throw ()
@@ -56,15 +52,7 @@ SocketException::~SocketException() throw ()
  */
 const char *SocketException::what() const throw()
 {
-#ifdef WIN32
-    std::strstream s;
-    s << "Winsock Errno:";
-    s << this->errornumber;
-    s << std::ends;
-    return s.str();
-#else
     return strerror( this->errornumber );
-#endif
 }
 
 

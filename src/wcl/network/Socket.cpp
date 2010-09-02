@@ -26,33 +26,17 @@
 
 #include <string.h>
 
-#ifdef WIN32
-	#include <strstream>
-#else /* UNIX */
-	#include <iostream>
-	#include <unistd.h>
-	#include <sys/socket.h>
-	#include <fcntl.h>
-	#include <errno.h>
-	#include <sys/ioctl.h>
-#endif
+#include <iostream>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/ioctl.h>
 
 #include "Socket.h"
 #include "SocketException.h"
 
 namespace wcl {
-
-
-/**
- * For Win32 winsock needs to be initialised before
- * we can use the subsystem. This is done in the first constructor call to
- * Socket. But we need to know if it's been done or not
- */
-#ifdef WIN32
-static bool win32init = false;
-static WORD sockVersion = MAKEWORD(1,1); // We'd like Winsock version 1.1
-static WSADATA wsaData;
-#endif
 
 
 /**
@@ -65,26 +49,17 @@ Socket::Socket():
 {
     memset( &this->address, 0, sizeof( this->address ));
 
-#ifdef WIN32
-	if(!win32init){
-		WSAStartup(sockVersion, &wsaData);
-		win32init=true;
-	}
-#endif
+    /* Block the SIGPIPE signal to avoid it being sent when a read on a closed socket happens */
+    sigset_t mask;
 
-#if defined(__linux) || defined(MACOSX)
-	/* Block the SIGPIPE signal to avoid it being sent when a read on a closed socket happens */
-	sigset_t mask;
+    /* Initialise the signal mask */
+    sigemptyset(&mask);
 
-	/* Initialise the signal mask */
-	sigemptyset(&mask);
+    /* Add the new signal to the mask */
+    sigaddset(&mask, SIGPIPE);
 
-	/* Add the new signal to the mask */
-	sigaddset(&mask, SIGPIPE);
-
-	/* Set the new signal to be blocked */
-	sigprocmask(SIG_BLOCK, &mask, NULL);
-#endif
+    /* Set the new signal to be blocked */
+    sigprocmask(SIG_BLOCK, &mask, NULL);
 }
 
 /**
@@ -103,11 +78,7 @@ Socket::~Socket()
 void Socket::close()
 {
     if ( this->isValid()){
-#ifdef WIN32
-	::closesocket( this->sockfd );
-#else
 	::close( this->sockfd );
-#endif
 	this->sockfd = -1;
     }
 }
@@ -169,19 +140,11 @@ ssize_t Socket::read ( void *buffer, size_t size ) throw (SocketException)
 	return -1;
     }
 
-#ifdef WIN32
-    ssize_t retval = ::recv(this->sockfd, (char*)buffer, size, 0x0);
-    if( retval == SOCKET_ERROR ){
-	throw new SocketException(this);	
-    }
-    return retval;
-#else
     ssize_t retval = ::read(this->sockfd, buffer, size );
     if ( retval == -1 && errno == ECONNRESET){
 	throw new SocketException(this);
     }
     return retval;
-#endif
 }
 
 /**
@@ -250,19 +213,11 @@ ssize_t Socket::write( const void *buffer, size_t size ) throw (SocketException)
 		return -1;
 	}
 
-#ifdef WIN32
-	ssize_t retval = ::send(this->sockfd, (const char *)buffer, size, 0x0);
-	if ( retval == SOCKET_ERROR ){
-		throw new SocketException(this);
-	}
-	return retval;
-#else
 	ssize_t retval =  ::write( this->sockfd, buffer, size );
 	if ( retval == -1 ){
 		throw new SocketException(this);
 	}
 	return retval;
-#endif
 }
 
 /**
@@ -293,14 +248,6 @@ bool Socket::setBlockingMode( const BlockingMode mode)
 	return false;
     }
 
-#ifdef WIN32
-	/** 
-         * Windows does non blocking very, very differently.
-	 * hence we don't support it. We return false to indicate this.
-	 */
-	return false;
-
-#else /* UNIX */
     // In order to set the blocking flag, we must be careful not 
     // to stop on any other flags that have been set. Hence
     // we obtain all the flags and adjust the blocking flag only
@@ -324,7 +271,6 @@ bool Socket::setBlockingMode( const BlockingMode mode)
     }
 
     return false;
-#endif
 }
 
 /**

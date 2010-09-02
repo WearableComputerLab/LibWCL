@@ -29,17 +29,11 @@
 
 #include <string>
 
-#ifdef WIN32
-	#include <windows.h>
-	#include <winsock.h>
-	typedef int socklen_t;
-#else					  /* Unix Includes */
 	#include <sys/types.h>
 	#include <netinet/in.h>
 	#include <signal.h>
 	#include <stdio.h>
 	#include <cstring>
-#endif
 
 #include <wcl/api.h>
 #include <wcl/network/SocketException.h>
