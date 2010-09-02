@@ -28,20 +28,20 @@
 
 #include <string>
 #include <wcl/api.h>
+#include <wcl/Exception.h>
 
 namespace wcl {
 
 //Forward Declaration
 class Socket;
 
-class WCL_API SocketException
+class WCL_API SocketException: public Exception
 {
 public:
     SocketException(const Socket *);
-    virtual ~SocketException();
+    virtual ~SocketException() throw();
 
-    int getCause() const;
-    const std::string getReason() const;
+    const char *what() const throw();
 
 private:
     int sockid;

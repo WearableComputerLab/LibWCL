@@ -45,13 +45,8 @@ SocketException::SocketException( const Socket *s )
 #endif
 }
 
-SocketException::~SocketException()
+SocketException::~SocketException() throw ()
 {}
-
-int SocketException::getCause() const
-{
-	return this->errornumber;
-}
 
 /**
  * Obtain the reason why the socket exception was
@@ -59,7 +54,7 @@ int SocketException::getCause() const
  * 
  * @return The reason this socket exception occurred
  */
-const std::string SocketException::getReason() const
+const char *SocketException::what() const throw()
 {
 #ifdef WIN32
     std::strstream s;
