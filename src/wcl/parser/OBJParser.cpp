@@ -93,7 +93,7 @@ OBJParser::~OBJParser()
  * first which may not be desirable (ie really large obj files);
  */
 
-void wcl::OBJParser::parse()
+void wcl::OBJParser::parse() throw (ParserException)
 {
     yydebug=this->debug;
     if( yyparse(this) ){

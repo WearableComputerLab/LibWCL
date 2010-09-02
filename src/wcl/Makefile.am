@@ -117,7 +117,8 @@ parser_sources+=	parser/OBJFormatGrammar.yy \
 			parser/Parser.cpp
 
 parser_headers+=	parser/OBJParser.h \
-			parser/Parser.h
+			parser/Parser.h \
+			parser/ParserException.h
 
 BUILT_SOURCES+=		OBJFormatGrammar.cc \
 		       	OBJFormatGrammar.h \

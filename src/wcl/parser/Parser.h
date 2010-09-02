@@ -30,25 +30,10 @@
 #include <string>
 #include <stdio.h>
 #include <wcl/api.h>
+#include <wcl/parser/ParserException.h>
 
 namespace wcl
 {
-    /**
-     * A parser exception is used to indicate an error that occurred during
-     * parsing. 
-     */
-    class WCL_API ParserException
-    {
-    public:
-        enum ParserExceptionCause { INVALID_INPUT, IOERROR, UNKNOWN_ERROR };
-
-        ParserExceptionCause cause;
-        std::string reason;
-
-        int getCause() const { return cause; };
-        const std::string getReason() const { return reason; };
-    };
-
     /**
      * An abstract base class for all parsers.
      * All parsers must implement the 'parse' method that
@@ -63,7 +48,7 @@ namespace wcl
          * This pure virtual method must be implemented by all parsers. It's
          * used to fire off the actual parse process of a parser
          */
-        virtual void parse() = 0;
+        virtual void parse() throw (ParserException) = 0;
 
         /**
          * Provide a means of turning on debug output. By default debug output
@@ -92,7 +77,7 @@ namespace wcl
          * @throws ParseException
          */
         void parseError(const ParserException::ParserExceptionCause cause,
-                        const std::string &reason)
+                        const std::string &reason) throw (ParserException)
         {
             static ParserException e;
             e.cause = cause;

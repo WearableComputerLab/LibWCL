@@ -54,7 +54,7 @@ class WCL_API OBJParser: public Parser
         OBJParser(std::istream &, RelativeToAbsolute=NULL);
         ~OBJParser();
 
-        void parse();
+        void parse() throw (ParserException);
         void print();
 
         const OBJGeometry &getGeometry();
