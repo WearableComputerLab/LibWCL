@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2005-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,41 +23,32 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#ifndef WCL_NETWORK_UDPSOCKET_H
-#define WCL_NETWORK_UDPSOCKET_H
+#ifndef WCL_NETWORK_SOCKETEXCEPTION_H
+#define WCL_NETWORK_SOCKETEXCEPTION_H
 
 #include <string>
 #include <wcl/api.h>
-#include <wcl/network/Socket.h>
-#include <wcl/network/UDPPacket.h>
 
 namespace wcl {
 
-/**
- * A UDPSocket creates the perception of an end to end connection
- * like a TCP connection. 
- */
-class WCL_API UDPSocket: public Socket
+//Forward Declaration
+class Socket;
+
+class WCL_API SocketException
 {
-    public:
-	UDPSocket ( const std::string hostname, const unsigned port );
-	ssize_t write(const void* buffer, size_t size) throw (SocketException);
-	ssize_t read(void *buffer, size_t size) throw (SocketException);
+public:
+    SocketException(const Socket *);
+    virtual ~SocketException();
 
-	// UDP Packet interface
-	ssize_t write( const UDPPacket * );
-	ssize_t read( UDPPacket * );
+    int getCause() const;
+    const std::string getReason() const;
 
-    protected:
-	UDPSocket();
-	virtual bool create();
-
-    private:
-	sockaddr_in raddress;
+private:
+    int sockid;
+    int errornumber;
 };
 
 
-}; // namespace wcl
+} //namespace wcl
 
 #endif

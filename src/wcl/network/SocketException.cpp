@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2005-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,41 +23,54 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#ifndef WCL_NETWORK_UDPSOCKET_H
-#define WCL_NETWORK_UDPSOCKET_H
-
-#include <string>
-#include <wcl/api.h>
-#include <wcl/network/Socket.h>
-#include <wcl/network/UDPPacket.h>
+#include <errno.h>
+#include "SocketException.h"
+#include "Socket.h"
 
 namespace wcl {
 
 /**
- * A UDPSocket creates the perception of an end to end connection
- * like a TCP connection. 
+ * Construct a socket exception with the specified reason
+ *
+ * @param reason The reason the exception occurred
  */
-class WCL_API UDPSocket: public Socket
+SocketException::SocketException( const Socket *s )
 {
-    public:
-	UDPSocket ( const std::string hostname, const unsigned port );
-	ssize_t write(const void* buffer, size_t size) throw (SocketException);
-	ssize_t read(void *buffer, size_t size) throw (SocketException);
+    this->sockid = **s;
 
-	// UDP Packet interface
-	ssize_t write( const UDPPacket * );
-	ssize_t read( UDPPacket * );
-
-    protected:
-	UDPSocket();
-	virtual bool create();
-
-    private:
-	sockaddr_in raddress;
-};
-
-
-}; // namespace wcl
-
+#ifdef WIN32
+    this->errornumber  = WSAGetLastError();
+#else
+    this->errornumber  = errno; /* errno defined in errno.h */
 #endif
+}
+
+SocketException::~SocketException()
+{}
+
+int SocketException::getCause() const
+{
+	return this->errornumber;
+}
+
+/**
+ * Obtain the reason why the socket exception was
+ * thrown
+ * 
+ * @return The reason this socket exception occurred
+ */
+const std::string SocketException::getReason() const
+{
+#ifdef WIN32
+    std::strstream s;
+    s << "Winsock Errno:";
+    s << this->errornumber;
+    s << std::ends;
+    return s.str();
+#else
+    return strerror( this->errornumber );
+#endif
+}
+
+
+} //namespace wcl

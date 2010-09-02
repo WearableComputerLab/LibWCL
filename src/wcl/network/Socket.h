@@ -42,11 +42,14 @@
 #endif
 
 #include <wcl/api.h>
+#include <wcl/network/SocketException.h>
 
 namespace wcl {
 
 /**
- * Classes and defines for creating and maintaining networking
+ * The Socket class is the base class for all networking transactions.
+ * It provides default operations for tcp/udp and the ability to get
+ * the associated file descriptor via *operator()
  */
 class WCL_API Socket
 {
@@ -55,11 +58,11 @@ class WCL_API Socket
 		enum BlockingMode { BLOCKING, NONBLOCKING };
 
 		virtual ~Socket();
-		virtual ssize_t read ( void *buffer, size_t size );
-		virtual ssize_t write( const void *buffer, size_t size );
-		virtual ssize_t write( const std::string & );
-		virtual void readUntil ( void *buffer, size_t size );
-		virtual void writeUntil ( void *buffer, size_t size );
+		virtual ssize_t read ( void *buffer, size_t size ) throw (SocketException);
+		virtual ssize_t write( const void *buffer, size_t size ) throw (SocketException);
+		virtual ssize_t write( const std::string & ) throw (SocketException);
+		virtual void readUntil ( void *buffer, size_t size ) throw (SocketException);
+		virtual void writeUntil ( void *buffer, size_t size ) throw (SocketException);
 		virtual ssize_t getAvailableCount();
 		virtual void close();
 		virtual bool isValid() const;
@@ -77,22 +80,6 @@ class WCL_API Socket
 		virtual bool bind( const unsigned port);
 
 };
-
-
-class WCL_API SocketException
-{
-public:
-    SocketException(const Socket *);
-    virtual ~SocketException();
-
-    int getCause() const;
-    const std::string getReason() const;
-
-private:
-    int sockid;
-    int errornumber;
-};
-
 
 }; // namespace wcl
 

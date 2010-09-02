@@ -38,6 +38,7 @@
 #endif
 
 #include "Socket.h"
+#include "SocketException.h"
 
 namespace wcl {
 
@@ -161,7 +162,7 @@ bool Socket::bind( const unsigned port )
  *        will return as soon as some data has been read
  * @throws SocketException if the remote end has forcable closed the socket 
  */
-ssize_t Socket::read ( void *buffer, size_t size )
+ssize_t Socket::read ( void *buffer, size_t size ) throw (SocketException)
 {
 
     if ( !isValid()){
@@ -193,7 +194,7 @@ ssize_t Socket::read ( void *buffer, size_t size )
  * @param size The amount of data to read, the buffer msut be at least this size
  * @throws SocketException if the remote end has forcable closed the socket
  */
-void Socket::readUntil ( void *buffer, size_t size )
+void Socket::readUntil ( void *buffer, size_t size ) throw (SocketException)
 {
     ssize_t amount;
 
@@ -217,7 +218,7 @@ void Socket::readUntil ( void *buffer, size_t size )
  * @param size The amount of data to write, the buffer must be at least this size.
  * @throws SocketException if the remote peer has forced the socket closes.
  */
-void Socket::writeUntil ( void *buffer, size_t size )
+void Socket::writeUntil ( void *buffer, size_t size ) throw (SocketException)
 {
     ssize_t amount;
 
@@ -243,7 +244,7 @@ void Socket::writeUntil ( void *buffer, size_t size )
  * @return The amount of charaters written
  * @throws SockcetException if the remote peer has forced the socket * closed
  */
-ssize_t Socket::write( const void *buffer, size_t size )
+ssize_t Socket::write( const void *buffer, size_t size ) throw (SocketException)
 {
 	if ( !isValid()){
 		return -1;
@@ -271,7 +272,7 @@ ssize_t Socket::write( const void *buffer, size_t size )
  * @return -1 if the socket is invalid, or the number of bytes written otherwise 
  * @throws SocketException if the write fails.
  */ 
-ssize_t Socket::write( const std::string &string )
+ssize_t Socket::write( const std::string &string ) throw (SocketException)
 {
     return this->write( string.c_str(), string.size());
 }
@@ -364,56 +365,6 @@ ssize_t Socket::getAvailableCount()
     return bytesAvailable;
 }
 
-
-
-/*==============================================================================
- *
- *  SocketException Class Methods
- *
- *=============================================================================*/
-
-/**
- * Construct a socket exception with the specified reason
- *
- * @param reason The reason the exception occurred
- */
-SocketException::SocketException( const Socket *s )
-{
-    this->sockid = **s;
-
-#ifdef WIN32
-    this->errornumber  = WSAGetLastError();
-#else
-    this->errornumber  = errno; /* errno defined in errno.h */
-#endif
-}
-
-SocketException::~SocketException()
-{}
-
-int SocketException::getCause() const
-{
-	return this->errornumber;
-}
-
-/**
- * Obtain the reason why the socket exception was
- * thrown
- * 
- * @return The reason this socket exception occurred
- */
-const std::string SocketException::getReason() const
-{
-#ifdef WIN32
-    std::strstream s;
-    s << "Winsock Errno:";
-    s << this->errornumber;
-    s << std::ends;
-    return s.str();
-#else
-    return strerror( this->errornumber );
-#endif
-}
 
 
 } // namespace wcl

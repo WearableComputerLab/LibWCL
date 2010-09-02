@@ -127,7 +127,7 @@ bool UDPSocket::create()
     return true; 
 }
 
-ssize_t UDPSocket::read(void *buffer, size_t size)
+ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
 {
 #ifdef WIN32
     ssize_t retval = recv(this->sockfd, (char *)buffer, size, 0x0);
@@ -140,7 +140,7 @@ ssize_t UDPSocket::read(void *buffer, size_t size)
     return retval;
 }
 	
-ssize_t UDPSocket::write(const void *buffer, size_t size)
+ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException)
 {
 #ifdef WIN32
     ssize_t retval = sendto(this->sockfd, (const char *)buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));

@@ -44,6 +44,7 @@ network_sources=
 if ENABLE_NETWORK
 network_headers+=\
               network/Socket.h\
+              network/SocketException.h\
               network/TCPServer.h\
               network/TCPSocket.h \
               network/UDPPacket.h\
@@ -52,6 +53,7 @@ network_headers+=\
 
 network_sources+=\
               network/Socket.cpp\
+              network/SocketException.cpp\
               network/TCPServer.cpp\
               network/TCPSocket.cpp\
               network/UDPServer.cpp\
