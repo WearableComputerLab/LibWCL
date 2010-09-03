@@ -97,7 +97,7 @@ void wcl::OBJParser::parse() throw (ParserException)
 {
     yydebug=this->debug;
     if( yyparse(this) ){
-        this->parseError(ParserException::UNKNOWN_ERROR,"Unknown syntax in file");
+        this->parseError(ParserException::INVALID_SYNTAX);
     }
 }
 
@@ -124,7 +124,7 @@ void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)
 
      ifstream s(path.c_str());
      if(!s.is_open())
-        this->parseError(ParserException::IOERROR,string("Unable To Open Material Library File:")+lib);
+        this->parseError(ParserException::IOERROR);
      istream *old = this->input;
      this->input= &s;
      this->parse();
@@ -175,7 +175,7 @@ void OBJParser::addFace(
              const double vi3, const double ti3, const double ni3)
 {
     if( !this->group )
-        this->parseError(ParserException::INVALID_INPUT,"No Group, to add Face too");
+        this->parseError(ParserException::INVALID_SYNTAX,"No Group, to add Face too");
 
     OBJFace *face = new OBJFace;
     OBJVertex *v1 = new OBJVertex;
@@ -209,7 +209,7 @@ void OBJParser::addFace(
 	     const double vi4, const double ti4, const double ni4)
 {
     if( !this->group )
-        this->parseError(ParserException::INVALID_INPUT,"No Group, to add Face too");
+        this->parseError(ParserException::INVALID_SYNTAX,"No Group, to add Face too");
 
     OBJFace *face = new OBJFace;
     OBJVertex *v1 = new OBJVertex;
@@ -252,7 +252,7 @@ void OBJParser::useMaterial(const std::string &name)
         string s="Material ";
         s+=name;
         s+=" Not Found In OBJ File";
-        this->parseError(ParserException::INVALID_INPUT, s);
+        this->parseError(ParserException::INVALID_SYNTAX, s);
     }
 
     this->material = it->second;
@@ -261,7 +261,7 @@ void OBJParser::useMaterial(const std::string &name)
 void OBJParser::setMaterialDiffuse(const double c1, const double c2, const double c3)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set diffuse value with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set diffuse value with no material present");
     }
 
     this->material->valid |= OBJMaterial::M_DIFFUSE;
@@ -271,7 +271,7 @@ void OBJParser::setMaterialDiffuse(const double c1, const double c2, const doubl
 void OBJParser::setMaterialAmbience(const double c1, const double c2, const double c3)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set ambience value with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set ambience value with no material present");
     }
 
     this->material->valid |= OBJMaterial::M_AMBIENT;
@@ -281,7 +281,7 @@ void OBJParser::setMaterialAmbience(const double c1, const double c2, const doub
 void OBJParser::setMaterialSpecular(const double c1, const double c2, const double c3)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set specular value with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set specular value with no material present");
     }
 
     this->material->valid |= OBJMaterial::M_SPECULAR;
@@ -291,7 +291,7 @@ void OBJParser::setMaterialSpecular(const double c1, const double c2, const doub
 void OBJParser::setMaterialOpacity(const double c1, const double c2, const double c3)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set opacity value with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set opacity value with no material present");
     }
     this->material->valid |= OBJMaterial::M_OPACITY;
     this->material->opacity=Vector(c1,c2,c3);
@@ -300,7 +300,7 @@ void OBJParser::setMaterialOpacity(const double c1, const double c2, const doubl
 void OBJParser::setMaterialRefractionIndex( const double index)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set refraction index with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
     this->material->valid |= OBJMaterial::M_REFRACTION;
     this->material->refractionIndex=index;
@@ -337,7 +337,7 @@ void OBJParser::addMaterial(const std::string &name)
 void OBJParser::setMaterialSpecularExponent(const double value)
 {
     if( ! this->material ){
-        this->parseError(ParserException::INVALID_INPUT, "Attempt to set refraction index with no material present");
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
     this->material->valid |= OBJMaterial::M_SPECULAREXP;
     this->material->specularExp = value;

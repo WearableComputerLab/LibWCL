@@ -38,15 +38,11 @@ namespace wcl {
 class WCL_API ParserException: public Exception
 {
 public:
-    const char *INVALID_INPUT;
-    const char *IOERROR;
+    static const char *INVALID_SYNTAX;
+    static const char *IOERROR;
 
-    ParserException(const char *cause) throw():
-	Exception(cause)
-	{}
-
-    virtual ~ParserException() throw()
-    {};
+    ParserException(const char *reason) throw();
+    virtual ~ParserException() throw();
 };
 
 }; //namespace wcl

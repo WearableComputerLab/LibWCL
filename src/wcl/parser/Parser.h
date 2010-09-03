@@ -76,14 +76,9 @@ namespace wcl
          *
          * @throws ParseException
          */
-        void parseError(const ParserException::ParserExceptionCause cause,
-                        const std::string &reason) throw (ParserException)
+        void parseError(const char *cause, const std::string ="") throw (ParserException)
         {
-            static ParserException e;
-            e.cause = cause;
-            e.reason = reason;
-
-            throw e;
+            throw ParserException(cause);
         }
     };
 

@@ -115,7 +115,8 @@ if ENABLE_PARSERS
 parser_sources+=	parser/OBJFormatGrammar.yy \
 			parser/OBJFormatScanner.ll \
 			parser/OBJParser.cpp \
-			parser/Parser.cpp
+			parser/Parser.cpp \
+			parser/ParserException.cpp
 
 parser_headers+=	parser/OBJParser.h \
 			parser/Parser.h \
