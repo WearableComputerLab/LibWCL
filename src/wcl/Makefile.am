@@ -21,17 +21,15 @@ BUILT_SOURCES=
 
 ########################################################
 #
-# Common Headers
+# Common FILES
 # 
-common_headers=\
-	      debug.h\
+common_headers=debug.h\
 	      CircularQueue\
 	      Singleton\
 	      Exception.h\
 	      api.h
 
-parser_headers=
-parser_sources=
+common_sources=Exception.cpp
     
 
 ########################################################
@@ -110,6 +108,9 @@ endif
 #
 # Parsers
 #
+parser_headers=
+parser_sources=
+
 if ENABLE_PARSERS
 parser_sources+=	parser/OBJFormatGrammar.yy \
 			parser/OBJFormatScanner.ll \
@@ -309,7 +310,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(video_headers)
 
 
-libwcl_la_SOURCES=$(network_sources)\
+libwcl_la_SOURCES=$(common_sources)\
+                 $(network_sources)\
 		 $(camera_sources)\
 		 $(camera_1394_sources)\
 		 $(camera_uvc_sources)\

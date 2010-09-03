@@ -23,31 +23,24 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef WCL_EXCEPTION_H
-#define WCL_EXCEPTION_H
 
-#include <exception>
-#include <wcl/api.h>
+#include "Exception.h"
 
 namespace wcl {
 
-/**
- * Base exception type for the library
- */
-class WCL_API Exception: public std::exception
+Exception::Exception() throw()
+{}
+
+Exception::Exception(const char *ireason) throw():
+    reason(ireason)
+{}
+
+Exception::~Exception() throw ()
+{}
+
+const char *Exception::what() const throw()
 {
-    public:
+    return this->reason;
+}
 
-	Exception(const char *ireason) throw();
-	virtual ~Exception() throw();
-	virtual const char *what() const throw();
-
-    protected:
-	Exception() throw();
-
-	const char *reason;
-};
-
-};  // namespace wcl
-
-#endif
+} // namespace wcl
