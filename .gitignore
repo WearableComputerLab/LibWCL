@@ -20,7 +20,6 @@ doc
 .libs
 libtool
 examples/artoolkitplus/artoolkitplus
-examples/calibration/
 examples/camera/cameratest
 examples/camera/snapshot
 examples/gestures/gestures
@@ -36,5 +35,4 @@ src/wcl/OBJFormatGrammar.cc
 src/wcl/OBJFormatGrammar.h
 src/wcl/OBJFormatScanner.cc
 src/wcl/Streamable.h
-src/wcl/graphics/
 src/wcl/libwcl.la
