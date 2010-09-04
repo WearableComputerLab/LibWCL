@@ -28,6 +28,7 @@
 #include <config.h>
 #include <iostream>
 #include "Camera.h"
+#include "CameraException.h"
 
 #if ENABLE_VIDEO
     #include <video/VideoDecoder.h>
@@ -212,7 +213,7 @@ namespace wcl
 			// matches everything we asked for!
 			return *it;
 		}
-		throw std::string("Could not find configuration that met the criteria.");
+		throw CameraException(CameraException::INVALIDCONFIGURATION);
 	}
 
 

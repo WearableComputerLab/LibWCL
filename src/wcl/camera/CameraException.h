@@ -47,6 +47,7 @@ public:
     static const char *IRISERROR;
     static const char *GAINERROR;
     static const char *FRAMERATEERROR;
+    static const char *INVALIDCONFIGURATION;
 
     CameraException(const char *);
     virtual ~CameraException() throw();
