@@ -32,6 +32,7 @@
 #include <vector>
 
 #include <wcl/api.h>
+#include <wcl/Exception.h>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Face.h>
@@ -87,7 +88,22 @@ namespace wcl
 			 */
 			Vertex* addVertex(const wcl::Vector& position);
 
-			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3);
+			/**
+			 * Adds a triangular face to the polygon. A number of checks
+			 * are performed to confirm that face is actually valid.
+			 * These are:
+			 *	1. No two vertexes are the same
+			 *	2. The face area is greater than the tolerance specified by TOL
+			 * If all checks are valid the face is stored in the
+			 * internal facelist and also returned.
+			 *
+			 * @param v1 Vertex 1 of the face
+			 * @param v2 Vertex 2 of the face
+			 * @param v3 Vertex 3 of the face
+			 * @return A pointer to the face
+			 * @throws Exception if checks are not met
+			 */
+			Face* addFace(Vertex* v1, Vertex* v2, Vertex* v3) throw(Exception);
 
 		protected:
 			std::vector<Face*> faceList;
