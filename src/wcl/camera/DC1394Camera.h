@@ -45,7 +45,7 @@ public:
 	void startup();
 
 	// method to get a frame from the camera
-	const unsigned char* getFrame();
+	virtual void update();
 
 	// method to shut down the camera.
 	void shutdown();

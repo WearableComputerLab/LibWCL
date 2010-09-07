@@ -147,7 +147,7 @@ namespace wcl
 			 * @return a char array containing the image buffer.
 			 * @throw exception if a frame cannot be grabbed or the setup fails
 			 */
-			const unsigned char* getFrame();
+			virtual void update();
 
 
 			/**

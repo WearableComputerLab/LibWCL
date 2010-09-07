@@ -245,21 +245,55 @@ namespace wcl
 			virtual void setControlValue(const Control control, const int value) = 0;
 
 			/**
+			 * Gets the next frame from the camera, stores it internally.
+			 */
+			virtual void update() = 0;
+
+			/**
 			 * Returns an image buffer for use in a program.
+			 * Blocking function, calls update internally to get 
+			 * the next frame from the hardware.
 			 *
 			 * @return an unsigned char array containing the image buffer.
 			 */
-			virtual const unsigned char* getFrame() = 0;
+			virtual const unsigned char* getFrame();
 
 			/**
 			 * Return an image buffer in the specified format. The
 			 * camera format is unchanged, and software is used
 			 * to convert the format to the requested format
 			 *
+			 * This calls update() to get the next frame from the hardware.
+			 *
 			 * @param f The format the frame should be returned in
 			 * @return an unsigned char array in the requested format (Note the datasize of this frame may be larger)
 			 */
 			virtual const unsigned char *getFrame(const ImageFormat f);
+
+			/**
+			 * Gets the current frame from the camera.
+			 * This method does not call update(), so successive
+			 * calls will return the same image.
+			 */
+			virtual const unsigned char* getCurrentFrame() const;
+
+			/**
+			 * Gets the current image from the camera in the specified format.
+			 *
+			 * This takes a buffer as an argument, and places a copy of the 
+			 * image into that buffer, in the required format.
+			 *
+			 * This is the only way you can get images in different formats 
+			 * with a const camera. This is because successive calls to getCurrentFrame
+			 * would modify the internal conversion buffer. This is bad.
+			 *
+			 * @param buffer The buffer to place the image into. This should be the correct
+			 *               size for the ImageFormat requested. 
+			 *
+			 * @param format The desired image format.
+			 */
+			virtual void getCurrentFrame(unsigned char* buffer, const ImageFormat& format) const;
+
 
 			/**
 			 * Start the camera capturing
@@ -346,6 +380,7 @@ namespace wcl
 
 			virtual const char *getTypeIdentifier() const = 0;
 
+			unsigned char* currentFrame;
 		private:
 			CameraBuffer *conversionBuffer;
 

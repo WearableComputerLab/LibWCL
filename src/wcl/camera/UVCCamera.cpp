@@ -238,7 +238,7 @@ void UVCCamera::setConfiguration(Configuration c)
 }
 
 
-const unsigned char* UVCCamera::getFrame()
+void UVCCamera::update()
 {
 	if (!isReadyForCapture)
 	{
@@ -258,7 +258,7 @@ const unsigned char* UVCCamera::getFrame()
 	// requeue buffer
 	ioctl(cam, VIDIOC_QBUF, &buf);
 
-	return (const unsigned char*) buffers[buf.index].start;
+	currentFrame = (unsigned char*) buffers[buf.index].start;
 }
 
 void UVCCamera::startup()

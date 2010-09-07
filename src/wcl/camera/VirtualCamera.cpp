@@ -93,18 +93,19 @@ void VirtualCamera::setControlValue(const Control control, const int value)
 	 << value << "(Note: No change to the image will occur)" << endl;
 }
 
-const unsigned char* VirtualCamera::getFrame()
+void VirtualCamera::update()
 {
-    if( this->buffers ){
-	const unsigned char *frame =
-	   (const unsigned char *) this->buffers[this->inUseBuffer].start;
-	this->inUseBuffer++;
-	if( this->inUseBuffer > this->numBuffers){
-	    this->inUseBuffer = 0;
+	if( this->buffers ){
+		unsigned char *frame =
+			(unsigned char *) this->buffers[this->inUseBuffer].start;
+		this->inUseBuffer++;
+		if( this->inUseBuffer > this->numBuffers){
+			this->inUseBuffer = 0;
+		}
+		currentFrame = frame;
+		return;
 	}
-	return frame;
-    }
-    return (const unsigned char *)defaultBuffer.start;
+	currentFrame = (unsigned char*) defaultBuffer.start;
 }
 
 void VirtualCamera::startup()

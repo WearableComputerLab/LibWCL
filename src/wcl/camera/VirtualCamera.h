@@ -50,7 +50,7 @@ namespace wcl
 		    virtual void setConfiguration(Configuration c);
 		    virtual void setExposureMode(const ExposureMode t);
 		    virtual void setControlValue(const Control control, const int value);
-		    virtual const unsigned char* getFrame();
+		    virtual void update();
 		    virtual void startup();
 		    virtual void shutdown();
 

@@ -307,7 +307,7 @@ void DC1394Camera::shutdown( void )
 }
 
 // method to get a frame from the camera
-const unsigned char* DC1394Camera::getFrame()
+void DC1394Camera::update()
 {
     dc1394error_t result;
 
@@ -327,31 +327,7 @@ const unsigned char* DC1394Camera::getFrame()
     if( result != DC1394_SUCCESS )
 	    throw CameraException(CameraException::BUFFERERROR);
 
-    /* XXX - fixup, bayer conversion should live partly in Camera class. - benjsc
-     * 20100211
-    // check if we need to do a bayer conversion
-    if( this->getUseBayer() )
-    {
-    // attempt to perform the conversion from bayer to rgb
-    this->result = dc1394_bayer_decoding_8bit( this->frame->image,
-    this->convertedImage, this->width,
-    this->height, this->colorFilter,
-    this->bayerMethod );
-
-    // check to see if there were any errors.
-    if( this->result != DC1394_SUCCESS )
-    {
-    this->shutdown();
-
-    fprintf( stderr, "failed to convert to bayer, libdc1394 said: %s", dc1394_error_get_string( this->result ) );
-    exit( EXIT_FAILURE );
-    }
-
-    return this->convertedImage;
-    }
-    */
-
-    return frame->image;
+    currentFrame = frame->image;
 }
 
 
