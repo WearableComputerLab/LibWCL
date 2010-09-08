@@ -33,6 +33,7 @@ namespace wcl
 	{
 		//all of the polhemus trackers are 6dof
 		type = SIX_DOF;
+		confidence = 1.0f;
 	}
 
 	PolhemusTrackedObject::~PolhemusTrackedObject()

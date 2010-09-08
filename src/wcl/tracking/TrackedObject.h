@@ -93,6 +93,8 @@ namespace wcl
 
 			virtual bool isVisible() const = 0;
 
+			virtual float getConfidence() const {return confidence;}
+
 		protected:
 			/**
 			 * The name of this object.
@@ -103,6 +105,8 @@ namespace wcl
 			 * The type of object.
 			 */
 			ObjectType type;
+
+			float confidence;
 	};
 
 };

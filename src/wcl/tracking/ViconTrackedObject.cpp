@@ -275,9 +275,15 @@ void ViconTrackedObject::updateData(double* array, int &offset)
 	{
 		double o = array[offset++];
 		if (o == 0)
+		{
 			visible = true;
+			confidence = 1.0f;
+		}
 		else
+		{
 			visible = false;
+			confidence = 0.0f;
+		}
 	}
 
 }

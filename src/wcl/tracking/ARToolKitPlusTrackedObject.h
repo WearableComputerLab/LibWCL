@@ -50,13 +50,11 @@ public:
 
     virtual bool isVisible() const;
     unsigned getWidth() const;
-    float getConfidence() const;
 
 private:
         unsigned id;
         unsigned width;
 	bool visible;
-	float confidence;
 
 	SMatrix transform;
 };
