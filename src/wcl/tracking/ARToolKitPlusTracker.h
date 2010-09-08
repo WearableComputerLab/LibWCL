@@ -60,7 +60,7 @@ public:
 			  const float nearplane = 100.0,
 			  const float farplane = 10000.0 );
     virtual ~ARToolKitPlusTracker();
-    virtual void setCamera(Camera *);
+    virtual void setCamera(const Camera *);
 
     virtual void update();
     virtual TrackedObject* getObject(const std::string name);
@@ -87,7 +87,8 @@ private:
 
     ARToolKitPlus::TrackerSingleMarker *tracker;
     unsigned markerWidth;
-    Camera *camera;
+    const Camera *camera;
+	unsigned char* cameraBuffer;
 
     float confidence;
     float nearplane;
