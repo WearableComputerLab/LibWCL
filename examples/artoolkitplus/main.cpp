@@ -212,6 +212,11 @@ int main(int argc, char** argv)
 {
     try {
     cam = CameraFactory::getCamera();
+	Camera::Configuration c;
+	c.width = 640;
+	c.height = 480;
+	c.format = Camera::YUYV422;
+	cam = CameraFactory::findCamera(c);
     if( cam == NULL ){
 	printf("No Cameras are available\n");
 	return 1;
