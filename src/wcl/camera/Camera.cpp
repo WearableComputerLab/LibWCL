@@ -176,6 +176,15 @@ namespace wcl
 		}
 	}
 
+	void Camera::convertImageRGB8toMONO8(const unsigned char* rgb, unsigned char* mono, const unsigned width, const unsigned height)
+	{
+		unsigned int in, out=0;
+		for (out = 0; out < width*height; ++out)
+		{
+			mono[out] = (unsigned char) (rgb[in]*0.3 + rgb[in+1]*0.59 + rgb[in+2]*0.11);
+			in+=3;
+		}
+	}
 
 	void Camera::setConfiguration(Configuration c)
 	{
@@ -309,6 +318,9 @@ NOTIMP:
 		unsigned width = this->activeConfiguration.width;
 		unsigned height = this->activeConfiguration.height;
 
+		unsigned char* temp;
+		VideoDecoder decoder(width, height,CODEC_ID_MJPEG, false );
+
 		switch( format ){
 			case RGB8:
 				{
@@ -326,7 +338,7 @@ NOTIMP:
 						    // Init the video decoder on the first MJPEG decoding frame
 							VideoDecoder decoder(width, height,CODEC_ID_MJPEG, false );
 						    decoder.nextFrame(currentFrame, this->getFormatBufferSize());
-							memcpy(buffer, internal->decoder->getFrame(), getFormatBufferSize(format));
+							memcpy(buffer, decoder.getFrame(), getFormatBufferSize(format));
 							return;
 						}
 #endif
@@ -342,6 +354,30 @@ NOTIMP:
 			case RGB32:
 			case BGR8:
 			case MONO8:
+				switch (this->activeConfiguration.format)
+				{
+					case RGB8:
+						convertImageRGB8toMONO8(currentFrame, buffer, width, height);
+						return;
+
+					case YUYV422:
+						//create a temporary buffer
+						temp = new unsigned char[getFormatBufferSize(RGB8)];
+						convertImageYUYV422toRGB8(currentFrame, temp, width, height);
+						convertImageRGB8toMONO8(temp, buffer, width, height);
+						delete [] temp;
+						return;
+
+					case MJPEG:
+						decoder.nextFrame(currentFrame, this->getFormatBufferSize());
+						convertImageRGB8toMONO8(decoder.getFrame(), buffer, width, height);
+						return;
+					default:
+						;
+				}
+				goto NOTIMP;
+				break;
+
 			case MONO16:
 			default:
 NOTIMP:

@@ -333,6 +333,8 @@ namespace wcl
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
 					const unsigned int width, const unsigned int height );
+
+			static void convertImageRGB8toMONO8(const unsigned char* rgb, unsigned char* mono, const unsigned width, const unsigned height);
 		protected:
 			//struct for information about the image buffers we create
 			struct CameraBuffer {
