@@ -14,7 +14,7 @@ Makefile.in
 Makefile
 stamp-h1
 tags
-
+moc_*
 autom4te.cache
 cfg
 doc

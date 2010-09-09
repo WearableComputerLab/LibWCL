@@ -319,7 +319,6 @@ NOTIMP:
 		unsigned height = this->activeConfiguration.height;
 
 		unsigned char* temp;
-		VideoDecoder decoder(width, height,CODEC_ID_MJPEG, false );
 
 		switch( format ){
 			case RGB8:
@@ -369,9 +368,12 @@ NOTIMP:
 						return;
 
 					case MJPEG:
-						decoder.nextFrame(currentFrame, this->getFormatBufferSize());
-						convertImageRGB8toMONO8(decoder.getFrame(), buffer, width, height);
+						{
+						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
+						dec.nextFrame(currentFrame, this->getFormatBufferSize());
+						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
 						return;
+						}
 					default:
 						;
 				}
