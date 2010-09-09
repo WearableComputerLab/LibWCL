@@ -30,6 +30,7 @@
 #include <string>
 
 #include <wcl/maths/Matrix.h>
+#include <wcl/maths/Quaternion.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
 
@@ -73,23 +74,23 @@ namespace wcl
 			/**
 			 * Returns a string representation of the object.
 			 */
-			virtual std::string toString() = 0;
+			virtual std::string toString() const = 0;
 
 			/**
 			 * Returns the name of the object.
 			 */
-			virtual std::string getName() { return name;}
+			virtual std::string getName() const { return name;}
 
 			/**
 			 * Returns this object's type.
 			 */
-			virtual ObjectType getType() { return type;}
+			virtual ObjectType getType() const { return type;}
 
-			virtual SMatrix getTransform() = 0;
+			virtual SMatrix getTransform() const = 0;
 
-			virtual Vector getTranslation() = 0;
+			virtual Vector getTranslation() const = 0;
 
-			virtual SMatrix getRotation() = 0;
+			virtual Quaternion getOrientation() const = 0;
 
 			virtual bool isVisible() const = 0;
 

@@ -54,15 +54,13 @@ namespace wcl
 			/**
 			 * Returns a string representation of the object.
 			 */
-			virtual std::string toString();
+			virtual std::string toString() const;
 
-			virtual SMatrix getTransform();
+			virtual SMatrix getTransform() const;
 
-			virtual Vector getTranslation();
+			virtual Vector getTranslation() const;
 			
-			virtual SMatrix getRotation();
-
-			wcl::Quaternion getRotationAsQuat();
+			virtual Quaternion getOrientation() const;
 
 			void setData(const double& x,
 						 const double& y,

@@ -36,7 +36,8 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
     const unsigned id):
     width(w),
     transform(4),
-    visible(false)
+    visible(false),
+	seen(false)
 {
     std::stringstream sid;
     sid<< "Marker ";
@@ -49,23 +50,21 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
 ARToolKitPlusTrackedObject::~ARToolKitPlusTrackedObject()
 {}
 
-std::string ARToolKitPlusTrackedObject::toString()
+std::string ARToolKitPlusTrackedObject::toString() const
 {
     std::stringstream ss;
     Vector position = this->getTranslation();
-    SMatrix orientation = this->getRotation();
     ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-    //ss << orientation.toString();
     return ss.str();
 
 }
 
-SMatrix ARToolKitPlusTrackedObject::getTransform()
+SMatrix ARToolKitPlusTrackedObject::getTransform() const
 {
     return this->transform;
 }
 
-Vector ARToolKitPlusTrackedObject::getTranslation()
+Vector ARToolKitPlusTrackedObject::getTranslation() const
 {
     Vector v(3);
     SMatrix s = this->getTransform();
@@ -75,20 +74,19 @@ Vector ARToolKitPlusTrackedObject::getTranslation()
     return v;
 }
 
-SMatrix ARToolKitPlusTrackedObject::getRotation()
+Quaternion ARToolKitPlusTrackedObject::getOrientation() const
 {
     SMatrix t = this->getTransform();
 
-    SMatrix s(3);
-    for(unsigned r=0; r < 3; r++ ){
-        for(unsigned c=0; c<3; c++)
-            s[r][c]=t[r][c];
-    }
+	//zero out the translation...
+	t[0][3] = 0.0;
+	t[1][3] = 0.0;
+	t[2][3] = 0.0;
 
-    return t;
+    return Quaternion(t);
 }
 
-unsigned ARToolKitPlusTrackedObject::getID()
+unsigned ARToolKitPlusTrackedObject::getID() const
 {
     return this->id;
 }
@@ -101,11 +99,18 @@ void ARToolKitPlusTrackedObject::setTransform(const SMatrix &s )
 void ARToolKitPlusTrackedObject::setVisible ( const bool state )
 {
     this->visible = state;
+	if (visible)
+		seen = true;
 }
 
 bool ARToolKitPlusTrackedObject::isVisible() const
 {
     return this->visible;
+}
+
+bool ARToolKitPlusTrackedObject::hasBeenSeen() const
+{
+	return seen;
 }
 
 unsigned ARToolKitPlusTrackedObject::getWidth() const
