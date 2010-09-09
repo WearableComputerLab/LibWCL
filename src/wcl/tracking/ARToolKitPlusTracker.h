@@ -82,6 +82,7 @@ public:
     void toString();
 
 private:
+    std::vector<TrackedObject *> seenObjects;
     std::vector<ARToolKitPlusTrackedObject *>objects;
     std::map<unsigned, ARToolKitPlusTrackedObject *> mapping;
 

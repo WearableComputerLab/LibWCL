@@ -180,12 +180,14 @@ void ARToolKitPlusTracker::update()
 
 
     // set all markers to not visable
-    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
-	it != this->objects.end();
-	++it ){
-	ARToolKitPlusTrackedObject *marker=*it;
-	marker->setVisible(false);
-    }
+	for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
+			it != this->objects.end();
+			++it ){
+		ARToolKitPlusTrackedObject *marker=*it;
+		marker->setVisible(false);
+		// invisible markers are not very confident markers.
+		marker->setConfidence(0.0f);
+	}
 
     // Update the found markers
     while( i < this->markersFound ){
@@ -229,6 +231,10 @@ void ARToolKitPlusTracker::update()
 			    break;
 		}
 
+		// if we've never seen the marker before, add it to the seen objects.
+		if (!marker->hasBeenSeen())
+			seenObjects.push_back(marker);
+		
 		marker->setTransform(m);
 		marker->setVisible(true);
 		marker->setConfidence(markers[i].cf);
@@ -254,14 +260,7 @@ TrackedObject* ARToolKitPlusTracker::getObject(const std::string name)
 
 std::vector<TrackedObject *> ARToolKitPlusTracker::getAllObjects()
 {
-    std::vector<TrackedObject *> v;
-    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it =
-	this->objects.begin();
-	it!=this->objects.end();
-	++it)
-	if( (*it)->isVisible())
-	    v.push_back(*it);
-    return v;
+    return seenObjects;
 }
 
 void ARToolKitPlusTracker::setUnits(Units u)
