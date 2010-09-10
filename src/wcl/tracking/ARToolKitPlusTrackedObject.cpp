@@ -40,7 +40,7 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
 	seen(false)
 {
     std::stringstream sid;
-    sid<< "Marker ";
+    sid<< "Marker";
     sid<< id;
     this->name=sid.str();
     this->type=SIX_DOF;
