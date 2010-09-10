@@ -24,64 +24,66 @@
  * SUCH DAMAGE.
  */
 
+#include <iostream>
 #include <wcl/camera/DC1394CameraFactory.h>
 
 namespace wcl {
 
-DC1394CameraFactory *DC1394CameraFactory::instance;
-std::vector<DC1394Camera *> DC1394CameraFactory::cameras;
+	DC1394CameraFactory *DC1394CameraFactory::instance;
+	std::vector<DC1394Camera *> DC1394CameraFactory::cameras;
 
-DC1394CameraFactory::DC1394CameraFactory()
-{
-}
+	DC1394CameraFactory::DC1394CameraFactory()
+	{
+	}
 
-DC1394CameraFactory::~DC1394CameraFactory()
-{
-    for(std::vector<DC1394Camera *>::iterator it = this->cameras.begin();
-	it != this->cameras.end();
-	++it )
-    {
-	DC1394Camera *c = *it;
-	delete c;
-    }
-}
+	DC1394CameraFactory::~DC1394CameraFactory()
+	{
+		for(std::vector<DC1394Camera *>::iterator it = this->cameras.begin();
+				it != this->cameras.end();
+				++it )
+		{
+			DC1394Camera *c = *it;
+			delete c;
+		}
+	}
 
-DC1394CameraFactory *DC1394CameraFactory::getInstance()
-{
-    if( DC1394CameraFactory::instance == NULL ){
-	DC1394CameraFactory::instance = new DC1394CameraFactory();
-	instance->probeCameras();
-    }
+	DC1394CameraFactory *DC1394CameraFactory::getInstance()
+	{
+		if( DC1394CameraFactory::instance == NULL ){
+			DC1394CameraFactory::instance = new DC1394CameraFactory();
+			instance->probeCameras();
+		}
 
-    return DC1394CameraFactory::instance;
-}
-
-
-std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
-{
-    DC1394CameraFactory *instance = DC1394CameraFactory::getInstance();
-    return instance->cameras;
-}
+		return DC1394CameraFactory::instance;
+	}
 
 
-void DC1394CameraFactory::probeCameras()
-{
-    // attempt to located the cameras on the firewire bus
-    dc1394error_t err;
-    dc1394_t * d;
-    dc1394camera_list_t * list;
-    d = dc1394_new ();
-    if( !d )
-	throw std::string("DC139CamearFactory:getCameras: Unable to get DC1394Context");
+	std::vector<DC1394Camera *> DC1394CameraFactory::getCameras()
+	{
+		DC1394CameraFactory *instance = DC1394CameraFactory::getInstance();
+		return instance->cameras;
+	}
 
-    err=dc1394_camera_enumerate (d, &list);
 
-    for( int i = 0 ; i < list->num; i++ ){
-	DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
-	this->cameras.push_back(c);
-    }
+	void DC1394CameraFactory::probeCameras()
+	{
+		using namespace std;
+		// attempt to located the cameras on the firewire bus
+		dc1394error_t err;
+		dc1394_t * d;
+		dc1394camera_list_t * list;
+		d = dc1394_new ();
+		if( !d )
+			throw std::string("DC139CamearFactory:getCameras: Unable to get DC1394Context");
 
-    dc1394_camera_free_list(list);
-}
+		err=dc1394_camera_enumerate (d, &list);
+
+		for( int i = 0 ; i < list->num; i++ ){
+			DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
+			this->cameras.push_back(c);
+		}
+
+		dc1394_camera_free_list(list);
+	}
 
 }
