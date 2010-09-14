@@ -28,12 +28,13 @@
 
 namespace wcl
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
+	PolhemusTrackedObject::PolhemusTrackedObject(const std::string& name) 
 		: position(3)
 	{
 		//all of the polhemus trackers are 6dof
 		type = SIX_DOF;
 		confidence = 1.0f;
+		this->name = name;
 	}
 
 	PolhemusTrackedObject::~PolhemusTrackedObject()

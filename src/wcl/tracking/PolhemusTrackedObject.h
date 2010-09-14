@@ -45,7 +45,7 @@ namespace wcl
 	class PolhemusTrackedObject : public TrackedObject
 	{
 		public:
-			PolhemusTrackedObject();
+			PolhemusTrackedObject(const std::string& name);
 
 			/**
 			 * Destructor.

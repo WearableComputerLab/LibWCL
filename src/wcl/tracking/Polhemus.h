@@ -168,7 +168,7 @@ namespace wcl
 			 */
 			int activeSensorCount;
 
-			PolhemusTrackedObject* sensors;
+			std::vector<PolhemusTrackedObject> sensors;
 
 			/**
 			 * Function to read any data that is left
