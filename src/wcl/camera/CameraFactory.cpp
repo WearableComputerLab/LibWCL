@@ -27,7 +27,7 @@
 #include <config.h>
 #include <iostream>
 #include <wcl/camera/CameraFactory.h>
-#ifdef ENABLE_CAMERA_1394
+#ifdef ENABLE_CAMERA_DC1394
 #include <wcl/camera/DC1394CameraFactory.h>
 #endif
 #ifdef ENABLE_CAMERA_UVC
@@ -72,9 +72,12 @@ std::vector<Camera *> CameraFactory::getCameras()
 {
     std::vector<Camera *>all;
 
-#ifdef ENABLE_CAMERA_1394
+	using namespace std;
+	cout << "Looking for cameras" << endl;
+#ifdef ENABLE_CAMERA_DC1394
     try {
 
+	cout << "Looking for DC1394 cameras" << endl;
     std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
 
     for(std::vector<DC1394Camera *>::iterator it = dc1394.begin();
@@ -88,6 +91,7 @@ std::vector<Camera *> CameraFactory::getCameras()
 #endif
 
 #ifdef ENABLE_CAMERA_UVC
+	cout << "Looking for UVC cameras" << endl;
     std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
     for(std::vector<UVCCamera *>::iterator it = uvc.begin();
 	it != uvc.end();

@@ -68,6 +68,8 @@ namespace wcl {
 	void DC1394CameraFactory::probeCameras()
 	{
 		using namespace std;
+
+		cout << "Probing DC cameras" << endl;
 		// attempt to located the cameras on the firewire bus
 		dc1394error_t err;
 		dc1394_t * d;
@@ -79,6 +81,7 @@ namespace wcl {
 		err=dc1394_camera_enumerate (d, &list);
 
 		for( int i = 0 ; i < list->num; i++ ){
+			cout << "Found 1" << endl;
 			DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
 			this->cameras.push_back(c);
 		}
