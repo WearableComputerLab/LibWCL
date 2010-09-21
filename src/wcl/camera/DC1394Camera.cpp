@@ -66,46 +66,45 @@ namespace wcl {
 		dc1394_free(this->d);
 	}
 
-	void DC1394Camera::setFormat( const ImageFormat format, const unsigned width,
-			const unsigned height )
+	void DC1394Camera::setConfiguration(Configuration &c)
 	{
 		dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
 
-		//#warning DC1349:setFormat This methods needs work.. benjsc - 20100205
+		//DC1349:setFormat This methods needs work.. benjsc - 20100205
 		//XXX This needs to be redone
-		switch( format ){
+		switch( c.format ){
 			case YUYV422:
-				if( width == 160 ) { mode = DC1394_VIDEO_MODE_160x120_YUV444; break; }
-				if( width == 320 ) { mode = DC1394_VIDEO_MODE_320x240_YUV422; break; }
-				if( width == 640 ){  mode = DC1394_VIDEO_MODE_640x480_YUV422; break; }
-				if( width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_YUV422; break; }
-				if( width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_YUV422; break; }
-				if( width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_YUV422; break; }
-				if( width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_YUV422; break; }
+				if( c.width == 160 ) { mode = DC1394_VIDEO_MODE_160x120_YUV444; break; }
+				if( c.width == 320 ) { mode = DC1394_VIDEO_MODE_320x240_YUV422; break; }
+				if( c.width == 640 ){  mode = DC1394_VIDEO_MODE_640x480_YUV422; break; }
+				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_YUV422; break; }
+				if( c.width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_YUV422; break; }
+				if( c.width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_YUV422; break; }
+				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_YUV422; break; }
 				goto notfound;
 			case YUYV411:
-				if( width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_YUV411; break; }
+				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_YUV411; break; }
 				goto notfound;
 			case RGB8:
-				if( width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_RGB8; break; }
-				if( width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_RGB8; break; }
-				if( width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_RGB8; break; }
-				if( width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_RGB8; break; }
-				if( width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_RGB8; break; }
+				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_RGB8; break; }
+				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_RGB8; break; }
+				if( c.width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_RGB8; break; }
+				if( c.width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_RGB8; break; }
+				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_RGB8; break; }
 				goto notfound;
 			case MONO8:
-				if( width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO8; break; }
-				if( width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO8; break; }
-				if( width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO8; break; }
-				if( width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO8; break; }
-				if( width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO8; break; }
+				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO8; break; }
+				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO8; break; }
+				if( c.width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO8; break; }
+				if( c.width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO8; break; }
+				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO8; break; }
 				goto notfound;
 			case MONO16:
-				if( width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO16; break; }
-				if( width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO16; break; }
-				if( width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO16; break; }
-				if( width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO16; break; }
-				if( width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO16; break; }
+				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO16; break; }
+				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO16; break; }
+				if( c.width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO16; break; }
+				if( c.width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO16; break; }
+				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO16; break; }
 				goto notfound;
 #if notyet
 			case FORMAT7:
@@ -174,20 +173,42 @@ notfound:
 			default:
 				throw CameraException(CameraException::INVALIDFORMAT);
 		}
-		this->videoMode = mode;
 
-		dc1394error_t result = dc1394_video_set_mode( this->camera, this->videoMode );
+		//XXX This works but isn't clean - benjsc 20100921
+		dc1394framerate_t rate;
+		if( c.fps == 1.875 )
+		    rate = DC1394_FRAMERATE_1_875;
+		else if ( c.fps == 3.75 )
+		    rate = DC1394_FRAMERATE_3_75;
+		else if ( c.fps == 7.5 )
+		    rate = DC1394_FRAMERATE_7_5;
+		else if ( c.fps == 15.0 )
+		    rate = DC1394_FRAMERATE_15;
+		else if ( c.fps == 30.0 )
+		    rate = DC1394_FRAMERATE_30;
+		else if ( c.fps == 60.0 )
+		    rate = DC1394_FRAMERATE_60;
+		else if ( c.fps == 120.0 )
+		    rate = DC1394_FRAMERATE_120;
+		else if ( c.fps == 240.0 )
+		    rate = DC1394_FRAMERATE_240;
+		else
+		    throw CameraException(CameraException::INVALIDFORMAT);
+
+		// With the modes and framerates worked out we
+		// actually try and setup the camera. We don't do this after
+		// each step above as if an invalid mode is selected (ie
+		// framerate) we want to pick it up before trying to actually 
+		// change the camera to that mode.
+		dc1394error_t result = dc1394_video_set_mode( this->camera, mode );
 		if( result != DC1394_SUCCESS )
 			throw CameraException(CameraException::CONTROLERROR);
 
-		Configuration c;
-		c.format = format;
-		c.width = width;
-		c.height = height;
+		dc1394_video_set_framerate( this->camera, rate );
+		if( result != DC1394_SUCCESS )
+			throw CameraException(CameraException::CONTROLERROR);
 
 		Camera::setConfiguration(c);
-
-		dc1394_video_set_framerate( this->camera, DC1394_FRAMERATE_15 );
 	}
 
 	void DC1394Camera::setExposureMode( const ExposureMode t )

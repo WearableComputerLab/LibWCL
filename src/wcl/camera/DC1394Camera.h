@@ -53,9 +53,6 @@ public:
 
 	void printDetails(bool);
 
-	void setFormat( const ImageFormat f, const unsigned width, const
-			unsigned height );
-
 
 	// method to set exposure
 	void setExposureMode( const ExposureMode t );
@@ -64,6 +61,7 @@ public:
 	 * Sets the control value for the camera
 	 */
 	void setControlValue(const Control control, const int value);
+	void setConfiguration(Configuration &c);
 
 protected:
 	const char *getTypeIdentifier() const { return "1394"; }
@@ -97,7 +95,6 @@ private:
 	// a frame returned from the dc1394 capture device
 	dc1394_t *d;
 	dc1394video_frame_t* frame;
-	dc1394video_mode_t videoMode;
 	dc1394framerate_t framerate;
 	uint64_t guid;
 
