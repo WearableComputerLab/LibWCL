@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,63 +23,28 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#ifndef VIRTUAL_TRACKEDOBJECT_H
-#define VIRTUAL_TRACKEDOBJECT_H
-
-#include <string>
+#ifndef WCL_PARSER_PARSEREXCEPTION
+#define WCL_PARSER_PARSEREXCEPTION
 
 #include <wcl/api.h>
-#include <wcl/maths/Matrix.h>
-#include <wcl/maths/Quaternion.h>
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
-#include <wcl/tracking/TrackedObject.h>
+#include <wcl/Exception.h>
 
-namespace wcl 
+namespace wcl {
+
+/**
+ * A parser exception is used to indicate an error that occurred during
+ * parsing.
+ */
+class WCL_API ParserException: public Exception
 {
-	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 * 
-	 */
-	class WCL_API VirtualTrackedObject : public TrackedObject
-	{
-		public:
-			VirtualTrackedObject(std::string _name);
-			
-			/**
-			 * Destructor.
-			 */
-			virtual ~VirtualTrackedObject(){}
+public:
+    static const char *INVALID_SYNTAX;
+    static const char *IOERROR;
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() const;
-
-			virtual SMatrix getTransform() const;
-
-			virtual Vector getTranslation() const;
-			
-			virtual Quaternion getOrientation() const;
-
-			void setData(const double& x,
-						 const double& y,
-						 const double& z,
-						 const double& rw,
-						 const double& rx,
-						 const double& ry,
-						 const double& rz);
-
-			virtual bool isVisible() const;
-
-		private:
-			wcl::Quaternion orientation;
-			wcl::Vector translation;
-	};
-
+    ParserException(const char *reason) throw();
+    virtual ~ParserException() throw();
 };
 
-#endif /*VIRTUAL_TRACKEDOBJECT_H_*/
+}; //namespace wcl
 
-
+#endif

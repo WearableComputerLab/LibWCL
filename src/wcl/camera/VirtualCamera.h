@@ -27,6 +27,7 @@
 #ifndef WCL_CAMERA_VIRTUALCAMERA_H
 #define WCL_CAMERA_VIRTUALCAMERA_H
 
+#include <wcl/api.h>
 #include <wcl/camera/Camera.h>
 
 namespace wcl
@@ -38,7 +39,7 @@ namespace wcl
 	 * maintained untouched. If no frames are provided, a default frame is
 	 * show. Upon a shutdown, the default frame is used again.
 	 */
-	class VirtualCamera: public Camera
+	class WCL_API VirtualCamera: public Camera
 	{
 
 	   public:

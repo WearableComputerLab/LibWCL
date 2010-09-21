@@ -26,12 +26,13 @@
 #ifndef WCL_VIDEO_VIDEODECODER_H
 #define WCL_VIDEO_VIDEODECODER_H
 
-#include <string>
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
 };
+#include <string>
+#include <wcl/api.h>
 
 namespace wcl
 {
@@ -43,7 +44,7 @@ namespace wcl
      * video is used so the next frame obtained is correct in the sequence of
      * the video.
      */
-    class VideoDecoder
+    class WCL_API VideoDecoder
     {
     public:
 	VideoDecoder(const std::string &path, const bool autofpslimit=true) throw (const std::string &);

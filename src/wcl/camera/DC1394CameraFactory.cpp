@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#include <iostream>
-#include <wcl/camera/DC1394CameraFactory.h>
+#include "CameraException.h"
+#include "DC1394CameraFactory.h"
 
 namespace wcl {
 
@@ -69,19 +69,17 @@ namespace wcl {
 	{
 		using namespace std;
 
-		cout << "Probing DC cameras" << endl;
 		// attempt to located the cameras on the firewire bus
 		dc1394error_t err;
 		dc1394_t * d;
 		dc1394camera_list_t * list;
 		d = dc1394_new ();
 		if( !d )
-			throw std::string("DC139CamearFactory:getCameras: Unable to get DC1394Context");
+		    throw CameraException(CameraException::EACCESS);
 
 		err=dc1394_camera_enumerate (d, &list);
 
 		for( int i = 0 ; i < list->num; i++ ){
-			cout << "Found 1" << endl;
 			DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
 			this->cameras.push_back(c);
 		}

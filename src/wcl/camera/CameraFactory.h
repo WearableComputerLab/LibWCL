@@ -28,6 +28,7 @@
 #define WCL_CAMERA_CAMERAFACTORY_H
 
 #include <vector>
+#include <wcl/api.h>
 #include <wcl/camera/Camera.h>
 
 namespace wcl
@@ -38,7 +39,7 @@ namespace wcl
 	 * Each of these methods return NULL if there is no camera matching the
 	 * requirements of the method call
 	 */
-	class CameraFactory
+	class WCL_API CameraFactory
 	{
 		public:
 

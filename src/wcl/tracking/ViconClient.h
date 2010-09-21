@@ -37,6 +37,7 @@
 #include <string>
 #include <vector>
 #include <stdint.h>
+#include <wcl/api.h>
 #include <wcl/network/TCPSocket.h>
 #include <wcl/tracking/Tracker.h>
 #include "ViconTrackedObject.h"
@@ -58,7 +59,7 @@ namespace wcl
 	 * in the update loop you would get the data from the TrackedObject
 	 * and update any scene graph nodes.
 	 */
-	class ViconClient : public Tracker
+	class WCL_API ViconClient : public Tracker
 	{
 		public: 
 

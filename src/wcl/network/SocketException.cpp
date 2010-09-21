@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,63 +23,42 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <errno.h>
+#include "SocketException.h"
+#include "Socket.h"
 
-#ifndef VIRTUAL_TRACKEDOBJECT_H
-#define VIRTUAL_TRACKEDOBJECT_H
+namespace wcl {
 
-#include <string>
-
-#include <wcl/api.h>
-#include <wcl/maths/Matrix.h>
-#include <wcl/maths/Quaternion.h>
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
-#include <wcl/tracking/TrackedObject.h>
-
-namespace wcl 
+/**
+ * Construct a socket exception with the specified reason
+ *
+ * @param reason The reason the exception occurred
+ */
+SocketException::SocketException( const Socket *is )
 {
-	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 * 
-	 */
-	class WCL_API VirtualTrackedObject : public TrackedObject
-	{
-		public:
-			VirtualTrackedObject(std::string _name);
-			
-			/**
-			 * Destructor.
-			 */
-			virtual ~VirtualTrackedObject(){}
+    this->s = s;
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() const;
+    this->errornumber  = errno; /* errno defined in errno.h */
+}
 
-			virtual SMatrix getTransform() const;
+SocketException::~SocketException() throw ()
+{}
 
-			virtual Vector getTranslation() const;
-			
-			virtual Quaternion getOrientation() const;
+/**
+ * Obtain the reason why the socket exception was
+ * thrown
+ *
+ * @return The reason this socket exception occurred
+ */
+const char *SocketException::what() const throw()
+{
+    return strerror( this->errornumber );
+}
 
-			void setData(const double& x,
-						 const double& y,
-						 const double& z,
-						 const double& rw,
-						 const double& rx,
-						 const double& ry,
-						 const double& rz);
-
-			virtual bool isVisible() const;
-
-		private:
-			wcl::Quaternion orientation;
-			wcl::Vector translation;
-	};
-
-};
-
-#endif /*VIRTUAL_TRACKEDOBJECT_H_*/
+Socket *SocketException::getSocket() const throw()
+{
+    return this->s;
+}
 
 
+} //namespace wcl

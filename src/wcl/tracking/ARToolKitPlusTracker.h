@@ -31,6 +31,7 @@
 #include <vector>
 #include <ARToolKitPlus/TrackerSingleMarkerImpl.h>
 
+#include <wcl/api.h>
 #include <wcl/camera/Camera.h>
 #include <wcl/tracking/Tracker.h>
 #include <wcl/tracking/ARToolKitPlusTrackedObject.h>
@@ -50,7 +51,7 @@ namespace wcl
  * with libWCL. By default ARToolkitPlus is setup to use BCH markers (up to
  * 1024) and detects a maximum of WCL_ARTOOLKITPLUSTRACKER_MARKER_DETECTION_COUNT marker
  */
-class ARToolKitPlusTracker: public Tracker
+class WCL_API ARToolKitPlusTracker: public Tracker
 {
 public:
     ARToolKitPlusTracker( const unsigned markerWidth = 80,

@@ -29,6 +29,8 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <wcl/api.h>
+
 namespace wcl {
 
 /**
@@ -47,7 +49,7 @@ typedef double T;
  * If you are working soley in graphics space your probably after the
  * SMatrix class.
  */
-class Matrix
+class WCL_API Matrix
 {
 public:
     Matrix();
@@ -91,10 +93,10 @@ private:
 };
 
 // Global Operators
-Matrix operator *( const T &, const Matrix & );
+Matrix WCL_API operator *( const T &, const Matrix & );
 
 // Helper functions
-Matrix transpose ( const Matrix & );
+Matrix WCL_API transpose ( const Matrix & );
 
 }; //namespace wcl
 

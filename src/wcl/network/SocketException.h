@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,63 +23,33 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-
-#ifndef VIRTUAL_TRACKEDOBJECT_H
-#define VIRTUAL_TRACKEDOBJECT_H
+#ifndef WCL_NETWORK_SOCKETEXCEPTION_H
+#define WCL_NETWORK_SOCKETEXCEPTION_H
 
 #include <string>
-
 #include <wcl/api.h>
-#include <wcl/maths/Matrix.h>
-#include <wcl/maths/Quaternion.h>
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
-#include <wcl/tracking/TrackedObject.h>
+#include <wcl/Exception.h>
 
-namespace wcl 
+namespace wcl {
+
+//Forward Declaration
+class Socket;
+
+class WCL_API SocketException: public Exception
 {
-	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 * 
-	 */
-	class WCL_API VirtualTrackedObject : public TrackedObject
-	{
-		public:
-			VirtualTrackedObject(std::string _name);
-			
-			/**
-			 * Destructor.
-			 */
-			virtual ~VirtualTrackedObject(){}
+public:
+    SocketException(const Socket *);
+    virtual ~SocketException() throw();
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() const;
+    const char *what() const throw();
+    Socket *getSocket() const throw();
 
-			virtual SMatrix getTransform() const;
-
-			virtual Vector getTranslation() const;
-			
-			virtual Quaternion getOrientation() const;
-
-			void setData(const double& x,
-						 const double& y,
-						 const double& z,
-						 const double& rw,
-						 const double& rx,
-						 const double& ry,
-						 const double& rz);
-
-			virtual bool isVisible() const;
-
-		private:
-			wcl::Quaternion orientation;
-			wcl::Vector translation;
-	};
-
+private:
+    Socket *s;
+    int errornumber;
 };
 
-#endif /*VIRTUAL_TRACKEDOBJECT_H_*/
 
+} //namespace wcl
 
+#endif

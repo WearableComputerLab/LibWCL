@@ -20,6 +20,7 @@
 #include <map>
 #include <string>
 
+#include <wcl/api.h>
 #include "PolygonObject.h"
 
 namespace wcl
@@ -27,7 +28,7 @@ namespace wcl
 	/**
 	 * Provides static functions for loading geometry for drawing.
 	 */
-	class GeometryLoader
+	class WCL_API GeometryLoader
 	{
 		public:
 			/**

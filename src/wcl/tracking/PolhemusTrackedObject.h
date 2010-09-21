@@ -30,6 +30,7 @@
 #include <string>
 #include <sstream>
 
+#include <wcl/api.h>
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
@@ -42,7 +43,7 @@ namespace wcl
 	 * Represents an object that can be tracked by the Vicon system.
 	 * 
 	 */
-	class PolhemusTrackedObject : public TrackedObject
+	class WCL_API PolhemusTrackedObject : public TrackedObject
 	{
 		public:
 			PolhemusTrackedObject(const std::string& name);

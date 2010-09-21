@@ -40,9 +40,13 @@ const char *CameraException::FRAMERATEERROR="Unknown FrameRate";
 const char *CameraException::IRISERROR="Invalid IRIS Setting";
 const char *CameraException::GAINERROR="Invalid GAIN Setting";
 const char *CameraException::BRIGHTNESSERROR="Invalid Brightness Setting";
+const char *CameraException::INVALIDCONFIGURATION="No Configuration matches the one requested";
 
 CameraException::CameraException(const char *why):
     reason(why)
+{}
+
+CameraException::~CameraException() throw()
 {}
 
 const char *CameraException::what() const throw ()

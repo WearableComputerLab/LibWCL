@@ -28,6 +28,7 @@
 #define WCL_NETWORK_UDPSOCKET_H
 
 #include <string>
+#include <wcl/api.h>
 #include <wcl/network/Socket.h>
 #include <wcl/network/UDPPacket.h>
 
@@ -37,12 +38,12 @@ namespace wcl {
  * A UDPSocket creates the perception of an end to end connection
  * like a TCP connection. 
  */
-class UDPSocket: public Socket
+class WCL_API UDPSocket: public Socket
 {
     public:
 	UDPSocket ( const std::string hostname, const unsigned port );
-	ssize_t write(const void* buffer, size_t size);
-	ssize_t read(void *buffer, size_t size);
+	ssize_t write(const void* buffer, size_t size) throw (SocketException);
+	ssize_t read(void *buffer, size_t size) throw (SocketException);
 
 	// UDP Packet interface
 	ssize_t write( const UDPPacket * );

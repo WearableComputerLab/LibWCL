@@ -26,6 +26,7 @@
 #ifndef WCL_NETWORK_UDPSERVER_H
 #define WCL_NETWORK_UDPSERVER_H
 
+#include <wcl/api.h>
 #include <wcl/network/UDPSocket.h>
 #include <wcl/network/UDPPacket.h>
 
@@ -35,7 +36,7 @@ namespace wcl {
  * The UDPServer class can be used to listen on a port and 
  * and receive UDPPackets.
  */
-class UDPServer: public UDPSocket
+class WCL_API UDPServer: public UDPSocket
 {
     public:
 	UDPServer( const unsigned port );

@@ -28,9 +28,10 @@
 #ifndef WCL_CAMERA_CAMERA_H
 #define WCL_CAMERA_CAMERA_H
 
-#include <wcl/maths/SMatrix.h>
 #include <string>
 #include <vector>
+#include <wcl/api.h>
+#include <wcl/maths/SMatrix.h>
 
 namespace wcl
 {
@@ -38,7 +39,7 @@ namespace wcl
 	/**
 	 * An abstract base class representing a camera
 	 */
-	class Camera
+	class WCL_API Camera
 	{
 
 		public:

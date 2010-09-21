@@ -27,13 +27,14 @@
 #ifndef WCL_CAMERA_DC1394CAMERA_H
 #define WCL_CAMERA_DC1394CAMERA_H
 
-#include <wcl/camera/Camera.h>
 #include <dc1394/control.h>
 #include <dc1394/conversions.h>
+#include <wcl/api.h>
+#include <wcl/camera/Camera.h>
 
 namespace wcl {
 
-class DC1394Camera: public Camera
+class WCL_API DC1394Camera: public Camera
 {
 public:
 	// default constructor

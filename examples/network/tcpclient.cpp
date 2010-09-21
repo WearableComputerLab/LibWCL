@@ -15,7 +15,7 @@ int main(void)
 	}
 	catch( SocketException* e )
 	{
-		fprintf( stderr, "%s", e->getReason().c_str() );
+		fprintf( stderr, "%s", e->what() );
 	}
 
 	return 0;

@@ -65,6 +65,11 @@ UVCCamera::UVCCamera(string filename) :
 	this->id = filename;
 }
 
+UVCCamera::~UVCCamera()
+{
+    this->shutdown();
+}
+
 
 void UVCCamera::loadCapabilities()
 {

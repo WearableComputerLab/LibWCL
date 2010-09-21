@@ -27,11 +27,12 @@
 #ifndef WCL_CAMERA_CAMERAEXCEPTION_H
 #define WCL_CAMERA_CAMERAEXCEPTION_H
 
+#include <wcl/api.h>
 #include <wcl/Exception.h>
 
 namespace wcl {
 
-class CameraException: public Exception
+class WCL_API CameraException: public Exception
 {
 public:
     static const char *EACCESS;
@@ -46,8 +47,10 @@ public:
     static const char *IRISERROR;
     static const char *GAINERROR;
     static const char *FRAMERATEERROR;
+    static const char *INVALIDCONFIGURATION;
 
     CameraException(const char *);
+    virtual ~CameraException() throw();
     virtual const char *what() const throw();
 
 private:

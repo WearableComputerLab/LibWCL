@@ -29,14 +29,14 @@
 #define LINE_SEGMENT_H
 
 #include <string>
-
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Line.h>
 
 
 namespace wcl
 {
-	class LineSegment
+	class WCL_API LineSegment
 	{
 		public:
 			LineSegment(const wcl::Vector& startPos, const wcl::Vector& endPos);

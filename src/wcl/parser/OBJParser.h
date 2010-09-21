@@ -39,7 +39,7 @@ namespace wcl {
  * The memory for this object is maintained by the OBJParser. Destroying
  * the class instance frees up the memory associated with the Geometry
  */
-class OBJParser: public Parser
+class WCL_API OBJParser: public Parser
 {
     public:
 	/**
@@ -54,7 +54,7 @@ class OBJParser: public Parser
         OBJParser(std::istream &, RelativeToAbsolute=NULL);
         ~OBJParser();
 
-        void parse();
+        void parse() throw (ParserException);
         void print();
 
         const OBJGeometry &getGeometry();

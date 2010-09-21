@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,62 +24,23 @@
  * SUCH DAMAGE.
  */
 
-#ifndef VIRTUAL_TRACKEDOBJECT_H
-#define VIRTUAL_TRACKEDOBJECT_H
+#include "Exception.h"
 
-#include <string>
+namespace wcl {
 
-#include <wcl/api.h>
-#include <wcl/maths/Matrix.h>
-#include <wcl/maths/Quaternion.h>
-#include <wcl/maths/SMatrix.h>
-#include <wcl/maths/Vector.h>
-#include <wcl/tracking/TrackedObject.h>
+Exception::Exception() throw()
+{}
 
-namespace wcl 
+Exception::Exception(const char *ireason) throw():
+    reason(ireason)
+{}
+
+Exception::~Exception() throw ()
+{}
+
+const char *Exception::what() const throw()
 {
-	/**
-	 * Represents an object that can be tracked by the Vicon system.
-	 * 
-	 */
-	class WCL_API VirtualTrackedObject : public TrackedObject
-	{
-		public:
-			VirtualTrackedObject(std::string _name);
-			
-			/**
-			 * Destructor.
-			 */
-			virtual ~VirtualTrackedObject(){}
+    return this->reason;
+}
 
-			/**
-			 * Returns a string representation of the object.
-			 */
-			virtual std::string toString() const;
-
-			virtual SMatrix getTransform() const;
-
-			virtual Vector getTranslation() const;
-			
-			virtual Quaternion getOrientation() const;
-
-			void setData(const double& x,
-						 const double& y,
-						 const double& z,
-						 const double& rw,
-						 const double& rx,
-						 const double& ry,
-						 const double& rz);
-
-			virtual bool isVisible() const;
-
-		private:
-			wcl::Quaternion orientation;
-			wcl::Vector translation;
-	};
-
-};
-
-#endif /*VIRTUAL_TRACKEDOBJECT_H_*/
-
-
+} // namespace wcl

@@ -30,6 +30,7 @@
 
 #include <vector>
 
+#include <wcl/api.h>
 #include <wcl/tracking/TrackedObject.h>
 
 namespace wcl
@@ -40,7 +41,7 @@ namespace wcl
 	 * Provides (as best possible) a unified interface for all
 	 * tracker types.
 	 */
-	class Tracker
+	class WCL_API Tracker
 	{
 		public:
 			/**

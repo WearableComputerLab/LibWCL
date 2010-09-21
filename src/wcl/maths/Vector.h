@@ -27,6 +27,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <wcl/api.h>
 #include <wcl/maths/Matrix.h>
 
 namespace wcl {
@@ -34,7 +35,7 @@ namespace wcl {
 /**
  * A Class representing a vector (aka a 1D matrix)
  */
-class Vector : public Matrix
+class WCL_API Vector : public Matrix
 {
 public:
     Vector();

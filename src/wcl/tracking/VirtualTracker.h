@@ -30,6 +30,7 @@
 
 #include <map>
 
+#include <wcl/api.h>
 #include <wcl/network/TCPSocket.h>
 #include <wcl/tracking/VirtualTrackedObject.h>
 #include <wcl/tracking/Tracker.h>
@@ -42,7 +43,7 @@ namespace wcl
 	 * Provides (as best possible) a unified interface for all
 	 * tracker types.
 	 */
-	class VirtualTracker : public Tracker
+	class WCL_API VirtualTracker : public Tracker
 	{
 		public:
 			VirtualTracker(std::string host, unsigned int port);
