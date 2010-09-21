@@ -98,6 +98,9 @@ namespace wcl
 			virtual float getConfidence() const {return confidence;}
 
 		protected:
+			TrackedObject():
+			    confidence(0.0){};
+
 			/**
 			 * The name of this object.
 			 */
