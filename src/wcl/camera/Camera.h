@@ -213,7 +213,7 @@ namespace wcl
 			 * @param height The height of the image in pixels
 			 * @throws Exception if the format can't be set
 			 */
-			virtual void setConfiguration(Configuration c);
+			virtual void setConfiguration(const Configuration &c) = 0;
 			Configuration getActiveConfiguration() const { return this->activeConfiguration; }
 
 			unsigned getFormatBytesPerPixel() const;

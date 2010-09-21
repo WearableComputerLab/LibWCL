@@ -61,7 +61,7 @@ public:
 	 * Sets the control value for the camera
 	 */
 	void setControlValue(const Control control, const int value);
-	void setConfiguration(Configuration &c);
+	void setConfiguration(const Configuration &c);
 
 protected:
 	const char *getTypeIdentifier() const { return "1394"; }

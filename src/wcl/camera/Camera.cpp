@@ -187,7 +187,7 @@ namespace wcl
 		}
 	}
 
-	void Camera::setConfiguration(Configuration c)
+	void Camera::setConfiguration(const Configuration &c)
 	{
 		assert (c.width != 0);
 		assert (c.height != 0);

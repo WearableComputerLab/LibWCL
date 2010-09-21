@@ -100,14 +100,12 @@ namespace wcl
 
 
 			/**
-			 * Sets the image format of the camera.
+			 * Sets the configuration for the camera
 			 *
-			 * @param f The data format for the images.
-			 * @param width The width of the image in pixels
-			 * @param height The height of the image in pixels
+			 * @param c The new configuration for the camera
 			 * @throw Exception if the format cannot be set
 			 */
-			void setConfiguration(Configuration c);
+			void setConfiguration(const Configuration &c);
 
 
 			/**

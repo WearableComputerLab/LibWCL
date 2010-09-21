@@ -197,7 +197,7 @@ void UVCCamera::loadCapabilities()
     }
 }
 
-void UVCCamera::setConfiguration(Configuration c)
+void UVCCamera::setConfiguration(const Configuration &c)
 {
 	v4l2_format newf;
 	newf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;

@@ -73,9 +73,9 @@ void VirtualCamera::printDetails(bool state)
     }
 }
 
-void VirtualCamera::setConfiguration(Configuration c)
+void VirtualCamera::setConfiguration(const Configuration &c)
 {
-	if(c.format = Camera::RGB8)
+	if(c.format == Camera::RGB8)
 		Camera::setConfiguration(c);
 	else
 		cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;

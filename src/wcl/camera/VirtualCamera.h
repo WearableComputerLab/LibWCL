@@ -48,7 +48,7 @@ namespace wcl
 
 		    // Overrides of Camera
 		    virtual void printDetails(bool);
-		    virtual void setConfiguration(Configuration c);
+		    virtual void setConfiguration(const Configuration &c);
 		    virtual void setExposureMode(const ExposureMode t);
 		    virtual void setControlValue(const Control control, const int value);
 		    virtual void update();

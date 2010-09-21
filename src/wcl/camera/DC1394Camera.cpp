@@ -66,7 +66,7 @@ namespace wcl {
 		dc1394_free(this->d);
 	}
 
-	void DC1394Camera::setConfiguration(Configuration &c)
+	void DC1394Camera::setConfiguration(const Configuration &c)
 	{
 		dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
 
