@@ -80,8 +80,8 @@ private:
 };
 
 // Global Operators
-Vector operator *(const T &, const Vector & );
-Vector operator *(const Matrix &, const Vector & );
+Vector WCL_API operator *(const T &, const Vector & );
+Vector WCL_API operator *(const Matrix &, const Vector & );
 
 }; //namespace wcl
 
