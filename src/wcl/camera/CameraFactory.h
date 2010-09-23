@@ -28,9 +28,8 @@
 #define WCL_CAMERA_CAMERAFACTORY_H
 
 #include <vector>
+#include <wcl/api.h>
 #include <wcl/camera/Camera.h>
-
-//#warning CameraFactory: Note the *CameraFactoryAPI/Implementation is currently Experimental -benjsc 20100212
 
 namespace wcl
 {
@@ -40,7 +39,7 @@ namespace wcl
 	 * Each of these methods return NULL if there is no camera matching the
 	 * requirements of the method call
 	 */
-	class CameraFactory
+	class WCL_API CameraFactory
 	{
 		public:
 
@@ -70,6 +69,13 @@ namespace wcl
 			 * Find all cameras matching the specified critieria
 			 */
 			static std::vector<Camera *> findCameras(Camera::Configuration partialConfig);
+
+			/**
+			 * Display information about all cameras in the system
+			 *
+			 * @param full If true display full details about each camera, else short info about the cameras
+			 */
+			static void printDetails(bool full);
 
 		private:
 			CameraFactory();

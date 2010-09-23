@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2005-2008 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,34 +24,18 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_MANUFACTURER_H
-#define WCL_MANUFACTURER_H
-
-#include <wcl/network/Network.h>
+#include "Parser.h"
 
 namespace wcl {
 
-/**
- * The Manufacturer class represents contains 
- * a list of MAC->Manufacturer names tuples.
- * The class provides specific details to deal with tuples
- */
-class Manufacturer
-{
-public:
+const char *ParserException::INVALID_SYNTAX= "Invalid Syntax in File";
+const char *ParserException::IOERROR = "Input/Output file reading file";
 
-	static const char *getManufacturer( const EthernetAddress & );
+ParserException::ParserException(const char *ireason) throw ():
+    Exception(ireason)
+{}
 
-private:
-	Manufacturer();
-
-	char ****machash;
-
-	static Manufacturer *instance;
-	static char *manufacturerlist[];
-
-};
+ParserException::~ParserException() throw()
+{}
 
 }; //namespace wcl
-
-#endif

@@ -107,6 +107,10 @@ AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitp
 #
 AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-parsers], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
 
+# Enable Examples
+#
+AC_ARG_ENABLE(examples, AC_HELP_STRING([--enable-examples], [Enable Relevant Examples for select options]), enable_examples="yes" , enable_examples="no")
+
 # 
 #  Enable All Options
 # 	This simply enables each option
@@ -123,6 +127,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_camera_virtual="yes";
 	     enable_tracking_artoolkitplus="yes";
 	     enable_video="yes";
+	     enable_examples="yes";
 	     )
 
 #
@@ -164,25 +169,6 @@ if test "x$enable_camera_uvc" = "xyes" || \
    test "x$enable_camera_virtual" = "xyes"; then
 	enable_camera="yes";
 fi
-
-
-#
-# Automake Substitution Variables
-#
-
-AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
-AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
-AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
-AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
-AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
-AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
-AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
-AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
-AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
-AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
 
 
 #
@@ -296,6 +282,39 @@ if test "x$enable_x11" = "xyes"; then
 fi
 
 
+
+# 
+# If examples are enabled we need to check for other options
+#
+EXAMPLE_LIBS=
+EXAMPLE_INCLUDES=
+
+if test "x$enable_examples" = "xyes" ; then
+	if test "x$enable_tracker_artoolkitplus" = "xyes" ||
+	   test "x$enable_video" = "xyes" ||
+	   test "x$enable_camera" = "xyes"; then
+	        PKG_CHECK_MODULES(GL,gl glu);
+		EXAMPLE_LIBS="$GL_LIBS"
+		EXAMPLE_INCLUDES="$GL_CFLAGS"
+
+		# These also need glut which isn't pkg-config supported
+		# XXX Really need a test for glut -benjsc 20100802
+		EXAMPLE_LIBS="$EXAMPLE_LIBS -lglut"
+
+		# Many camera examples require the virtual camera so we enable that here as well
+		if test "x$enable_camera" = "xyes"; then
+			enable_camera_virtual="yes"
+		fi
+	fi
+	if test "x$enable_gestures" = "xyes" ; then
+		PKG_CHECK_MODULES(QT, QtGui);
+		EXAMPLE_LIBS="$EXAMPLE_LIBS $QT_LIBS"
+		EXAMPLE_INCLUDES="$EXAMPLE_INCLUDES $QT_CFLAGS"
+
+	fi
+fi
+
+
 AC_DEFINE([TOL], [0.00001f], [tolerance for comparing floating point numbers])
 if test "x$enable_camera_uvc" = "xyes" ; then
 AC_DEFINE(ENABLE_CAMERA_UVC, 1, [Enable UVC Camera Camera Support])
@@ -342,6 +361,7 @@ echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
 echo "Video Encoder/Decoder Support : $enable_video"
+echo "Examples Compiled             : $enable_examples"
 echo "Maths Support                 : Enabled (default)"
 echo "-------------------------------------------------"
 
@@ -352,6 +372,27 @@ echo "-------------------------------------------------"
 AC_SUBST(PKGCONFIG_OTHERLIBS)
 AC_SUBST(PKGCONFIG_OTHERINCLUDES)
 AC_SUBST(PKGCONFIG_LIBDIR)
+AC_SUBST(EXAMPLE_LIBS)
+AC_SUBST(EXAMPLE_INCLUDES)
+
+#
+# Automake Substitution Variables
+#
+
+AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
+AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
+AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
+AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
+AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
+AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
+AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 
 #
 # Files to create
@@ -360,6 +401,17 @@ AC_SUBST(PKGCONFIG_LIBDIR)
 AC_CONFIG_FILES([Makefile
 		 src/Makefile
                  src/wcl/Makefile
+		 examples/Makefile
+		 examples/artoolkitplus/Makefile
+	       	 examples/camera/Makefile
+	         examples/gestures/Makefile
+		 examples/network/Makefile
+		 examples/parallel/Makefile
+	       	 examples/parsers/Makefile
+	         examples/polhemus/Makefile
+		 examples/serial/Makefile
+	       	 examples/vicon/Makefile
+	         examples/video/Makefile
 		 libwcl.pc
 		])
 

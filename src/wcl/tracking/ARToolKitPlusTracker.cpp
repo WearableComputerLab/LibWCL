@@ -37,7 +37,7 @@ namespace wcl {
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
 					    const unsigned iscreenWidth, const unsigned iscreenHeight,
 					    const float inearplane, const float ifarplane):
-    markerWidth(imarkerWidth), scale(CM), cameraFormat(Camera::RGB8),
+    cameraBuffer(NULL), markerWidth(imarkerWidth), scale(CM), cameraFormat(Camera::RGB8),
     nearplane(inearplane), farplane(ifarplane),inited(false)
 {
 
@@ -86,6 +86,9 @@ ARToolKitPlusTracker::~ARToolKitPlusTracker()
     // would cause a SIGSEGV if we try it
     delete this->tracker;
 
+	if (cameraBuffer != NULL)
+		delete [] cameraBuffer;
+	
     for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
 	it != this->objects.end();
 	++it ){
@@ -94,7 +97,7 @@ ARToolKitPlusTracker::~ARToolKitPlusTracker()
     }
 }
 
-void ARToolKitPlusTracker::setCamera(Camera *camera)
+void ARToolKitPlusTracker::setCamera(const Camera *camera)
 {
     assert( camera != NULL && "You Can't specifiy NULL for the camera");
     //assert( camera->hasDistortionMatrix() != false && "You must have a valid distortion matrix for the camera before ARToolKitPlusTracker will work");
@@ -124,6 +127,12 @@ void ARToolKitPlusTracker::setCamera(Camera *camera)
             format=ARToolKitPlus::PIXEL_FORMAT_RGB;
 	    break;
     }
+
+	if (cameraBuffer != NULL)
+	{
+		delete cameraBuffer;
+	}
+	cameraBuffer = new unsigned char[camera->getFormatBufferSize(cameraFormat)];
 
     // Create a new ARToolkit Camera to
     // init the tracker, note ARToolKitPlus will remove
@@ -165,17 +174,20 @@ void ARToolKitPlusTracker::update()
 
     assert( this->inited && "ARToolKitPlusTracker:update() : The tracker has not yet been inited, please call setCamera First" );
 
-    this->bestMarker=this->tracker->calc(this->camera->getFrame(this->cameraFormat), -1, true, &markers, &this->markersFound);
+	this->camera->getCurrentFrame(cameraBuffer, this->cameraFormat);
+    this->bestMarker=this->tracker->calc(cameraBuffer, -1, true, &markers, &this->markersFound);
     this->confidence = (float)tracker->getConfidence();
 
 
     // set all markers to not visable
-    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
-	it != this->objects.end();
-	++it ){
-	ARToolKitPlusTrackedObject *marker=*it;
-	marker->setVisible(false);
-    }
+	for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
+			it != this->objects.end();
+			++it ){
+		ARToolKitPlusTrackedObject *marker=*it;
+		marker->setVisible(false);
+		// invisible markers are not very confident markers.
+		marker->setConfidence(0.0f);
+	}
 
     // Update the found markers
     while( i < this->markersFound ){
@@ -219,6 +231,10 @@ void ARToolKitPlusTracker::update()
 			    break;
 		}
 
+		// if we've never seen the marker before, add it to the seen objects.
+		if (!marker->hasBeenSeen())
+			seenObjects.push_back(marker);
+		
 		marker->setTransform(m);
 		marker->setVisible(true);
 		marker->setConfidence(markers[i].cf);
@@ -244,14 +260,7 @@ TrackedObject* ARToolKitPlusTracker::getObject(const std::string name)
 
 std::vector<TrackedObject *> ARToolKitPlusTracker::getAllObjects()
 {
-    std::vector<TrackedObject *> v;
-    for(std::vector<ARToolKitPlusTrackedObject *>::iterator it =
-	this->objects.begin();
-	it!=this->objects.end();
-	++it)
-	if( (*it)->isVisible())
-	    v.push_back(*it);
-    return v;
+    return seenObjects;
 }
 
 void ARToolKitPlusTracker::setUnits(Units u)

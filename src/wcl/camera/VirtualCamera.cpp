@@ -36,7 +36,7 @@ using namespace std;
 namespace wcl
 {
 
-CameraBuffer VirtualCamera::defaultBuffer;
+Camera::CameraBuffer VirtualCamera::defaultBuffer;
 
 VirtualCamera::VirtualCamera()
 {
@@ -57,22 +57,25 @@ VirtualCamera::VirtualCamera()
 VirtualCamera::~VirtualCamera()
 {}
 
-void VirtualCamera::printDetails()
+void VirtualCamera::printDetails(bool state)
 {
-    cout << "WCL Virtual Camera" << endl;
-    if ( this->buffers ){
-	cout << "Using Provided Frames" << endl;
-	cout << "| Current Frame: " << inUseBuffer << endl;
-	cout << "| Total Frames: " << this->numBuffers << endl;
-    } else {
+    Camera::printDetails(state);
 
-	cout << "Using Default Frame" << endl;
+    if ( state ){
+	if ( this->buffers ){
+	    cout << "Using Provided Frames" << endl;
+	    cout << "| Current Frame: " << inUseBuffer << endl;
+	    cout << "| Total Frames: " << this->numBuffers << endl;
+	} else {
+
+	    cout << "Using Default Frame" << endl;
+	}
     }
 }
 
-void VirtualCamera::setConfiguration(Configuration c)
+void VirtualCamera::setConfiguration(const Configuration &c)
 {
-	if(c.format = Camera::RGB8)
+	if(c.format == Camera::RGB8)
 		Camera::setConfiguration(c);
 	else
 		cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
@@ -90,18 +93,19 @@ void VirtualCamera::setControlValue(const Control control, const int value)
 	 << value << "(Note: No change to the image will occur)" << endl;
 }
 
-const unsigned char* VirtualCamera::getFrame()
+void VirtualCamera::update()
 {
-    if( this->buffers ){
-	const unsigned char *frame =
-	   (const unsigned char *) this->buffers[this->inUseBuffer].start;
-	this->inUseBuffer++;
-	if( this->inUseBuffer > this->numBuffers){
-	    this->inUseBuffer = 0;
+	if( this->buffers ){
+		unsigned char *frame =
+			(unsigned char *) this->buffers[this->inUseBuffer].start;
+		this->inUseBuffer++;
+		if( this->inUseBuffer > this->numBuffers){
+			this->inUseBuffer = 0;
+		}
+		currentFrame = frame;
+		return;
 	}
-	return frame;
-    }
-    return (const unsigned char *)defaultBuffer.start;
+	currentFrame = (unsigned char*) defaultBuffer.start;
 }
 
 void VirtualCamera::startup()

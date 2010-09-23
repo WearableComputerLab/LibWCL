@@ -9,7 +9,7 @@
 #
 INCLUDES= -I@top_srcdir@/src/
 libwcl_la_includedir=$(includedir)/wcl
-AM_CPPFLAGS=
+AM_CPPFLAGS=-DWCL_DLL -DWCL_DLL_EXPORTS -fvisibility=hidden
 AM_LDFLAGS=
 AM_YFLAGS=-d
 
@@ -21,15 +21,15 @@ BUILT_SOURCES=
 
 ########################################################
 #
-# Common Headers
+# Common FILES
 # 
-common_headers=\
-	      debug.h\
-		  CircularQueue\
-		  Singleton
+common_headers=debug.h\
+	      CircularQueue\
+	      Singleton\
+	      Exception.h\
+	      api.h
 
-parser_headers=
-parser_sources=
+common_sources=Exception.cpp
     
 
 ########################################################
@@ -42,6 +42,7 @@ network_sources=
 if ENABLE_NETWORK
 network_headers+=\
               network/Socket.h\
+              network/SocketException.h\
               network/TCPServer.h\
               network/TCPSocket.h \
               network/UDPPacket.h\
@@ -50,6 +51,7 @@ network_headers+=\
 
 network_sources+=\
               network/Socket.cpp\
+              network/SocketException.cpp\
               network/TCPServer.cpp\
               network/TCPSocket.cpp\
               network/UDPServer.cpp\
@@ -106,14 +108,19 @@ endif
 #
 # Parsers
 #
+parser_headers=
+parser_sources=
+
 if ENABLE_PARSERS
 parser_sources+=	parser/OBJFormatGrammar.yy \
 			parser/OBJFormatScanner.ll \
 			parser/OBJParser.cpp \
-			parser/Parser.cpp
+			parser/Parser.cpp \
+			parser/ParserException.cpp
 
 parser_headers+=	parser/OBJParser.h \
-			parser/Parser.h
+			parser/Parser.h \
+			parser/ParserException.h
 
 BUILT_SOURCES+=		OBJFormatGrammar.cc \
 		       	OBJFormatGrammar.h \
@@ -189,9 +196,11 @@ camera_sources=
 
 if ENABLE_CAMERA
 camera_headers+=camera/Camera.h\
+		camera/CameraException.h\
 	       camera/CameraFactory.h
 
 camera_sources+=camera/Camera.cpp\
+		camera/CameraException.cpp\
 	       camera/CameraFactory.cpp
 endif
 
@@ -302,7 +311,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(video_headers)
 
 
-libwcl_la_SOURCES=$(network_sources)\
+libwcl_la_SOURCES=$(common_sources)\
+                 $(network_sources)\
 		 $(camera_sources)\
 		 $(camera_1394_sources)\
 		 $(camera_uvc_sources)\

@@ -29,6 +29,7 @@
 
 #include <string>
 
+#include <wcl/api.h>
 #include <wcl/network/TCPSocket.h>
 #include <wcl/maths/Matrix.h>
 #include <wcl/maths/SMatrix.h>
@@ -41,7 +42,7 @@ namespace wcl
 	/**
 	 * Represents an object that can be tracked by the Vicon system.
 	 */
-	class ViconTrackedObject : public TrackedObject
+	class WCL_API ViconTrackedObject : public TrackedObject
 	{
 		public:
 			/**
@@ -69,13 +70,14 @@ namespace wcl
 			/**
 			 * Returns a string representation of the object.
 			 */
-			virtual std::string toString();
+			virtual std::string toString() const;
 
-			virtual SMatrix getTransform();
+			virtual SMatrix getTransform() const;
 
-			virtual Vector getTranslation();
+			virtual Vector getTranslation() const;
 			
-			virtual SMatrix getRotation();
+			virtual Quaternion getOrientation() const;
+			SMatrix getRotationMatrix() const;
 
 			void setUnits(Tracker::Units u);
 

@@ -1,17 +1,6 @@
-# 
-# Indicate this is not a GNU project and that 
-# missing files should be automatically created
-AUTOMAKE_OPTIONS=foreign
+AM_LDFLAGS=@top_srcdir@/src/wcl/libwcl.la @PKGCONFIG_OTHERLIBS@ @EXAMPLE_LIBS@
+AM_CXXFLAGS=@PKGCONFIG_OTHERINCLUDES@ -I@top_srcdir@/src/ @EXAMPLE_INCLUDES@
 
-cameratestdir=../
-cameratest_PROGRAMS = cameratest 
-cameratest_LDADD = @PKGCONFIG_OTHERLIBS@
-
-# Headers that have to be compiled
-cameratest_HEADERS = 
-
-
-# Sources that have to be compiled
-cameratest_SOURCES = \
-					main.cpp
-
+noinst_PROGRAMS = cameratest  snapshot
+cameratest_SOURCES = main.cpp
+snapshot_SOURCES= snapshot.cpp

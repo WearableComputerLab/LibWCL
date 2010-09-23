@@ -27,13 +27,14 @@
 #ifndef WCL_CAMERA_DC1394CAMERA_H
 #define WCL_CAMERA_DC1394CAMERA_H
 
-#include <wcl/camera/Camera.h>
 #include <dc1394/control.h>
 #include <dc1394/conversions.h>
+#include <wcl/api.h>
+#include <wcl/camera/Camera.h>
 
 namespace wcl {
 
-class DC1394Camera: public Camera
+class WCL_API DC1394Camera: public Camera
 {
 public:
 	// default constructor
@@ -45,15 +46,12 @@ public:
 	void startup();
 
 	// method to get a frame from the camera
-	const unsigned char* getFrame();
+	virtual void update();
 
 	// method to shut down the camera.
 	void shutdown();
 
-	void printDetails();
-
-	void setFormat( const ImageFormat f, const unsigned width, const
-			unsigned height );
+	void printDetails(bool);
 
 
 	// method to set exposure
@@ -63,6 +61,10 @@ public:
 	 * Sets the control value for the camera
 	 */
 	void setControlValue(const Control control, const int value);
+	void setConfiguration(const Configuration &c);
+
+protected:
+	const char *getTypeIdentifier() const { return "1394"; }
 
 private:
 
@@ -70,7 +72,7 @@ private:
 	void setBrightness( const int );
 	void setGain( const int  );
 	void setIris( const int );
-	void getCurrentConfig();
+	void loadCapabilities();
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
 	//XXX Or the api updated! - benjsc 20100211
@@ -93,7 +95,6 @@ private:
 	// a frame returned from the dc1394 capture device
 	dc1394_t *d;
 	dc1394video_frame_t* frame;
-	dc1394video_mode_t videoMode;
 	dc1394framerate_t framerate;
 	uint64_t guid;
 

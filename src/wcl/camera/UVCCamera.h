@@ -28,9 +28,11 @@
 #define WCL_CAMERA_UVCCAMERA_H
 
 #include <stdint.h>
-#include <wcl/camera/Camera.h>
-#include <linux/videodev2.h>
 #include <string>
+#include <linux/videodev2.h>
+#include <wcl/api.h>
+#include <wcl/Exception.h>
+#include <wcl/camera/Camera.h>
 
 #define AUTO_EXPOSURE_CTRL 10094849
 
@@ -44,7 +46,7 @@ namespace wcl
 	 * This might actually work for any camera that has a Video4Linux2
 	 * driver, but untested.
 	 */
-	class UVCCamera: public Camera
+	class WCL_API UVCCamera: public Camera
 	{
 
 		public:
@@ -81,6 +83,11 @@ namespace wcl
 			 */
 			UVCCamera(string filename = "/dev/video0");
 
+			/**
+			 * Close down the camera
+			 */
+			virtual ~UVCCamera();
+
 
 			/**
 			 * Prints useful information about the camera to the console.
@@ -88,20 +95,17 @@ namespace wcl
 			 *  o Supported image modes
 			 *  o Supported resolutions and framerates
 			 *  o Available controls
-			 *
 			 */
-			void printDetails();
+			void printDetails(bool);
 
 
 			/**
-			 * Sets the image format of the camera.
+			 * Sets the configuration for the camera
 			 *
-			 * @param f The data format for the images.
-			 * @param width The width of the image in pixels
-			 * @param height The height of the image in pixels
+			 * @param c The new configuration for the camera
 			 * @throw Exception if the format cannot be set
 			 */
-			void setConfiguration(Configuration c);
+			void setConfiguration(const Configuration &c);
 
 
 			/**
@@ -147,7 +151,7 @@ namespace wcl
 			 * @return a char array containing the image buffer.
 			 * @throw exception if a frame cannot be grabbed or the setup fails
 			 */
-			const unsigned char* getFrame();
+			virtual void update();
 
 
 			/**
@@ -160,6 +164,10 @@ namespace wcl
 			 * Closes the connection to the camera and deletes any mmap'd buffers.
 			 */
 			void shutdown();
+
+		protected:
+			const char *getTypeIdentifier() const { return "USB"; }
+
 
 		private:
 			/**
@@ -207,6 +215,7 @@ namespace wcl
 			uint32_t mapControlToV4L2( const Control ) const ;
 
 	};
+
 
 };
 

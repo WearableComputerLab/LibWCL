@@ -15,6 +15,8 @@
 
 #include <QPainter>
 
+using namespace wcl;
+
 
 Canvas::Canvas()
 {
@@ -52,7 +54,7 @@ void Canvas::mouseReleaseEvent(QMouseEvent *event)
 		//recognise gesture
 		std::string gesture = gEngine.recognise(points);
 		emit gestureRecognised(QString(gesture.c_str()));
-		qDebug(gesture.c_str());
+		qDebug("%s",gesture.c_str());
 	}
 	//clear our line list and repaint
 	lineList.clear();
@@ -84,7 +86,7 @@ void Canvas::paintEvent(QPaintEvent *event)
 		for (;it<lineList.end();it++)
 		{
 			Point p2 = *it;
-			p.drawLine(first.x, first.y, p2.x, p2.y);
+			p.drawLine(first[0], first[1], p2[0], p2[1]);
 			first = p2;
 		}
 	}

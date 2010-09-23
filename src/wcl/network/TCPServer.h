@@ -24,9 +24,10 @@
  * SUCH DAMAGE.
  */
 
-#ifndef WCL_TCPSERVERSOCKET_H
-#define WCL_TCPSERVERSOCKET_H
+#ifndef WCL_NETWORK_TCPSERVERSOCKET_H
+#define WCL_NETWORK_TCPSERVERSOCKET_H
 
+#include <wcl/api.h>
 #include <wcl/network/TCPSocket.h>
 
 namespace wcl {
@@ -39,7 +40,7 @@ namespace wcl {
  * Indicate if you want the server to be blocking or non blocking then
  * Call accept each time you wish to process a new connection.
  */
-class TCPServer: private TCPSocket
+class WCL_API TCPServer: private TCPSocket
 {
 	public:
 		TCPServer( const unsigned port, const unsigned queuelength = DEFAULT_SERVER_QUEUE_LENGTH );

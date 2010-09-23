@@ -26,11 +26,12 @@
 #ifndef SMATRIX_H
 #define SMATRIX_H
 
+#include <wcl/api.h>
 #include "Matrix.h"
 namespace wcl
 {
 
-class SMatrix : public Matrix
+class WCL_API SMatrix : public Matrix
 {
 public:
     SMatrix( unsigned );
@@ -66,12 +67,12 @@ private:
 };
 
 // Global operators
-SMatrix operator * ( const T &, const SMatrix & );
+SMatrix WCL_API operator * ( const T &, const SMatrix & );
 
 // Helper functions
-SMatrix transpose ( const SMatrix & );
-SMatrix inv       ( const SMatrix & );
-T       det       ( const SMatrix & );
+SMatrix WCL_API transpose ( const SMatrix & );
+SMatrix WCL_API inv       ( const SMatrix & );
+T       WCL_API det       ( const SMatrix & );
 
 }; //end wcl
 #endif

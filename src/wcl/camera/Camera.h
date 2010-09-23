@@ -28,27 +28,18 @@
 #ifndef WCL_CAMERA_CAMERA_H
 #define WCL_CAMERA_CAMERA_H
 
-#include <wcl/maths/SMatrix.h>
 #include <string>
 #include <vector>
+#include <wcl/api.h>
+#include <wcl/maths/SMatrix.h>
 
 namespace wcl
 {
 
-	//struct for information about the image buffers we create
-	struct CameraBuffer {
-		void* start;
-		size_t length;
-
-		CameraBuffer();
-	};
-
-
-
 	/**
 	 * An abstract base class representing a camera
 	 */
-	class Camera
+	class WCL_API Camera
 	{
 
 		public:
@@ -139,7 +130,7 @@ namespace wcl
 
 			struct Configuration
 			{
-				unsigned fps;
+				float fps;
 				unsigned width;
 				unsigned height;
 				ImageFormat format;
@@ -205,8 +196,9 @@ namespace wcl
 			 *  o Supported resolutions and framerates
 			 *  o Available controls
 			 *
+			 * @param full If true display full details about the camera else id type and current mode
 			 */
-			virtual void printDetails() = 0;
+			virtual void printDetails(bool full = true);
 
 			/**
 			 * Obtain the unique identify for this camera
@@ -221,7 +213,7 @@ namespace wcl
 			 * @param height The height of the image in pixels
 			 * @throws Exception if the format can't be set
 			 */
-			virtual void setConfiguration(Configuration c);
+			virtual void setConfiguration(const Configuration &c) = 0;
 			Configuration getActiveConfiguration() const { return this->activeConfiguration; }
 
 			unsigned getFormatBytesPerPixel() const;
@@ -254,21 +246,55 @@ namespace wcl
 			virtual void setControlValue(const Control control, const int value) = 0;
 
 			/**
+			 * Gets the next frame from the camera, stores it internally.
+			 */
+			virtual void update() = 0;
+
+			/**
 			 * Returns an image buffer for use in a program.
+			 * Blocking function, calls update internally to get 
+			 * the next frame from the hardware.
 			 *
 			 * @return an unsigned char array containing the image buffer.
 			 */
-			virtual const unsigned char* getFrame() = 0;
+			virtual const unsigned char* getFrame();
 
 			/**
 			 * Return an image buffer in the specified format. The
 			 * camera format is unchanged, and software is used
 			 * to convert the format to the requested format
 			 *
+			 * This calls update() to get the next frame from the hardware.
+			 *
 			 * @param f The format the frame should be returned in
 			 * @return an unsigned char array in the requested format (Note the datasize of this frame may be larger)
 			 */
 			virtual const unsigned char *getFrame(const ImageFormat f);
+
+			/**
+			 * Gets the current frame from the camera.
+			 * This method does not call update(), so successive
+			 * calls will return the same image.
+			 */
+			virtual const unsigned char* getCurrentFrame() const;
+
+			/**
+			 * Gets the current image from the camera in the specified format.
+			 *
+			 * This takes a buffer as an argument, and places a copy of the 
+			 * image into that buffer, in the required format.
+			 *
+			 * This is the only way you can get images in different formats 
+			 * with a const camera. This is because successive calls to getCurrentFrame
+			 * would modify the internal conversion buffer. This is bad.
+			 *
+			 * @param buffer The buffer to place the image into. This should be the correct
+			 *               size for the ImageFormat requested. 
+			 *
+			 * @param format The desired image format.
+			 */
+			virtual void getCurrentFrame(unsigned char* buffer, const ImageFormat& format) const;
+
 
 			/**
 			 * Start the camera capturing
@@ -308,7 +334,17 @@ namespace wcl
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
 					const unsigned int width, const unsigned int height );
+
+			static void convertImageRGB8toMONO8(const unsigned char* rgb, unsigned char* mono, const unsigned width, const unsigned height);
 		protected:
+			//struct for information about the image buffers we create
+			struct CameraBuffer {
+			    void* start;
+			    size_t length;
+
+			    CameraBuffer();
+			};
+
 
 			Camera();
 
@@ -345,6 +381,9 @@ namespace wcl
 
 			std::vector<Configuration> supportedConfigurations;
 
+			virtual const char *getTypeIdentifier() const = 0;
+
+			unsigned char* currentFrame;
 		private:
 			CameraBuffer *conversionBuffer;
 
@@ -353,6 +392,7 @@ namespace wcl
 			Priv *internal;
 
 			void setupConversionBuffer( const size_t buffersize );
+			const char *imageFormatToString( const ImageFormat );
 	};
 
 };

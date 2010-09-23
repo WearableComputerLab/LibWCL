@@ -31,6 +31,7 @@
 #include <config.h>
 
 #include "PolygonObject.h"
+#include "Exception.h"
 
 using namespace std;
 
@@ -152,26 +153,17 @@ namespace wcl
 		}
 	}
 
-	Face* PolygonObject::addFace(Vertex* v1, Vertex* v2, Vertex* v3)
+	Face* PolygonObject::addFace(Vertex* v1, Vertex* v2, Vertex* v3) throw (Exception)
 	{
-		if (!((*v1) == (*v2) || (*v1) == (*v3) || (*v2) == (*v3)))
-		{
-			Face* f = new Face(v1, v2, v3);
-			if (f->getArea() > TOL)
-			{
-				//cerr << "Actually adding the face" << endl;
-				faceList.push_back(f);
-				//cerr << "the size is " << faceList.size() << endl;
-				return f;
-			}
-			else
-			{
-				//cerr << "area is < TOL" << endl;
-				delete f;
-			}
-		}
-		//throw std::string("cheating");
-		return NULL;
+		if ((*v1) == (*v2) || (*v1) == (*v3) || (*v2) == (*v3))
+		    throw Exception("Invalid Vertexes given, 2 Vertexes are the same");
+
+		Face* f = new Face(v1, v2, v3);
+		if (f->getArea() <= TOL)
+		    throw Exception("Face Area is lower than tolerance");
+
+		faceList.push_back(f);
+		return f;
 	}
 
 

@@ -36,10 +36,12 @@
 #include <string.h>
 #include <stdlib.h>
 #include "UVCCamera.h"
+#include "CameraException.h"
 
 using namespace wcl;
 
-UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
+UVCCamera::UVCCamera(string filename) :
+    isReadyForCapture(false)
 {
 	// Camera to open
 	cam = open(filename.c_str(), O_RDWR);
@@ -47,12 +49,25 @@ UVCCamera::UVCCamera(string filename) : isReadyForCapture(false)
 	// Bail if we can't open the device...
 	if (cam == -1)
 	{
-		throw string(strerror(errno));
+	    switch(errno)
+	    {
+		case EACCES: throw CameraException(CameraException::EACCESS);
+		case ENOENT: throw CameraException(CameraException::NOTFOUND);
+		default: throw CameraException(CameraException::UNKNOWN);
+	    }
 	}
 
 	loadCapabilities();
 
 	setConfiguration(supportedConfigurations[0]);
+
+	// For now the id of a UVCCamera is it's device node
+	this->id = filename;
+}
+
+UVCCamera::~UVCCamera()
+{
+    this->shutdown();
 }
 
 
@@ -68,15 +83,9 @@ void UVCCamera::loadCapabilities()
 	 */
 	if (info.capabilities & V4L2_CAP_VIDEO_CAPTURE != 1)
 	{
-		throw string("Device is not a camera!");
+		throw CameraException(CameraException::NOCAPTURE);
 	}
 	
-	// Whether the camera supports access to images using read()
-	if (info.capabilities & V4L2_CAP_READWRITE)
-	{
-		cout << "Device supports read() and write()" << endl;
-	}
-
 	// mmap streaming check
 	if (info.capabilities & V4L2_CAP_STREAMING)
 		mode = MMAP;
@@ -115,8 +124,27 @@ void UVCCamera::loadCapabilities()
 			case V4L2_PIX_FMT_Y16:
 				f=MONO16;
 				break;
+			case V4L2_PIX_FMT_JPEG:
+			case V4L2_PIX_FMT_YVYU:
+			case V4L2_PIX_FMT_UYVY:
+			case V4L2_PIX_FMT_YYUV:
+			case V4L2_PIX_FMT_YUV420:
+			case V4L2_PIX_FMT_YVU420:
+			case V4L2_PIX_FMT_NV12:
+			case V4L2_PIX_FMT_NV21:
+			case V4L2_PIX_FMT_NV16:
+			case V4L2_PIX_FMT_NV61:
+			case V4L2_PIX_FMT_SPCA501:
+			case V4L2_PIX_FMT_SPCA505:
+			case V4L2_PIX_FMT_SPCA508:
+			case V4L2_PIX_FMT_SGBRG8:
+			case V4L2_PIX_FMT_SGRBG8:
+			case V4L2_PIX_FMT_SBGGR8:
+			// Vendor Specific Extentions
+			case V4L2_PIX_FMT_PWC1:
+			case V4L2_PIX_FMT_PWC2:
 			default:
-				cerr << "oh oh, they support a format we don't know about..." << endl;
+				cerr << "UVCCamera: Ignoring unsupported video format ("  << format.pixelformat << ")" << endl;
 				break;
 		}
 
@@ -147,15 +175,29 @@ void UVCCamera::loadCapabilities()
 				this->supportedConfigurations.push_back(c);
 				frame.index++;
 			}
-			cout << endl;
 			size.index++;
 		}
 
 		format.index++;
 	}
+
+    // At this point we confirm that there in indeed supported configurations.
+    // There is a posibility there is a camera that has no configurations hence
+    if( this->supportedConfigurations.size() == 0 ){
+	// Add a nop configuration
+	// Note this really should never happen hence the values here
+	// should be safe - benjsc 20100802
+	Configuration c;
+	c.format = (ImageFormat)65535; // No value
+	c.fps=1;
+	c.width=1;
+	c.height=1;
+
+	this->supportedConfigurations.push_back(c);
+    }
 }
 
-void UVCCamera::setConfiguration(Configuration c)
+void UVCCamera::setConfiguration(const Configuration &c)
 {
 	v4l2_format newf;
 	newf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -192,7 +234,7 @@ void UVCCamera::setConfiguration(Configuration c)
 
 	if (-1 == ioctl(cam, VIDIOC_S_FMT, &newf))
 	{
-		throw string(strerror(errno));
+		throw CameraException(CameraException::INVALIDFORMAT);
 	}
 
 	bufferSize = newf.fmt.pix.sizeimage;
@@ -201,13 +243,11 @@ void UVCCamera::setConfiguration(Configuration c)
 }
 
 
-const unsigned char* UVCCamera::getFrame()
+void UVCCamera::update()
 {
 	if (!isReadyForCapture)
 	{
-		cout << "Preparing" << endl;
 		prepareForCapture();
-		cout << "Ready" << endl;
 	}
 
 	//grab frame...
@@ -217,13 +257,13 @@ const unsigned char* UVCCamera::getFrame()
 
 	if (-1 == ioctl(cam, VIDIOC_DQBUF, &buf))
 	{
-		throw string("can't dequeue buffer, bailing");
+		throw CameraException(CameraException::BUFFERERROR);
 	}
 
 	// requeue buffer
 	ioctl(cam, VIDIOC_QBUF, &buf);
 
-	return (const unsigned char*) buffers[buf.index].start;
+	currentFrame = (unsigned char*) buffers[buf.index].start;
 }
 
 void UVCCamera::startup()
@@ -241,7 +281,7 @@ void UVCCamera::prepareForCapture()
 
 	if (-1 == ioctl(cam, VIDIOC_REQBUFS, &reqbuf))
 	{
-		throw string("can't allocate buffers. bailing");
+		throw CameraException(CameraException::BUFFERERROR);
 	}
 
 	// create an array for our buffers
@@ -257,7 +297,7 @@ void UVCCamera::prepareForCapture()
 
 		if (-1 == ioctl(cam, VIDIOC_QUERYBUF, &buffer))
 		{
-			throw string("Fail");
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 		buffers[i].length = buffer.length;
 		buffers[i].start = mmap(NULL, buffer.length,
@@ -267,22 +307,21 @@ void UVCCamera::prepareForCapture()
 
 		if (MAP_FAILED == buffers[i].start)
 		{
-			cout << "mmap failed" << endl;
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 
 		//enqueue the buffer for use by the driver
 		if (-1 == ioctl(cam, VIDIOC_QBUF, &buffer))
 		{
-			throw string("enqueueing buffer failed. bailing");
+		    throw CameraException(CameraException::BUFFERERROR);
 		}
 	}
-	cout << "mmap'd all the buffers" << endl;
 
 	int type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	// turn on streaming.
 	if (-1 == ioctl(cam, VIDIOC_STREAMON, &type))
 	{
-		throw string(strerror(errno));
+	    throw CameraException(CameraException::BUFFERERROR);
 	}
 
 
@@ -300,59 +339,19 @@ void UVCCamera::shutdown()
 	close(cam);
 }
 
-void UVCCamera::printDetails()
+void UVCCamera::printDetails(bool state)
 {
+	Camera::printDetails(state);
 
-	v4l2_capability info;
-	ioctl(cam, VIDIOC_QUERYCAP, &info);
+	if ( state ){
+	    v4l2_capability info;
+	    ioctl(cam, VIDIOC_QUERYCAP, &info);
 
-	cout << "Camera: " << info.card << endl;
-	cout << "Bus: " << info.bus_info << endl;
+	    cout << "Camera: " << info.card << endl;
+	    cout << "Bus: " << info.bus_info << endl;
 
-	//query image formats...
-	v4l2_fmtdesc format;
-	format.index = 0;
-	format.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-
-	cout << "Supported Image Formats " << endl;
-
-	//enumerate image formats
-	while (0 == ioctl(cam, VIDIOC_ENUM_FMT, &format))
-	{
-		cout << "Format: " << format.description << endl;
-
-		v4l2_frmsizeenum size;
-		size.index = 0;
-		size.pixel_format = format.pixelformat;
-
-		//enumerate image sizes for the image format
-		while (0 == ioctl(cam, VIDIOC_ENUM_FRAMESIZES, &size))
-		{
-			int width = size.discrete.width;
-			int height = size.discrete.height;
-			cout << " " <<  width << "x" << height << " @ ";
-
-
-			//enumerate framerates at current format and resolution
-			v4l2_frmivalenum frame;
-			frame.index = 0;
-			frame.pixel_format = format.pixelformat;
-			frame.width = width;
-			frame.height = height;
-
-			while (0 == ioctl(cam, VIDIOC_ENUM_FRAMEINTERVALS, &frame))
-			{
-				cout << frame.discrete.denominator <<  ", ";
-				frame.index++;
-			}
-			cout << endl;
-			size.index++;
-		}
-
-		format.index++;
+	    loadControls();
 	}
-
-	loadControls();
 }
 
 void UVCCamera::setExposureMode(const ExposureMode t)
@@ -374,24 +373,8 @@ void UVCCamera::setExposureMode(const ExposureMode t)
 	//normally this a pointer to an array of controls, but we are only setting 1
 	box.controls = &control;
 
-	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box))
-	{
-		switch (errno)
-		{
-			case EINVAL:
-			cout << "id is invalid or ctrl_class is invalid or controls are in conflict" << endl;
-			break;
-			case ERANGE:
-			cout << "value is out of bounds" << endl;
-			break;
-			case EBUSY:
-			cout << "control temporarily unavailable" << endl;
-			break;
-			default:
-			cout << "What the hell I have no idea whats going on!" << endl;
-			break;
-		}
-		throw std::string("UVCCamera:setExposureMode");
+	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box)) {
+		throw CameraException(CameraException::EXPOSUREERROR);
 	}
 }
 
@@ -417,22 +400,7 @@ void UVCCamera::setControlValue(const Control controlName, const int value)
 
 	if (0 != ioctl(cam, VIDIOC_S_EXT_CTRLS, &box))
 	{
-		switch (errno)
-		{
-			case EINVAL:
-			cout << "id is invalid or ctrl_class is invalid or controls are in conflict" << endl;
-			break;
-			case ERANGE:
-			cout << "value is out of bounds" << endl;
-			break;
-			case EBUSY:
-			cout << "control temporarily unavailable" << endl;
-			break;
-			default:
-			cout << "What the hell I have no idea whats going on!" << endl;
-			break;
-		}
-		throw std::string("UVCCamera:setControlValue:Failed to set Control Value");
+		throw CameraException(CameraException::CONTROLERROR);
 	}
 
 }

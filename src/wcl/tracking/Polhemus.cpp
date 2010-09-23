@@ -61,12 +61,16 @@ namespace wcl
 
 		if (type == PATRIOT)
 		{
-			sensors = new PolhemusTrackedObject[2];
+			sensors.push_back(PolhemusTrackedObject("0"));
+			sensors.push_back(PolhemusTrackedObject("1"));
 			//getSensorCount();
 		}
 		else
 		{
-			sensors = new PolhemusTrackedObject[4];
+			sensors.push_back(PolhemusTrackedObject("0"));
+			sensors.push_back(PolhemusTrackedObject("1"));
+			sensors.push_back(PolhemusTrackedObject("2"));
+			sensors.push_back(PolhemusTrackedObject("3"));
 		}
 
 		//setContinuous(true);
@@ -78,7 +82,6 @@ namespace wcl
 			setContinuous(false);
 
 		connection.close();
-		delete[] sensors;
 	}
 
 	void Polhemus::clearInput()

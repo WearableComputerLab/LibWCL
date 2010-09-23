@@ -26,12 +26,15 @@
 
 #include <assert.h>
 #include <config.h>
+#include <iostream>
 #include "Camera.h"
+#include "CameraException.h"
 
 #if ENABLE_VIDEO
     #include <video/VideoDecoder.h>
 #endif
 
+using namespace std;
 
 namespace wcl
 {
@@ -42,7 +45,7 @@ namespace wcl
 #endif
 	};
 
-	CameraBuffer::CameraBuffer():
+	Camera::CameraBuffer::CameraBuffer():
 		start(0)
 	{}
 
@@ -66,7 +69,9 @@ namespace wcl
 			delete this->conversionBuffer;
 		}
 		if(this->internal){
+#if ENABLE_VIDEO
 		    delete this->internal->decoder;
+#endif
 		    delete this->internal;
 		}
 	}
@@ -84,6 +89,7 @@ namespace wcl
 		if( this->buffers )
 			delete [] this->buffers;
 
+		this->buffers = NULL;
 		this->numBuffers=0;
 	}
 
@@ -171,8 +177,17 @@ namespace wcl
 		}
 	}
 
+	void Camera::convertImageRGB8toMONO8(const unsigned char* rgb, unsigned char* mono, const unsigned width, const unsigned height)
+	{
+		unsigned int in, out=0;
+		for (out = 0; out < width*height; ++out)
+		{
+			mono[out] = (unsigned char) (rgb[in]*0.3 + rgb[in+1]*0.59 + rgb[in+2]*0.11);
+			in+=3;
+		}
+	}
 
-	void Camera::setConfiguration(Configuration c)
+	void Camera::setConfiguration(const Configuration &c)
 	{
 		assert (c.width != 0);
 		assert (c.height != 0);
@@ -207,7 +222,7 @@ namespace wcl
 			// matches everything we asked for!
 			return *it;
 		}
-		throw std::string("Could not find configuration that met the criteria.");
+		throw CameraException(CameraException::INVALIDCONFIGURATION);
 	}
 
 
@@ -221,13 +236,20 @@ namespace wcl
 	 * @param f The format to convert the frame too
 	 * @return A pointer to the converted frame
 	 */
+
+	const unsigned char* Camera::getFrame()
+	{
+		update();
+		return currentFrame;
+	}
+
 	const unsigned char *Camera::getFrame(const ImageFormat f )
 	{
-		const unsigned char *frame = this->getFrame();
+		update();
 
 		// Handle the same image format being requested
 		if( this->activeConfiguration.format == f )
-			return frame;
+			return currentFrame;
 
 		unsigned width = this->activeConfiguration.width;
 		unsigned height = this->activeConfiguration.height;
@@ -240,11 +262,11 @@ namespace wcl
 				{
 					switch( this->activeConfiguration.format){
 						case MONO8:
-							convertImageMONO8toRGB8(frame, buffer, width, height);
+							convertImageMONO8toRGB8(currentFrame, buffer, width, height);
 							return buffer;
 
 						case YUYV422:
-							convertImageYUYV422toRGB8( frame, buffer, width, height);
+							convertImageYUYV422toRGB8( currentFrame, buffer, width, height);
 							return buffer;
 
 #if ENABLE_VIDEO
@@ -254,7 +276,7 @@ namespace wcl
 							this->internal = new Priv;
 							this->internal->decoder = new VideoDecoder(width, height,CODEC_ID_MJPEG, false );
 						    }
-						    internal->decoder->nextFrame(frame, this->getFormatBufferSize());
+						    internal->decoder->nextFrame(currentFrame, this->getFormatBufferSize());
 						    return internal->decoder->getFrame();
 						}
 #endif
@@ -277,6 +299,93 @@ NOTIMP:
 		}
 
 		return NULL;
+	}
+
+
+	const unsigned char* Camera::getCurrentFrame() const
+	{
+		return currentFrame;
+	}
+
+	void Camera::getCurrentFrame(unsigned char* buffer, const ImageFormat& format) const
+	{
+		// Handle the same image format being requested
+		if( this->activeConfiguration.format == format )
+		{
+			memcpy(buffer, currentFrame, getFormatBufferSize());
+			return;
+		}
+
+		unsigned width = this->activeConfiguration.width;
+		unsigned height = this->activeConfiguration.height;
+
+		unsigned char* temp;
+
+		switch( format ){
+			case RGB8:
+				{
+					switch( this->activeConfiguration.format){
+						case MONO8:
+							convertImageMONO8toRGB8(currentFrame, buffer, width, height);
+							return;
+
+						case YUYV422:
+							convertImageYUYV422toRGB8( currentFrame, buffer, width, height);
+							return;
+
+#if ENABLE_VIDEO
+						case MJPEG:{
+						    // Init the video decoder on the first MJPEG decoding frame
+							VideoDecoder decoder(width, height,CODEC_ID_MJPEG, false );
+						    decoder.nextFrame(currentFrame, this->getFormatBufferSize());
+							memcpy(buffer, decoder.getFrame(), getFormatBufferSize(format));
+							return;
+						}
+#endif
+						default:
+							;
+					}
+					goto NOTIMP;
+				}
+			case MJPEG:
+			case YUYV422:
+			case YUYV411:
+			case RGB16:
+			case RGB32:
+			case BGR8:
+			case MONO8:
+				switch (this->activeConfiguration.format)
+				{
+					case RGB8:
+						convertImageRGB8toMONO8(currentFrame, buffer, width, height);
+						return;
+
+					case YUYV422:
+						//create a temporary buffer
+						temp = new unsigned char[getFormatBufferSize(RGB8)];
+						convertImageYUYV422toRGB8(currentFrame, temp, width, height);
+						convertImageRGB8toMONO8(temp, buffer, width, height);
+						delete [] temp;
+						return;
+
+					case MJPEG:
+						{
+						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
+						dec.nextFrame(currentFrame, this->getFormatBufferSize());
+						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
+						return;
+						}
+					default:
+						;
+				}
+				goto NOTIMP;
+				break;
+
+			case MONO16:
+			default:
+NOTIMP:
+				assert(0 && "Camera::getFrame(const ImageFormat) - Requested Conversion Not Implemented");
+		}
 	}
 
 	unsigned Camera::getFormatBytesPerPixel() const
@@ -341,4 +450,45 @@ NOTIMP:
 		this->parameters = p;
 	}
 
+	void Camera::printDetails(bool state)
+	{
+
+	    Configuration a = this->getActiveConfiguration();
+	    cout << "Camera: " << this->id << " (" << this->getTypeIdentifier() << ")"
+		 << this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps << endl;
+
+	    if ( state ){
+		cout << "Features/Modes" << endl;
+		for(std::vector<Configuration>::iterator it =
+		    supportedConfigurations.begin(); it !=
+		    supportedConfigurations.end(); ++it ){
+
+		    Configuration c = *it;
+		    cout << "\t" << this->imageFormatToString(c.format) << " "
+			 << c.width << "x" << c.height << " @" << c.fps << endl;
+		}
+	    }
+	}
+
+	const char *Camera::imageFormatToString(const ImageFormat f )
+	{
+	    switch(f)
+	    {
+		case MJPEG: return "MJPEG";
+		case YUYV422: return "YUYV422";
+		case YUYV411: return "YUYV411";
+		case RGB8: return "RGB8";
+		case RGB16: return "RGB16";
+		case RGB32: return "RGB32";
+		case BGR8: return "BGR8";
+		case MONO8: return "MONO8";
+		case MONO16: return "MONO16";
+		case ANY:
+		default:
+		    return "UNKNOWN:";
+	    };
+	}
+
 }
+
+

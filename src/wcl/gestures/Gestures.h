@@ -46,10 +46,15 @@
 #include <string>
 #include <vector>
 
+#include <wcl/api.h>
 #include <wcl/maths/Vector.h>
 
 namespace wcl 
 {
+	/**
+	 * Definition of a point
+	 */
+	typedef wcl::Vector Point;
 
 	/**
 	 * Type used for storing a list of Points.
@@ -61,7 +66,7 @@ namespace wcl
 	 * Internal format used for storing gesture templates.
 	 * Consists of a PointList and a name for the gesture.
 	 */
-	struct GestureTemplate
+	struct WCL_API GestureTemplate
 	{
 		PointList points;
 		std::string name;
@@ -71,7 +76,7 @@ namespace wcl
 	 * Struct representing the bounding box of a gesture.
 	 * This is used during scaling.
 	 */
-	struct BoundingSquare
+	struct WCL_API BoundingSquare
 	{
 		wcl::Vector p1;
 		wcl::Vector p2;
@@ -96,7 +101,7 @@ namespace wcl
 	 * gesture is then returned.
 	 *
 	 */
-	class Gestures
+	class WCL_API Gestures
 	{
 		public:
 		/**

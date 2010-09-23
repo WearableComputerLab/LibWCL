@@ -55,7 +55,7 @@ ViconTrackedObject::~ViconTrackedObject()
 {
 }
 
-SMatrix ViconTrackedObject::getTransform()
+SMatrix ViconTrackedObject::getTransform() const
 {
 	/*
 	 *
@@ -138,7 +138,7 @@ SMatrix ViconTrackedObject::getTransform()
 }
 
 
-Vector ViconTrackedObject::getTranslation()
+Vector ViconTrackedObject::getTranslation() const
 {
 	Vector v(3);
 	switch (this->units)
@@ -164,7 +164,7 @@ Vector ViconTrackedObject::getTranslation()
 }
 
 
-SMatrix ViconTrackedObject::getRotation()
+Quaternion ViconTrackedObject::getOrientation() const
 {
 	/*
 	 *
@@ -215,7 +215,8 @@ SMatrix ViconTrackedObject::getRotation()
 }
 
 
-std::string ViconTrackedObject::toString() {
+std::string ViconTrackedObject::toString() const
+{
 	std::stringstream s;
 	s << name;
 	s << ": (" ;
@@ -275,9 +276,15 @@ void ViconTrackedObject::updateData(double* array, int &offset)
 	{
 		double o = array[offset++];
 		if (o == 0)
+		{
 			visible = true;
+			confidence = 1.0f;
+		}
 		else
+		{
 			visible = false;
+			confidence = 0.0f;
+		}
 	}
 
 }

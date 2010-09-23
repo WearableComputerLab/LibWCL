@@ -18,12 +18,6 @@ disk, but this is not implemented yet.
 libwcl (built with at least gestures enabled)
 qt4-dev
 
-
-== BUILDING ==
-qmake
-make
-
-
 == RUNNING ==
 ./gestures
 

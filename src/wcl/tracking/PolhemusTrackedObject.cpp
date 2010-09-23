@@ -28,25 +28,26 @@
 
 namespace wcl
 {
-	PolhemusTrackedObject::PolhemusTrackedObject() 
+	PolhemusTrackedObject::PolhemusTrackedObject(const std::string& name) 
 		: position(3)
 	{
 		//all of the polhemus trackers are 6dof
 		type = SIX_DOF;
+		confidence = 1.0f;
+		this->name = name;
 	}
 
 	PolhemusTrackedObject::~PolhemusTrackedObject()
 	{}
 
-	std::string PolhemusTrackedObject::toString()
+	std::string PolhemusTrackedObject::toString() const
 	{
 		std::stringstream ss;
 		ss << "Position: " << position[0] << " " << position[1] << " " << position[2] << " ";
-		ss << orientation.toString();
 		return ss.str();
 	}
 
-	SMatrix PolhemusTrackedObject::getTransform()
+	SMatrix PolhemusTrackedObject::getTransform() const
 	{
 		SMatrix T(4);
 		T[0][0] = 1;
@@ -58,17 +59,17 @@ namespace wcl
 		T[1][3] = position[1];
 		T[2][3] = position[2];
 
-		return T * getRotation();
+		return T * getOrientation().getRotation();
 	}
 
-	Vector PolhemusTrackedObject::getTranslation()
+	Vector PolhemusTrackedObject::getTranslation() const
 	{
 		return position;
 	}
 
-	SMatrix PolhemusTrackedObject::getRotation()
+	Quaternion PolhemusTrackedObject::getOrientation() const
 	{
-		return orientation.getRotation();
+		return orientation;
 	}
 
 	void PolhemusTrackedObject::update(T x, T y, T z, T rw, T rx, T ry, T rz)

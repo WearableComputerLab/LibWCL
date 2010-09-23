@@ -27,6 +27,7 @@
 #ifndef WCL_CAMERA_VIRTUALCAMERA_H
 #define WCL_CAMERA_VIRTUALCAMERA_H
 
+#include <wcl/api.h>
 #include <wcl/camera/Camera.h>
 
 namespace wcl
@@ -38,7 +39,7 @@ namespace wcl
 	 * maintained untouched. If no frames are provided, a default frame is
 	 * show. Upon a shutdown, the default frame is used again.
 	 */
-	class VirtualCamera: public Camera
+	class WCL_API VirtualCamera: public Camera
 	{
 
 	   public:
@@ -46,11 +47,11 @@ namespace wcl
 		    ~VirtualCamera();
 
 		    // Overrides of Camera
-		    virtual void printDetails();
-		    virtual void setConfiguration(Configuration c);
+		    virtual void printDetails(bool);
+		    virtual void setConfiguration(const Configuration &c);
 		    virtual void setExposureMode(const ExposureMode t);
 		    virtual void setControlValue(const Control control, const int value);
-		    virtual const unsigned char* getFrame();
+		    virtual void update();
 		    virtual void startup();
 		    virtual void shutdown();
 
@@ -61,6 +62,9 @@ namespace wcl
 		     * the buffers to provide frames
 		     */
 		    void setFrames(const CameraBuffer *buffers, const unsigned bufferCount);
+
+	    protected:
+		    const char *getTypeIdentifier() const { return "VIRTUAL"; }
 
 	    private:
 		    static CameraBuffer defaultBuffer;

@@ -27,39 +27,40 @@
 #ifndef WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
 #define WCL_TRACKING_ARTOOLKITPLUSTRACKEDOBJECT_H
 
+#include <wcl/api.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/tracking/TrackedObject.h>
 
 namespace wcl {
 
-class ARToolKitPlusTrackedObject: public TrackedObject
-{
-public:
-    ARToolKitPlusTrackedObject(const unsigned width, const unsigned id);
+	class WCL_API ARToolKitPlusTrackedObject: public TrackedObject
+	{
+		public:
+			ARToolKitPlusTrackedObject(const unsigned width, const unsigned id);
 
-    virtual ~ARToolKitPlusTrackedObject();
-    virtual std::string toString();
-    virtual SMatrix getTransform();
-    virtual Vector getTranslation();
-    virtual SMatrix getRotation();
-    virtual unsigned getID();
+			virtual ~ARToolKitPlusTrackedObject();
+			virtual std::string toString() const;
+			virtual SMatrix getTransform() const;
+			virtual Vector getTranslation() const;
+			virtual Quaternion getOrientation() const;
+			virtual unsigned getID() const;
 
-    void setTransform(const SMatrix &);
-    void setVisible( const bool state);
-    void setConfidence( const float value );
+			void setTransform(const SMatrix &);
+			void setVisible( const bool state);
+			void setConfidence( const float value );
 
-    virtual bool isVisible() const;
-    unsigned getWidth() const;
-    float getConfidence() const;
+			virtual bool isVisible() const;
+			virtual bool hasBeenSeen() const;
+			unsigned getWidth() const;
 
-private:
-        unsigned id;
-        unsigned width;
-	bool visible;
-	float confidence;
+		private:
+			unsigned id;
+			unsigned width;
+			bool visible;
+			bool seen;
 
-	SMatrix transform;
-};
+			SMatrix transform;
+	};
 
 };
 

@@ -23,21 +23,21 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef WCL_UDPPACKET_H
-#define WCL_UDPPACKET_H
+#ifndef WCL_NETWORK_UDPPACKET_H
+#define WCL_NETWORK_UDPPACKET_H
 
-#ifndef WIN32
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#endif
+
+#include <wcl/api.h>
 
 namespace wcl {
 
 // Forward Declaration
 class UDPSocket;
 
-class UDPPacket
+class WCL_API UDPPacket
 {
 
     public:

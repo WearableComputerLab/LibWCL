@@ -29,7 +29,9 @@
 
 #include <string>
 
+#include <wcl/api.h>
 #include <wcl/maths/Matrix.h>
+#include <wcl/maths/Quaternion.h>
 #include <wcl/maths/SMatrix.h>
 #include <wcl/maths/Vector.h>
 
@@ -62,7 +64,7 @@ namespace wcl
 	 * Represents an object that can be tracked by the Vicon system.
 	 *
 	 */
-	class TrackedObject
+	class WCL_API TrackedObject
 	{
 		public:
 			/**
@@ -73,27 +75,32 @@ namespace wcl
 			/**
 			 * Returns a string representation of the object.
 			 */
-			virtual std::string toString() = 0;
+			virtual std::string toString() const = 0;
 
 			/**
 			 * Returns the name of the object.
 			 */
-			virtual std::string getName() { return name;}
+			virtual std::string getName() const { return name;}
 
 			/**
 			 * Returns this object's type.
 			 */
-			virtual ObjectType getType() { return type;}
+			virtual ObjectType getType() const { return type;}
 
-			virtual SMatrix getTransform() = 0;
+			virtual SMatrix getTransform() const = 0;
 
-			virtual Vector getTranslation() = 0;
+			virtual Vector getTranslation() const = 0;
 
-			virtual SMatrix getRotation() = 0;
+			virtual Quaternion getOrientation() const = 0;
 
 			virtual bool isVisible() const = 0;
 
+			virtual float getConfidence() const {return confidence;}
+
 		protected:
+			TrackedObject():
+			    confidence(0.0){};
+
 			/**
 			 * The name of this object.
 			 */
@@ -103,6 +110,8 @@ namespace wcl
 			 * The type of object.
 			 */
 			ObjectType type;
+
+			float confidence;
 	};
 
 };

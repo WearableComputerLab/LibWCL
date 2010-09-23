@@ -38,13 +38,13 @@ namespace wcl
 	}
 
 
-	std::string VirtualTrackedObject::toString()
+	std::string VirtualTrackedObject::toString() const
 	{
 		//TODO implement me
 		return "VirtualTrackedObject";
 	}
 
-	SMatrix VirtualTrackedObject::getTransform()
+	SMatrix VirtualTrackedObject::getTransform() const
 	{
 		SMatrix T(4);
 		T[0][0] = 1;
@@ -56,11 +56,11 @@ namespace wcl
 		T[1][3] = translation[1];
 		T[2][3] = translation[2];
 
-		return T * getRotation();
+		return T * getOrientation().getRotation();
 
 	}
 
-	Vector VirtualTrackedObject::getTranslation()
+	Vector VirtualTrackedObject::getTranslation() const
 	{
 		return translation;
 	}
@@ -80,12 +80,7 @@ namespace wcl
 	}
 
 
-	SMatrix VirtualTrackedObject::getRotation() 
-	{
-		return orientation.getRotation();
-	}
-
-	wcl::Quaternion VirtualTrackedObject::getRotationAsQuat() 
+	wcl::Quaternion VirtualTrackedObject::getOrientation() const
 	{
 		return orientation;
 	}

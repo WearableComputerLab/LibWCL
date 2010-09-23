@@ -35,6 +35,8 @@
 #error "Only Linux Support for the Parallel Port currently exists"
 #endif
 
+#include <wcl/api.h>
+
 namespace wcl {
 
 /**
@@ -86,7 +88,7 @@ namespace wcl {
  * 24 Signal Ground (Not controllable)
  * 25 Signal Ground (Not controllable)
  */
-class Parallel
+class WCL_API Parallel
 {
 public:
 

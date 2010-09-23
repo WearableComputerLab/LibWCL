@@ -20,8 +20,8 @@
 #ifndef CANVAS_H
 #define CANVAS_H
 
+using namespace wcl;
 using namespace std;
-using namespace gestures;
 
 /**
  * A canvas that allows recording and recognising widgets

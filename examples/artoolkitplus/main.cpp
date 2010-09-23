@@ -113,7 +113,7 @@ GLvoid init()
 	glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
 	glLightfv(GL_LIGHT0, GL_POSITION, position);
 
-	data = new unsigned char[cam->getFormatWidth() * cam->getFormatHeight() * 3/*RGB*/];
+	data = new unsigned char[cam->getActiveConfiguration().width * cam->getActiveConfiguration().height * 3/*RGB*/];
 }
 
 GLvoid reshape(int width, int height)
@@ -132,13 +132,13 @@ GLvoid display()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	const unsigned char* frame = cam->getFrame(Camera::RGB8);
-	memcpy(data,frame,cam->getFormatWidth() * cam->getFormatHeight() * 3 /*RGB*/);
+	memcpy(data,frame,cam->getActiveConfiguration().width * cam->getActiveConfiguration().height * 3 /*RGB*/);
 
 	// Flip the image, glPixelZoom should do this but for some reason
 	// I can't get it to work
 	unsigned i=0;
-	unsigned height = cam->getFormatHeight();
-	unsigned width = cam->getFormatWidth();
+	unsigned height = cam->getActiveConfiguration().height;
+	unsigned width = cam->getActiveConfiguration().width;
 	for(unsigned rows=height; rows > height/2; rows--){
 	    for(unsigned cols=0; cols < width*3; cols++){
 		int source = (rows*width*3) + cols;
@@ -212,6 +212,10 @@ int main(int argc, char** argv)
 {
     try {
     cam = CameraFactory::getCamera();
+	Camera::Configuration c;
+	c.width = 640;
+	c.height = 480;
+	cam = CameraFactory::findCamera(c);
     if( cam == NULL ){
 	printf("No Cameras are available\n");
 	return 1;
@@ -254,8 +258,7 @@ int main(int argc, char** argv)
 		cout << "using default parameters, be careful now ya' hear!" <<endl;
 	}
 
-    cam->printDetails();
-	cam->setFormat(Camera::YUYV422, 640, 480);
+	cam->printDetails();
 
 	if (argc == 9)
 	{
@@ -263,12 +266,12 @@ int main(int argc, char** argv)
 		cam->setParameters(p);
 	}
 
-    tracker = new ARToolKitPlusTracker(MARKER_SIZE,-1,cam->getFormatWidth(), cam->getFormatHeight());
+    tracker = new ARToolKitPlusTracker(MARKER_SIZE,-1,cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
     tracker->setCamera(cam);
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-    glutInitWindowSize(cam->getFormatWidth(), cam->getFormatHeight());
+    glutInitWindowSize(cam->getActiveConfiguration().width, cam->getActiveConfiguration().height);
     glutInitWindowPosition(100,100);
     glutCreateWindow(argv[0]);
     init();

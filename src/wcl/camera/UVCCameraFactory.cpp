@@ -28,6 +28,7 @@
 #include <iostream>
 #include <sstream>
 #include <wcl/camera/UVCCameraFactory.h>
+#include <wcl/camera/CameraException.h>
 
 #define MAX_DEVICES 64
 
@@ -80,11 +81,14 @@ void UVCCameraFactory::probeCameras()
 	try {
 	    UVCCamera *c = new UVCCamera( device.str().c_str());
 	    this->cameras.push_back( c );
-	} catch (std::string s )
+	} catch (CameraException c )
 	{
-	    printf("Exception Raised: %s\n", s.c_str());
-	    // Exception raised, hence there's no device, or some other issue
-	    // we simply break the loop at this point
+	    // Exception raised device creation failed for some reason
+	    // we simply break the loop at this point. It's possible that 
+	    // the devices are not found as we loop through the list of 
+	    // devices.
+	    if(c.what() != CameraException::NOTFOUND)
+		printf("UVCCameraFactory:Exception Raised: %s\n", c.what());
 	    break;
 	}
 

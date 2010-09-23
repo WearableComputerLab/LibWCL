@@ -28,6 +28,7 @@
 #ifndef FACE_H
 #define FACE_H
 
+#include <wcl/api.h>
 #include <wcl/geometry/BoundingBox.h>
 #include <wcl/geometry/Plane.h>
 #include <wcl/geometry/Vertex.h>
@@ -37,7 +38,7 @@ namespace wcl
 	/**
 	 * A single face of a polygon.
 	 */
-	class Face
+	class WCL_API Face
 	{
 		public:
 
