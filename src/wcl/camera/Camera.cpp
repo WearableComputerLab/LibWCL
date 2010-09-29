@@ -125,7 +125,8 @@ namespace wcl
 	void Camera::convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 			const unsigned int width, const unsigned int height)
 	{
-		unsigned int in, out = 0;
+		unsigned int in = 0;
+		unsigned int out = 0;
 		unsigned int pixel_16;
 		unsigned char pixel_24[3];
 		unsigned int pixel32;
@@ -167,7 +168,8 @@ namespace wcl
 	void Camera::convertImageMONO8toRGB8( const unsigned char *mono, unsigned char *rgb,
 			const unsigned int width, const unsigned int height )
 	{
-		unsigned int in, out=0;
+		unsigned int in = 0;
+		unsigned int out = 0;
 		for(in = 0; in < width * height; in++ )
 		{
 			rgb[out+0]=mono[in];
@@ -179,7 +181,8 @@ namespace wcl
 
 	void Camera::convertImageRGB8toMONO8(const unsigned char* rgb, unsigned char* mono, const unsigned width, const unsigned height)
 	{
-		unsigned int in, out=0;
+		unsigned int in = 0;
+		unsigned int out = 0;
 		for (out = 0; out < width*height; ++out)
 		{
 			mono[out] = (unsigned char) (rgb[in]*0.3 + rgb[in+1]*0.59 + rgb[in+2]*0.11);
