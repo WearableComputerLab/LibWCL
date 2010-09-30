@@ -462,7 +462,7 @@ uint32_t UVCCamera::mapControlToV4L2( const Control c ) const
 	case Camera::POWER_FREQUENCY:return V4L2_CID_POWER_LINE_FREQUENCY;
 	case Camera::WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
 	case Camera::SHARPNESS:return V4L2_CID_SHARPNESS;
-	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE;
+	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE_ABSOLUTE;
     }
 }
 
