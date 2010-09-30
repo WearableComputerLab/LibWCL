@@ -292,15 +292,17 @@ int64_t VideoDecoder::getLastFrame() const
 
 void VideoDecoder::rewind()
 {
-    if( this->formatContext )
-	av_seek_frame(this->formatContext, this->index,0, AVSEEK_FLAG_BACKWARD);
+	if( this->formatContext )
+	{
+		av_seek_frame(this->formatContext, this->index,0, AVSEEK_FLAG_BACKWARD);
+		avcodec_flush_buffers(this->codecContext);
+	}
 }
 
 bool VideoDecoder::atEnd() const
 {
     if( this->formatContext && this->getCurrentFrame() >= this->getLastFrame())
-	return true;
-
+		return true;
     return false;
 }
 
