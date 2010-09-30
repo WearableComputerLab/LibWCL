@@ -38,11 +38,7 @@ AC_LANG([C++])
 #
 #####################################
 
-# Indicate this is a release build and that 
-# dependancies for changes between Makefile.am and Makefile.in
-# should not be checked. This makes compiling faster. If you are working
-# on the library, run: ./configure --enable-maintainer-mode to enable the dependancies
-AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE([enable]);
 
 #
 # Configure options
