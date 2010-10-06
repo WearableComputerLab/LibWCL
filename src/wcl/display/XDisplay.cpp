@@ -25,6 +25,7 @@
  */
 #include "XDisplay.h"
 
+#include <assert.h>
 #include <X11/extensions/dpms.h>
 
 #define SERVER_DEFAULT (-1)
@@ -32,12 +33,6 @@
 
 using namespace wcl;
 
-/**
- * Open a connection to the XServer.
- *
- * @param displaynameandport A string with the display name and port ie: localhost:0
- * @throws XException on failed connection
- */
 XDisplay::XDisplay(const char *displaynameandport):
     connectionOwner(true)
 {
@@ -46,43 +41,29 @@ XDisplay::XDisplay(const char *displaynameandport):
 	throw new XException(this);
 }
 
-/**
- * Turn a already open connection into an XDisplay object.
- * Note: Destroying the XDisplay object will not close the connection
- *       to the server in this case.
- *
- * @param x11 The already open connection
- */
 XDisplay::XDisplay(::Display *x11):
     connection(x11), connectionOwner(false)
 {}
+    connectionOwner(false),connection(x11)
+{
+    assert(x11 != NULL && "Invalid X11 Display Connection");
+}
 
-/**
- * Destroy the XDisplay object. If the XConnection was created
- * by this object it will be closed before the object is destroyed
- */
 XDisplay::~XDisplay()
 {
     if( this->connectionOwner)
 	XCloseDisplay( this->connection );
 }
 
-/**
- * Enable the screensaver under X windows
- */
 void XDisplay::enableScreenSaver()
 {
     int timeout, interval, blanking, exposure;
     XGetScreenSaver( this->connection, &timeout, &interval, &blanking, &exposure);
-    XSetScreenSaver( this->connection, DEFAULT_TIMEOUT, SERVER_DEFAULT, 
+    XSetScreenSaver( this->connection, DEFAULT_TIMEOUT, SERVER_DEFAULT,
 		     blanking, exposure );
 }
 
 
-/**
- * Disable the Screen saver under X Windows
- * This is done by setting the timeout & interval to 0
- */
 void XDisplay::disableScreenSaver()
 {
     int timeout, interval, blanking, exposure;
@@ -91,26 +72,17 @@ void XDisplay::disableScreenSaver()
 		     blanking, exposure);
 }
 
-/**
- * Enable DPMS under X Windows
- */
 void XDisplay::enableDPMS()
 {
     DPMSEnable(this->connection);
 }
 
-/**
- * Enable DPMS under X Windows
- */
 void XDisplay::disableDPMS()
 {
     DPMSDisable(this->connection);
 }
 
 
-/**
- * Enable both the screen saver and DPMS
- */
 
 void XDisplay::enableAll()
 {
@@ -118,9 +90,6 @@ void XDisplay::enableAll()
     this->enableScreenSaver();
 }
 
-/**
- * Disable both the screen saver and DPMS
- */
 void XDisplay::disableAll()
 {
     this->disableDPMS();
@@ -128,10 +97,12 @@ void XDisplay::disableAll()
 }
 
 
-/**
- * Obtain the connection to the X server
- */
 ::Display *XDisplay::getXConnection() const
 {
     return this->connection;
+}
+
+unsigned XDisplay::getNumberOfScreens() const
+{
+    return ScreenCount(this->connection);
 }
