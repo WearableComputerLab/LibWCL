@@ -39,7 +39,7 @@ namespace wcl
 {
 
 	Wiimote::Wiimote() throw(WiimoteException)
-		: mMessageQueue(NULL), mAccelerometer(3), mNunchukStick(2), mButtonState(0)
+		: mMessageQueue(NULL), mAccelerometer(3), mNunchukStick(2), mNunchukAccelerometer(3), mButtonState(0)
 	{
 		//connect to wiimote
 		bacpy(&mMacAddress, BDADDR_ANY);
@@ -55,7 +55,7 @@ namespace wcl
 
 
 	Wiimote::Wiimote(std::string mac) throw(WiimoteException)
-		: mMessageQueue(NULL), mAccelerometer(3), mNunchukStick(2), mButtonState(0)
+		: mMessageQueue(NULL), mAccelerometer(3), mNunchukStick(2), mNunchukAccelerometer(3), mButtonState(0)
 	{
 		if (0 != str2ba(mac.c_str(), &mMacAddress))
 		{
@@ -125,10 +125,10 @@ namespace wcl
 						mNunchukAccelerometer[2] = (double) (mMessageQueue)[i].nunchuk_mesg.acc[2];
 
 						//button c
-						if (mMessageQueue[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C == 0)
+						if ((mMessageQueue[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_C) == 0)
 						{
 							// it is zero, so XOR
-							mButtonState = mButtonState ^ buttonToBitmask(BUTTON_C);
+							mButtonState = mButtonState & (0xffff ^ buttonToBitmask(BUTTON_C));
 						}
 						else
 						{
@@ -137,10 +137,10 @@ namespace wcl
 						}
 
 						//button z
-						if (mMessageQueue[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z == 0)
+						if ((mMessageQueue[i].nunchuk_mesg.buttons & CWIID_NUNCHUK_BTN_Z) == 0)
 						{
 							// it is zero, so XOR
-							mButtonState = mButtonState ^ buttonToBitmask(BUTTON_Z);
+							mButtonState = mButtonState & (0xffff ^ buttonToBitmask(BUTTON_Z));
 						}
 						else
 						{
@@ -199,9 +199,20 @@ namespace wcl
 		return mNunchukAccelerometer;
 	}
 
+
+	wcl::Vector Wiimote::getNunchukStick() const
+	{
+		return mNunchukStick;
+	}
+
 	bool Wiimote::getButton(Button b) const
 	{
-		return (0 != buttonToBitmask(b) & mButtonState);
+		return (0 != (buttonToBitmask(b) & mButtonState));
+	}
+
+	uint16_t Wiimote::getRawButtonState() const
+	{
+		return mButtonState;
 	}
 
 

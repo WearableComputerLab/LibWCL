@@ -34,7 +34,7 @@ namespace wcl {
 	/**
 	 * Exception class used by the Wiimote.
 	 */
-	class WiimoteException: public Exception
+	class WCL_API WiimoteException: public Exception
 	{
 		public:
 			/**

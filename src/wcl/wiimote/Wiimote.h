@@ -31,7 +31,7 @@
 #include <string>
 #include <cwiid.h>
 #include <stdint.h>
-#include "maths/Vector.h"
+#include <wcl/maths/Vector.h>
 
 #include "WiimoteException.h"
 
@@ -40,17 +40,17 @@ namespace wcl
 	/**
 	 * A class that wraps a Wiimote connection using libcwiid.
 	 */
-	class Wiimote
+	class WCL_API Wiimote
 	{
 
 		public:
 
 			enum Button
 			{
+				BUTTON_2 = 0,
 				BUTTON_1,
-				BUTTON_2,
-				BUTTON_A,
 				BUTTON_B,
+				BUTTON_A,
 				BUTTON_MINUS,
 				BUTTON_HOME,
 				BUTTON_LEFT,
@@ -120,6 +120,7 @@ namespace wcl
 			wcl::Vector getAccelerometer() const;
 			wcl::Vector getNunchukAccelerometer() const;
 
+			wcl::Vector getNunchukStick() const;
 
 			/**
 			 * Gets the state of a button.
@@ -129,6 +130,8 @@ namespace wcl
 			 */
 			bool getButton(Button b) const;
 
+
+			uint16_t getRawButtonState() const;
 
 
 		private:
