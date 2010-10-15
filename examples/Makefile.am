@@ -35,4 +35,8 @@ if ENABLE_TRACKING_ARTOOLKITPLUS
 SUBDIRS+=artoolkitplus
 endif
 
+if ENABLE_WIIMOTE
+SUBDIRS+=wiimote
+endif
+
 endif
