@@ -74,6 +74,24 @@ gestures_sources+=\
 
 endif
 
+######################################################
+#
+# Wiimote Stuff
+#
+wiimote_headers=
+wiimote_sources=
+
+if ENABLE_WIIMOTE
+wiimote_headers+=\
+				 wiimote/Wiimote.h \
+				 wiimote/WiimoteException.h
+
+wiimote_sources+=\
+				 wiimote/Wiimote.cpp \
+				 wiimote/WiimoteException.cpp
+
+endif
+
 ########################################################
 #
 # Geometry stuff 
@@ -308,7 +326,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(rawports_headers)\
 				$(x11_headers)\
 				$(parser_headers)\
-				$(video_headers)
+				$(video_headers) \
+				$(wiimote_headers)
 
 
 libwcl_la_SOURCES=$(common_sources)\
@@ -325,5 +344,6 @@ libwcl_la_SOURCES=$(common_sources)\
 		 $(rawports_sources)\
 		 $(x11_sources)\
 		 $(parser_sources)\
-		 $(video_sources)
+		 $(video_sources) \
+		 $(wiimote_sources)
 

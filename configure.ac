@@ -101,7 +101,11 @@ AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitp
 
 # Support for Videos
 #
-AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-parsers], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
+AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
+
+# Support for wiimote
+#
+AC_ARG_ENABLE(wiimote, AC_HELP_STRING([--enable-wiimote], [Enable Wiimote interface]), enable_wiimote="yes" , enable_wiimote="no")
 
 # Enable Examples
 #
@@ -124,6 +128,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_tracking_artoolkitplus="yes";
 	     enable_video="yes";
 	     enable_examples="yes";
+	     enable_wiimote="yes";
 	     )
 
 #
@@ -277,6 +282,11 @@ if test "x$enable_x11" = "xyes"; then
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
 fi
 
+if test "x$enable_wiimote" = "xyes"; then
+    PKG_CHECK_MODULES(CWIID, cwiid)
+    PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $CWIID_LIBS"
+    PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $CWIID_CFLAGS"
+fi
 
 
 # 
@@ -357,6 +367,7 @@ echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
 echo "Video Encoder/Decoder Support : $enable_video"
+echo "Wiimote Support               : $enable_wiimote"
 echo "Examples Compiled             : $enable_examples"
 echo "Maths Support                 : Enabled (default)"
 echo "-------------------------------------------------"
@@ -388,6 +399,7 @@ AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
 AM_CONDITIONAL(ENABLE_PARSERS, test "x$enable_parsers" = "xyes")
 AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitplus" = "xyes")
 AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
+AM_CONDITIONAL(ENABLE_WIIMOTE, test "x$enable_wiimote" = "xyes")
 AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 
 #
