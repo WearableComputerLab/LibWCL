@@ -38,7 +38,7 @@ AC_LANG([C++])
 #
 #####################################
 
-AM_MAINTAINER_MODE([enable]);
+AM_MAINTAINER_MODE([enable])
 
 #
 # Configure options
@@ -264,6 +264,7 @@ if test "x$enable_video" = "xyes"; then
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBSWSCALE_LIBS"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBSWSCALE_CFLAGS"
 	AC_DEFINE(ENABLE_VIDEO, 1, [Enable VideoDecoding/Encoding Support])
+	CXXFLAGS="$CXXFLAGS -D__STDC_CONSTANT_MACROS"
 fi
 	
 if test "x$enable_tracking_artoolkitplus" = "xyes"; then
@@ -407,21 +408,22 @@ AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 #
 ##############################
 AC_CONFIG_FILES([Makefile
-		 src/Makefile
-                 src/wcl/Makefile
-		 examples/Makefile
-		 examples/artoolkitplus/Makefile
-	       	 examples/camera/Makefile
-	         examples/gestures/Makefile
-		 examples/network/Makefile
-		 examples/parallel/Makefile
-	       	 examples/parsers/Makefile
-	         examples/polhemus/Makefile
-		 examples/serial/Makefile
-	       	 examples/vicon/Makefile
-	         examples/video/Makefile
-		 libwcl.pc
-		])
+				 src/Makefile
+				 src/wcl/Makefile
+				 examples/Makefile
+				 examples/artoolkitplus/Makefile
+				 examples/camera/Makefile
+				 examples/gestures/Makefile
+				 examples/network/Makefile
+				 examples/parallel/Makefile
+				 examples/parsers/Makefile
+				 examples/polhemus/Makefile
+				 examples/serial/Makefile
+				 examples/vicon/Makefile
+				 examples/video/Makefile
+				 examples/wiimote/Makefile
+				 libwcl.pc
+				 ])
 
 #
 # Build the configure file
