@@ -215,6 +215,20 @@ namespace wcl
 		return mButtonState;
 	}
 
+	
+	std::string Wiimote::getMacAddress() const
+	{
+		char s[18];
+		ba2str(&mMacAddress, s);
+		return s;
+	}
+
+	int Wiimote::getSoftwareID() 
+	{
+		return cwiid_get_id(mWiimote);
+	}
+
+
 
 	uint16_t Wiimote::buttonToBitmask(Button b) const
 	{

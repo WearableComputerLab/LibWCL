@@ -133,6 +133,20 @@ namespace wcl
 
 			uint16_t getRawButtonState() const;
 
+			/**
+			 * Returns the string representation of this wiimotes
+			 * MAC address.
+			 */
+			std::string getMacAddress() const;
+
+			/**
+			 * Returns the software ID assigned to this wiimote.
+			 * This is unique amoung all wiimotes for a process,
+			 * but each wiimote may receive a different ID each
+			 * time the process starts.
+			 */
+			int getSoftwareID();
+
 
 		private:
 			/*
