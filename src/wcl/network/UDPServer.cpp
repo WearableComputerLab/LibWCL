@@ -37,7 +37,7 @@ namespace wcl {
  * @param port The port to listen on
  * @throws SocketException If a socket or the binding to the port fails
  */
-UDPServer::UDPServer( const unsigned port )
+UDPServer::UDPServer( const unsigned port ) throw (SocketException)
 {
     if ( this->create() == false ){
 	throw new SocketException(this);	

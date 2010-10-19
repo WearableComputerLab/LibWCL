@@ -52,7 +52,7 @@ UDPSocket::UDPSocket()
  * @param port The port on the remote host
  * @throws SocketException if the remote host could not be found
  */
-UDPSocket::UDPSocket ( const std::string server, const unsigned port )
+UDPSocket::UDPSocket ( const std::string server, const unsigned port ) throw (SocketException)
 {
     struct hostent *he;
 

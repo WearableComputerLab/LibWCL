@@ -39,7 +39,7 @@ namespace wcl {
 class WCL_API UDPServer: public UDPSocket
 {
     public:
-	UDPServer( const unsigned port );
+	UDPServer( const unsigned port ) throw (SocketException);
 };
 
 
