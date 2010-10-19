@@ -27,6 +27,7 @@
 
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netinet/in.h>
 
 namespace wcl {
@@ -35,12 +36,24 @@ namespace wcl {
  * Create a UDP Server that listens on the given port
  *
  * @param port The port to listen on
+ * @param mcastgroup The multicast group to use (if required)
  * @throws SocketException If a socket or the binding to the port fails
  */
-UDPServer::UDPServer( const unsigned port )
+UDPServer::UDPServer( const unsigned port, const char *mcastgroup ) throw (SocketException)
 {
+    struct ip_mreq mreq;
+
     if ( this->create() == false ){
-	throw new SocketException(this);	
+	throw new SocketException(this);
+    }
+
+    if( mcastgroup != NULL ){
+	mreq.imr_multiaddr.s_addr=inet_addr(mcastgroup);
+	mreq.imr_interface.s_addr=htonl(INADDR_ANY);
+	if (setsockopt(this->sockfd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) == -1) {
+	    this->close();
+	    throw new SocketException(this);
+	}
     }
 
     if ( this->bind(port) == false ){

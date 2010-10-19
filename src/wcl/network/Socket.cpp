@@ -108,7 +108,7 @@ bool Socket::bind( const unsigned port )
     }
 	
     this->address.sin_family = AF_INET;
-    this->address.sin_addr.s_addr = INADDR_ANY;
+    this->address.sin_addr.s_addr = htonl(INADDR_ANY);
     this->address.sin_port = htons ( port );
 
     if ( ::bind ( this->sockfd, (struct sockaddr *)&this->address, sizeof(this->address)) == -1 ){
