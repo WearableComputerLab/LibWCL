@@ -38,7 +38,7 @@ AC_LANG([C++])
 #
 #####################################
 
-AM_MAINTAINER_MODE([enable]);
+AM_MAINTAINER_MODE([enable])
 
 #
 # Configure options
