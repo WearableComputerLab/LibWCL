@@ -41,7 +41,7 @@ namespace wcl {
 class WCL_API UDPSocket: public Socket
 {
     public:
-	UDPSocket ( const std::string hostname, const unsigned port ) throw (SocketException);
+	UDPSocket ( const std::string &hostname, const unsigned port ) throw (SocketException);
 	ssize_t write(const void* buffer, size_t size) throw (SocketException);
 	ssize_t read(void *buffer, size_t size) throw (SocketException);
 

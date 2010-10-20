@@ -109,7 +109,7 @@ ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
 	
 ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException)
 {
-    ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&raddress, sizeof(raddress));
+    ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&address, sizeof(address));
 
     if (retval == -1 ){
 	throw new SocketException(this);
