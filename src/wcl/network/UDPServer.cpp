@@ -39,18 +39,19 @@ namespace wcl {
  * @param mcastgroup The multicast group to use (if required)
  * @throws SocketException If a socket or the binding to the port fails
  */
-UDPServer::UDPServer( const unsigned port, const char *mcastgroup ) throw (SocketException)
+UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw (SocketException):
+    hasmcast(false)
 {
-    struct ip_mreq mreq;
 
     if ( this->create() == false ){
 	throw new SocketException(this);
     }
 
-    if( mcastgroup != NULL ){
+    if( mcastgroup.size() ){
+	hasmcast=true;
 
 	// Store the local lookup of the address
-	this->storeResolve(mcastgroup, port);
+	this->storeResolve(mcastgroup.c_str(), port);
 
 	// Ask the kernel to enable multicast support for the requested group
 	
@@ -67,6 +68,5 @@ UDPServer::UDPServer( const unsigned port, const char *mcastgroup ) throw (Socke
 	throw new SocketException(this);
     }
 }
-
 
 }; // namespace wcl

@@ -26,6 +26,7 @@
 #ifndef WCL_NETWORK_UDPSERVER_H
 #define WCL_NETWORK_UDPSERVER_H
 
+#include <string>
 #include <wcl/api.h>
 #include <wcl/network/UDPSocket.h>
 #include <wcl/network/UDPPacket.h>
@@ -40,7 +41,24 @@ namespace wcl {
 class WCL_API UDPServer: public UDPSocket
 {
     public:
-	UDPServer( const unsigned port, const char *mcastgroup = NULL ) throw (SocketException);
+	UDPServer( const unsigned port, const std::string &mcastgroup = "" ) throw (SocketException);
+
+	/**
+	 * Write the given UDPPacket to the socket. The Recipient field of the
+	 * UDPPacket is used to indicate where to send this packet to. If the field
+         * is not set the server will set the field to the multicast group if multicast
+	 * is enabled. Else pass it down to UDPSocket to process
+	 *
+	 * @param The packet to send to the remote host
+	 * @return -1 on error, or the amount of data written
+	 * @throw Socket Exception on a failed write
+	 */
+	ssize_t UDPSocket::write;
+
+    private:
+	bool hasmcast;
+	struct ip_mreq mreq;
+
 };
 
 
