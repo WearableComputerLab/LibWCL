@@ -32,6 +32,8 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <sys/ioctl.h>
+#include <netdb.h>
+#include <arpa/inet.h>
 
 #include "Socket.h"
 #include "SocketException.h"
@@ -311,6 +313,36 @@ ssize_t Socket::getAvailableCount()
     return bytesAvailable;
 }
 
+sockaddr_in Socket::resolve( const char *input, const unsigned port) throw (SocketException)
+{
+    struct hostent *he;
+    struct sockaddr_in address;
+
+    // Setup the address to connect too
+    address.sin_family = AF_INET;
+    address.sin_port = htons ( port );
+
+    // Attempt to perform a quick conversion, this only works provided the server string
+    // passed in is a fully qualified name/ip.
+    if ( inet_pton( AF_INET, input, &address.sin_addr ) == 0 ){
+
+	// If we can't do a quick conversion, try the long way
+	he = gethostbyname( input );
+	if ( he == NULL ){
+	    throw new SocketException(NULL);
+	}
+
+	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
+    }
+
+    return address;
+}
+
+void Socket::storeResolve( const char *input, const unsigned port) throw (SocketException)
+{
+    struct sockaddr_in temp = Socket::resolve( input, port );
+    memcpy( &this->address, &temp, sizeof(struct sockaddr_in));
+}
 
 
 } // namespace wcl

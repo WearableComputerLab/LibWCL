@@ -64,13 +64,34 @@ class WCL_API Socket
 		virtual BlockingMode getBlockingMode() const;
 
 		int operator *() const;
+
+		/**
+		 * Given a ip address, or host name resolve the input to a
+		 * sockaddr_in structure. Note this call may appear to hang if a
+		 * dns query is required to resolve the hostname - at least
+		 * until dns timesout
+		 *
+		 * @param input The ip address or hostname to convert
+		 * @param port The port to put in the struct
+		 * @return A valid sockaddr_in structure
+		 * @throw SocketException upon resolution failure
+		 */
+		static sockaddr_in resolve(const char *input, const unsigned port) throw (SocketException);
 	
 	protected:
 		int sockfd;
-		sockaddr_in address;
+		struct sockaddr_in address;
                 BlockingMode blocking;
 
 		Socket();
+
+		/**
+		 * Resolve the given ip/hostname and store it in the 'address' field
+		 * @param input ip/hostname to convert
+		 * @param port The port to store in the strcut
+		 * @throw SocketException upon resolving issue
+		 */
+		void storeResolve( const char *input, const unsigned port) throw (SocketException);
 		virtual bool bind( const unsigned port);
 
 };
