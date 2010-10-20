@@ -26,9 +26,10 @@
 #ifndef WCL_NETWORK_UDPPACKET_H
 #define WCL_NETWORK_UDPPACKET_H
 
+#include <assert.h>
+#include <stdlib.h>
 #include <sys/types.h>
 #include <netinet/in.h>
-#include <stdlib.h>
 
 #include <wcl/api.h>
 
