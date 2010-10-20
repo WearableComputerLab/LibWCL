@@ -29,6 +29,7 @@
 #include <wcl/api.h>
 #include <wcl/network/UDPSocket.h>
 #include <wcl/network/UDPPacket.h>
+#include <arpa/inet.h>
 
 namespace wcl {
 

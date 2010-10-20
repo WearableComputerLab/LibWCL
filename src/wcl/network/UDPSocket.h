@@ -52,9 +52,6 @@ class WCL_API UDPSocket: public Socket
     protected:
 	UDPSocket();
 	virtual bool create();
-
-    private:
-	sockaddr_in raddress;
 };
 
 

@@ -48,8 +48,14 @@ UDPServer::UDPServer( const unsigned port, const char *mcastgroup ) throw (Socke
     }
 
     if( mcastgroup != NULL ){
-	mreq.imr_multiaddr.s_addr=inet_addr(mcastgroup);
-	mreq.imr_interface.s_addr=htonl(INADDR_ANY);
+
+	// Store the local lookup of the address
+	this->storeResolve(mcastgroup, port);
+
+	// Ask the kernel to enable multicast support for the requested group
+	
+	this->mreq.imr_multiaddr.s_addr=this->address.sin_addr.s_addr;
+	this->mreq.imr_interface.s_addr=this->address.sin_port;
 	if (setsockopt(this->sockfd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) == -1) {
 	    this->close();
 	    throw new SocketException(this);

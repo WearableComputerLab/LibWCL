@@ -29,9 +29,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
 
 namespace wcl {
 
@@ -54,30 +51,12 @@ TCPSocket::TCPSocket()
  */
 TCPSocket::TCPSocket( const std::string server, const unsigned port ) throw (SocketException)
 {
-    struct hostent *he;
-
     // Create a new socket
     if ( !this->create()){
 	throw new SocketException(this);
-    } 
-
-    // Setup the address to connect too
-    address.sin_family = AF_INET;
-    address.sin_port = htons ( port );
-
-    // Attempt to perform a quick conversion, this only works provided the server string
-    // passed in is a fully qualified name/ip. 
-    if ( inet_pton( AF_INET, server.c_str(), &address.sin_addr ) == 0 ){
-
-	// If we can't do a quick conversion, try the long way
-	he = gethostbyname( server.c_str());
-	if ( he == NULL ){
-	    throw new SocketException(this);
-	}
-
-	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);
-
     }
+
+    this->storeResolve( server.c_str(), port );
 
     // Perform the connection
     if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){

@@ -56,23 +56,7 @@ UDPSocket::UDPSocket ( const std::string server, const unsigned port ) throw (So
 {
     struct hostent *he;
 
-    // Lookup the address of the remote machine
-    // Attempt to perform a quick conversion, this only works provided the server string
-    // passed in is a fully qualified name/ip. 
-    if ( inet_pton( AF_INET, server.c_str(), &raddress.sin_addr ) == 0 ){
-
-	// If we can't do a quick conversion, try the long way
-	he = gethostbyname( server.c_str());
-	if ( he == NULL ){
-	    throw new SocketException(this);
-	}
-
-	memcpy(&raddress.sin_addr, he->h_addr_list[0], he->h_length);
-    }
-    // Store the port add set the address type
-    raddress.sin_family = AF_INET;
-    raddress.sin_port=htons(port);
-
+    this->storeResolve( server.c_str(), port );
 
     if ( this->create() == false ){
 	throw new SocketException(this);
@@ -135,16 +119,24 @@ ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException
 
 /**
  * Write the given UDPPacket to the socket. The Recipient field of the
- * UDPPacket is used to indicate where to send this packet to.
+ * UDPPacket is used to indicate where to send this packet to. If the
+ * field is not set the packet will be sent to the end point of
+ * the socket connection
  *
  * @param The packet to send to the remote host
  * @return -1 on error, or the amount of data written
+ * @throw SocketException on write failure
  */
 ssize_t UDPSocket::write( const UDPPacket *packet )
 {
     assert ( packet != NULL && packet->getData() != NULL  );
 
-    raddress = packet->getRecipient();
+    struct sockaddr_in raddress;
+
+    if( packet->hasAddress())
+	raddress = packet->getRecipient();
+    else 
+	raddress = this->address;
 
     ssize_t retval = sendto( this->sockfd, 
 		    packet->getData(), 
