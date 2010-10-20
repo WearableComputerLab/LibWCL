@@ -52,14 +52,16 @@ class WCL_API UDPPacket
 
 	void setData( void *, const size_t );
 	void setRecipient( const sockaddr_in );
+	bool hasAddress() const;
 
     private:
-	sockaddr_in address;
+	struct sockaddr_in address;
 
 	void *data;
 	size_t size;
 
 	bool needdelete;
+	bool addressset;
 };
 
 /**
@@ -69,10 +71,9 @@ class WCL_API UDPPacket
  * @param length The length of the buffer to allocate
  * @throws a string exception on memory allocation error
  */
-inline UDPPacket::UDPPacket( const size_t length )
+inline UDPPacket::UDPPacket( const size_t length ):
+    size(length),needdelete(true),addressset(false)
 {
-    this->size = length;
-    this->needdelete =true;
     this->data = (void *) malloc( this->size );
 }
 
@@ -84,7 +85,11 @@ inline UDPPacket::UDPPacket( const size_t length )
  * @param length The length of the buffer
  */ 
 inline UDPPacket::UDPPacket( void *buffer, const size_t length ):
-    data(buffer), size(length), needdelete(false){}
+    data(buffer), size(length), needdelete(false),addressset(false)
+{
+
+    assert(buffer!=NULL && length==0);
+}
 
 
 /**
@@ -122,6 +127,7 @@ inline size_t UDPPacket::getSize() const
  */
 inline sockaddr_in UDPPacket::getRecipient() const
 {
+    assert( addressset != false && "UDPPacket::getRecipient() called bug address is invalid");
     return this->address;
 }
 
@@ -134,6 +140,12 @@ inline void UDPPacket::setData( void *buffer, const size_t length )
 inline void UDPPacket::setRecipient( const sockaddr_in recipient )
 {
     this->address = recipient;
+    this->addressset = true;;
+}
+
+inline bool UDPPacket::hasAddress() const
+{
+    return this->addressset;
 }
 
 
