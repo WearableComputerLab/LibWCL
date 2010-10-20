@@ -53,7 +53,7 @@ class WCL_API UDPServer: public UDPSocket
 	 * @return -1 on error, or the amount of data written
 	 * @throw Socket Exception on a failed write
 	 */
-	ssize_t UDPSocket::write;
+	UDPSocket::write;
 
     private:
 	bool hasmcast;
