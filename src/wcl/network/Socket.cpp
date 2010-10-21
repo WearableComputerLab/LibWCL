@@ -318,6 +318,8 @@ sockaddr_in Socket::resolve( const char *input, const unsigned port) throw (Sock
     struct hostent *he;
     struct sockaddr_in address;
 
+    memset(&address, 0x0, sizeof(struct sockaddr_in));
+
     // Setup the address to connect too
     address.sin_family = AF_INET;
     address.sin_port = htons ( port );
