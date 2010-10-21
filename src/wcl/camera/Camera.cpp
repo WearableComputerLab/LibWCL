@@ -27,6 +27,7 @@
 #include <assert.h>
 #include <config.h>
 #include <iostream>
+#include <string.h>
 #include "Camera.h"
 #include "CameraException.h"
 
@@ -373,10 +374,12 @@ NOTIMP:
 
 					case MJPEG:
 						{
+#if ENABLE_VIDEO
 						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
 						dec.nextFrame(currentFrame, this->getFormatBufferSize());
 						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
 						return;
+#endif
 						}
 					default:
 						;
