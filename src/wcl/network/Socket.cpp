@@ -144,7 +144,7 @@ ssize_t Socket::read ( void *buffer, size_t size ) throw (SocketException)
 
     ssize_t retval = ::read(this->sockfd, buffer, size );
     if ( retval == -1 && errno == ECONNRESET){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
     return retval;
 }
@@ -217,7 +217,7 @@ ssize_t Socket::write( const void *buffer, size_t size ) throw (SocketException)
 
 	ssize_t retval =  ::write( this->sockfd, buffer, size );
 	if ( retval == -1 ){
-		throw new SocketException(this);
+		throw SocketException(this);
 	}
 	return retval;
 }
@@ -308,7 +308,7 @@ ssize_t Socket::getAvailableCount()
     int bytesAvailable;
     int status = ioctl (this->sockfd, FIONREAD, &bytesAvailable);
     if ( status == -1 && errno == ECONNRESET){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
     return bytesAvailable;
 }
@@ -329,7 +329,7 @@ sockaddr_in Socket::resolve( const char *input, const unsigned port) throw (Sock
 	// If we can't do a quick conversion, try the long way
 	he = gethostbyname( input );
 	if ( he == NULL ){
-	    throw new SocketException(NULL);
+	    throw SocketException(NULL);
 	}
 
 	memcpy(&address.sin_addr, he->h_addr_list[0], he->h_length);

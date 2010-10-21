@@ -46,8 +46,8 @@ class WCL_API UDPSocket: public Socket
 	ssize_t read(void *buffer, size_t size) throw (SocketException);
 
 	// UDP Packet interface
-	ssize_t write( const UDPPacket * );
-	ssize_t read( UDPPacket * );
+	ssize_t write( const UDPPacket * ) throw (SocketException);
+	ssize_t read( UDPPacket * ) throw (SocketException);
 
     protected:
 	UDPSocket();

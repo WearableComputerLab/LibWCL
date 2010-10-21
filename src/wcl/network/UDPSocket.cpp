@@ -59,13 +59,13 @@ UDPSocket::UDPSocket ( const std::string &server, const unsigned port ) throw (S
     this->storeResolve( server.c_str(), port );
 
     if ( this->create() == false ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 
     // Bind to a port on the local host, first free port.
     if ( this->bind(0) == false ){
 	this->close();
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 }
 
@@ -102,7 +102,7 @@ ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
 {
     ssize_t retval = recv(this->sockfd, buffer, size, 0x0);
     if ( retval == -1 ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
     return retval;
 }
@@ -112,7 +112,7 @@ ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException
     ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&address, sizeof(address));
 
     if (retval == -1 ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
     return retval;
 }
@@ -127,7 +127,7 @@ ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException
  * @return -1 on error, or the amount of data written
  * @throw SocketException on write failure
  */
-ssize_t UDPSocket::write( const UDPPacket *packet )
+ssize_t UDPSocket::write( const UDPPacket *packet ) throw (SocketException)
 {
     assert ( packet != NULL && packet->getData() != NULL  );
 
@@ -145,7 +145,7 @@ ssize_t UDPSocket::write( const UDPPacket *packet )
 		    (struct sockaddr *)&raddress, 
 		    sizeof(raddress));
     if ( retval == -1 ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
     return retval;
 }
@@ -156,7 +156,7 @@ ssize_t UDPSocket::write( const UDPPacket *packet )
  * @param packet the Packet to read into
  * @return -1 on error, 0 on read with nothing waiting, or the amount read
  */
-ssize_t UDPSocket::read( UDPPacket *packet )
+ssize_t UDPSocket::read( UDPPacket *packet ) throw (SocketException)
 {
     assert( packet != NULL && packet->getData() != NULL);
 
@@ -171,7 +171,7 @@ ssize_t UDPSocket::read( UDPPacket *packet )
 			(socklen_t*)&clientAddressLen);
 
     if ( result == -1 ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 
     packet->setRecipient( clientAddress );

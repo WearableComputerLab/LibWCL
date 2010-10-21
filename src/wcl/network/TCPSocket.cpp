@@ -53,7 +53,7 @@ TCPSocket::TCPSocket( const std::string &server, const unsigned port ) throw (So
 {
     // Create a new socket
     if ( !this->create()){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 
     this->storeResolve( server.c_str(), port );
@@ -61,7 +61,7 @@ TCPSocket::TCPSocket( const std::string &server, const unsigned port ) throw (So
     // Perform the connection
     if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
 	this->close();
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 }
 

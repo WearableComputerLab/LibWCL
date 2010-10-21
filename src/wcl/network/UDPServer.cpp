@@ -44,7 +44,7 @@ UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw
 {
 
     if ( this->create() == false ){
-	throw new SocketException(this);
+	throw SocketException(this);
     }
 
     if( mcastgroup.size() ){
@@ -59,7 +59,7 @@ UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw
 	this->mreq.imr_interface.s_addr=this->address.sin_port;
 	if (setsockopt(this->sockfd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) == -1) {
 	    this->close();
-	    throw new SocketException(this);
+	    throw SocketException(this);
 	}
     }
 
