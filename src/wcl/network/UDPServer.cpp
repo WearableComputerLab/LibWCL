@@ -47,6 +47,11 @@ UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw
 	throw SocketException(this);
     }
 
+    if ( this->bind(port) == false ){
+	this->close();
+	throw SocketException(this);
+    }
+
     if( mcastgroup.size() ){
 	hasmcast=true;
 
@@ -61,11 +66,6 @@ UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw
 	    this->close();
 	    throw SocketException(this);
 	}
-    }
-
-    if ( this->bind(port) == false ){
-	this->close();
-	throw new SocketException(this);
     }
 }
 

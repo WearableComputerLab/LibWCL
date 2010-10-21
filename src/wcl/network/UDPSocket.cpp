@@ -56,8 +56,6 @@ UDPSocket::UDPSocket ( const std::string &server, const unsigned port ) throw (S
 {
     struct hostent *he;
 
-    this->storeResolve( server.c_str(), port );
-
     if ( this->create() == false ){
 	throw SocketException(this);
     }
@@ -67,6 +65,8 @@ UDPSocket::UDPSocket ( const std::string &server, const unsigned port ) throw (S
 	this->close();
 	throw SocketException(this);
     }
+
+    this->storeResolve( server.c_str(), port );
 }
 
 /**
