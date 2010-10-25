@@ -88,7 +88,7 @@ inline UDPPacket::UDPPacket( void *buffer, const size_t length ):
     data(buffer), size(length), needdelete(false),addressset(false)
 {
 
-    assert(buffer!=NULL && length==0);
+    assert(buffer!=NULL && length!=0);
 }
 
 
