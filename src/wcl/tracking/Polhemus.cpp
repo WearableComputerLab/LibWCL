@@ -38,7 +38,7 @@
 namespace wcl
 {
 
-	Polhemus::Polhemus(std::string path, TrackerType t) : Tracker(), type(t), activeSensorCount(-1), continuous(false)
+	Polhemus::Polhemus(std::string path, TrackerType t) : Tracker(),  activeSensorCount(-1), type(t),continuous(false)
 	{
 		std::cout << "About to connect to " << path << std::endl;
 		if (!connection.open(path.c_str(), Serial::BAUD_115200))
@@ -130,7 +130,7 @@ namespace wcl
 					{
 						//std::cout << "BytesRead: " << bytesRead << std::endl;
 						//std::cout << "Reading Update Response: " << response;
-						int result = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+						(void)sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 						if (units == MM)
 						{
 							sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
@@ -173,7 +173,7 @@ namespace wcl
 	{
 	    std::vector<TrackedObject *> objects;
 
-	    for(unsigned i=0; i< activeSensorCount; i++ ){
+	    for(int i=0; i< activeSensorCount; i++ ){
 		objects.push_back(&sensors[i]);
 	    }
 
@@ -359,7 +359,7 @@ namespace wcl
 	{
 		unsigned char response[1024] = {0};
 		response[1023] = '\0';
-		int responseLength = connection.read((void*) &response, 1024);
+		connection.read((void*) &response, 1024);
 		std::cout << prefix << " (" << response << ")" << std::endl;
 
 	}

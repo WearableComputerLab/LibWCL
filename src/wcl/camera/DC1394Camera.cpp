@@ -40,10 +40,10 @@ using namespace std;
 namespace wcl {
 
 	DC1394Camera::DC1394Camera(const uint64_t myguid):
-		frame(NULL),
 		d(NULL),
-		running(false),
-		guid(myguid)
+		frame(NULL),
+		guid(myguid),
+		running(false)
 	{
 		this->d = dc1394_new ();
 		if( !this->d )
@@ -288,6 +288,7 @@ notfound:
 			case APERTURE: return this->setIris(value);
 			case BRIGHTNESS: return this->setBrightness( value );
 			case GAIN: return this->setGain( value );
+			case ISO:
 			case WHITE_BALANCE:
 			case CONTRAST:
 			case SATURATION:
@@ -676,7 +677,7 @@ void DC1394Camera::loadCapabilities()
 	dc1394_video_get_supported_modes( camera, &videoModes );
 	Camera::Configuration c;
 
-	for( int i = 0; i < videoModes.num; i++ )
+	for( unsigned i = 0; i < videoModes.num; i++ )
 	{
 		switch( videoModes.modes[i] )
 		{

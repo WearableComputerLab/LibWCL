@@ -4,7 +4,6 @@
  */
 
 %option nomain
-%option nodefault
 %option noyywrap
 %option prefix="OBJFormat_" outfile="lex.yy.c"
 %option debug
@@ -77,5 +76,7 @@ extern void doFatal( const char *);
 
  /* Squeltch whitespace */
 [\t\n\r ]*  ;
+
+. { printf("lex Unknown character, ignoring = '%s'", yytext); };
 
 %%

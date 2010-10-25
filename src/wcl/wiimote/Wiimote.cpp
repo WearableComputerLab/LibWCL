@@ -260,7 +260,7 @@ namespace wcl
 		{
 			mLEDState = mLEDState | leds[led];
 		}
-		else if (!on && 0 != mLEDState & leds[led])
+		else if (!on && 0 != (mLEDState & leds[led]))
 		{
 			//only change the flag if necessary...
 			mLEDState = mLEDState ^ leds[led];

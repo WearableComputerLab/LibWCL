@@ -92,7 +92,7 @@ VideoDecoder::VideoDecoder(const unsigned iwidth, const unsigned iheight,
 
 int VideoDecoder::findVideoStream(const int nth)
 {
-    int i;
+    unsigned i;
     int vstreams;
 
     // In order to find a stream the formatContext must already be initialised
@@ -100,7 +100,7 @@ int VideoDecoder::findVideoStream(const int nth)
     // the input format
     assert( this->formatContext != NULL );
 
-    for( i = 0, vstreams=0; i < this->formatContext->nb_streams; i++ ){
+    for(i = 0, vstreams=0; i < this->formatContext->nb_streams; i++ ){
 	if( this->formatContext->streams[i]->codec->codec_type ==CODEC_TYPE_VIDEO){
 	    if( vstreams == nth )
 		return i;

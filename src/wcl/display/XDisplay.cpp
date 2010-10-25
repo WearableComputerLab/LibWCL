@@ -54,7 +54,7 @@ XDisplay::XDisplay(const char *displaynameandport):
  * @param x11 The already open connection
  */
 XDisplay::XDisplay(::Display *x11):
-    connectionOwner(false),connection(x11)
+    connection(x11), connectionOwner(false)
 {}
 
 /**

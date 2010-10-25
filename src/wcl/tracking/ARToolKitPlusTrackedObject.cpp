@@ -35,9 +35,9 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
     const unsigned w,
     const unsigned id):
     width(w),
-    transform(4),
     visible(false),
-	seen(false)
+    seen(false),
+    transform(4)
 {
     std::stringstream sid;
     sid<< "Marker";

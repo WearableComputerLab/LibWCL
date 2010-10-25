@@ -56,8 +56,8 @@ namespace wcl
 		buffers(NULL),
 		bufferSize(0),
 		numBuffers(0),
-		conversionBuffer(NULL),
 		areParametersSet(false),
+		conversionBuffer(NULL),
 		internal(NULL)
 	{
 	}
@@ -420,6 +420,8 @@ NOTIMP:
 				return 4;
 			case MJPEG:
 				return 12;
+			default:
+				return 0;
 		}
 	}
 

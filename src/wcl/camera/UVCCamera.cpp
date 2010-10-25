@@ -81,7 +81,7 @@ void UVCCamera::loadCapabilities()
 	 * capabilities is an int that can be bitmasked agains capability flags.
 	 * For now we are interested in VIDEO_CAPTRE and AUDIO
 	 */
-	if (info.capabilities & V4L2_CAP_VIDEO_CAPTURE != 1)
+	if ((info.capabilities & V4L2_CAP_VIDEO_CAPTURE) != 1)
 	{
 		throw CameraException(CameraException::NOCAPTURE);
 	}
@@ -226,6 +226,12 @@ void UVCCamera::setConfiguration(const Configuration &c)
 		case MONO16:
 			newf.fmt.pix.pixelformat = V4L2_PIX_FMT_Y16;
 			break;
+
+		case YUYV411:
+		case RGB16:
+		case RGB32:
+		case ANY:
+			throw CameraException(CameraException::INVALIDFORMAT);
 	}
 
 	// lets just ignore interlacing for now
@@ -288,7 +294,7 @@ void UVCCamera::prepareForCapture()
 	// The buffer count may be less than we asked for
 	this->allocateBuffers(sizeof(CameraBuffer),  reqbuf.count);
 
-	for (int i=0;i<reqbuf.count; i++)
+	for (unsigned i=0;i<reqbuf.count; i++)
 	{
 		struct v4l2_buffer buffer;
 		buffer.type = reqbuf.type;
@@ -332,7 +338,7 @@ void UVCCamera::prepareForCapture()
 void UVCCamera::shutdown()
 {
 	// cleanup the mmap'd buffers
-	for (int i=0; i<numBuffers; i++)
+	for (unsigned i=0; i<numBuffers; i++)
 		munmap(buffers[i].start, buffers[i].length);
 
 	this->destroyBuffers();
@@ -421,24 +427,7 @@ void UVCCamera::loadControls()
 		if (ctrl.flags & V4L2_CTRL_FLAG_DISABLED)
 			continue;
 
-		if (ctrl.type == V4L2_CTRL_TYPE_MENU)
-		{
-			cout << "Menu:    " << ctrl.name << endl;
-			cout << "   ID : " << ctrl.id << endl;
-
-			v4l2_querymenu menu;
-			menu.id = ctrl.id;
-			cout << "   Menu Items:" << endl;
-			for (menu.index = ctrl.minimum; menu.index <= ctrl.maximum; menu.index++)
-			{
-				if (0 == ioctl(cam, VIDIOC_QUERYMENU, &menu))
-				{
-					cout << "      " << menu.index << " " <<  menu.name << endl;
-					
-				}
-			}
-		}
-		else 
+		if (ctrl.type != V4L2_CTRL_TYPE_MENU)
 		{
 			cout << "Control: " << ctrl.name << endl;
 			cout << "   Min: " << ctrl.minimum << endl;
@@ -463,6 +452,13 @@ uint32_t UVCCamera::mapControlToV4L2( const Control c ) const
 	case Camera::WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
 	case Camera::SHARPNESS:return V4L2_CID_SHARPNESS;
 	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE_ABSOLUTE;
+
+	// Unhandled V4L options
+	default:
+	case Camera::ISO:
+	case Camera::APERTURE:
+	case Camera::FRAMERATE:
+			       throw CameraException(CameraException::CONTROLERROR);
     }
 }
 

@@ -66,7 +66,7 @@ public:
     virtual ~XException(){};
 
     int getCause() const { return 1;};
-    const std::string getReason() const {"Failed To Connect";};
+    const std::string getReason() const { return "Failed To Connect";};
 };
 
 }

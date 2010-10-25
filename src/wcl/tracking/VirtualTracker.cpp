@@ -47,7 +47,7 @@ namespace wcl
 		socket->readUntil(&objectCount, 4);
 		objectCount = ntohl(objectCount);
 
-		for (unsigned i=0;i<objectCount;i++)
+		for (int32_t i=0;i<objectCount;i++)
 		{
 			char name[9];
 			name[8] = '\0';

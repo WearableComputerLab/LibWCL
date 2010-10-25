@@ -79,7 +79,7 @@ namespace wcl {
 
 		err=dc1394_camera_enumerate (d, &list);
 
-		for( int i = 0 ; i < list->num; i++ ){
+		for( unsigned i = 0 ; i < list->num; i++ ){
 			DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
 			this->cameras.push_back(c);
 		}

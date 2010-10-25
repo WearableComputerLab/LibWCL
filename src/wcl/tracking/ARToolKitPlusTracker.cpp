@@ -37,8 +37,8 @@ namespace wcl {
 ARToolKitPlusTracker::ARToolKitPlusTracker( const unsigned imarkerWidth, const int thresholdValue,
 					    const unsigned iscreenWidth, const unsigned iscreenHeight,
 					    const float inearplane, const float ifarplane):
-    cameraBuffer(NULL), markerWidth(imarkerWidth), scale(CM), cameraFormat(Camera::RGB8),
-    nearplane(inearplane), farplane(ifarplane),inited(false)
+    markerWidth(imarkerWidth), cameraBuffer(NULL),
+    nearplane(inearplane), farplane(ifarplane),inited(false),scale(CM),cameraFormat(Camera::RGB8)
 {
 
     assert( imarkerWidth != 0 && "Using ARToolKitPlus with a marker width of zero doesn't make sense");

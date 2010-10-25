@@ -361,7 +361,7 @@ namespace wcl
 			/**
 			 * The number of buffers we have
 			 */
-			int numBuffers;
+			unsigned numBuffers;
 
 			/**
 			 * The Current Camera related parameters

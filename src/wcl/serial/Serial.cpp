@@ -854,7 +854,7 @@ Serial::scanBaudRate( const char testchar, const BaudRate baudstotry )
 
     // Test the found baudrate against those in the list the user wanted
     // if they never wanted that rate, return false (despite the rate being set)
-    if( rate & baudstotry == 0 )
+    if( ( rate & baudstotry ) == 0 )
         return false;
 
     // Set the baudrate to the found rate

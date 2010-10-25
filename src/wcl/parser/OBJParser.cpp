@@ -44,7 +44,7 @@ namespace wcl {
 
 
 OBJParser::OBJParser(istream &stream, RelativeToAbsolute ifunc):
-    input(&stream), func(ifunc), material(NULL), group(NULL)
+    func(ifunc), input(&stream), material(NULL), group(NULL)
 {
 }
 
@@ -422,7 +422,6 @@ void OBJParser::print()
             printf("     - Material: %s\n",
                    f->material?f->material->name.c_str():"<NONE>");
 
-            bool first=true;
             for( vector<OBJVertex *>::iterator vit = f->verts.begin();
                  vit != f->verts.end();
                  ++vit ){

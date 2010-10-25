@@ -101,6 +101,8 @@ namespace wcl
 		hnf.n[2] = normal[2] / rootA2B2C2;
 
 		hnf.p = d / rootA2B2C2;
+
+		return hnf;
 	}
 
 	wcl::Vector Plane::getNormal() const
