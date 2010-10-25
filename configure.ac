@@ -304,7 +304,7 @@ if test "x$enable_examples" = "xyes" ; then
 	if test "x$enable_tracker_artoolkitplus" = "xyes" ||
 	   test "x$enable_video" = "xyes" ||
 	   test "x$enable_camera" = "xyes"; then
-	        PKG_CHECK_MODULES(GL,gl glu);
+	        PKG_CHECK_MODULES(GL,gl glu)
 		EXAMPLE_LIBS="$GL_LIBS"
 		EXAMPLE_INCLUDES="$GL_CFLAGS"
 
