@@ -286,7 +286,8 @@ fi
 if test "x$enable_wiimote" = "xyes"; then
     PKG_CHECK_EXISTS(cwiid, 
 		     [PKG_CHECK_MODULES(CWIID, cwiid)],
-		     [AC_CHECK_HEADERS(cwiid.h, CWIID_LIBS=-lcwiid, 
+		     [AC_CHECK_HEADERS(cwiid.h,
+				       CWIID_LIBS="-lcwiid -lbluetooth", 
 				       AC_MSG_ERROR([You need to install libcwiid for wii support]))]
 		     )
     PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $CWIID_LIBS"
