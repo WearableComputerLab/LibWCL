@@ -61,7 +61,7 @@ UDPServer::UDPServer( const unsigned port, const std::string &mcastgroup ) throw
 	// Ask the kernel to enable multicast support for the requested group
 	
 	this->mreq.imr_multiaddr.s_addr=this->address.sin_addr.s_addr;
-	this->mreq.imr_interface.s_addr=this->address.sin_port;
+	this->mreq.imr_interface.s_addr=INADDR_ANY;
 	if (setsockopt(this->sockfd,IPPROTO_IP,IP_ADD_MEMBERSHIP,&mreq,sizeof(mreq)) == -1) {
 	    this->close();
 	    throw SocketException(this);
