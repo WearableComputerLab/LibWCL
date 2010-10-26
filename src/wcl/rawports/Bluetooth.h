@@ -16,10 +16,11 @@
 #include <string>
 #include <vector>
 
+#include <wcl/api.h>
 
 namespace wcl
 {
-	struct BluetoothDevice
+	struct WCL_API BluetoothDevice
 	{
 		std::string name;
 		std::string mac;
@@ -30,7 +31,7 @@ namespace wcl
 			: name(n), mac(m) {}
 	};
 
-	class Bluetooth {
+	class WCL_API Bluetooth {
 		public:
 
 
