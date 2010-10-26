@@ -31,7 +31,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <wcl/serial/Serial.h>
+#include <wcl/rawports/Serial.h>
 
 #define DEVICE "/dev/ttyS0"
 #define BUFSIZE 4096

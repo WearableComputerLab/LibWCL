@@ -30,7 +30,7 @@
 #include <sstream>
 #include <string>
 
-#include <wcl/bluetooth/Bluetooth.h>
+#include <wcl/rawports/Bluetooth.h>
 
 
 using namespace std;
