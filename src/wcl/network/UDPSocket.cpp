@@ -162,7 +162,7 @@ ssize_t UDPSocket::write( const UDPPacket *packet ) throw (SocketException)
  * @param peek Indicate if the 
  * @return -1 on error, 0 on read with nothing waiting, or the amount read
  */
-ssize_t UDPSocket::read( UDPPacket *packet, const bool peek = false ) throw (SocketException)
+ssize_t UDPSocket::read( UDPPacket *packet, const bool peek) throw (SocketException)
 {
     assert( packet != NULL && packet->getData() != NULL);
 
