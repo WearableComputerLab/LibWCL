@@ -96,16 +96,21 @@ bool UDPSocket::create()
     return true; 
 }
 
-ssize_t UDPSocket::read(void *buffer, size_t size) throw (SocketException)
+ssize_t UDPSocket::read(void *buffer, const size_t size, const bool peek) throw (SocketException)
 {
-    ssize_t retval = recv(this->sockfd, buffer, size, 0x0);
+    int flags = 0;
+
+    if( peek )
+	flags = MSG_PEEK;
+
+    ssize_t retval = recv(this->sockfd, buffer, size, flags);
     if ( retval == -1 ){
 	throw SocketException(this);
     }
     return retval;
 }
 	
-ssize_t UDPSocket::write(const void *buffer, size_t size) throw (SocketException)
+ssize_t UDPSocket::write(const void *buffer, const size_t size) throw (SocketException)
 {
     ssize_t retval = sendto(this->sockfd, buffer, size, 0x0, (struct sockaddr *)&address, sizeof(address));
 
@@ -149,22 +154,29 @@ ssize_t UDPSocket::write( const UDPPacket *packet ) throw (SocketException)
 }
 
 /**
- * Read data into the given packet. The packet should be preallocated with a valid buffer & size
+ * Read data into the given packet. The packet should be preallocated with a
+ * valid buffer & size. Note: When reading you must read an entire packet
+ * or the remaining data will be discarded in UDP
  *
  * @param packet the Packet to read into
+ * @param peek Indicate if the 
  * @return -1 on error, 0 on read with nothing waiting, or the amount read
  */
-ssize_t UDPSocket::read( UDPPacket *packet ) throw (SocketException)
+ssize_t UDPSocket::read( UDPPacket *packet, const bool peek = false ) throw (SocketException)
 {
     assert( packet != NULL && packet->getData() != NULL);
 
+    int flags = 0;
     struct sockaddr_in clientAddress;
     size_t clientAddressLen = sizeof(clientAddress);
+
+    if( peek )
+	flags = MSG_PEEK;
 
     ssize_t result =  recvfrom( this->sockfd, 
 			packet->getData(), 
 			packet->getSize(), 
-			0x0,
+			flags,
 			(struct sockaddr *)&clientAddress, 
 			(socklen_t*)&clientAddressLen);
 

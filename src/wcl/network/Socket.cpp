@@ -129,20 +129,25 @@ bool Socket::bind( const unsigned port )
  *
  * @param buffer The buffer to read into
  * @param size The size of the buffer
+*  @param peek To peak at the message and not remove it from the network queue
  * @return The amount of data read if all ok, -1 on a read error, not caused
  *         by the close of a socket, 0 on a graceful close Note, the amount
  *        of data actually read may not match what you requested. This function
  *        will return as soon as some data has been read
  * @throws SocketException if the remote end has forcable closed the socket 
  */
-ssize_t Socket::read ( void *buffer, size_t size ) throw (SocketException)
+ssize_t Socket::read ( void *buffer, const size_t size, const bool peek) throw (SocketException)
 {
+    int flags = 0;
 
     if ( !isValid()){
 	return -1;
     }
 
-    ssize_t retval = ::read(this->sockfd, buffer, size );
+    if( peek )
+	flags = MSG_PEEK;
+
+    ssize_t retval = ::recv(this->sockfd, buffer, size, flags );
     if ( retval == -1 && errno == ECONNRESET){
 	throw SocketException(this);
     }
@@ -153,24 +158,25 @@ ssize_t Socket::read ( void *buffer, size_t size ) throw (SocketException)
  * Attempt to read data from a socket into a buffer. This method
  * will block until the requested size has been read. If you don't want
  * the socket to block, (even if it's nonblocking) use read. Please note
- * if using this on a blocking socket, it will act like a busy loop thrashing.
+ * if using this on a non blocking socket, it will act like a busy loop thrashing.
  *
  * @param buffer The buffer to read into
  * @param size The amount of data to read, the buffer msut be at least this size
  * @throws SocketException if the remote end has forcable closed the socket
  */
-void Socket::readUntil ( void *buffer, size_t size ) throw (SocketException)
+void Socket::readUntil ( void *buffer, const size_t size ) throw (SocketException)
 {
     ssize_t amount;
+    ssize_t total = size;
 
-    while( size > 0 ){
-	amount = this->read( buffer, size );
+    while( total > 0 ){
+	amount = this->read( buffer, total );
 
 	// We just can't increment a void * pointer as we don't know what it is
 	// pointing too. However, we know that ::read returns in bytes so we 
 	// cast to a type which can be validly incremented
 	buffer = amount + (uint8_t *)buffer; 
-	size-=amount;
+	total-=amount;
     }
 }
 
@@ -183,18 +189,19 @@ void Socket::readUntil ( void *buffer, size_t size ) throw (SocketException)
  * @param size The amount of data to write, the buffer must be at least this size.
  * @throws SocketException if the remote peer has forced the socket closes.
  */
-void Socket::writeUntil ( void *buffer, size_t size ) throw (SocketException)
+void Socket::writeUntil ( void *buffer, const size_t size ) throw (SocketException)
 {
     ssize_t amount;
+    ssize_t total = size;
 
-    while( size > 0 ){
-		amount = this->write( buffer, size );
+    while( total > 0 ){
+		amount = this->write( buffer, total );
 
 		// We just can't increment a void * pointer as we don't know what it is
 		// pointing too. However, we know that ::read returns in bytes so we 
 		// cast to a type which can be validly incremented
 		buffer = amount + (uint8_t *)buffer; 
-		size-=amount;
+		total-=amount;
     }
 }
 
@@ -209,7 +216,7 @@ void Socket::writeUntil ( void *buffer, size_t size ) throw (SocketException)
  * @return The amount of charaters written
  * @throws SockcetException if the remote peer has forced the socket * closed
  */
-ssize_t Socket::write( const void *buffer, size_t size ) throw (SocketException)
+ssize_t Socket::write( const void *buffer, const size_t size ) throw (SocketException)
 {
 	if ( !isValid()){
 		return -1;

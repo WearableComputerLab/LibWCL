@@ -42,12 +42,12 @@ class WCL_API UDPSocket: public Socket
 {
     public:
 	UDPSocket ( const std::string &hostname, const unsigned port ) throw (SocketException);
-	ssize_t write(const void* buffer, size_t size) throw (SocketException);
-	ssize_t read(void *buffer, size_t size) throw (SocketException);
+	ssize_t write(const void* buffer, const size_t size) throw (SocketException);
+	ssize_t read(void *buffer, const size_t size, const bool peek = false) throw (SocketException);
 
 	// UDP Packet interface
 	ssize_t write( const UDPPacket * ) throw (SocketException);
-	ssize_t read( UDPPacket * ) throw (SocketException);
+	ssize_t read( UDPPacket *, const bool peek ) throw (SocketException);
 
     protected:
 	UDPSocket();

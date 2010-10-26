@@ -52,11 +52,11 @@ class WCL_API Socket
 		enum BlockingMode { BLOCKING, NONBLOCKING };
 
 		virtual ~Socket();
-		virtual ssize_t read ( void *buffer, size_t size ) throw (SocketException);
-		virtual ssize_t write( const void *buffer, size_t size ) throw (SocketException);
+		virtual ssize_t read ( void *buffer, const size_t size, const bool peek = false ) throw (SocketException);
+		virtual ssize_t write( const void *buffer, const size_t size ) throw (SocketException);
 		virtual ssize_t write( const std::string & ) throw (SocketException);
-		virtual void readUntil ( void *buffer, size_t size ) throw (SocketException);
-		virtual void writeUntil ( void *buffer, size_t size ) throw (SocketException);
+		virtual void readUntil ( void *buffer, const size_t size ) throw (SocketException);
+		virtual void writeUntil ( void *buffer, const size_t size ) throw (SocketException);
 		virtual ssize_t getAvailableCount();
 		virtual void close();
 		virtual bool isValid() const;
