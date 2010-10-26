@@ -32,7 +32,7 @@
 #include <wcl/api.h>
 #include <wcl/tracking/PolhemusTrackedObject.h>
 #include <wcl/tracking/Tracker.h>
-#include <wcl/serial/Serial.h>
+#include <wcl/rawports/Serial.h>
 
 namespace wcl
 {
