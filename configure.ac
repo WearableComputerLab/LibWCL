@@ -84,7 +84,7 @@ AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry cla
 #
 # Support for Raw ports
 #
-AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial/parallel]), enable_rawports="yes" , enable_rawports="no")
+AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial,parallel, bluetooth]), enable_rawports="yes" , enable_rawports="no")
 
 # Support for X11
 #
@@ -94,9 +94,6 @@ AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_
 #
 AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
 
-# Support for bluetooth 
-#
-AC_ARG_ENABLE(bluetooth, AC_HELP_STRING([--enable-bluetooth], [Enable Bluetooth IO Support]), enable_bluetooth="yes" , enable_bluetooth="no")
 
 # Support for ARToolkitPlus Tracking
 #
@@ -124,7 +121,6 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_camera_uvc="yes";
 	     enable_gestures="yes";
 	     enable_vicon="yes";
-	     enable_bluetooth="yes";
 	     enable_geometry="yes";
 	     enable_x11="yes";
 	     enable_parsers="yes";
@@ -146,7 +142,6 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_geometry" = "xno" && \
    test "x$enable_gestures" = "xno" && \
    test "x$enable_rawports" = "xno" && \ 
-   test "x$enable_bluetooth" = "xno" && \ 
    test "x$enable_camera_uvc" = "xno" && \
    test "x$enable_x11" = "xno" && \
    test "x$enable_camera_virtual" = "xno" && \
@@ -299,7 +294,7 @@ if test "x$enable_wiimote" = "xyes"; then
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $CWIID_CFLAGS"
 fi
 
-if test "x$enable_bluetooth" = "xyes"; then
+if test "x$enable_rawports" = "xyes"; then
     PKG_CHECK_MODULES(BLUETOOTH, bluez)
     PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $BLUETOOTH_LIBS"
     PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $BLUETOOTH_CFLAGS"
@@ -378,8 +373,7 @@ echo "Gesture recognition           : $enable_gestures"
 echo "Geometry classes              : $enable_geometry"
 echo "Vicon MoCap Support           : $enable_vicon"
 echo "X11 Support                   : $enable_x11"
-echo "Rawports Support(com/lpt)     : $enable_rawports"
-echo "Bluetooth Support             : $enable_bluetooth"
+echo "Rawports Support(com/lpt/bt)  : $enable_rawports"
 echo "UVC Camera support            : $enable_camera_uvc"
 echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
@@ -405,7 +399,6 @@ AC_SUBST(EXAMPLE_INCLUDES)
 #
 
 AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
-AM_CONDITIONAL(ENABLE_BLUETOOTH, test "x$enable_bluetooth" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
@@ -433,10 +426,11 @@ AC_CONFIG_FILES([Makefile
 				 examples/camera/Makefile
 				 examples/gestures/Makefile
 				 examples/network/Makefile
-				 examples/parallel/Makefile
 				 examples/parsers/Makefile
 				 examples/polhemus/Makefile
+				 examples/bluetooth/Makefile
 				 examples/serial/Makefile
+				 examples/parallel/Makefile
 				 examples/vicon/Makefile
 				 examples/video/Makefile
 				 examples/wiimote/Makefile

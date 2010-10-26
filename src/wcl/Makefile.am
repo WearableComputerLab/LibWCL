@@ -284,24 +284,16 @@ maths_sources=maths/Matrix.cpp\
 rawports_headers=
 rawports_sources=
 if ENABLE_RAWPORTS
-rawports_headers+=parallel/Parallel.h\
-		 serial/Serial.h
+rawports_headers+=rawports/Bluetooth.h\
+                  rawports/Parallel.h\
+		          rawports/Serial.h
 
-rawports_sources+=parallel/Parallel.cpp\
-		 serial/Serial.cpp
+rawports_sources+=rawports/Bluetooth.cpp\
+                  rawports/Parallel.cpp\
+		          rawports/Serial.cpp
 endif
 
 
-#######################################################################
-#
-# Raw ports
-#
-bluetooth_headers=
-bluetooth_sources=
-if ENABLE_BLUETOOTH
-bluetooth_headers+=bluetooth/Bluetooth.h
-bluetooth_sources+=bluetooth/Bluetooth.cpp
-endif
 
 
 #####################################################################
@@ -339,8 +331,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(x11_headers)\
 				$(parser_headers)\
 				$(video_headers) \
-				$(wiimote_headers) \
-				$(bluetooth_headers)
+				$(wiimote_headers) 
 
 
 libwcl_la_SOURCES=$(common_sources)\
@@ -358,6 +349,5 @@ libwcl_la_SOURCES=$(common_sources)\
 		 $(x11_sources)\
 		 $(parser_sources)\
 		 $(video_sources) \
-		 $(wiimote_sources) \
-		 $(bluetooth_sources)
+		 $(wiimote_sources) 
 
