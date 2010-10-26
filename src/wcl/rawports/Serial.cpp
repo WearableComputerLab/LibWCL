@@ -29,7 +29,7 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <string.h>
-#include <wcl/serial/Serial.h>
+#include <wcl/rawports/Serial.h>
 
 using namespace wcl;
 

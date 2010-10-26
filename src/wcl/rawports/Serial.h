@@ -31,6 +31,8 @@
 #include <string>
 #include <wcl/api.h>
 
+#include "IODevice.h"
+
 namespace wcl {
 
 /**
@@ -76,12 +78,9 @@ namespace wcl {
  *  also include the RING Signal line.
  *
  */
-class WCL_API Serial
+class WCL_API Serial : public IODevice
 {
 public:
-    enum BlockingMode { BLOCKING,
-			NONBLOCKING, };	// Default is blocking
-
     enum StopBits { ONE=0,
 		    TWO=CSTOPB };
 
@@ -168,17 +167,17 @@ public:
                const Flush = INPUT,
 	       const Signal= (const Signal)0 );  // Set this to DCD to NOT ignore the DCD signal
 
-    bool flush( const Flush = BOTH  );	// Clear fifos, don't write it
+    virtual bool flush( const Flush = BOTH  );	// Clear fifos, don't write it
     bool drain();			// Wait for data to be written
 
-    virtual bool close(bool = true);	// close & optionall restores preopen state
+    bool close(bool = true);	// close & optionall restores preopen state
 
     virtual ssize_t read ( void *buffer, size_t size );
     virtual ssize_t write( const void *buffer, size_t size );
     virtual ssize_t write( const std::string & );
     virtual ssize_t getAvailableCount() const;
 
-    bool isValid() const;
+    virtual bool isValid() const;
 
     BaudRate getBaudRate() const;
     BlockingMode getBlockingMode() const;
@@ -191,7 +190,7 @@ public:
     // When calling theses, check the return values. If
     // a call is not valid on the given port it will fail and return
     // false.
-    bool setBlockingMode( const BlockingMode );
+    virtual bool setBlockingMode( const BlockingMode );
     bool setStopBits( const StopBits );
     bool setParity( const Parity, const bool strip=true, const bool check=true, const bool mark=false );
     bool setDataBits( const DataBits );
