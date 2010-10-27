@@ -355,7 +355,7 @@ Serial::write( const std::string &str )
  * @return the amount of bytes available or -1 on error
  */
 ssize_t
-Serial::getAvailableCount() const
+Serial::getAvailableCount() 
 {
     if( isValid()){
         int bytes;

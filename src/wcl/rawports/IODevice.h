@@ -45,7 +45,7 @@ namespace wcl
 			virtual ssize_t write( const void *buffer, size_t size ) = 0;
 			virtual ssize_t write( const std::string & ) = 0;
 			virtual bool isValid() const = 0;
-			virtual ssize_t getAvailableCount() const = 0;
+			virtual ssize_t getAvailableCount() = 0;
 
 	};
 

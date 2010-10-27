@@ -87,7 +87,7 @@ namespace wcl
 
 		/*allocate the memory for the read call*/
 		char data [bytes];
-		int result = read (fd, data, bytes);
+		int result = ::read (fd, data, bytes);
 
 		/*Nuke anything in the buffer if no data was read*/
 		if (result <= 0)
@@ -101,8 +101,15 @@ namespace wcl
 	}
 
 
+	ssize_t Bluetooth::read(void* buffer, size_t bytes){
 
-	bool Bluetooth::setBlocking(bool blocking){
+		int result = ::read (fd, buffer, bytes);
+		return result;
+	}
+
+
+
+	bool Bluetooth::setBlockingMode(BlockingMode blocking){
 
 		/*Get the current socket flags*/
 		int flags = fcntl (fd, F_GETFL, 0);
@@ -133,7 +140,7 @@ namespace wcl
 
 	/*Lets us know how much data is waiting on the socket, also a -1 occurs if the
 	 * device has been disconnected.*/
-	int Bluetooth::dataAvailable(){
+	ssize_t Bluetooth::getAvailableCount(){
 		int readmask = 0;
 
 		fd_set rfds;
@@ -180,17 +187,22 @@ namespace wcl
 
 	}
 
-	int Bluetooth::close(){
+	bool Bluetooth::close(bool ){
 		return ::close(this->fd);
 	}
 
 	int Bluetooth::writeChar(char *c){
-		return write(this->fd, c, 1);
+		return ::write(this->fd, c, 1);
 	}
 
-	int Bluetooth::writeLine(std::string line){
+	ssize_t Bluetooth::write(const std::string& line){
 		int result =  ::write(this->fd, line.c_str(), line.size());
-		return (bool)result;
+		return result;
+	}
+
+	ssize_t Bluetooth::write(const void* buffer, size_t bytes ){
+		int result =  ::write(this->fd, buffer, bytes);
+		return result;
 	}
 
 	bool Bluetooth::flush(){
