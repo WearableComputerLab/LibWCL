@@ -285,6 +285,7 @@ rawports_headers=
 rawports_sources=
 if ENABLE_RAWPORTS
 rawports_headers+=rawports/Bluetooth.h\
+				  rawports/IODevice.h\
                   rawports/Parallel.h\
 		          rawports/Serial.h
 

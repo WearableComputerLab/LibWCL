@@ -49,7 +49,7 @@ namespace wcl
 			virtual ssize_t getAvailableCount();
 
 			// TODO: Fix isValid in Bluetooth
-			virtual bool isValid() {return true;};
+			virtual bool isValid() const {return true;};
 
 			static std::vector<BluetoothDevice> scanForDevices();
 
@@ -58,7 +58,7 @@ namespace wcl
 			bool reConnect(bool blocking);
 			int readRaw(std::string&, int bytes);
 			int writeChar(char* c);
-			bool flush();
+			virtual bool flush(const Flush = BOTH);
 			int getFD();
 			std::string getName();
 			//char * scan();

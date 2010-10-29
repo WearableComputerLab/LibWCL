@@ -205,7 +205,7 @@ namespace wcl
 		return result;
 	}
 
-	bool Bluetooth::flush(){
+	bool Bluetooth::flush(const Flush f){
 
 		std::string buf;
 		int result = readRaw(buf, 1024*64);

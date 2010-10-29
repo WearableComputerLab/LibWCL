@@ -27,6 +27,8 @@
 #ifndef WCL_IO_DEVICE_H 
 #define WCL_IO_DEVICE_H 
 
+#include <termios.h>
+#include <wcl/api.h>
 
 namespace wcl
 {
@@ -35,6 +37,12 @@ namespace wcl
 			enum BlockingMode { 
 				BLOCKING,
 				NONBLOCKING, 
+			};
+			
+			enum Flush {
+				INPUT  = TCIFLUSH,
+				OUTPUT = TCOFLUSH,
+				BOTH   = TCIOFLUSH,
 			};
 
 			virtual ~IODevice() {};
@@ -45,6 +53,7 @@ namespace wcl
 			virtual ssize_t write( const void *buffer, size_t size ) = 0;
 			virtual ssize_t write( const std::string & ) = 0;
 			virtual bool isValid() const = 0;
+			virtual bool flush( const Flush = BOTH) = 0;
 			virtual ssize_t getAvailableCount() = 0;
 
 	};

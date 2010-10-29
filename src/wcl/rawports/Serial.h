@@ -127,11 +127,6 @@ public:
     enum InputMode { RAW,		// Character mode
 		     LINE };		// Line mode
 
-    enum Flush {
-		    INPUT  = TCIFLUSH,
-		    OUTPUT = TCOFLUSH,
-		    BOTH   = TCIOFLUSH,
-     };
 
     // The lines/Signal listed below can be used with the
     // setLine and getSignal methods to individually get
