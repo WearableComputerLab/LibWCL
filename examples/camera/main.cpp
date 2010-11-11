@@ -37,6 +37,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include <wcl/Exception.h>
 #include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
 
@@ -255,9 +256,9 @@ int main(int argc, char** argv)
 	delete cam;
 
     }
-    catch (std::string s)
+    catch (Exception e)
     {
-	cout << "Exception Occured: " << s << endl;
+	cout << "Exception Occured: " << e.what() << endl;
     }
 
     return 0;

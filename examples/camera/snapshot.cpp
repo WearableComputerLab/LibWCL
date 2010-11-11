@@ -38,6 +38,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include <wcl/Exception.h>
 #include <wcl/camera/CameraFactory.h>
 
 using namespace std;
@@ -264,9 +265,9 @@ int main(int argc, char** argv)
 	cam->shutdown();
 	delete cam;
     }
-    catch (std::string s)
+    catch (Exception e)
     {
-	cout << "Exception Occured: " << s << endl;
+	cout << "Exception Occured: " << e.what() << endl;
 	return 1;
     }
 
