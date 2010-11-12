@@ -29,6 +29,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <iostream>
+#include <sstream>
 #include <dc1394/dc1394.h>
 #include <dc1394/utils.h>
 
@@ -45,6 +46,12 @@ namespace wcl {
 		guid(myguid),
 		running(false)
 	{
+
+		//why do we need a GUID and an ID?!
+		stringstream ss;
+		ss << guid;
+		this->id = ss.str();
+
 		this->d = dc1394_new ();
 		if( !this->d )
 			throw CameraException(CameraException::EACCESS);

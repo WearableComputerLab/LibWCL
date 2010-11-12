@@ -45,6 +45,10 @@ namespace wcl
 
 		public:
 
+			/**
+			 * Enumeration for all of the buttons on the wiimote
+			 * and nunchuk.
+			 */
 			enum Button
 			{
 				BUTTON_2 = 0,
@@ -118,8 +122,19 @@ namespace wcl
 			 * Gets the accelerometer data.
 			 */
 			wcl::Vector getAccelerometer() const;
+
+
+			/**
+			 * Gets the accelerometer data from the nunchuk,
+			 * or a zero vector if it is not plugged in.
+			 */
 			wcl::Vector getNunchukAccelerometer() const;
 
+
+			/**
+			 * Gets the X/Y position of the nunchuk stick,
+			 * or (0,0) if it is not plugged int.
+			 */
 			wcl::Vector getNunchukStick() const;
 
 			/**
@@ -131,6 +146,10 @@ namespace wcl
 			bool getButton(Button b) const;
 
 
+			/**
+			 * Returns the raw button state as a uint16.
+			 * Each button is bitmasked.
+			 */
 			uint16_t getRawButtonState() const;
 
 			/**
