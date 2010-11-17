@@ -47,17 +47,23 @@ namespace wcl
 		}
 		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
+	
 		setContinuous(false);
 		usleep(2000);
-		clearInput();
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
 		{
 			throw std::string(strerror(errno));
 		}
+		
+		
+		clearInput();
 		setAsciiOutput();
 		setDataFormat();
 		setUnits(MM);
+
+
+		clearInput();
 
 		if (type == PATRIOT)
 		{
@@ -74,6 +80,7 @@ namespace wcl
 		}
 
 		//setContinuous(true);
+		//printf("connection.getAvailableCount init: %d\n",connection.getAvailableCount());
 	}
 
 	Polhemus::~Polhemus()
@@ -86,6 +93,8 @@ namespace wcl
 
 	void Polhemus::clearInput()
 	{
+		connection.drain();
+		connection.flush();
 		int bytesAvailable = connection.getAvailableCount();
 		char* rubbish = new char[bytesAvailable];
 		connection.read((void*) rubbish, bytesAvailable);
@@ -104,49 +113,44 @@ namespace wcl
 		else if (type == FASTRAK)
 			expectedBytes = 54;
 
+
 		if (activeSensorCount > 0)
 		{
 			if (!continuous)
 			{
 				connection.write("P");
+				connection.drain();
 			}
+			
+			/*
+			char response[140];
+			memset(response, 0, 140);
+			size_t sz = connection.getAvailableCount();
+			connection.readUntil(response, 138);
+			printf("%d:%s\n", sz, response);
+			*/
+	
 
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				if (connection.getAvailableCount() >= expectedBytes)
+				connection.readUntil((void*) &response, expectedBytes);
+				size_t sz = connection.getAvailableCount();
+				response[expectedBytes] = '\0';
+					
+				//printf("%d %s\n", sz, response);
+				
+				int count = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+				assert (number <= sensors.size());
+				
+				if (units == MM)
 				{
-					if (type == PATRIOT)
-					{
-						bytesRead = connection.read((void*) &response, 69);
-						response[69] = '\0';
-					}
-					else if (type == FASTRAK)
-					{
-						bytesRead = connection.read((void*) &response, 54);
-						response[54] = '\0';
-					}
-
-					if (bytesRead == expectedBytes)
-					{
-						//std::cout << "BytesRead: " << bytesRead << std::endl;
-						//std::cout << "Reading Update Response: " << response;
-						(void)sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
-						if (units == MM)
-						{
-							sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
-						}
-						else
-						{
-							sensors[number-1].update(x,y,z,rw,rx,ry,rz);
-						}
-					}
-					else
-					{
-						std::cout << "Did not read the right number of bytes, ignoring" << std::endl;
-						connection.flush();
-						clearInput();
-					}
+					sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
 				}
+				else
+				{
+					sensors[number-1].update(x,y,z,rw,rx,ry,rz);
+				}
+				
 			}
 		}
 		else
