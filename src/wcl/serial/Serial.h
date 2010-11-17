@@ -176,6 +176,8 @@ public:
     virtual ssize_t read ( void *buffer, size_t size );
     virtual ssize_t write( const void *buffer, size_t size );
     virtual ssize_t write( const std::string & );
+	virtual void writeUntil( void *buffer, const size_t size);
+	virtual void readUntil(void *buffer, size_t size);
     virtual ssize_t getAvailableCount() const;
 
     bool isValid() const;

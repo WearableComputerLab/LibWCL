@@ -30,6 +30,7 @@
 #include <sys/ioctl.h>
 #include <string.h>
 #include <wcl/serial/Serial.h>
+#include <stdint.h>
 
 using namespace wcl;
 
@@ -317,6 +318,27 @@ Serial::read ( void *buffer, size_t size )
     return -1;
 }
 
+void
+Serial::readUntil(void *buffer, size_t size)
+{
+	ssize_t amount;
+    ssize_t total = size;
+
+    while( total > 0 ){
+	amount = this->read( buffer, total );
+	
+	assert( amount >= 0 );
+
+	// We just can't increment a void * pointer as we don't know what it is
+	// pointing too. However, we know that ::read returns in bytes so we 
+	// cast to a type which can be validly incremented
+	buffer = amount + (uint8_t *)buffer; 
+	total-=amount;
+    }
+
+}
+
+
 /**
  * Write the given buffer to the port. The buffer should be at least size long.
  * If serial::isvalid is false this method will simply return 0; Note this
@@ -347,6 +369,23 @@ ssize_t
 Serial::write( const std::string &str )
 {
     return this->write( str.c_str(), str.size());
+}
+
+void 
+Serial::writeUntil( void *buffer, const size_t size )
+{
+	ssize_t amount;
+    ssize_t total = size;
+
+    while( total > 0 ){
+		amount = this->write( buffer, total );
+
+		// We just can't increment a void * pointer as we don't know what it is
+		// pointing too. However, we know that ::read returns in bytes so we 
+		// cast to a type which can be validly incremented
+		buffer = amount + (uint8_t *)buffer; 
+		total-=amount;
+    }
 }
 
 /**
