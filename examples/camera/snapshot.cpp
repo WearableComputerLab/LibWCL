@@ -193,6 +193,11 @@ int main(int argc, char** argv)
 	}
 
 	cam = CameraFactory::getCamera(argv[1]);
+	if( cam == NULL ){
+	    cout << "Camera not found" << endl;
+	    return 1;
+	}
+
 	Camera::Configuration c;
 	c.width = MAX_RES;
 	c = cam->findConfiguration(c);
