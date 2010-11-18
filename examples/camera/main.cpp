@@ -256,7 +256,7 @@ int main(int argc, char** argv)
 	delete cam;
 
     }
-    catch (Exception e)
+    catch (Exception &e)
     {
 	cout << "Exception Occured: " << e.what() << endl;
     }
