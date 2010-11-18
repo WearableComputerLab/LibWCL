@@ -37,9 +37,11 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
-#include <wcl/Exception.h>
+#include <wcl/camera/CameraException.h>
 #include <wcl/camera/VirtualCamera.h>
 #include <wcl/camera/CameraFactory.h>
+
+#define WIDTH 640
 
 using namespace std;
 using namespace wcl;
@@ -49,13 +51,11 @@ unsigned char* data;
 
 void usage()
 {
-    printf("Usage: camera type [devicenode]\n"
+    printf("Usage: camera [devicenode]\n"
 	   "\n"
-	   "eg: camera 1 /dev/video0\n"
+	   "eg: camera /dev/video0\n"
 	   "\n"
-	   "Where type is:\n"
-	   "	1. UVC/Firewire\n"
-	   "	2. Virtual Camera\n"
+	   "If no device node is given the first available camera is used. If no physical camera exists, the virtual camera is used\n"
 	  );
 }
 
@@ -173,65 +173,51 @@ void keyboard(unsigned char key, int w, int h)
 
 int main(int argc, char** argv)
 {
-    if(argc < 2 ){
+    if(argc >=  2 &&
+       (strcmp(argv[1],"--help") == 0 ||
+        strcmp(argv[1],"-h" ) == 0)){
 	usage();
 	return 1;
     }
 
     try {
-	// Display info about all cameras
-	CameraFactory::printDetails(false);
-	std::vector<Camera *> cameras =
-	    CameraFactory::getCameras();
 
-	if( cameras.size() == 0 ){
-	    return 0;
-	}
+	if( argc == 2 ){
+	    cout << "Attempting to use Camera specified:" << argv[1] <<endl;
+	    cam = CameraFactory::getCamera(argv[1]);
+	} else {
+	    cout << "No Camera Specified, using CameraFactory to find the first camera..." << endl;
+	    std::vector<Camera *> cameras = CameraFactory::getCameras();
+	    CameraFactory::printDetails(false);
 
-
-	cout << "Opening Camera... ";
-
-	// Open the camera
-	switch( atoi(argv[1])){
-	    case 1:
-		{
-		    if( argc < 3 ){
-			cout << "Using Camera factory" << endl;
-			cam = CameraFactory::getCamera();
-		    } else {
-			cout << argv[2] <<endl;
-			cam = CameraFactory::getCamera(argv[2]);
-		    }
-
-		    if (cam == NULL ){
-			std::cout << "No usable cameras found" << std::endl;
-			exit(0);
-		    }
-		}
-		break;
-	    case 2: //Virtual Camera
+	    if( cameras.size() == 0 ){
+		cout << "No physical camera's found, using virtual camera" << endl;
 		cam = new VirtualCamera();
-		break;
-	    default:
-		usage();
-		return 1;
+	    } else {
+		cam = CameraFactory::getCamera();
+	    }
 	}
-
-	cout << "Done!" << endl;
+	if (cam == NULL ){
+	    std::cout << "No usable cameras found" << std::endl;
+	    exit(0);
+	}
 
 	/*
 	 * Print out camera details
 	 */
 	cam->printDetails();
 
+	cout << "Setting Camera to a width of " << WIDTH << " pixels" << endl;
+
 	Camera::Configuration c;
-	c.width = 640;
+	c.width = WIDTH;
 	cam->setConfiguration(cam->findConfiguration(c));
 
-	//set power frequency compensation to 50 Hz
+	//Set power frequency compensation to 50 Hz
+	//this is noncritical so don't stop the program if it fails
+	try {
 	cam->setControlValue(Camera::POWER_FREQUENCY, 1);
-
-	//cout << "about to grab frame, length is: " << cam.getBufferSize() << endl;
+	}catch(CameraException &e){}
 
 	// Create GLUT window
 	glutInit(&argc, argv);
