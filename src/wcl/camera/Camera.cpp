@@ -296,6 +296,37 @@ namespace wcl
 			case RGB32:
 			case BGR8:
 			case MONO8:
+				{
+				    switch( this->activeConfiguration.format ){
+					case RGB8:
+					    convertImageRGB8toMONO8(currentFrame,buffer,width,height);
+					    return buffer;
+
+					case YUYV422:
+						{
+						//create a temporary buffer
+						unsigned char *temp = new unsigned char[getFormatBufferSize(RGB8)];
+						convertImageYUYV422toRGB8(currentFrame, temp, width, height);
+						convertImageRGB8toMONO8(temp, buffer, width, height);
+						delete [] temp;
+						return buffer;
+						}
+
+					case MJPEG:
+						{
+#if ENABLE_VIDEO
+						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
+						dec.nextFrame(currentFrame, this->getFormatBufferSize());
+						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
+						return buffer;
+#endif
+						}
+
+					default:
+					    ;
+				    }
+				    goto NOTIMP;
+				}
 			case MONO16:
 			default:
 NOTIMP:
@@ -440,7 +471,7 @@ NOTIMP:
 	void Camera::setupConversionBuffer( const size_t buffersize )
 	{
 		if( this->conversionBuffer ){
-			if( this->conversionBuffer->length == buffersize )
+			if( this->conversionBuffer->length >= buffersize )
 				return;
 
 			delete this->conversionBuffer;
