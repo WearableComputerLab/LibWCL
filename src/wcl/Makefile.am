@@ -160,6 +160,8 @@ tracking_sources=
 
 if ENABLE_VICON
 tracking_headers+=\
+		    tracking/LazySusan.h \
+		    tracking/LazySusanTrackedObject.h \
 			tracking/Polhemus.h \
 			tracking/PolhemusTrackedObject.h \
 			tracking/TrackedObject.h \
@@ -170,6 +172,8 @@ tracking_headers+=\
 			tracking/VirtualTracker.h
 
 tracking_sources+=\
+		    tracking/LazySusan.cpp \
+		    tracking/LazySusanTrackedObject.cpp \
 			tracking/Polhemus.cpp \
 			tracking/PolhemusTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \

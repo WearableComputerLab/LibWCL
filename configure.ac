@@ -423,14 +423,15 @@ AC_CONFIG_FILES([Makefile
 				 src/wcl/Makefile
 				 examples/Makefile
 				 examples/artoolkitplus/Makefile
+				 examples/bluetooth/Makefile
 				 examples/camera/Makefile
 				 examples/gestures/Makefile
+				 examples/lazysusan/Makefile
 				 examples/network/Makefile
+				 examples/parallel/Makefile
 				 examples/parsers/Makefile
 				 examples/polhemus/Makefile
-				 examples/bluetooth/Makefile
 				 examples/serial/Makefile
-				 examples/parallel/Makefile
 				 examples/vicon/Makefile
 				 examples/video/Makefile
 				 examples/wiimote/Makefile

@@ -40,4 +40,7 @@ if ENABLE_WIIMOTE
 SUBDIRS+=wiimote
 endif
 
+
+SUBDIRS+=lazysusan
+
 endif
