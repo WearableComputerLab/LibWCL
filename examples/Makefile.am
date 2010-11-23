@@ -29,6 +29,7 @@ endif
 if ENABLE_RAWPORTS
 SUBDIRS+=serial
 SUBDIRS+=parallel
+SUBDIRS+=bluetooth
 endif
 
 if ENABLE_TRACKING_ARTOOLKITPLUS

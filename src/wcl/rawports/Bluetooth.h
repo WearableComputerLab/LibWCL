@@ -16,10 +16,13 @@
 #include <string>
 #include <vector>
 
+#include <wcl/api.h>
+
+#include "IODevice.h"
 
 namespace wcl
 {
-	struct BluetoothDevice
+	struct WCL_API BluetoothDevice
 	{
 		std::string name;
 		std::string mac;
@@ -30,26 +33,32 @@ namespace wcl
 			: name(n), mac(m) {}
 	};
 
-	class Bluetooth {
+	class WCL_API Bluetooth : public IODevice {
 		public:
 
 
 			Bluetooth();
 			virtual ~Bluetooth();
 
+			// for IODevice
+			virtual bool setBlockingMode(BlockingMode m);
+			virtual bool close(bool restoreState = true);
+			virtual ssize_t read ( void *buffer, size_t size );
+			virtual ssize_t write(const std::string& line);
+			virtual ssize_t write( const void *buffer, size_t size );
+			virtual ssize_t getAvailableCount();
+
+			// TODO: Fix isValid in Bluetooth
+			virtual bool isValid() const {return true;};
 
 			static std::vector<BluetoothDevice> scanForDevices();
 
 			/*IODevice Sigs*/
 			int connect(std::string dev, bool blocking);
 			bool reConnect(bool blocking);
-			int close();
 			int readRaw(std::string&, int bytes);
-			int dataAvailable();
-			int writeLine(std::string line);
 			int writeChar(char* c);
-			bool setBlocking(bool state);
-			bool flush();
+			virtual bool flush(const Flush = BOTH);
 			int getFD();
 			std::string getName();
 			//char * scan();

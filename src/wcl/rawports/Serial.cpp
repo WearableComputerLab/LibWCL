@@ -29,8 +29,8 @@
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <string.h>
-#include <wcl/serial/Serial.h>
 #include <stdint.h>
+#include <wcl/rawports/Serial.h>
 
 using namespace wcl;
 
@@ -394,7 +394,7 @@ Serial::writeUntil( void *buffer, const size_t size )
  * @return the amount of bytes available or -1 on error
  */
 ssize_t
-Serial::getAvailableCount() const
+Serial::getAvailableCount()
 {
     if( isValid()){
         int bytes;

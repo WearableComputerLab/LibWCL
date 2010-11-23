@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2010 Michael Marner <michael@20papercups.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -24,31 +24,39 @@
  * SUCH DAMAGE.
  */
 
+#ifndef WCL_IO_DEVICE_H 
+#define WCL_IO_DEVICE_H 
 
-#include <iostream>
-#include <vector>
-#include <sstream>
-#include <string>
+#include <termios.h>
+#include <wcl/api.h>
 
-#include <wcl/rawports/Bluetooth.h>
-
-
-using namespace std;
-using namespace wcl;
-
-
-int main(int argc, char* argv[])
+namespace wcl
 {
+	class WCL_API IODevice {
+		public:
+			enum BlockingMode { 
+				BLOCKING,
+				NONBLOCKING, 
+			};
+			
+			enum Flush {
+				INPUT  = TCIFLUSH,
+				OUTPUT = TCOFLUSH,
+				BOTH   = TCIOFLUSH,
+			};
 
-	cout << "Simple bluetooth example" << endl << endl;
+			virtual ~IODevice() {};
 
-	std::vector<wcl::BluetoothDevice> devices = Bluetooth::scanForDevices();
+			virtual bool setBlockingMode(BlockingMode m) = 0;
+			virtual bool close(bool restoreState) = 0;
+			virtual ssize_t read ( void *buffer, size_t size ) = 0;
+			virtual ssize_t write( const void *buffer, size_t size ) = 0;
+			virtual ssize_t write( const std::string & ) = 0;
+			virtual bool isValid() const = 0;
+			virtual bool flush( const Flush = BOTH) = 0;
+			virtual ssize_t getAvailableCount() = 0;
 
-	for (vector<BluetoothDevice>::iterator it = devices.begin(); it < devices.end(); ++it)
-	{
-		cout << "Found Device: " << it->name << " " << it->mac << endl;
-	}
+	};
 
-	return 0;
 }
-
+#endif
