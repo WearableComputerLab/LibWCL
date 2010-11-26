@@ -27,6 +27,7 @@
 /*
  * Simple test of the Binary Coded GrayCode Phase Shift code
  */
+#include <stdio.h>
 #include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -36,13 +37,13 @@
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
 
-#define IMAGE_WIDTH 1024
-#define IMAGE_HEIGHT 768
+#define IMAGE_WIDTH 640
+#define IMAGE_HEIGHT 480
 
 using namespace std;
 using namespace wcl;
 
-Camera *c;
+Camera *camera;
 GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
 
 GLvoid init()
@@ -65,7 +66,7 @@ void keyboard(unsigned char key, int w, int h)
     }
 }
 
-GLvoid display()
+GLvoid displayProjector()
 {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
@@ -80,10 +81,38 @@ GLvoid display()
 	glutSwapBuffers();
 }
 
+GLvoid displayCamera()
+{
+	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glPixelZoom(1.0f, -1.0f);
+	glRasterPos2i(-1, 1);
+	glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, camera->getFrame(Camera::RGB8));
+
+	glFlush();
+	glutSwapBuffers();
+}
+
+/**
+ * Constantly fetch a new image from the camera to display
+ */
+GLvoid idle()
+{
+	glutPostRedisplay();
+}
+
+
 int main(int argc, char** argv)
 {
     try {
-	c = CameraFactory::getCamera("/dev/video0");
+	Camera::Configuration config;
+	config.width=IMAGE_WIDTH;
+	config.height=IMAGE_HEIGHT;
+	camera = CameraFactory::findCamera(config);
     } catch(CameraException &e)
     {
 	cout << "CameraException:" << e.what() << endl;
@@ -94,10 +123,18 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);
     glutInitWindowPosition(100,100);
-    glutCreateWindow(argv[0]);
+    int window1 = glutCreateWindow(argv[0]);
     init();
-    glutDisplayFunc(display);
+    glutDisplayFunc(displayProjector);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+
+    glutInitWindowPosition(100+IMAGE_WIDTH,100);
+    int window2 = glutCreateWindow(argv[0]);
+    init();
+    glutDisplayFunc(displayCamera);
+    glutReshapeFunc(reshape);
+    glutIdleFunc(idle);
+
     glutMainLoop();
 }
