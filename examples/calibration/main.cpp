@@ -25,20 +25,25 @@
  */
 
 /*
- * Simple test of the Binary Coded Grey Phase Shift code
+ * Simple test of the Binary Coded GrayCode Phase Shift code
  */
+#include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
 #include <stdlib.h>
-#include "PatternGenerator.h"
+#include "GrayCode.h"
+#include <wcl/camera/CameraException.h>
+#include <wcl/camera/CameraFactory.h>
 
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 480
+#define IMAGE_WIDTH 1024
+#define IMAGE_HEIGHT 768
 
 using namespace std;
+using namespace wcl;
 
-PatternGenerator g(IMAGE_WIDTH, IMAGE_HEIGHT);
+Camera *c;
+GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
 
 GLvoid init()
 {
@@ -77,6 +82,14 @@ GLvoid display()
 
 int main(int argc, char** argv)
 {
+    try {
+	c = CameraFactory::getCamera("/dev/video0");
+    } catch(CameraException &e)
+    {
+	cout << "CameraException:" << e.what() << endl;
+	exit(0);
+    }
+
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);

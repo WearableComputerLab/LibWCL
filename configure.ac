@@ -425,6 +425,7 @@ AC_CONFIG_FILES([Makefile
 				 examples/artoolkitplus/Makefile
 				 examples/bluetooth/Makefile
 				 examples/camera/Makefile
+				 examples/calibration/Makefile
 				 examples/gestures/Makefile
 				 examples/lazysusan/Makefile
 				 examples/network/Makefile
