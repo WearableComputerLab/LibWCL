@@ -33,8 +33,26 @@
 
 
 GrayCode::GrayCode(const unsigned iwidth, const unsigned iheight ):
-    width(iwidth), height(iheight), totalGrayCodes(0), images(NULL),stage(0)
+    width(iwidth), height(iheight), totalGrayCodes(0), codedImages(NULL),stage(0)
 {
+    // Work out how many patterns are needed for the
+    // specified rows and columns. Since we are trying to
+    // encode a binary sequence, this is: count = log2(x)
+    // where x is the width or the height - depending if we
+    // are encoding columns or rows. We also have to cater
+    // for rounding in c hence we ceil to the next
+    // highest value then cast the value to get count;
+    this->greyCodeColumnCount = (unsigned)ceil(log2(this->width));
+    this->greyCodeRowCount = (unsigned)ceil(log2(this->height));
+
+    // Record the total amount of patterns required for
+    // both the columns and the rows
+    this->totalGrayCodes = greyCodeColumnCount + greyCodeRowCount;
+
+    // Create the data storage for the patterns.
+    this->createStorage();
+
+    // Build the various images required for graycode displaying
     this->buildGrayCodes();
 };
 
@@ -43,9 +61,9 @@ GrayCode::~GrayCode()
 {
     if( this->images ){
 	for( unsigned i = 0; i <  this->totalGrayCodes; i++ )
-	    delete this->images[i];
+	    delete this->codedImages[i];
 
-	delete this->images;
+	delete this->codedImages;
     }
 }
 
@@ -58,38 +76,22 @@ void GrayCode::next()
 
 const unsigned char *GrayCode::generate()
 {
-    return this->images[this->stage];
+    return this->codedImages[this->stage];
 }
 
 void GrayCode::buildGrayCodes()
 {
-    // Work out how many patterns are needed for the
-    // specified rows and columns. Since we are trying to
-    // encode a binary sequence, this is: count = log2(x)
-    // where x is the width or the height - depending if we
-    // are encoding columns or rows. We also have to cater
-    // for rounding in c hence we ceil to the next
-    // highest value then cast the value to get count;
-    unsigned greyCodeColumnCount = (unsigned)ceil(log2(this->width));
-    unsigned greyCodeRowCount = (unsigned)ceil(log2(this->height));
-
-    // Record the total amount of patterns required for
-    // both the columns and the rows
-    this->totalGrayCodes = greyCodeColumnCount + greyCodeRowCount;
-
-    // Create the data storage for the patterns.
-    this->createStorage();
-
     //
     // Build the required grey code images.
     //
     //
+    unsigned char *codedColumnImages = this->codedImages;
 
     // We start by building the greycoded columns.
     for(unsigned column = 0; column < this->width; column++ ) {
-	for ( unsigned imageCount = 0; imageCount < greyCodeColumnCount; imageCount++ ){
+	for ( unsigned imageCount = 0; imageCount < this->greyCodeColumnCount; imageCount++ ){
 
-	    unsigned char *data = this->images[imageCount];
+	    unsigned char *data = this->codedColumnImages[imageCount];
 
 	    //
 	    // Work out the value for this column
@@ -117,10 +119,7 @@ void GrayCode::buildGrayCodes()
 	    // This then works from most significant bit down to least
 	    // significant bit which makes deciding easier.
 	    //
-
-	    unsigned char value;
-
-	    value  = ( toGrayCode(column) >> (greyCodeColumnCount - imageCount -1)) & 1;
+	    unsigned char value  = ( toGrayCode(column) >> (this->greyCodeColumnCount - imageCount -1)) & 1;
 
 	    // We now update the value of the column to be in the range 0
 	    // (black) or 255 (white). As this is what GL expects for a texture
@@ -140,20 +139,14 @@ void GrayCode::buildGrayCodes()
     // We now repeat the above setup but focus on the rows not
     // the columns
     //
+    unsigned char *codedRowImages= this->codedImages[this->greyCodeColumnCount];
+
     for( unsigned row=0; row < this->height; row++){
-	for ( unsigned imageCount = 0; imageCount < greyCodeRowCount; imageCount++ ){
-	    unsigned char *data = this->images[imageCount + greyCodeColumnCount];
-	    unsigned char value  = ( row >> (greyCodeRowCount - imageCount -1)) & 1;
-
-	    // We now update the value of the column to be in the range 0
-	    // (black) or 255 (white). As this is what GL expects for a texture
+	for ( unsigned imageCount = 0; imageCount < this->greyCodeRowCount; imageCount++ ){
+	    unsigned char *data = this->codedRowImages[imageCount]
+	    unsigned char value  = ( row >> (this->greyCodeRowCount - imageCount -1)) & 1;
 	    value *=255;
-
-	    // Store the value in the image
 	    this->setPixel(data,0 /* X */,row, value);
-
-	    // Copy the value down for all rows of the image.
-	    // after this the entire column for this image is set
 	    for( unsigned column = 1; column < this->width; column++ )
 		this->setPixel(data,column,row, value);
 	}
@@ -181,7 +174,7 @@ void GrayCode::setPixel(unsigned char *data, const unsigned x, const unsigned y,
 /**
  * Given a grey code, obtain the row/column that represents that column
  */
-wcl::Vector GrayCode::getRowCol(const unsigned rowcode, const unsigned columncode) const
+wcl::Vector GrayCode::getRowCol(const unsigned columncode, const unsigned rowcode) const
 {
     wcl::Vector v(2);
 
@@ -205,4 +198,37 @@ unsigned int GrayCode::fromGrayCode(const unsigned value)
 unsigned int GrayCode::toGrayCode(const unsigned value)
 {
     return ( value >> 1 ) ^ (value);
+}
+
+
+/**
+ * Given the correct amount of images, decode the structured light sequence.
+ * Note the images are expected to be in 8 bit greyscale.
+ *
+ * @param capturedImages the images captured for each structured light sequence
+ */
+void GrayCode::decode(const unsigned char **capturedImages)
+{
+    // First we separate the rows from the columns;
+    const unsigned char *columnsImages = *capturedImages;
+    const unsigned char *rowsImages = *(captureImages+ this->greyCodeRowCount);
+
+    // We now begin the process of decoding the images back into the relevant
+    // graycodes. The decoding works as follows. When capturing the graycodes
+    // we generated both the gray code image and the image invert. By looking
+    // at the difference between these two images we find what the bit is at
+    // each pixel of the imagepair. For pixels that are not part of the
+    // projected image they get assigned a bit value of zero. Ie all undetected
+    // pixels are 0. Hence to perform the decode we walk across each column in
+    // the image pair, mask out the default environment
+    for(unsigned columnCount = 0; columnCount < this->greyCodeColumnCount; columnCount++){
+
+	// Obtain pointers to the grey code image and the image invert
+	const unsigned char *gray    = columnImages[ columnCount ];
+	const unsigned char *invgray = columnImages[ columnCount + 1];
+
+	// Now we find the difference between the two images.
+
+    }
+
 }

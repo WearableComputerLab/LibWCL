@@ -52,8 +52,11 @@ private:
     unsigned height;
 
     unsigned totalGrayCodes;
-    unsigned char **images;
+    unsigned grayCodeRowCount;
+    unsigned grayCodeColumnCount;
+    unsigned char **codedImages;
     unsigned stage;
+    Matrix decodedRows;
 
     void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned char);
     void createStorage();
