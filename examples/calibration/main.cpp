@@ -40,6 +40,7 @@
 
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
+#define TIMER_VALUE 200
 
 using namespace std;
 using namespace wcl;
@@ -148,7 +149,7 @@ GLvoid captureTimer(int value )
 	}
     }
 
-    glutTimerFunc(100,captureTimer,0);
+    glutTimerFunc(TIMER_VALUE,captureTimer,0);
 }
 
 
@@ -185,7 +186,7 @@ int main(int argc, char** argv)
     glutDisplayFunc(displayCamera);
     glutReshapeFunc(reshape);
     glutIdleFunc(idle);
-    glutTimerFunc(100,captureTimer,0);
+    glutTimerFunc(TIMER_VALUE,captureTimer,0);
 
     glutMainLoop();
 }
