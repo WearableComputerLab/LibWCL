@@ -327,3 +327,18 @@ void GrayCode::reset()
     this->decodedColumns.storeZeros();
     this->decodedRows.storeZeros();
 }
+
+const unsigned char *GrayCode::getDebugImage()
+{
+    static unsigned char *buffer = new unsigned char[this->width*this->height];
+
+
+    // Display the values of the detection in the rgb image
+    for(unsigned y = 0; y < this->height; y++ ){
+	for(unsigned x = 0; x < this->width; x++){
+	    this->setPixel(buffer, x, y, (int)((this->decodedColumns[x][y] / (float)this->width)) * 255.0);
+	}
+    }
+
+    return buffer;
+}

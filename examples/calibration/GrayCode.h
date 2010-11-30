@@ -51,6 +51,7 @@ public:
     static unsigned int fromGrayCode(const unsigned int);
 
     unsigned getRequiredImageCount() const;
+    const unsigned char *getDebugImage();
 
 private:
     unsigned width;

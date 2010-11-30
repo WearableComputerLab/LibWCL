@@ -88,7 +88,10 @@ GLvoid displayProjector()
 	glPixelZoom(1.0f, -1.0f);
 	glRasterPos2i(-1, 1);
 
-	glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.generate());
+	if( capturing )
+	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.generate());
+	else
+	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getDebugImage());
 
 	glFlush();
 	glutSwapBuffers();
