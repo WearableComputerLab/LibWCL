@@ -70,6 +70,7 @@ void keyboard(unsigned char key, int w, int h)
     if(key==27)
 	exit(EXIT_SUCCESS);
     if(key==13){
+	g.reset();
 	image = 0;
 	capturing=true;
     }
@@ -134,7 +135,6 @@ GLvoid captureTimer(int value )
 		camera[1] = 100;
 		Vector v=g.getRowCol(Vector(camera));
 		v.print();
-		g.reset();
 	    }
 	    glutSetWindow(window1);
 	    glutPostRedisplay();
