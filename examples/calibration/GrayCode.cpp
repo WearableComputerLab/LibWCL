@@ -308,14 +308,12 @@ void GrayCode::decode(const unsigned char **capturedImages)
 
     // Each stored value in the matrixes are gray coded still. We now
     // convert the values back to binary.
-    for(unsigned rowCount = 0; rowCount < this->grayCodeRowCount; rowCount++ ){
-	for(unsigned colCount=0; colCount < this->grayCodeColumnCount; colCount++){
-	    this->decodedRows[colCount][rowCount] = fromGrayCode((unsigned) this->decodedRows[colCount][rowCount]);
-	    this->decodedColumns[colCount][rowCount] = fromGrayCode((unsigned) this->decodedColumns[colCount][rowCount]);
+    for(unsigned y; y < this->height; y++ ){
+	for(unsigned x; x < this->width; x++){
+	    this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
+	    this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
 	}
     }
-
-    this->decodedRows.print();
 }
 
 unsigned GrayCode::getRequiredImageCount() const
