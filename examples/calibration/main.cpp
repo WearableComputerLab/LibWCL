@@ -85,6 +85,8 @@ GLvoid displayProjector()
 	glLoadIdentity();
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
+	glPixelZoom(1.0f, -1.0f);
+	glRasterPos2i(-1, 1);
 
 	glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.generate());
 
