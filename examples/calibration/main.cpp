@@ -176,6 +176,13 @@ int main(int argc, char** argv)
 	exit(0);
     }
 
+    //Set power frequency compensation to 50 Hz
+    //this is noncritical so don't stop the program if it fails
+    try {
+	camera->setControlValue(Camera::POWER_FREQUENCY, 1);
+    }catch(CameraException &e){}
+
+
     init();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
