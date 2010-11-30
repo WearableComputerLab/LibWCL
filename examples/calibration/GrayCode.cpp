@@ -265,7 +265,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 	for( unsigned y = 0; y < this->height; y++ ){
 	    for( unsigned x = 0; x < this->width; x++ ){
 
-		unsigned offset = (this->height * y) + x;
+		unsigned offset = (this->width * y) + x;
 
 		// Find the bit value for this pixel in the image
 		bool bitvalue = gray[offset] >= invgray[offset];
@@ -294,7 +294,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 	for( unsigned y = 0; y < this->height; y++ ){
 	    for( unsigned x = 0; x < this->width; x++ ){
 
-		unsigned offset = (this->height * y) + x;
+		unsigned offset = (this->width * y) + x;
 		bool bitvalue = gray[offset] >= invgray[offset];
 		int bit = this->grayCodeRowCount - rowCount - 1;
 		if( bitvalue ){
