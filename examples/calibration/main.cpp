@@ -28,11 +28,12 @@
  * Simple test of the Binary Coded GrayCode Phase Shift code
  */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <iostream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-#include <stdlib.h>
 #include "GrayCode.h"
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
@@ -43,12 +44,19 @@
 using namespace std;
 using namespace wcl;
 
+bool capturing=false;
+unsigned image=0;
+int window1, window2;
 Camera *camera;
 GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
+unsigned char **buffers;
 
 GLvoid init()
 {
 	glClearColor(0,0,0,0);
+	buffers = new unsigned char *[g.getRequiredImageCount()];
+	for( unsigned i = 0; i < g.getRequiredImageCount(); i++ )
+	    buffers[i] = new unsigned char [IMAGE_WIDTH * IMAGE_HEIGHT];
 }
 
 GLvoid reshape(int width, int height)
@@ -61,10 +69,11 @@ void keyboard(unsigned char key, int w, int h)
     if(key==27)
 	exit(EXIT_SUCCESS);
     if(key==13){
-	g.next();
-	glutPostRedisplay();
+	image = 0;
+	capturing=true;
     }
 }
+
 
 GLvoid displayProjector()
 {
@@ -102,7 +111,44 @@ GLvoid displayCamera()
  */
 GLvoid idle()
 {
-	glutPostRedisplay();
+    glutSetWindow(window1);
+    glutPostRedisplay();
+    glutSetWindow(window2);
+    glutPostRedisplay();
+}
+
+GLvoid captureTimer(int value )
+{
+    static bool display = true;
+    if(capturing)
+    {
+	if( display ) {
+	    if(g.next() == false ){
+		capturing=false;
+		display=true;
+		cout << "Decoding GrayCode" << endl;
+		g.decode((const unsigned char **)buffers);
+		Vector camera(2);
+		camera[0] = 100;
+		camera[1] = 100;
+		Vector v=g.getRowCol(Vector(camera));
+		v.print();
+		g.reset();
+	    }
+	    glutSetWindow(window1);
+	    glutPostRedisplay();
+	    glutSetWindow(window2);
+	    glutPostRedisplay();
+	    display=false;
+	} else {
+	    cout << "Capturing Image" << image << endl;
+	    memcpy(buffers[image],camera->getFrame(Camera::MONO8),IMAGE_WIDTH * IMAGE_HEIGHT);
+	    image++;
+	    display=true;
+	}
+    }
+
+    glutTimerFunc(100,captureTimer,0);
 }
 
 
@@ -119,22 +165,27 @@ int main(int argc, char** argv)
 	exit(0);
     }
 
+    if ( camera == NULL ){
+	cout << "Camera Not Found" << endl;
+	exit(0);
+    }
+
+    init();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
     glutInitWindowSize(IMAGE_WIDTH, IMAGE_HEIGHT);
     glutInitWindowPosition(100,100);
-    int window1 = glutCreateWindow(argv[0]);
-    init();
+    window1 = glutCreateWindow(argv[0]);
     glutDisplayFunc(displayProjector);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
 
     glutInitWindowPosition(100+IMAGE_WIDTH,100);
-    int window2 = glutCreateWindow(argv[0]);
-    init();
+    window2 = glutCreateWindow(argv[0]);
     glutDisplayFunc(displayCamera);
     glutReshapeFunc(reshape);
     glutIdleFunc(idle);
+    glutTimerFunc(100,captureTimer,0);
 
     glutMainLoop();
 }

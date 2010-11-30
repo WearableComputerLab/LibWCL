@@ -28,6 +28,7 @@
 #define PATTERNGENERATOR_H
 
 #include <wcl/maths/Vector.h>
+#include <wcl/maths/Matrix.h>
 
 /**
  * A class that generates different patterns that can be used for
@@ -39,13 +40,17 @@ public:
     GrayCode(const unsigned width, const unsigned height );
     ~GrayCode();
 
-    void next();
+    void reset();
+    bool next();
     const unsigned char *generate();
 
-    wcl::Vector getRowCol(const unsigned rowcode, const unsigned columncode) const;
+    wcl::Vector getRowCol(const wcl::Vector &) const;
+    void decode(const unsigned char **capturedImages);
 
     static unsigned int toGrayCode( const unsigned int);
     static unsigned int fromGrayCode(const unsigned int);
+
+    unsigned getRequiredImageCount() const;
 
 private:
     unsigned width;
@@ -56,7 +61,8 @@ private:
     unsigned grayCodeColumnCount;
     unsigned char **codedImages;
     unsigned stage;
-    Matrix decodedRows;
+    wcl::Matrix decodedColumns;
+    wcl::Matrix decodedRows;
 
     void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned char);
     void createStorage();
