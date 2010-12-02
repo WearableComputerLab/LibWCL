@@ -52,9 +52,8 @@ Camera *camera;
 GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
 unsigned char **buffers;
 
-GLvoid init()
+void init()
 {
-	glClearColor(0,0,0,0);
 	buffers = new unsigned char *[g.getRequiredImageCount()];
 	for( unsigned i = 0; i < g.getRequiredImageCount(); i++ )
 	    buffers[i] = new unsigned char [IMAGE_WIDTH * IMAGE_HEIGHT];
@@ -161,10 +160,18 @@ GLvoid captureTimer(int value )
 int main(int argc, char** argv)
 {
     try {
-	Camera::Configuration config;
-	config.width=IMAGE_WIDTH;
-	config.height=IMAGE_HEIGHT;
-	camera = CameraFactory::findCamera(config);
+	if(argc < 2 ){
+	    Camera::Configuration config;
+	    config.width=IMAGE_WIDTH;
+	    config.height=IMAGE_HEIGHT;
+	    camera = CameraFactory::findCamera(config);
+	} else {
+	    camera = CameraFactory::getCamera(argv[1]);
+	    Camera::Configuration config = camera->getActiveConfiguration();
+	    config.width=IMAGE_WIDTH;
+	    config.height=IMAGE_HEIGHT;
+	    camera->setConfiguration(config);
+	}
     } catch(CameraException &e)
     {
 	cout << "CameraException:" << e.what() << endl;
