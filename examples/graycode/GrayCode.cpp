@@ -286,7 +286,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 		int bit = this->grayCodeColumnCount - columnCount - 1;
 		if( bitvalue ){
 		    int value = (int)this->decodedColumns[x][y];
-		    value |= 2 << bit;
+		    value |= 1 << bit;
 		    this->decodedColumns[x][y] = value;
 		}
 	    }
@@ -309,7 +309,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 		int bit = this->grayCodeRowCount - rowCount - 1;
 		if( bitvalue ){
 		    int value = (int)this->decodedRows[x][y];
-		    value |= 2 << bit;
+		    value |= 1 << bit;
 		    this->decodedRows[x][y] = value;
 		}
 	    }
