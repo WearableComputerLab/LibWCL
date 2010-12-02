@@ -101,9 +101,9 @@ void GrayCode::buildGrayCodes()
     // The first two images are the most sigificant bit and full black/white
     // this allows us to work out the region the graycodes are projected onto
     // We set the initial pattern here we calculate all inverts below
-    memset( *this->codedImages, 255, this->width * this->height );
-
-    unsigned char **codedColumnImages = this->codedImages+2;
+    unsigned char **codedColumnImages = this->codedImages;
+    memset( *codedColumnImages, 255, this->width * this->height );
+    codedColumnImages+=2;
 
     // We start by building the graycoded columns.
     for(unsigned column = 0; column < this->width; column++ ) {
@@ -157,9 +157,9 @@ void GrayCode::buildGrayCodes()
     // We now repeat the above setup but focus on the rows not
     // the columns
     //
-    memset( *codedColumnImages+(this->grayCodeColumnCount*2)+1, 255, this->width * this->height );
-
-    unsigned char **codedRowImages= codedColumnImages+(this->grayCodeColumnCount*2)+2;
+    unsigned char **codedRowImages= codedColumnImages+(this->grayCodeColumnCount*2);
+    memset( *codedRowImages, 255, this->width * this->height );
+    codedRowImages+=2;
 
     for( unsigned row=0; row < this->height; row++){
 	for ( unsigned imageCount = 0; imageCount < this->grayCodeRowCount; imageCount++ ){
