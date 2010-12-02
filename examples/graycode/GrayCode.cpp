@@ -47,6 +47,13 @@ GrayCode::GrayCode(const unsigned iwidth, const unsigned iheight ):
     this->grayCodeColumnCount = (unsigned)ceil(log2(this->width));
     this->grayCodeRowCount = (unsigned)ceil(log2(this->height));
 
+    // When considering the columns and the rows we also have to consider
+    // that the width/height is not an exact factor of 2 (ie 800 pixels).
+    // Hence we may have to shift the phase of a binary image so that
+    // the binary bands line up correctly.
+    this->grayCodeColumnPhase = (unsigned)floor((pow(2.0,this->grayCodeColumnCount)-this->width)/2);
+    this->grayCodeRowPhase = (unsigned)floor((pow(2.0,this->grayCodeRowCount)-this->height)/2);
+
     // Record the total amount of patterns required for
     // both the columns and the rows, we also cater for the inverts and the
     // initial images
@@ -137,7 +144,10 @@ void GrayCode::buildGrayCodes()
 	    // This then works from most significant bit down to least
 	    // significant bit which makes deciding easier.
 	    //
-	    unsigned char value  = ( toGrayCode(column) >> (this->grayCodeColumnCount - imageCount -1)) & 1;
+	    // We also take into account that the width and the height of an
+	    // image is not a power of two. Hence we offset each column/row by the
+	    // relevant phase shift to align the graycodes correctly.
+	    unsigned char value  = ( toGrayCode(column+this->grayCodeColumnPhase) >> (this->grayCodeColumnCount - imageCount -1)) & 1;
 
 	    // We now update the value of the column to be in the range 0
 	    // (black) or 255 (white). As this is what GL expects for a texture
@@ -164,7 +174,7 @@ void GrayCode::buildGrayCodes()
     for( unsigned row=0; row < this->height; row++){
 	for ( unsigned imageCount = 0; imageCount < this->grayCodeRowCount; imageCount++ ){
 	    unsigned char *data = codedRowImages[imageCount*2];
-	    unsigned char value  = ( row >> (this->grayCodeRowCount - imageCount -1)) & 1;
+	    unsigned char value  = ( toGrayCode(row+this->grayCodeRowPhase) >> (this->grayCodeRowCount - imageCount -1)) & 1;
 	    value *=255;
 	    this->setPixel(data,0 /* X */,row, value);
 	    for( unsigned column = 1; column < this->width; column++ )
@@ -336,7 +346,8 @@ const unsigned char *GrayCode::getDebugImage()
     // Display the values of the detection in the rgb image
     for(unsigned y = 0; y < this->height; y++ ){
 	for(unsigned x = 0; x < this->width; x++){
-	    this->setPixel(buffer, x, y, (int)((this->decodedColumns[x][y] / (float)this->width)) * 255.0);
+	    this->setPixel(buffer, x, y, (int)((this->decodedColumns[x][y] /
+						(float)this->width)) * 255.0);
 	}
     }
 

@@ -59,7 +59,9 @@ private:
 
     unsigned totalGrayCodes;
     unsigned grayCodeRowCount;
+    unsigned grayCodeRowPhase;
     unsigned grayCodeColumnCount;
+    unsigned grayCodeColumnPhase;
     unsigned char **codedImages;
     unsigned stage;
     wcl::Matrix decodedColumns;
