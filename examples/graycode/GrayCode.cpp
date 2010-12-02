@@ -317,11 +317,17 @@ void GrayCode::decode(const unsigned char **capturedImages)
     }
 
     // Each stored value in the matrixes are gray coded still. We now
-    // convert the values back to binary.
+    // convert the values back to binary. At the same time we filter to make
+    // sure the values are within range of what they should be (ie width or
+    // height of the original graycode)
     for(unsigned y; y < this->height; y++ ){
 	for(unsigned x; x < this->width; x++){
 	    this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
 	    this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
+	    if( this->decodedRows[x][y] > this->height )
+		this->decodedRows[x][y] = 0.0;
+	    if( this->decodedColumns[x][y] > this->width )
+		this->decodedRows[x][y] = 0.0;
 	}
     }
 }
