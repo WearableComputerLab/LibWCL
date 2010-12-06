@@ -325,8 +325,8 @@ void GrayCode::decode(const unsigned char **capturedImages)
     // convert the values back to binary. At the same time we filter to make
     // sure the values are within range of what they should be (ie width or
     // height of the original graycode)
-    for(unsigned y; y < this->height; y++ ){
-	for(unsigned x; x < this->width; x++){
+    for(unsigned y=0; y < this->height; y++ ){
+	for(unsigned x=0; x < this->width; x++){
 	    //this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
 	    //this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
 	    if( this->decodedRows[x][y] > this->height )
