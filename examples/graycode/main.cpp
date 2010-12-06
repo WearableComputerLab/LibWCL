@@ -40,17 +40,26 @@
 
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define TIMER_VALUE 200
+#define TIMER_VALUE 500
+#define CROSS_DENSITY 100
 
 using namespace std;
 using namespace wcl;
 
+GLvoid captureTimer(int value );
+
+bool automated=false;
 bool capturing=false;
 unsigned image=0;
 int window1, window2;
-Camera *camera;
 GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
+
+// The in use camera
+Camera *camera;
+
+// Buffers for frame detection
 unsigned char **buffers;
+
 
 void init()
 {
@@ -68,11 +77,42 @@ void keyboard(unsigned char key, int w, int h)
 {
     if(key==27)
 	exit(EXIT_SUCCESS);
+    if(key==114 /* r */){
+	g.reset();
+	capturing=true;
+	cout << "Reset" <<endl;;
+    }
+    if(key=='v'){
+	cout << "Decoding GrayCode Ignoring Camera" << endl;
+	g.decode((const unsigned char **)g.getCodedImages());
+    }
     if(key==13){
+	if( capturing == true ){
+	    if(!g.next()){
+		g.reset();
+	    }
+	}
+	capturing=true;
+    }
+    if(key == 'a' ){
+	automated=true;
 	g.reset();
 	image = 0;
 	capturing=true;
+	glutTimerFunc(TIMER_VALUE,captureTimer,0);
     }
+}
+
+void drawCross(const unsigned x, const unsigned y)
+{
+    glBegin(GL_LINE);
+    glVertex3d(x>5?x-5:0,y,0);
+    glVertex3d(x+5,y,0);
+    glEnd();
+    glBegin(GL_LINES);
+    glVertex3d(x,y>5?y-5:0,0);
+    glVertex3d(x,y+5,0);
+    glEnd();
 }
 
 
@@ -89,8 +129,24 @@ GLvoid displayProjector()
 
 	if( capturing )
 	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.generate());
-	else
+	else {
 	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getDebugImage());
+
+	    glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, -1.0, 1.0);
+
+	    for(unsigned y=0; y < IMAGE_HEIGHT; y+=CROSS_DENSITY){
+		for(unsigned x=0; x < IMAGE_WIDTH; x+=CROSS_DENSITY){
+		    Vector v(2);
+		   v[0]=x;
+		    v[1]=y;
+		    v = g.getRowCol(v);
+		    glColor3f(1.0,0.0,0.0);
+		    drawCross(x,y);
+		    glColor3f(0.0,0.0,1.0);
+		    drawCross(v[0],v[1]);
+		}
+	    }
+	}
 
 	glFlush();
 	glutSwapBuffers();
@@ -126,19 +182,20 @@ GLvoid idle()
 GLvoid captureTimer(int value )
 {
     static bool display = true;
+    static bool first=true;
     if(capturing)
     {
 	if( display ) {
-	    if(g.next() == false ){
-		capturing=false;
-		display=true;
-		cout << "Decoding GrayCode" << endl;
-		g.decode((const unsigned char **)buffers);
-		Vector camera(2);
-		camera[0] = 100;
-		camera[1] = 100;
-		Vector v=g.getRowCol(Vector(camera));
-		v.print();
+	    if( !first ){
+		if(g.next() == false ){
+		    capturing=false;
+		    display=true;
+		    first=true;
+		    cout << "Decoding GrayCode" << endl;
+		    g.decode((const unsigned char **)buffers);
+		}
+	    } else {
+		first=false;
 	    }
 	    glutSetWindow(window1);
 	    glutPostRedisplay();
@@ -151,11 +208,12 @@ GLvoid captureTimer(int value )
 	    image++;
 	    display=true;
 	}
+	if( automated ){
+	    glutTimerFunc(TIMER_VALUE,captureTimer,0);
+	}
     }
 
-    glutTimerFunc(TIMER_VALUE,captureTimer,0);
 }
-
 
 int main(int argc, char** argv)
 {
@@ -189,7 +247,6 @@ int main(int argc, char** argv)
 	camera->setControlValue(Camera::POWER_FREQUENCY, 1);
     }catch(CameraException &e){}
 
-
     init();
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -205,7 +262,6 @@ int main(int argc, char** argv)
     glutDisplayFunc(displayCamera);
     glutReshapeFunc(reshape);
     glutIdleFunc(idle);
-    glutTimerFunc(TIMER_VALUE,captureTimer,0);
 
     glutMainLoop();
 }
