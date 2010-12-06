@@ -363,3 +363,8 @@ const unsigned char *GrayCode::getDebugImage()
 
     return buffer;
 }
+
+const unsigned char **GrayCode::getCodedImages()
+{
+    return (const unsigned char **)this->codedImages;
+}

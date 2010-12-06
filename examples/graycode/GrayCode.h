@@ -53,6 +53,8 @@ public:
     unsigned getRequiredImageCount() const;
     const unsigned char *getDebugImage();
 
+    const unsigned char **getCodedImages();
+
 private:
     unsigned width;
     unsigned height;
