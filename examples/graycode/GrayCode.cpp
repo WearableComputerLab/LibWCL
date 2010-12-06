@@ -147,7 +147,8 @@ void GrayCode::buildGrayCodes()
 	    // We also take into account that the width and the height of an
 	    // image is not a power of two. Hence we offset each column/row by the
 	    // relevant phase shift to align the graycodes correctly.
-	    unsigned char value  = ( toGrayCode(column+this->grayCodeColumnPhase) >> (this->grayCodeColumnCount - imageCount -1)) & 1;
+	    //unsigned char value  = (column+this->grayCodeColumnPhase) >> (this->grayCodeColumnCount - imageCount -1) & 1;
+	    unsigned char value  = ((column) >> (this->grayCodeColumnCount - imageCount -1)) & 1;
 
 	    // We now update the value of the column to be in the range 0
 	    // (black) or 255 (white). As this is what GL expects for a texture
@@ -174,7 +175,9 @@ void GrayCode::buildGrayCodes()
     for( unsigned row=0; row < this->height; row++){
 	for ( unsigned imageCount = 0; imageCount < this->grayCodeRowCount; imageCount++ ){
 	    unsigned char *data = codedRowImages[imageCount*2];
-	    unsigned char value  = ( toGrayCode(row+this->grayCodeRowPhase) >> (this->grayCodeRowCount - imageCount -1)) & 1;
+	    //unsigned char value  = (toGrayCode(row+this->grayCodeRowPhase)) >> (this->grayCodeRowCount - imageCount -1) & 1;
+	    //unsigned char value  = (toGrayCode(row)) >> (this->grayCodeRowCount - imageCount -1) & 1;
+	    unsigned char value  = (row) >> (this->grayCodeRowCount - imageCount -1) & 1;
 	    value *=255;
 	    this->setPixel(data,0 /* X */,row, value);
 	    for( unsigned column = 1; column < this->width; column++ )
@@ -315,15 +318,14 @@ void GrayCode::decode(const unsigned char **capturedImages)
 	    }
 	}
     }
-
     // Each stored value in the matrixes are gray coded still. We now
     // convert the values back to binary. At the same time we filter to make
     // sure the values are within range of what they should be (ie width or
     // height of the original graycode)
     for(unsigned y; y < this->height; y++ ){
 	for(unsigned x; x < this->width; x++){
-	    this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
-	    this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
+	    //this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
+	    //this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
 	    if( this->decodedRows[x][y] > this->height )
 		this->decodedRows[x][y] = 0.0;
 	    if( this->decodedColumns[x][y] > this->width )
