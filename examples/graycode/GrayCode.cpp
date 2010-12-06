@@ -25,6 +25,7 @@
  */
 
 #include <assert.h>
+#include <stdio.h>
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
@@ -259,7 +260,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 {
     // First we separate the rows from the columns;
     const unsigned char **columnImages = capturedImages;
-    const unsigned char **rowImages = capturedImages+ this->grayCodeRowCount;
+    const unsigned char **rowImages = columnImages+(this->grayCodeColumnCount*2)+2;
 
     // We now begin the process of decoding the images back into the relevant
     // graycodes. The decoding works as follows. When capturing the graycodes
@@ -268,11 +269,12 @@ void GrayCode::decode(const unsigned char **capturedImages)
     // each pixel of the imagepair. For pixels that are not part of the
     // projected image they get assigned a bit value of zero. Ie all undetected
     // pixels are 0.
-    for(unsigned columnCount = 0; columnCount < this->grayCodeColumnCount; columnCount++){
+    columnImages+=2;
+    for(unsigned columnCount = 0; columnCount < this->grayCodeColumnCount; columnCount++, columnImages+=2){
 
 	// Obtain pointers to the gray code image and the image invert
-	const unsigned char *gray    = columnImages[ columnCount ];
-	const unsigned char *invgray = columnImages[ columnCount + 1];
+	const unsigned char *gray    = columnImages[0];
+	const unsigned char *invgray = columnImages[1];
 
 	// Now decode each pixel of the image pair.
 	for( unsigned y = 0; y < this->height; y++ ){
@@ -297,11 +299,12 @@ void GrayCode::decode(const unsigned char **capturedImages)
     }
 
     // Repeat for rows
-    for(unsigned rowCount = 0; rowCount < this->grayCodeRowCount; rowCount++){
+    rowImages+=2;
+    for(unsigned rowCount = 0; rowCount < this->grayCodeRowCount; rowCount++,rowImages+=2){
 
 	// Obtain pointers to the gray code image and the image invert
-	const unsigned char *gray    = rowImages[ rowCount ];
-	const unsigned char *invgray = rowImages[ rowCount + 1];
+	const unsigned char *gray    = rowImages[0];
+	const unsigned char *invgray = rowImages[1];
 
 	// Now decode each pixel of the image pair.
 	for( unsigned y = 0; y < this->height; y++ ){
