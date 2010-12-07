@@ -40,8 +40,8 @@
 
 #define IMAGE_WIDTH 640
 #define IMAGE_HEIGHT 480
-#define TIMER_VALUE 500
-#define CROSS_DENSITY 100
+#define TIMER_VALUE 100
+#define CROSS_DENSITY 30
 
 using namespace std;
 using namespace wcl;
@@ -85,6 +85,7 @@ void keyboard(unsigned char key, int w, int h)
     }
     if(key=='v'){
 	cout << "Decoding GrayCode Ignoring Camera" << endl;
+	g.reset();
 	g.decode((const unsigned char **)g.getCodedImages());
     }
     if(key==13){
