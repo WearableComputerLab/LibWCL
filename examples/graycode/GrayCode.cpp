@@ -340,7 +340,7 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 	    if( this->decodedRows[x][y] < 0.0 )
 		this->decodedRows[x][y] = 0.0;
 	    if( this->decodedColumns[x][y] < 0.0 )
-		this->decodedRows[x][y] = 0.0;
+		this->decodedColumns[x][y] = 0.0;
 	}
     }
 }
