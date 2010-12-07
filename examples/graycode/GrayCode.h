@@ -45,7 +45,7 @@ public:
     const unsigned char *generate();
 
     wcl::Vector getRowCol(const wcl::Vector &) const;
-    void decode(const unsigned char **capturedImages);
+    void decode(const unsigned char **capturedImages, const unsigned int threshold=64);
 
     static unsigned int toGrayCode( const unsigned int);
     static unsigned int fromGrayCode(const unsigned int);

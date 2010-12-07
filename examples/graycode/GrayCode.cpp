@@ -252,12 +252,16 @@ unsigned int GrayCode::toGrayCode(const unsigned value)
  * Note the images are expected to be in 8 bit grayscale.
  *
  * @param capturedImages the images captured for each structured light sequence
+ * @param threshold A threshold value for the amount of change that is required between the black and white images pairs
  */
-void GrayCode::decode(const unsigned char **capturedImages)
+void GrayCode::decode(const unsigned char **capturedImages, const unsigned int threshold)
 {
     // First we separate the rows from the columns;
     const unsigned char **columnImages = capturedImages;
     const unsigned char **rowImages = columnImages+(this->grayCodeColumnCount*2)+2;
+
+    //TODO: Workout automatic threshold based on column/row first two images.
+    //This can be a per image pixel threshold - benjsc 20101206
 
     // We now begin the process of decoding the images back into the relevant
     // graycodes. The decoding works as follows. When capturing the graycodes
@@ -280,7 +284,7 @@ void GrayCode::decode(const unsigned char **capturedImages)
 		unsigned offset = (this->width * y) + x;
 
 		// Find the bit value for this pixel in the image
-		bool bitvalue = gray[offset] >= invgray[offset];
+		bool bitvalue = gray[offset]>=invgray[offset] ?  abs(gray[offset]-invgray[offset])>=threshold : 0;
 
 		// Store the value of this bit in decoded matrix at the correct
 		// location. The columnCount indicates the significance of the
@@ -308,7 +312,8 @@ void GrayCode::decode(const unsigned char **capturedImages)
 	    for( unsigned x = 0; x < this->width; x++ ){
 
 		unsigned offset = (this->width * y) + x;
-		bool bitvalue = gray[offset] >= invgray[offset];
+		bool bitvalue = gray[offset]>=invgray[offset] ?  abs(gray[offset]-invgray[offset])>=threshold : 0;
+
 		int bit = this->grayCodeRowCount - rowCount - 1;
 		if( bitvalue ){
 		    int value = (int)this->decodedRows[x][y];
