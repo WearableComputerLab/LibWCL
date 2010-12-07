@@ -77,9 +77,10 @@ void keyboard(unsigned char key, int w, int h)
 {
     if(key==27)
 	exit(EXIT_SUCCESS);
-    if(key==114 /* r */){
+    if(key=='r'){
 	g.reset();
-	capturing=true;
+	image=0;
+	capturing=false;
 	cout << "Reset" <<endl;;
     }
     if(key=='v'){
