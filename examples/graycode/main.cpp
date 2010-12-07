@@ -137,10 +137,10 @@ GLvoid displayProjector()
 	    for(unsigned y=0; y < IMAGE_HEIGHT; y+=CROSS_DENSITY){
 		for(unsigned x=0; x < IMAGE_WIDTH; x+=CROSS_DENSITY){
 		    Vector v(2);
-		   v[0]=x;
+		    v[0]=x;
 		    v[1]=y;
 		    v = g.getRowCol(v);
-		    glColor3f(1.0,0.0,0.0);
+		    glColor3f(0.3,0.0,0.0);
 		    drawCross(x,y);
 		    glColor3f(0.0,0.0,1.0);
 		    drawCross(v[0],v[1]);
