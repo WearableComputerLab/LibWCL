@@ -192,8 +192,10 @@ GLvoid captureTimer(int value )
 		    capturing=false;
 		    display=true;
 		    first=true;
+		    automated=false;
 		    cout << "Decoding GrayCode" << endl;
 		    g.decode((const unsigned char **)buffers);
+		    return;
 		}
 	    } else {
 		first=false;
