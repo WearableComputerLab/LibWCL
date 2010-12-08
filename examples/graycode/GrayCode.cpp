@@ -353,9 +353,9 @@ unsigned GrayCode::getRequiredImageCount() const
 
 void GrayCode::reset()
 {
-    this->stage=0;
     this->decodedColumns.storeZeros();
     this->decodedRows.storeZeros();
+    this->stage=0;
 }
 
 const unsigned char *GrayCode::getDebugImage()
