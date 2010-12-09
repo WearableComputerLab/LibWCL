@@ -24,7 +24,7 @@
  * SUCH DAMAGE.
  */
 
-#define MAX_RES 1600
+#define MAX_RES 640
 
 // include system headers
 #include <stdlib.h>
@@ -44,6 +44,8 @@
 using namespace std;
 using namespace wcl;
 
+static unsigned number=1;
+
 Camera *cam;
 
 void usage()
@@ -51,7 +53,10 @@ void usage()
     printf("snapshot devicenode [filename]\n"
 	   "Snapshot takes a image from a camera and displays it to the screen\n"
 	   "or saves it to a file if a filename is given. It uses image magic to\n"
-	   "convert the image from a rgb image to a jpg"
+	   "convert the image from a rgb image to a jpg.\n"
+	   "\n"
+	   "If no filename is given snapshot shows a live camera image.  Pressing\n"
+	   "space will cause a snapshot to be taken and saved to disk\n"
 	   );
 }
 
@@ -163,10 +168,67 @@ GLvoid reshape(int width, int height)
 	glMatrixMode(GL_MODELVIEW);
 }
 
+int saveFile(const string &filename)
+{
+	    cout << "Writing Camera Image to: " << filename << endl;
+
+	    stringstream name;
+	    name << filename;
+	    name << ".rgb";
+
+	    FILE *f = fopen(name.str().c_str(), "w");
+	    if ( f == NULL ){
+		perror("Failed to open output file");
+		return 1;
+	    }
+
+	    const unsigned char * frame = cam->getFrame(Camera::RGB8);
+
+	    if(fwrite(frame, cam->getFormatBufferSize(Camera::RGB8), 1, f) <= 0){
+		perror("Failed to write output file");
+		return 1;
+	    }
+
+
+	    fclose(f);
+
+	    Camera::Configuration c = cam->getActiveConfiguration();
+
+	    stringstream s;
+	    s << "convert ";
+	    s << "-size ";
+	    s << c.width;
+	    s << "x";
+	    s << c.height;
+	    s << " -depth 8 ";
+	    s << name.str();
+	    s << " ";
+	    s << filename;
+	    s << ".jpg";
+
+	    cout << s.str() << endl;
+
+	    if( system(s.str().c_str()) < 0 ){
+		cerr << "Failed to convert to jpg: " << s.str().c_str() << endl;
+		return 1;
+	    }
+
+	    unlink( name.str().c_str() );
+
+	    return 0;
+}
+
 void keyboard(unsigned char key, int w, int h)
 {
     if(key==27)
 	exit(EXIT_SUCCESS);
+    if(key==' ')
+    {
+	stringstream s;
+	s << "snapshot";
+	s << number++;
+	saveFile(s.str());
+    }
 }
 
 int main(int argc, char** argv)
@@ -223,48 +285,11 @@ int main(int argc, char** argv)
 
 	} else {
 
-	    cout << "Writing Camera Image to: " << filename << endl;
-
-	    stringstream name;
-	    name << filename;
-	    name << ".rgb";
-
-	    FILE *f = fopen(name.str().c_str(), "w");
-	    if ( f == NULL ){
-		perror("Failed to open output file");
-		return 1;
+	    int value;
+	    if((value = saveFile(filename)) != 0 ){
+		cout << "Saving Failed" << endl;
 	    }
-
-	    const unsigned char * frame = cam->getFrame(Camera::RGB8);
-
-	    if(fwrite(frame, cam->getFormatBufferSize(Camera::RGB8), 1, f) <= 0){
-		perror("Failed to write output file");
-		return 1;
-	    }
-
-
-	    fclose(f);
-
-	    stringstream s;
-	    s << "convert ";
-	    s << "-size ";
-	    s << c.width;
-	    s << "x";
-	    s << c.height;
-	    s << " -depth 8 ";
-	    s << name.str();
-	    s << " ";
-	    s << filename;
-	    s << ".jpg";
-
-	    cout << s.str() << endl;
-
-	    if( system(s.str().c_str()) < 0 ){
-		cerr << "Failed to convert to jpg: " << s.str().c_str() << endl;
-		return 1;
-	    }
-
-	    unlink( name.str().c_str() );
+	    return value;
 	}
 
 	cam->shutdown();
@@ -278,4 +303,5 @@ int main(int argc, char** argv)
 
     return 0;
 }
+
 
