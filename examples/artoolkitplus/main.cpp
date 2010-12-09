@@ -173,6 +173,9 @@ GLvoid display()
 	    ++it ){
 
 	    TrackedObject *object = *it;
+	    if( object->isVisible() == false )
+		continue;
+
 	    SMatrix m(4);
 	    cout << object->toString();
 
