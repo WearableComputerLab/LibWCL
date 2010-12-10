@@ -52,7 +52,7 @@ bool automated=false;
 bool capturing=false;
 unsigned image=0;
 int window1, window2;
-GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT);
+GrayCode g(IMAGE_WIDTH, IMAGE_HEIGHT,IMAGE_WIDTH,IMAGE_HEIGHT);
 
 // The in use camera
 Camera *camera;
