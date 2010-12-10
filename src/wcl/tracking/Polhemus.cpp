@@ -147,6 +147,8 @@ namespace wcl
 				}
 				assert (number <= sensors.size());
 				
+				//printf("%d: (%f,%f,%f)\n", number, x, y, z);
+				
 				if (units == MM)
 				{
 					sensors[number-1].update(x*10,y*10,z*10,rw,rx,ry,rz);
