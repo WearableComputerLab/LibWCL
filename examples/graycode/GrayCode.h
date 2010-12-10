@@ -37,7 +37,7 @@
 class GrayCode
 {
 public:
-    GrayCode(const unsigned width, const unsigned height );
+    GrayCode(const unsigned pwidth, const unsigned pheight, const unsigned cwidth, const unsigned cheight );
     ~GrayCode();
 
     void reset();
@@ -56,8 +56,10 @@ public:
     const unsigned char **getCodedImages();
 
 private:
-    unsigned width;
-    unsigned height;
+    unsigned pwidth;
+    unsigned pheight;
+    unsigned cwidth;
+    unsigned cheight;
 
     unsigned totalGrayCodes;
     unsigned grayCodeRowCount;
@@ -69,7 +71,7 @@ private:
     wcl::Matrix decodedColumns;
     wcl::Matrix decodedRows;
 
-    void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned char);
+    void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned, const unsigned char);
     void createStorage();
     void buildGrayCodes();
 };

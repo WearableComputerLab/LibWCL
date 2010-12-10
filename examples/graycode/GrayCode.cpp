@@ -34,9 +34,11 @@
 
 using namespace std;
 
-GrayCode::GrayCode(const unsigned iwidth, const unsigned iheight ):
-    width(iwidth), height(iheight), totalGrayCodes(0), codedImages(NULL),stage(0),
-    decodedColumns(iwidth, iheight), decodedRows(iwidth, iheight)
+GrayCode::GrayCode(const unsigned ipwidth, const unsigned ipheight,
+		   const unsigned icwidth, const unsigned icheight ):
+    pwidth(ipwidth), pheight(ipheight), totalGrayCodes(0), codedImages(NULL),stage(0),
+    decodedColumns(icwidth, icheight), decodedRows(icwidth, icheight),
+    cwidth(icwidth),cheight(icheight)
 {
     // Work out how many patterns are needed for the
     // specified rows and columns. Since we are trying to
@@ -45,15 +47,15 @@ GrayCode::GrayCode(const unsigned iwidth, const unsigned iheight ):
     // are encoding columns or rows. We also have to cater
     // for rounding in c hence we ceil to the next
     // highest value then cast the value to get count;
-    this->grayCodeColumnCount = (unsigned)ceil(log2(this->width));
-    this->grayCodeRowCount = (unsigned)ceil(log2(this->height));
+    this->grayCodeColumnCount = (unsigned)ceil(log2(this->pwidth));
+    this->grayCodeRowCount = (unsigned)ceil(log2(this->pheight));
 
     // When considering the columns and the rows we also have to consider
     // that the width/height is not an exact factor of 2 (ie 800 pixels).
     // Hence we may have to shift the phase of a binary image so that
     // the binary bands line up correctly.
-    this->grayCodeColumnPhase = (unsigned)floor((pow(2.0,this->grayCodeColumnCount)-this->width)/2);
-    this->grayCodeRowPhase = (unsigned)floor((pow(2.0,this->grayCodeRowCount)-this->height)/2);
+    this->grayCodeColumnPhase = (unsigned)floor((pow(2.0,this->grayCodeColumnCount)-this->pwidth)/2);
+    this->grayCodeRowPhase = (unsigned)floor((pow(2.0,this->grayCodeRowCount)-this->pheight)/2);
 
     // Record the total amount of patterns required for
     // both the columns and the rows, we also cater for the inverts and the
@@ -110,11 +112,11 @@ void GrayCode::buildGrayCodes()
     // this allows us to work out the region the graycodes are projected onto
     // We set the initial pattern here we calculate all inverts below
     unsigned char **codedColumnImages = this->codedImages;
-    memset( *codedColumnImages, 255, this->width * this->height );
+    memset( *codedColumnImages, 255, this->pwidth * this->pheight );
     codedColumnImages+=2;
 
     // We start by building the graycoded columns.
-    for(unsigned column = 0; column < this->width; column++ ) {
+    for(unsigned column = 0; column < this->pwidth; column++ ) {
 	for ( unsigned imageCount = 0; imageCount < this->grayCodeColumnCount; imageCount++ ){
 
 	    unsigned char *data = codedColumnImages[imageCount*2];
@@ -155,12 +157,12 @@ void GrayCode::buildGrayCodes()
 	    value *=255;
 
 	    // Store the value in the image
-	    this->setPixel(data,column,0 /* y */, value);
+	    this->setPixel(data,column,0 /* y */, this->pwidth, value);
 
 	    // Copy the value down for all rows of the image.
 	    // after this the entire column for this image is set
-	    for( unsigned row = 1; row < this->height; row++ )
-		this->setPixel(data,column,row, value);
+	    for( unsigned row = 1; row < this->pheight; row++ )
+		this->setPixel(data,column,row, this->pwidth, value);
 	}
     }
 
@@ -169,17 +171,17 @@ void GrayCode::buildGrayCodes()
     // the columns
     //
     unsigned char **codedRowImages= codedColumnImages+(this->grayCodeColumnCount*2);
-    memset( *codedRowImages, 255, this->width * this->height );
+    memset( *codedRowImages, 255, this->pwidth * this->pheight );
     codedRowImages+=2;
 
-    for( unsigned row=0; row < this->height; row++){
+    for( unsigned row=0; row < this->pheight; row++){
 	for ( unsigned imageCount = 0; imageCount < this->grayCodeRowCount; imageCount++ ){
 	    unsigned char *data = codedRowImages[imageCount*2];
 	    unsigned char value  = (row+this->grayCodeRowPhase) >> (this->grayCodeRowCount - imageCount -1) & 1;
 	    value *=255;
-	    this->setPixel(data,0 /* X */,row, value);
-	    for( unsigned column = 1; column < this->width; column++ )
-		this->setPixel(data,column,row, value);
+	    this->setPixel(data,0 /* X */,row, this->pwidth, value);
+	    for( unsigned column = 1; column < this->pwidth; column++ )
+		this->setPixel(data,column,row, this->pwidth, value);
 	}
     }
 
@@ -187,10 +189,10 @@ void GrayCode::buildGrayCodes()
     // Now create the invert images for each pattern
     //
     for( unsigned count = 0; count < this->totalGrayCodes; count+=2 ){
-	    for( unsigned row = 0; row < this->height; row++ ){
-		for( unsigned column = 0; column < this->width; column++ ){
-		this->codedImages[count+1][row*this->width+column] =
-		    this->codedImages[count][row*this->width+column] ? 0 : 255;
+	    for( unsigned row = 0; row < this->pheight; row++ ){
+		for( unsigned column = 0; column < this->pwidth; column++ ){
+		this->codedImages[count+1][row*this->pwidth+column] =
+		    this->codedImages[count][row*this->pwidth+column] ? 0 : 255;
 	    }
 	}
     }
@@ -203,15 +205,12 @@ void GrayCode::createStorage()
 {
     this->codedImages = new unsigned char *[this->totalGrayCodes];
     for( unsigned i = 0; i < this->totalGrayCodes; i++ )
-	this->codedImages[i] = new unsigned char [this->width * this->height];
+	this->codedImages[i] = new unsigned char [this->pwidth * this->pheight];
 }
 
-void GrayCode::setPixel(unsigned char *data, const unsigned x, const unsigned y, const unsigned char colour )
+void GrayCode::setPixel(unsigned char *data, const unsigned x, const unsigned y, const unsigned stride, const unsigned char colour )
 {
-    assert(x < this->width && "Column out of bounds" );
-    assert(y < this->height && "Row out of bounds");
-
-    data[(y*this->width)+x]= colour;
+    data[(y*stride)+x]= colour;
 }
 
 /**
@@ -278,14 +277,22 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 	const unsigned char *invgray = columnImages[1];
 
 	// Now decode each pixel of the image pair.
-	for( unsigned y = 0; y < this->height; y++ ){
-	    for( unsigned x = 0; x < this->width; x++ ){
+	for( unsigned y = 0; y < this->cheight; y++ ){
+	    for( unsigned x = 0; x < this->cwidth; x++ ){
 
-		unsigned offset = (this->width * y) + x;
+		unsigned offset = (this->cwidth * y) + x;
 
 		// Find the bit value for this pixel in the image
 		bool bitvalue = gray[offset]>=invgray[offset] ?  abs(gray[offset]-invgray[offset])>=threshold : 0;
+#if 0
+		printf("%d, %d, %d - %d,%d\n",
+		       gray[offset],
+		       invgray[offset],
+		       bitvalue,
+		       abs(gray[offset]-invgray[offset]),
+		       threshold);
 
+#endif
 		// Store the value of this bit in decoded matrix at the correct
 		// location. The columnCount indicates the significance of the
 		// bit in the number.
@@ -308,10 +315,10 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 	const unsigned char *invgray = rowImages[1];
 
 	// Now decode each pixel of the image pair.
-	for( unsigned y = 0; y < this->height; y++ ){
-	    for( unsigned x = 0; x < this->width; x++ ){
+	for( unsigned y = 0; y < this->cheight; y++ ){
+	    for( unsigned x = 0; x < this->cwidth; x++ ){
 
-		unsigned offset = (this->width * y) + x;
+		unsigned offset = (this->cwidth * y) + x;
 		bool bitvalue = gray[offset]>=invgray[offset] ?  abs(gray[offset]-invgray[offset])>=threshold : 0;
 
 		int bit = this->grayCodeRowCount - rowCount - 1;
@@ -327,15 +334,15 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
     // convert the values back to binary. At the same time we filter to make
     // sure the values are within range of what they should be (ie width or
     // height of the original graycode)
-    for(unsigned y=0; y < this->height; y++ ){
-	for(unsigned x=0; x < this->width; x++){
+    for(unsigned y=0; y < this->cheight; y++ ){
+	for(unsigned x=0; x < this->cwidth; x++){
 	    this->decodedRows[x][y] -= this->grayCodeRowPhase;
 	    this->decodedColumns[x][y] -= this->grayCodeColumnPhase;
 	    //this->decodedRows[x][y] = fromGrayCode((unsigned) this->decodedRows[x][y]);
 	    //this->decodedColumns[x][y] = fromGrayCode((unsigned) this->decodedColumns[x][y]);
-	    if( this->decodedRows[x][y] > this->height )
+	    if( this->decodedRows[x][y] > this->cheight )
 		this->decodedRows[x][y] = 0.0;
-	    if( this->decodedColumns[x][y] > this->width )
+	    if( this->decodedColumns[x][y] > this->cwidth )
 		this->decodedRows[x][y] = 0.0;
 	    if( this->decodedRows[x][y] < 0.0 )
 		this->decodedRows[x][y] = 0.0;
@@ -360,13 +367,13 @@ void GrayCode::reset()
 
 const unsigned char *GrayCode::getDebugImage()
 {
-    static unsigned char *buffer = new unsigned char[this->width*this->height];
+    static unsigned char *buffer = new unsigned char[this->cwidth*this->cheight];
 
 
     // Display the values of the detection in the rgb image
-    for(unsigned y = 0; y < this->height; y++ ){
-	for(unsigned x = 0; x < this->width; x++){
-	    this->setPixel(buffer, x, y, (int)(((this->decodedColumns[x][y] / (float)this->width)) * 255.0));
+    for(unsigned y = 0; y < this->cheight; y++ ){
+	for(unsigned x = 0; x < this->cwidth; x++){
+	    this->setPixel(buffer, x, y, this->cwidth, (int)(((this->decodedColumns[x][y] / (float)this->pwidth)) * 255.0));
 	}
     }
 
