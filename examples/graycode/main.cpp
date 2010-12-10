@@ -107,7 +107,7 @@ void keyboard(unsigned char key, int w, int h)
 
 void drawCross(const unsigned x, const unsigned y)
 {
-    glBegin(GL_LINE);
+    glBegin(GL_LINES);
     glVertex3d(x>5?x-5:0,y,0);
     glVertex3d(x+5,y,0);
     glEnd();
