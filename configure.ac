@@ -62,6 +62,11 @@ AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/F
 #
 AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), enable_camera_uvc="yes" , enable_camera_uvc="no")
 
+#
+# PTGrey Camera Support 
+#
+AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), enable_camera_ptgrey="yes" , enable_camera_ptgrey="no")
+
 # Support for Virtual Camera
 #
 AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), enable_camera_virtual="yes" , enable_camera_virtual="no")
@@ -128,6 +133,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_tracking_artoolkitplus="yes";
 	     enable_video="yes";
 	     enable_wiimote="yes";
+	     enable_camera_ptgrey="yes";
 	     )
 
 #
@@ -146,6 +152,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_camera_virtual" = "xno" && \
    test "x$enable_tracking_artoolkitplus" = "xno" && \
    test "x$enable_parsers" = "xno" && \
+   test "x$enable_camera_ptgrey" = "xno" && \
    test "x$enable_video" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
@@ -166,6 +173,7 @@ fi
 #
 if test "x$enable_camera_uvc" = "xyes" || \
    test "x$enable_camera_1394" = "xyes" ||
+   test "x$enable_camera_ptgrey" = "xyes" ||
    test "x$enable_camera_virtual" = "xyes"; then
 	enable_camera="yes";
 fi
@@ -250,6 +258,14 @@ if test "x$enable_camera_1394" = "xyes"; then
     else
 	AC_MSG_ERROR([Camera Support Is Not Available on your platform])
     fi
+fi
+
+if test "x$enable_camera_ptgrey" = "xyes"; then
+AC_CHECK_HEADERS([flycapture/FlyCapture2.h],,
+		 AC_MSG_ERROR([Point Grey Camera support requested but
+			      libflycapture2-dev is not installed])
+		)
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lflycapture"
 fi
 
 if test "x$enable_video" = "xyes"; then
@@ -339,6 +355,9 @@ fi
 if test "x$enable_camera_1394" = "xyes" ; then
 AC_DEFINE(ENABLE_CAMERA_DC1394, 1, [Enable IEEE1394 Camera Support])
 fi
+if test "x$enable_camera_ptgrey" = "xyes" ; then
+AC_DEFINE(ENABLE_CAMERA_PTGREY, 1, [Enable PTGrey Camera Support (Via libflycapture2)])
+fi
 if test "x$enable_camera_virtual" = "xyes" ; then
 AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
 fi
@@ -374,6 +393,7 @@ echo "Vicon MoCap Support           : $enable_vicon"
 echo "X11 Support                   : $enable_x11"
 echo "Rawports Support(com/lpt/bt)  : $enable_rawports"
 echo "UVC Camera support            : $enable_camera_uvc"
+echo "UVC Camera support            : $enable_camera_ptgrey"
 echo "Parser Support                : $enable_parsers"
 echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
@@ -401,6 +421,7 @@ AM_CONDITIONAL(ENABLE_NETWORK, test "x$enable_network" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA, test "x$enable_camera" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_VIRTUAL, test "x$enable_camera_virtual" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
+AM_CONDITIONAL(ENABLE_CAMERA_PTGREY, test "x$enable_camera_ptgrey" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
 AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")

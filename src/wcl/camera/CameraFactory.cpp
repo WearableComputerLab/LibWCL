@@ -34,6 +34,9 @@
 #ifdef ENABLE_CAMERA_UVC
 #include <wcl/camera/UVCCameraFactory.h>
 #endif
+#ifdef ENABLE_CAMERA_PTGREY
+#include <wcl/camera/PTGreyCameraFactory.h>
+#endif
 
 using namespace std;
 
@@ -73,7 +76,19 @@ std::vector<Camera *> CameraFactory::getCameras()
 {
     std::vector<Camera *>all;
 
-	using namespace std;
+#ifdef ENABLE_CAMERA_PTGREY
+    try {
+	std::vector<PTGreyCamera *>ptgrey = PTGreyCameraFactory::getCameras();
+	for(std::vector<PTGreyCamera *>::iterator it = ptgrey.begin();
+	    it != ptgrey.end();
+	    ++it )
+	    all.push_back( *it );
+
+    } catch ( CameraException &e ){
+	std::clog << "PTGreyCameras Unavailable:" << e.what() << std::endl;
+    }
+#endif
+
 #ifdef ENABLE_CAMERA_DC1394
     try {
 

@@ -264,6 +264,20 @@ camera_virtualcamera_headers+=camera/VirtualCamera.h
 camera_virtualcamera_sources+=camera/VirtualCamera.cpp
 endif
 
+#
+# PTGrey Camera Support
+#
+camera_ptgrey_headers=
+camera_ptgrey_sources=
+
+if ENABLE_CAMERA_PTGREY
+camera_uvc_headers+=camera/PTGreyCamera.h\
+		   camera/PTGreyCameraFactory.h
+camera_uvc_sources+=camera/PTGreyCamera.cpp\
+		   camera/PTGreyCameraFactory.cpp
+
+endif
+
 #######################################################################
 #
 # Math Libraries
@@ -325,6 +339,7 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 			        $(network_headers)\
 				$(camera_headers)\
 				$(camera_1394_headers)\
+				$(camera_ptgrey_headers)\
 				$(camera_uvc_headers)\
 				$(camera_virtualcamera_headers)\
 				$(gestures_headers)\
@@ -343,6 +358,7 @@ libwcl_la_SOURCES=$(common_sources)\
                  $(network_sources)\
 		 $(camera_sources)\
 		 $(camera_1394_sources)\
+		 $(camera_ptgrey_sources)\
 		 $(camera_uvc_sources)\
 		 $(camera_virtualcamera_sources)\
 		 $(gestures_sources)\
