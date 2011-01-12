@@ -38,16 +38,11 @@ namespace wcl
 	{
 		assert(minimum.getRows() == 3);
 		assert(maximum.getRows() == 3);
-		// hello!
 	}
 
 	BoundingBox::BoundingBox()
 	{
-		double maxDouble = std::numeric_limits<double>::max();
-		min = wcl::Vector(maxDouble,maxDouble,maxDouble);
-
-		double minDouble = std::numeric_limits<double>::min();
-		max = wcl::Vector(minDouble,minDouble,minDouble);
+	    this->clear();
 	}
 
 	void BoundingBox::clear()
