@@ -1,5 +1,6 @@
 /*-
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2011 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -193,6 +194,12 @@ namespace wcl
 
 		if (p[2] > max[2])
 			max[2] = p[2];
+	}
+
+	void BoundingBox::addBox(const wcl::BoundingBox &box)
+	{
+	    this->addPoint(box.min);
+		this->addPoint(box.max);
 	}
 }
 

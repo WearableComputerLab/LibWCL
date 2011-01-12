@@ -86,6 +86,14 @@ namespace wcl
 			void addPoint(const wcl::Vector& p);
 
 			/**
+			 * Add the given bounding box, adjusting the size of
+			 * the bounding volume of this box if needed.
+			 *
+			 * @param box The box to be added to the bounding volume
+			 */
+			void addBox( const wcl::Vector &box);
+
+			/**
 			 * Resets the bounding box to an invalid state
 			 */
 			void clear();
