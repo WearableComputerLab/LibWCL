@@ -91,7 +91,7 @@ namespace wcl
 			 *
 			 * @param box The box to be added to the bounding volume
 			 */
-			void addBox( const wcl::Vector &box);
+			void addBox( const wcl::BoundingBox &box);
 
 			/**
 			 * Resets the bounding box to an invalid state
