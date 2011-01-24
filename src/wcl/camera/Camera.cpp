@@ -123,6 +123,76 @@ namespace wcl
 		return pixel32;
 	}
 
+	void Camera::convertImageYUYV411toRGB8(const unsigned char *yuv, unsigned char *rgb,
+			const unsigned int width, const unsigned int height)
+	{
+		unsigned int in = 0;
+		unsigned int out = 0;
+		unsigned int pixel_16;
+		unsigned char pixel_24[3];
+		unsigned int pixel32;
+		int y1, y2, y3, y4, u, v;
+
+		for(in = 0; in < (6 * width * height / 4); in += 6)
+		{
+			u = yuv[in];
+			y1 = yuv[in+1];
+			y2 = yuv[in+2];
+			v = yuv[in+3];
+			y3 = yuv[in+4];
+			y4 = yuv[in+5];
+			
+			//Convert formats and push into chars. 
+			pixel32 = Camera::convertPixelYUYV422toRGB8(y1, u, v);
+			pixel_24[0] = (pixel32 & 0x000000ff);
+			pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
+			pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
+
+			//Push out. 
+			rgb[out++] = pixel_24[0];
+			rgb[out++] = pixel_24[1];
+			rgb[out++] = pixel_24[2];
+
+			//Convert formats and push into chars. 
+			pixel32 = Camera::convertPixelYUYV422toRGB8(y2, u, v);
+			pixel_24[0] = (pixel32 & 0x000000ff);
+			pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
+			pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
+
+			//Push out. 
+			rgb[out++] = pixel_24[0];
+			rgb[out++] = pixel_24[1];
+			rgb[out++] = pixel_24[2];
+
+			//Convert formats and push into chars. 
+			pixel32 = Camera::convertPixelYUYV422toRGB8(y3, u, v);
+			pixel_24[0] = (pixel32 & 0x000000ff);
+			pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
+			pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
+
+			//Push out. 
+			rgb[out++] = pixel_24[0];
+			rgb[out++] = pixel_24[1];
+			rgb[out++] = pixel_24[2];
+
+			//Convert formats and push into chars. 
+			pixel32 = Camera::convertPixelYUYV422toRGB8(y4, u, v);
+			pixel_24[0] = (pixel32 & 0x000000ff);
+			pixel_24[1] = (pixel32 & 0x0000ff00) >> 8;
+			pixel_24[2] = (pixel32 & 0x00ff0000) >> 16;
+
+			//Push out. 
+			rgb[out++] = pixel_24[0];
+			rgb[out++] = pixel_24[1];
+			rgb[out++] = pixel_24[2];
+
+
+	
+		}
+	}
+
+
+
 	void Camera::convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 			const unsigned int width, const unsigned int height)
 	{
@@ -273,6 +343,10 @@ namespace wcl
 							convertImageYUYV422toRGB8( currentFrame, buffer, width, height);
 							return buffer;
 
+						case YUYV411:
+							convertImageYUYV411toRGB8( currentFrame, buffer, width, height);
+							return buffer;
+
 #if ENABLE_VIDEO
 						case MJPEG:{
 						    // Init the video decoder on the first MJPEG decoding frame
@@ -366,6 +440,9 @@ NOTIMP:
 
 						case YUYV422:
 							convertImageYUYV422toRGB8( currentFrame, buffer, width, height);
+							return;
+						case YUYV411:
+							convertImageYUYV411toRGB8( currentFrame, buffer, width, height);
 							return;
 
 #if ENABLE_VIDEO

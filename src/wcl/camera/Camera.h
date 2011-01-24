@@ -331,6 +331,8 @@ namespace wcl
 			 */
 			static void convertImageYUYV422toRGB8(const unsigned char *yuv, unsigned char *rgb,
 					const unsigned int width, const unsigned int height);
+			static void convertImageYUYV411toRGB8(const unsigned char *yuv, unsigned char *rgb,
+					const unsigned int width, const unsigned int height);
 
 			static void convertImageMONO8toRGB8(const unsigned char *mono8, unsigned char *rgb,
 					const unsigned int width, const unsigned int height );
