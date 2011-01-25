@@ -25,7 +25,7 @@ extern void doFatal( const char *);
                     OBJ Specific classes
  **************************************************************/
 ^g      { BEGIN DATA; return GROUP;            }
-^s      { BEGIN DATA; return SHADING_GROUP;    }
+^s      { BEGIN DATA; return SMOOTHING_GROUP;    }
 ^v      { return VERTEX;           }
 ^vt     { return TEX_COORD;        }
 ^vn     { return NORMAL;           }
@@ -42,10 +42,14 @@ extern void doFatal( const char *);
 ^Kd     { return DIFFUSE;          }
 ^Ka     { return AMBIENT;          }
 ^Ks     { return SPECULAR;         }
-^Tf     { return OPACITY;          }
+^Tr     { return OPACITY;          }
 ^Ni     { return REFRACTION_INDEX; }
 ^Ns     { return SPECULAR_EXP;     }
 ^map_Kd { BEGIN DATA; return DIFFUSE_MAP;      }
+^map_Ka { BEGIN DATA; return AMBIENT_MAP;      }
+^map_Ks { BEGIN DATA; return SPECULAR_MAP;     }
+^map_d  { BEGIN DATA; return ALPHA_MAP;        }
+^map_bump|^bump { BEGIN DATA; return BUMP_MAP; }
 ^illum  { return ILLUM;		   }
 
 
