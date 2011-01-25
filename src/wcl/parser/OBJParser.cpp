@@ -418,6 +418,7 @@ void OBJParser::print()
 
         OBJGroup *g = *it;
         printf(" + Group: %s\n", g->name.c_str());
+	printf(" +-+ %u Faces\n", g->faces.size());
 
         for( vector<OBJFace *>::iterator fit = g->faces.begin();
              fit != g->faces.end();
@@ -433,9 +434,9 @@ void OBJParser::print()
                  vit != f->verts.end();
                  ++vit ){
                 OBJVertex *v = *vit;
-                Vector vec=this->data.points[v->pointIndex-1];
-                Vector t=this->data.texcoords[v->uvIndex-1];
-                Vector n=this->data.normals[v->normalIndex-1];
+                Vector vec=this->data.points[v->pointIndex];
+                Vector t=this->data.texcoords[v->uvIndex];
+                Vector n=this->data.normals[v->normalIndex];
                 printf("    | V %d (%f,%f,%f)  N %d (%f,%f,%f) T %d (%f,%f)\n",
                        v->pointIndex, vec[0],vec[1],vec[2],
                        v->uvIndex,  n[0],n[1],n[2],
