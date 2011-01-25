@@ -76,9 +76,9 @@ namespace wcl
          *
          * @throws ParseException
          */
-        void parseError(const char *cause, const std::string ="") throw (ParserException)
+        void parseError(const char *cause, const std::string extra="") throw (ParserException)
         {
-            throw ParserException(cause);
+            throw ParserException((std::string(cause) + ":" + extra).c_str());
         }
     };
 
