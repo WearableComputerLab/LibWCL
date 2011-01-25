@@ -27,8 +27,13 @@
 #define WCL_PARSER_OBJPARSER_H
 
 #include <iostream>
+#include <stack>
 #include <wcl/parser/Parser.h>
 #include <wcl/geometry/OBJGeometry.h>
+
+
+// Forward declare the FlexScanner needed for the stack in this class
+struct OBJFormat_FlexLexer;
 
 namespace wcl {
 
@@ -90,6 +95,7 @@ class WCL_API OBJParser: public Parser
     private:
 	RelativeToAbsolute func;
         std::istream *input;
+        std::stack<OBJFormat_FlexLexer *> stack;
         OBJGeometry data;
         OBJMaterial *material;
         OBJGroup *group;
