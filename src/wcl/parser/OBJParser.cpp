@@ -137,7 +137,6 @@ void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)
      this->parse();
      s.close();
      this->input = old;
-     this->parse();
 }
 
 void OBJParser::addGroup(const std::string &name)
@@ -259,7 +258,7 @@ void OBJParser::useMaterial(const std::string &name)
     if(it==this->data.materialmap.end()){
         string s="Material ";
         s+=name;
-        s+=" Not Found In OBJ File";
+        s+=" Not Defined";
         this->parseError(ParserException::INVALID_SYNTAX, s);
     }
 
