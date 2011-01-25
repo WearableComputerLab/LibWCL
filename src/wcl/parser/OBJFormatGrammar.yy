@@ -164,7 +164,7 @@ face:		FACE  INT INT INT  INT INT INT  INT INT INT
 				    $8,$9,$10);
 		}
 		|
-		FACE  INT INT INT INT  INT INT INT INT  INT INT INT INT
+		FACE  INT INT INT  INT INT INT  INT INT INT  INT INT INT
 		{
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->addFace($2,$3,$4,
