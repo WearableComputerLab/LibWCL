@@ -8,6 +8,7 @@
 %option prefix="OBJFormat_" outfile="lex.yy.c"
 %option debug
 %option c++
+%x DATA
      
 %{
 #include "parser/OBJParser.h"
@@ -23,28 +24,28 @@ extern void doFatal( const char *);
  /**************************************************************
                     OBJ Specific classes
  **************************************************************/
-^g      { return GROUP;            }
-^s      { return SHADING_GROUP;    }
+^g      { BEGIN DATA; return GROUP;            }
+^s      { BEGIN DATA; return SHADING_GROUP;    }
 ^v      { return VERTEX;           }
 ^vt     { return TEX_COORD;        }
 ^vn     { return NORMAL;           }
 ^f      { return FACE;             }
-^mtllib { return MTL_LIB;          }
-^usemtl { return USE_MTL;          }
+^mtllib { BEGIN DATA; return MTL_LIB; }
+^usemtl { BEGIN DATA; return USE_MTL;          }
 #.*\n  { return COMMENT;          }
 
 
  /**************************************************************
                     MTL Specific classes
  **************************************************************/
-^newmtl { return NEW_MTL;          }
+^newmtl { BEGIN DATA; return NEW_MTL;          }
 ^Kd     { return DIFFUSE;          }
 ^Ka     { return AMBIENT;          }
 ^Ks     { return SPECULAR;         }
 ^Tf     { return OPACITY;          }
 ^Ni     { return REFRACTION_INDEX; }
 ^Ns     { return SPECULAR_EXP;     }
-^map_Kd { return DIFFUSE_MAP;      }
+^map_Kd { BEGIN DATA; return DIFFUSE_MAP;      }
 ^illum  { return ILLUM;		   }
 
 
@@ -53,20 +54,22 @@ extern void doFatal( const char *);
  **************************************************************/
 
  /* Floating point number */
-[-+0-9]+\.[0-9]+ {
+<INITIAL>[-+0-9]+\.[0-9]+ {
 	yylval.d = atof(yytext);
 	return DOUBLE;
 }
 
  /* integer number */
-[0-9]+ {
+<INITIAL>[0-9]+ {
 	yylval.i = atoi(yytext);
 	return INT;
 }
 
+
  /* string */
-[a-zA-Z][a-zA-Z0-9\._/-]+ {
+<DATA>([^ \r\t\n][^\r\t\n]+[^ \r\t\n]|[^ \r\t\n]+) {
 	strcpy(yylval.str,yytext);
+	BEGIN INITIAL;
 	return STRING;
 }
 
@@ -75,8 +78,11 @@ extern void doFatal( const char *);
  **************************************************************/
 
  /* Squeltch whitespace */
-[\t\n\r ]*  ;
+<INITIAL,DATA>[ \t\n\r]  ;
 
-. { printf("lex Unknown character, ignoring = '%s'", yytext); };
+ /* Face separators */
+<INITIAL>"/"	;
+
+. { printf("lex Unknown character, ignoring = '%s'\n", yytext); };
 
 %%
