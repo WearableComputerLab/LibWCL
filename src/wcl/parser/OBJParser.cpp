@@ -44,7 +44,7 @@ namespace wcl {
 
 
 OBJParser::OBJParser(istream &stream, RelativeToAbsolute ifunc):
-    func(ifunc), input(&stream), material(NULL), group(NULL)
+    func(ifunc), input(&stream), material(NULL), group(NULL),smoothing(NULL)
 {
 }
 
@@ -144,7 +144,7 @@ void OBJParser::addGroup(const std::string &name)
     OBJGroup *g = new OBJGroup;
     g->name = name;
     this->data.groups.push_back(g);
-    this->data.groupsmap[name]=g;
+    this->data.groupsMap[name]=g;
     this->group = g;
 }
 
@@ -166,13 +166,19 @@ void OBJParser::addNormal(const double n1, const double n2, const double n3)
     this->data.normals.push_back(v);
 }
 
-void OBJParser::addShaderGroup( const std::string &sgroup )
+void OBJParser::setSmoothingGroup( const std::string &name )
 {
-#warning OBJParser: Note Shader Group support is not implemented
-    //NOTIMP, let user know
-    cout <<"OBJParser::addShaderGroup| ShaderGroup Not Implemented, ignoring "
-          << sgroup
-          << endl;
+    map<string, OBJSmoothing *>::iterator it;
+
+    it = this->data.smoothingMap.find(name);
+    if(it==this->data.smoothingMap.end()){
+	OBJSmoothing *s = new OBJSmoothing;
+	s->name = name;
+	this->data.smoothing.push_back(s);
+	this->smoothing = s;
+    } else {
+	this->smoothing = it->second;
+    }
 }
 #warning OBJParser: Only Faces consiting of Triangles or Quads are supported
 
@@ -207,6 +213,9 @@ void OBJParser::addFace(
     v3->uvIndex    = ti3-1;
 
     this->group->faces.push_back(face);
+
+    if( this->smoothing )
+	this->smoothing->faces.push_back(face);
 }
 
 void OBJParser::addFace(
@@ -247,6 +256,9 @@ void OBJParser::addFace(
     v4->uvIndex    = ti4-1;
 
     this->group->faces.push_back(face);
+
+    if( this->smoothing )
+	this->smoothing->faces.push_back(face);
 }
 
 void OBJParser::useMaterial(const std::string &name)
@@ -254,8 +266,8 @@ void OBJParser::useMaterial(const std::string &name)
     map<string, OBJMaterial *>::iterator it;
 
     // search for the material named in the map
-    it = this->data.materialmap.find(name);
-    if(it==this->data.materialmap.end()){
+    it = this->data.materialMap.find(name);
+    if(it==this->data.materialMap.end()){
         string s="Material ";
         s+=name;
         s+=" Not Defined";
@@ -313,32 +325,59 @@ void OBJParser::setMaterialRefractionIndex( const double index)
     this->material->refractionIndex=index;
 }
 
-void OBJParser::setMaterialDiffuseMap(const std::string &path)
-{
-#warning OBJParser: Diffuse Map Loading Is Not Yet Implemented
-    //NOTIMP, let user know
-    cout <<"OBJParser::setMaterialDiffuseMap| Diffuse Map loading not Implemented, ignoring "
-          << path
-          << endl;
-}
-
 void OBJParser::setMaterialIlluminationGroup(const int group)
 {
-#warning OBJParser: Illumination Group Loading Is Not Yet Implemented
-    //NOTIMP, let user know
-    cout <<"OBJParser::setMaterialIlluminationGroup| Illumination Group loading not Implemented, ignoring "
-          << group
-          << endl;
+    this->material->valid |= OBJMaterial::M_ILLUMGROUP;
+    this->material->illumGroup = group;
+}
+
+void OBJParser::setMaterialDiffuseMap(const std::string &path)
+{
+    this->material->valid |= OBJMaterial::M_DIFFUSE_MAP;
+    this->material->diffuseMap = path;
+}
+
+void OBJParser::setMaterialAmbientMap(const std::string &path)
+{
+    this->material->valid |= OBJMaterial::M_AMBIENT_MAP;
+    this->material->ambientMap = path;
+}
+
+void OBJParser::setMaterialSpecularMap(const std::string &path)
+{
+    this->material->valid |= OBJMaterial::M_SPECULAR_MAP;
+    this->material->specularMap = path;
+}
+
+void OBJParser::setMaterialAlphaMap(const std::string &path)
+{
+    this->material->valid |= OBJMaterial::M_ALPHA_MAP;
+    this->material->alphaMap = path;
+}
+
+void OBJParser::setMaterialBumpMap(const std::string &path)
+{
+    this->material->valid |= OBJMaterial::M_BUMP_MAP;
+    this->material->bumpMap = path;
 }
 
 void OBJParser::addMaterial(const std::string &name)
 {
-    OBJMaterial *m = new OBJMaterial;
-    m->name = name;
-    m->valid=OBJMaterial::M_NONE;
-    this->data.materials.push_back(m);
-    this->data.materialmap[name]=m;
-    this->material = m;
+    map<string, OBJMaterial *>::iterator it;
+
+    // Add the material if it doesn't already exist
+    it = this->data.materialMap.find(name);
+    if(it==this->data.materialMap.end()){
+	this->material = it->second;
+	OBJMaterial *m = new OBJMaterial;
+	m->name = name;
+	m->valid=OBJMaterial::M_NONE;
+	this->data.materials.push_back(m);
+	this->data.materialMap[name]=m;
+	this->material = m;
+    } else {
+	this->material = it->second;
+    }
 }
 
 void OBJParser::setMaterialSpecularExponent(const double value)
@@ -357,7 +396,7 @@ void OBJParser::print()
     for(vector<OBJMaterial *>::iterator it = this->data.materials.begin();
         it != this->data.materials.end(); ++it ){
         OBJMaterial *m=*it;
-        printf(" + Name: %s valid[%d]\n", m->name.c_str(), m->valid);
+        printf(" + Name: %s valid[%llu]\n", m->name.c_str(), m->valid);
         if( m->valid & OBJMaterial::M_DIFFUSE )
             printf("   dif  [ %f,%f,%f]\n",
                    m->diffuse[0], m->diffuse[1], m->diffuse[2]);
@@ -374,6 +413,18 @@ void OBJParser::print()
             printf( "  refInd %f\n", m->refractionIndex);
         if(m->valid & OBJMaterial::M_SPECULAREXP)
             printf("   specexp %f\n",m->specularExp);
+        if(m->valid & OBJMaterial::M_ILLUMGROUP)
+            printf("   illumgrp: %d\n",m->illumGroup);
+        if(m->valid & OBJMaterial::M_DIFFUSE_MAP)
+            printf("   diffusemap: %s\n",m->diffuseMap.c_str());
+        if(m->valid & OBJMaterial::M_AMBIENT_MAP)
+            printf("   ambientmap: %s\n",m->ambientMap.c_str());
+        if(m->valid & OBJMaterial::M_SPECULAR_MAP)
+            printf("   specularmap: %s\n",m->specularMap.c_str());
+        if(m->valid & OBJMaterial::M_ALPHA_MAP)
+            printf("   specularmap: %s\n",m->alphaMap.c_str());
+        if(m->valid & OBJMaterial::M_BUMP_MAP)
+            printf("   bumpmap: %s\n",m->bumpMap.c_str());
     }
 
     printf("\n");

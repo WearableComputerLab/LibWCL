@@ -20,8 +20,9 @@ using namespace wcl;
 %}
 
 // Tokens returned by lex
-%token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SHADING_GROUP COMMENT
-%token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP DIFFUSE_MAP ILLUM
+%token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SMOOTHING_GROUP COMMENT
+%token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM 
+%token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
 %debug
 
 %union {
@@ -46,7 +47,7 @@ request:
 	|	request vertextexture
 	|	request vertexnormal
 	|	request face
-	|	request shadinggroup
+	|	request smoothinggroup
 	|	request COMMENT
 	|	request use_material
 	|	error {
@@ -102,15 +103,35 @@ material_property:
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->setMaterialIlluminationGroup($2);
 		}
+		| SPECULAR_EXP DOUBLE
+		{
+		    OBJParser *parser = (OBJParser *)param;
+		    parser->setMaterialSpecularExponent($2);
+		}
 		| DIFFUSE_MAP STRING
 		{
 		    OBJParser *parser  = (OBJParser *)param;
 		    parser->setMaterialDiffuseMap($2);
 		}
-		| SPECULAR_EXP DOUBLE
+		| AMBIENT_MAP STRING
 		{
-		    OBJParser *parser = (OBJParser *)param;
-		    parser->setMaterialSpecularExponent($2);
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->setMaterialAmbientMap($2);
+		}
+		| SPECULAR_MAP STRING
+		{
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->setMaterialSpecularMap($2);
+		}
+		| ALPHA_MAP STRING
+		{
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->setMaterialAlphaMap($2);
+		}
+		| BUMP_MAP STRING
+		{
+		    OBJParser *parser  = (OBJParser *)param;
+		    parser->setMaterialBumpMap($2);
 		}
 		;
 
@@ -142,18 +163,11 @@ vertexnormal:	NORMAL DOUBLE DOUBLE DOUBLE
 		}
 		;
 
-shadinggroup:   SHADING_GROUP STRING
+smoothinggroup:   SMOOTHING_GROUP STRING
 		{
 		    OBJParser *parser  = (OBJParser *)param;
-		    parser->addShaderGroup($2);
+		    parser->setSmoothingGroup($2);
 		} 
-		| SHADING_GROUP INT
-		{
-		    std::stringstream s;
-		    s<< $2;
-		    OBJParser *parser  = (OBJParser *)param;
-		    parser->addShaderGroup(s.str());
-		}
 		;
 
 face:		FACE  INT INT INT  INT INT INT  INT INT INT

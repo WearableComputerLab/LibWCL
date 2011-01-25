@@ -27,6 +27,7 @@
 #ifndef OBJ_GEOMETRY
 #define OBJ_GEOMETRY
 
+#include <stdint.h>
 #include <map>
 #include <string>
 #include <vector>
@@ -50,22 +51,43 @@ namespace wcl
                        M_SPECULAR=4,
                        M_OPACITY=8,
                        M_REFRACTION=16,
-                       M_SPECULAREXP=32};
-                int valid;
-                std::string name;          // newmtl [NAME]
+                       M_SPECULAREXP=32,
+		       M_ILLUMGROUP=64,
+
+                       // Valid maps
+                       M_DIFFUSE_MAP=1,
+                       M_AMBIENT_MAP=2,
+                       M_SPECULAR_MAP=4,
+                       M_ALPHA_MAP=8,
+                       M_BUMP_MAP=16
+                        };
+                uint64_t valid;
+                uint32_t maps;
+                std::string name;           // newmtl [NAME]
                 Vector diffuse;             // Kd
                 Vector ambient;             // Ka
                 Vector specular;            // Ks
-                Vector opacity;             // Tf
+                Vector opacity;             // Tr
                 double refractionIndex;     // Ni
                 double specularExp;         // Ns
-                // Diffusionmap???
+		uint32_t illumGroup;	    // illum
+                std::string diffuseMap;     // map_Kd
+                std::string ambientMap;     // map_Ka
+                std::string specularMap;    // map_Ks
+                std::string alphaMap;	    // map_d
+                std::string bumpMap;	    // map_bump | bump
 	};
 
 	struct WCL_API OBJFace
 	{
                 OBJMaterial *material;
 		std::vector<OBJVertex *> verts;
+	};
+
+	struct WCL_API OBJSmoothing
+	{
+		std::string name;
+		std::vector<OBJFace *> faces;
 	};
 
         struct WCL_API OBJGroup
@@ -81,8 +103,10 @@ namespace wcl
 		std::vector<wcl::Vector> texcoords;
                 std::vector<wcl::OBJMaterial *> materials;
                 std::vector<wcl::OBJGroup *>groups;
-		std::map<std::string, wcl::OBJMaterial *> materialmap;
-                std::map<std::string, wcl::OBJGroup *>groupsmap;
+		std::vector<wcl::OBJSmoothing *>smoothing;
+		std::map<std::string, wcl::OBJMaterial *> materialMap;
+                std::map<std::string, wcl::OBJGroup *>groupsMap;
+		std::map<std::string, wcl::OBJSmoothing *>smoothingMap;
 	};
 }
 
