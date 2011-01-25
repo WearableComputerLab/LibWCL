@@ -135,6 +135,7 @@ void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)
      istream *old = this->input;
      this->input= &s;
      this->parse();
+     s.close();
      this->input = old;
      this->parse();
 }
