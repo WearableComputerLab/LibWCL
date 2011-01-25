@@ -96,15 +96,22 @@ OBJParser::~OBJParser()
 void wcl::OBJParser::parse() throw (ParserException)
 {
     yydebug=this->debug;
+
+    OBJFormat_FlexLexer *lexer = new OBJFormat_FlexLexer(this->input,&clog);
+    lexer->set_debug(this->debug);
+    this->stack.push(lexer);
+
     if( yyparse(this) ){
         this->parseError(ParserException::INVALID_SYNTAX);
     }
+
+    this->stack.pop();
+    delete lexer;
 }
 
 int wcl::OBJParser::scanner(OBJParser *p)
 {
-    OBJFormat_FlexLexer *lexer = new OBJFormat_FlexLexer(p->input,&cout);
-    lexer->set_debug(p->debug);
+    OBJFormat_FlexLexer *lexer = p->stack.top();
     return lexer->yylex();
 }
 
