@@ -23,6 +23,7 @@ using namespace wcl;
 %token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SMOOTHING_GROUP COMMENT
 %token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM 
 %token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
+%expect 2
 %debug
 
 %union {
@@ -170,22 +171,23 @@ smoothinggroup:   SMOOTHING_GROUP STRING
 		} 
 		;
 
-face:		FACE  INT INT INT  INT INT INT  INT INT INT
+face:		facestart vertexgroup
+
+facestart:	FACE	
 		{
 		    OBJParser *parser  = (OBJParser *)param;
-		    parser->addFace($2,$3,$4,
-				    $5,$6,$7,
-				    $8,$9,$10);
+		    parser->newFace();
 		}
-		|
-		FACE  INT INT INT  INT INT INT  INT INT INT  INT INT INT
+		;
+
+vertexgroup:	vertex
+		| vertexgroup vertex
+
+vertex: 	INT INT INT
 		{
 		    OBJParser *parser  = (OBJParser *)param;
-		    parser->addFace($2,$3,$4,
-				    $5,$6,$7,
-				    $8,$9,$10,
-				    $11,$12,$13);
-		}
+		    parser->addFaceVertex($1,$2,$3);
+		} 
 		;
 
 use_material:	USE_MTL STRING
