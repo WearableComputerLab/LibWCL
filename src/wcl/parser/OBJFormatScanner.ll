@@ -9,6 +9,7 @@
 %option debug
 %option c++
 %x DATA
+%x FACEDATA
      
 %{
 #include "parser/OBJParser.h"
@@ -29,7 +30,7 @@ extern void doFatal( const char *);
 ^v      { return VERTEX;           }
 ^vt     { return TEX_COORD;        }
 ^vn     { return NORMAL;           }
-^f      { return FACE;             }
+^f      { BEGIN FACEDATA; return FACE;             }
 ^mtllib { BEGIN DATA; return MTL_LIB; }
 ^usemtl { BEGIN DATA; return USE_MTL;          }
 #.*\n  { return COMMENT;          }
@@ -42,7 +43,7 @@ extern void doFatal( const char *);
 ^Kd     { return DIFFUSE;          }
 ^Ka     { return AMBIENT;          }
 ^Ks     { return SPECULAR;         }
-^Tr     { return OPACITY;          }
+^Tf|^Tr { return OPACITY;          }
 ^Ni     { return REFRACTION_INDEX; }
 ^Ns     { return SPECULAR_EXP;     }
 ^map_Kd { BEGIN DATA; return DIFFUSE_MAP;      }
@@ -64,7 +65,7 @@ extern void doFatal( const char *);
 }
 
  /* integer number */
-<INITIAL>[0-9]+ {
+<INITIAL,FACEDATA>[0-9]+ {
 	yylval.i = atoi(yytext);
 	return INT;
 }
@@ -85,7 +86,9 @@ extern void doFatal( const char *);
 <INITIAL,DATA>[ \t\n\r]  ;
 
  /* Face separators */
-<INITIAL>"/"	;
+<FACEDATA>[/ \t]	;
+
+<FACEDATA>\n	{ BEGIN INITIAL; }
 
 . { printf("lex Unknown character, ignoring = '%s'\n", yytext); };
 

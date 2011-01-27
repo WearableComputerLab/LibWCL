@@ -70,15 +70,8 @@ class WCL_API OBJParser: public Parser
         void addVertex(const double, const double, const double);
         void addVertexTexture(const double, const double);
         void addNormal(const double, const double, const double);
-	//Add a triangle
-        void addFace(const double, const double, const double,
-                     const double, const double, const double,
-                     const double, const double, const double);
-	//Add a quad
-        void addFace(const double, const double, const double,
-                     const double, const double, const double,
-                     const double, const double, const double,
-		     const double, const double, const double);
+	void newFace();
+	void addFaceVertex(const double, const double, const double);
         void useMaterial(const std::string &);
         void setMaterialDiffuse(const double, const double, const double);
         void setMaterialAmbience(const double, const double, const double);
@@ -104,6 +97,7 @@ class WCL_API OBJParser: public Parser
         OBJMaterial *material;
         OBJGroup *group;
 	OBJSmoothing *smoothing;
+	OBJFace *face;
 
         OBJParser(const OBJParser &); /* NIMP */
 

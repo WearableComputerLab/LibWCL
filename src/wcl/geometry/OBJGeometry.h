@@ -78,9 +78,12 @@ namespace wcl
                 std::string bumpMap;	    // map_bump | bump
 	};
 
+	struct OBJSmoothing; //forward dec
+
 	struct WCL_API OBJFace
 	{
                 OBJMaterial *material;
+		OBJSmoothing *smoothing;
 		std::vector<OBJVertex *> verts;
 	};
 
