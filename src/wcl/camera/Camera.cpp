@@ -128,7 +128,6 @@ namespace wcl
 	{
 		unsigned int in = 0;
 		unsigned int out = 0;
-		unsigned int pixel_16;
 		unsigned char pixel_24[3];
 		unsigned int pixel32;
 		int y1, y2, y3, y4, u, v;
