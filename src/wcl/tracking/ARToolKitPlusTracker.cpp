@@ -28,6 +28,7 @@
 #include <assert.h>
 #include <ARToolKitPlus/CameraImpl.h>
 #include <ARToolKitPlus/CameraAdvImpl.h>
+#include <ARToolKitPlus/TrackerSingleMarkerImpl.h>
 
 using namespace ARToolKitPlus;
 

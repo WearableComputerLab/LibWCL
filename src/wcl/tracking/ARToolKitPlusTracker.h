@@ -29,7 +29,7 @@
 
 #include <stdint.h>
 #include <vector>
-#include <ARToolKitPlus/TrackerSingleMarkerImpl.h>
+#include <map>
 
 #include <wcl/api.h>
 #include <wcl/camera/Camera.h>
@@ -48,8 +48,8 @@
 // often conflict.
 namespace ARToolKitPlus
 {
-     class TrackerSingleMarker *tracker;
-}
+     class TrackerSingleMarker;
+};
 
 namespace wcl
 {
