@@ -214,15 +214,26 @@ GLvoid display()
 int main(int argc, char** argv)
 {
     try {
-    cam = CameraFactory::getCamera();
-	Camera::Configuration c;
-	c.width = 640;
-	c.height = 480;
-	cam = CameraFactory::findCamera(c);
-    if( cam == NULL ){
-	printf("No Cameras are available\n");
-	return 1;
-    }
+        if( argc == 2 ){
+            cout << "Attempting to use Camera specified:" << argv[1] <<endl;
+            cam = CameraFactory::getCamera(argv[1]);
+        } else {
+            cout << "No Camera Specified, using CameraFactory to find the first camera..." << endl;
+            std::vector<Camera *> cameras = CameraFactory::getCameras();
+            CameraFactory::printDetails(false);
+
+            if( cameras.size() == 0 ){
+                cout << "No physical camera's found, using virtual camera" << endl;
+                cam = new VirtualCamera();
+            } else {
+                cam = CameraFactory::getCamera();
+            }
+        }
+        if (cam == NULL ){
+            std::cout << "No usable cameras found" << std::endl;
+            exit(0);
+        }
+
 
 	float flx;
 	float fly;
@@ -234,20 +245,20 @@ int main(int argc, char** argv)
 	float p1;
 	float p2;
 
-	if (argc > 1)
+	if (argc > 2)
 	{
 		cout << "Using camera parameters from command line" << endl;
 
 		if (argc == 9)
 		{
-			flx = atol(argv[1]);
-			fly = atol(argv[2]);
-			ppx = atol(argv[3]);
-			ppy = atol(argv[4]);
-			k1  = atol(argv[5]);
-			k2  = atol(argv[6]);
-			p1  = atol(argv[7]);
-			p2  = atol(argv[8]);
+			flx = atol(argv[2]);
+			fly = atol(argv[3]);
+			ppx = atol(argv[4]);
+			ppy = atol(argv[5]);
+			k1  = atol(argv[6]);
+			k2  = atol(argv[7]);
+			p1  = atol(argv[8]);
+			p2  = atol(argv[9]);
 		}
 		else
 		{
