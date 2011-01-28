@@ -43,6 +43,14 @@
 #define WCL_ARTOOLKITPLUSTRACKER_MARKER_DETECTION_COUNT 8
 #endif
 
+// We forward declare ARToolkitPlus::TrackerSingleMarker as
+// if someone uses artoolkit & artoolkitplus the template includes
+// often conflict.
+namespace ARToolKitPlus
+{
+     class TrackerSingleMarker *tracker;
+}
+
 namespace wcl
 {
 
