@@ -28,8 +28,9 @@
 /*
  * Simple test of the ARToolKitPlus Wrappers
  */
+#include <cstring>
+#include <cstdio>
 #include <iostream>
-
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
