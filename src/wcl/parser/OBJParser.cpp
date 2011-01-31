@@ -132,7 +132,7 @@ void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)
 
      ifstream s(path.c_str());
      if(!s.is_open())
-        this->parseError(ParserException::IOERROR);
+        this->parseError(ParserException::IOERROR,"Material File: " + lib + " Not Found or invalid");
      istream *old = this->input;
      this->input= &s;
      this->parse();
