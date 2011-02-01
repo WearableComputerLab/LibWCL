@@ -577,11 +577,25 @@ NOTIMP:
 		for(std::vector<Configuration>::iterator it =
 		    supportedConfigurations.begin(); it !=
 		    supportedConfigurations.end(); ++it ){
-
 		    Configuration c = *it;
-		    cout << "\t" << this->imageFormatToString(c.format) << " "
-			 << c.width << "x" << c.height << " @" << c.fps << endl;
+
+		    if( it == supportedConfigurations.begin()){
+			cout << "\t" << this->imageFormatToString(c.format) << " " << c.width << "x" << c.height << " @" << c.fps;
+		    }
+		    else {
+			--it;
+			Configuration prev = *it;
+			++it;
+			if( c.format == prev.format && c.width == prev.width && c.height == prev.height )
+			    cout << "," << c.fps;
+			else {
+			    cout << "\n";
+			    cout << "\t" << this->imageFormatToString(c.format) << " "
+				<< c.width << "x" << c.height << " @" << c.fps;
+			}
+		    }
 		}
+		cout << "\n";
 	    }
 	}
 
