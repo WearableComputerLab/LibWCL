@@ -51,6 +51,7 @@ namespace wcl
 		    virtual void setConfiguration(const Configuration &c);
 		    virtual void setExposureMode(const ExposureMode t);
 		    virtual void setControlValue(const Control control, const int value);
+		    virtual int getControlValue(const Control) { return 1; }
 		    virtual void update();
 		    virtual void startup();
 		    virtual void shutdown();
