@@ -113,7 +113,7 @@ namespace wcl
 				ANY,
 				MJPEG, //Motion JPEG Format.
 				YUYV422, // YUYV 4:2:2 format.
-				YUYV411, // YUYV 4:2:2 format.
+				YUYV411, // YUYV 4:1:1 format.
 				RGB8, //  8 8 8
 				RGB16, // 16 16 16
 				RGB32, // 32 32 32
