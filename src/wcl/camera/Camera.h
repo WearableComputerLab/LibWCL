@@ -246,6 +246,13 @@ namespace wcl
 			virtual void setControlValue(const Control control, const int value) = 0;
 
 			/**
+			 * Returns the value of a control for the camera.
+			 * 
+			 * @param control The control to receive.
+			 */
+			virtual int getControlValue(const Control control) = 0;
+
+			/**
 			 * Gets the next frame from the camera, stores it internally.
 			 */
 			virtual void update() = 0;
