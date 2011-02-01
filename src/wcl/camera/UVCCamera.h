@@ -137,6 +137,14 @@ namespace wcl
 			void setControlValue(const Control control, const int value);
 
 			/**
+			 * Returns the value of a control for the camera.
+			 * 
+			 * @param control The control to receive.
+			 */
+			virtual int getControlValue(const Control control);
+
+
+			/**
 			 * Sets the camera up ready for capture
 			 *
 			 * @throws exception if the camera can't be setup

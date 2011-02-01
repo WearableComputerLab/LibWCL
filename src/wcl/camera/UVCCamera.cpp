@@ -411,6 +411,29 @@ void UVCCamera::setControlValue(const Control controlName, const int value)
 
 }
 
+int UVCCamera::getControlValue(const Control controlName)
+{
+	struct v4l2_ext_control control;
+	struct v4l2_ext_controls box;
+
+	//setup the control
+	control.id = mapControlToV4L2(controlName);
+	
+	//setup the container
+	box.ctrl_class = V4L2_CTRL_CLASS_USER;
+	box.count = 1;
+	
+	//normally this a pointer to an array of controls, but we are only setting 1
+	box.controls = &control;
+
+	if (0 != ioctl(cam, VIDIOC_G_EXT_CTRLS, &box))
+	{
+		throw CameraException(CameraException::CONTROLERROR);
+	}
+
+	return control.value;
+}
+
 
 unsigned UVCCamera::getFormatBufferSize() const
 {

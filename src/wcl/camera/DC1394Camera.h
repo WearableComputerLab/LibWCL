@@ -60,7 +60,9 @@ public:
 	/**
 	 * Sets the control value for the camera
 	 */
-	void setControlValue(const Control control, const int value);
+	virtual void setControlValue(const Control control, const int value);
+	virtual int getControlValue(const Control control);
+
 	void setConfiguration(const Configuration &c);
 
 protected:

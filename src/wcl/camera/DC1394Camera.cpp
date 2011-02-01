@@ -308,6 +308,11 @@ notfound:
 	}
 
 
+	int DC1394Camera::getControlValue(const Control control) {
+		throw CameraException("DC1394 Cameras do not yet support getting control values");
+	}
+
+
 	void DC1394Camera::startup()
 	{
 		// setup up the capture and define the number of DMA buffers to use.
