@@ -127,7 +127,6 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_camera_virtual="yes";
 	     enable_tracking_artoolkitplus="yes";
 	     enable_video="yes";
-	     enable_examples="yes";
 	     enable_wiimote="yes";
 	     )
 
