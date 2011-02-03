@@ -182,9 +182,9 @@ namespace wcl
 				WHITE_BALANCE,
 				SHARPNESS,
 				EXPOSURE,
-				FRAMERATE,
-				ISO
-
+				ISO,
+				FOCUS,
+				AUTOFOCUS
 			};
 
 			virtual ~Camera();
