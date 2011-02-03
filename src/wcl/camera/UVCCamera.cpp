@@ -475,13 +475,14 @@ uint32_t UVCCamera::mapControlToV4L2( const Control c ) const
 	case Camera::WHITE_BALANCE:return V4L2_CID_WHITE_BALANCE_TEMPERATURE;
 	case Camera::SHARPNESS:return V4L2_CID_SHARPNESS;
 	case Camera::EXPOSURE: return V4L2_CID_EXPOSURE_ABSOLUTE;
+	case Camera::FOCUS: return V4L2_CID_FOCUS_ABSOLUTE;
+	case Camera::AUTOFOCUS: return V4L2_CID_FOCUS_AUTO;
 
 	// Unhandled V4L options
 	default:
 	case Camera::ISO:
 	case Camera::APERTURE:
-	case Camera::FRAMERATE:
-			       throw CameraException(CameraException::CONTROLERROR);
+		throw CameraException(CameraException::CONTROLERROR);
     }
 }
 
