@@ -74,6 +74,7 @@ private:
 	void setBrightness( const int );
 	void setGain( const int  );
 	void setIris( const int );
+	void setISOSpeed( const int );
 	void loadCapabilities();
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
