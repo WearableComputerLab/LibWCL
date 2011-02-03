@@ -292,10 +292,10 @@ notfound:
 	{
 		switch( control )
 		{
-			case APERTURE: return this->setIris(value);
-			case BRIGHTNESS: return this->setBrightness( value );
-			case GAIN: return this->setGain( value );
-			case ISO:
+			case APERTURE: this->setIris(value); break;
+			case BRIGHTNESS: this->setBrightness( value ); break;
+			case GAIN: this->setGain( value ); break;
+			case ISO: this->setISOSpeed(value);
 			case WHITE_BALANCE:
 			case CONTRAST:
 			case SATURATION:
@@ -365,151 +365,29 @@ notfound:
 	}
 
 
-	/*
-	// method to change to the framerate specified by the string.
-	void DC1394Camera::setFramerate( char* newFramerate )
-	{
-	// make sure the video mode wasn't null
-	if( newFramerate != NULL )
-	{
 
-	// check to see what the user passed in
-	if( strcmp( newFramerate, "DC1394_FRAMERATE_1_875" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_1_875;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_3_75" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_3_75;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_7_5" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_7_5;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_15" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_15;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_30" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_30;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_60" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_60;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_120" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_120;
-	}
-	else if( strcmp( newFramerate, "DC1394_FRAMERATE_240" ) == 0 )
-	{
-	this->framerate = DC1394_FRAMERATE_240;
-	}
-	else
-	{
-	fprintf( stderr, "Framerate not supported" );
-	this->printSupportedFramerates();
-	fprintf( stderr, "unsupported framereat, see list above for available framerates" );
-	exit( EXIT_FAILURE );
-	}
-
-	// check that the framerate is supported
-	if( !isFramerateSupported( this->framerate ) )
-	{
-	fprintf( stderr, "failed to set the framerate" );
-	this->printSupportedFramerates();
-	fprintf( stderr, "Please check that the framerate you requested is supported by the camera (see list above)" );
-	exit( EXIT_FAILURE );
-	}
-
-	// make sure the camera is set up
-	if( this->camera == NULL )
-	{
-	fprintf( stderr, "camera isn't initialized" );
-	exit( EXIT_FAILURE );
-	}
-
-	// attempt to set the framerate
-	this->result = dc1394_video_set_framerate( this->camera, this->framerate );
-
-	// check if everything went okay
-	if( this->result != DC1394_SUCCESS )
-	{
-	fprintf( stderr, "failed to set the framerate" );
-	this->printSupportedVideoModes();
-	fprintf( stderr, "The error that I got from libdc1394 was %s", dc1394_error_get_string( this->result ) );
-	exit( EXIT_FAILURE );
-}
-else
-{
-	fprintf( stderr, "set the framerate to %s", newFramerate );
-}
-
-}
-}
-*/
-
-/*
 // method to change to the ISO speed
-void DC1394Camera::setISOSpeed( char* newISOSpeed )
+void DC1394Camera::setISOSpeed( const int value )
 {
-dc1394speed_t ISOSpeed;
+    dc1394speed_t isoSpeed;
 
-if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_100" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_100;
-}
-else if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_200" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_200;
-}
-else if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_400" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_400;
-}
-else if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_800" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_800;
-}
-else if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_1600" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_1600;
-}
-else if( strcmp( newISOSpeed, "DC1394_ISO_SPEED_3200" ) == 0 )
-{
-ISOSpeed = DC1394_ISO_SPEED_3200;
-}
-else
-{
-fprintf( stderr, "ISO speed not supported" );
-//this->printSupportedISOSpeeds();
-fprintf( stderr, "unsupported ISO speed, see list above for available speeds" );
-exit( EXIT_FAILURE );
-}
+    switch(value){
+	case 100: isoSpeed = DC1394_ISO_SPEED_100; break;
+	case 200: isoSpeed = DC1394_ISO_SPEED_200; break;
+	case 400: isoSpeed = DC1394_ISO_SPEED_400; break;
+	case 800: isoSpeed = DC1394_ISO_SPEED_800; break;
+	case 1600: isoSpeed = DC1394_ISO_SPEED_1600; break;
+	case 3200: isoSpeed = DC1394_ISO_SPEED_3200; break;
+	default:
+		   throw CameraException(CameraException::ISOERROR);
+    }
 
-// make sure the camera is set up
-if( this->camera == NULL )
-{
-fprintf( stderr, "camera isn't initialized" );
-exit( EXIT_FAILURE );
+    dc1394error_t result = dc1394_video_set_iso_speed( this->camera, isoSpeed );
+    if( result != DC1394_SUCCESS ) {
+	throw CameraException(CameraException::ISOERROR);
+    }
+
 }
-
-fprintf( stderr, "about to set ISO speed to: %s", newISOSpeed );
-
-this->result = dc1394_video_set_iso_speed( this->camera, ISOSpeed );
-if( this->result != DC1394_SUCCESS )
-{
-fprintf( stderr, "failed to set ISO speed to %s", newISOSpeed );
-fprintf( stderr, "currently I have no way of checking was the available speeds are" );
-fprintf( stderr, "error message is: %s", dc1394_error_get_string( this->result ) );
-exit( EXIT_FAILURE );
-}
-
-fprintf( stderr, "ISO speed has been set to: %s", newISOSpeed );
-}
-*/
-
 
 void DC1394Camera::setIris( const int value)
 {
