@@ -302,8 +302,9 @@ notfound:
 			case POWER_FREQUENCY:
 			case SHARPNESS:
 			case EXPOSURE:
-			case FRAMERATE:
-					   printf("DC1394Camera: setControlValue: Control %d not supported/implemented\n",control);
+			case FOCUS:
+			case AUTOFOCUS:
+					   throw CameraException("DC1394 Cameras do not yet support setting control values");
 		}
 	}
 
