@@ -230,22 +230,6 @@ wcl::Vector GrayCode::getRowCol(const wcl::Vector &input) const
     return v;
 }
 
-
-unsigned int GrayCode::fromGrayCode(const unsigned value)
-{
-    unsigned int temp = value ^ (value>>8);
-    temp ^= (temp>>4);
-    temp ^= (temp>>2);
-    temp ^= (temp>>1);
-    return temp;
-}
-
-unsigned int GrayCode::toGrayCode(const unsigned value)
-{
-    return ( value >> 1 ) ^ (value);
-}
-
-
 /**
  * Given the correct amount of images, decode the structured light sequence.
  * Note the images are expected to be in 8 bit grayscale.

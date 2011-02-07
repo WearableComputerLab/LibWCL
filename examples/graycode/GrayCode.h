@@ -47,9 +47,6 @@ public:
     wcl::Vector getRowCol(const wcl::Vector &) const;
     void decode(const unsigned char **capturedImages, const unsigned int threshold=64);
 
-    static unsigned int toGrayCode( const unsigned int);
-    static unsigned int fromGrayCode(const unsigned int);
-
     unsigned getRequiredImageCount() const;
     const unsigned char *getDebugImage();
 
@@ -58,9 +55,6 @@ public:
 private:
     unsigned pwidth;
     unsigned pheight;
-    unsigned cwidth;
-    unsigned cheight;
-
     unsigned totalGrayCodes;
     unsigned grayCodeRowCount;
     unsigned grayCodeRowPhase;
@@ -68,8 +62,11 @@ private:
     unsigned grayCodeColumnPhase;
     unsigned char **codedImages;
     unsigned stage;
+
     wcl::Matrix decodedColumns;
     wcl::Matrix decodedRows;
+    unsigned cwidth;
+    unsigned cheight;
 
     void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned, const unsigned char);
     void createStorage();
