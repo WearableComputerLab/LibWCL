@@ -32,13 +32,15 @@
 #include <iostream>
 #include "GrayCode.h"
 
+#define WHITE 255
+
 using namespace std;
 
 GrayCode::GrayCode(const unsigned ipwidth, const unsigned ipheight,
 		   const unsigned icwidth, const unsigned icheight ):
     pwidth(ipwidth), pheight(ipheight), totalGrayCodes(0), codedImages(NULL),stage(0),
     decodedColumns(icwidth, icheight), decodedRows(icwidth, icheight),
-    cwidth(icwidth),cheight(icheight)
+    cwidth(icwidth),cheight(icheight),mask(NULL)
 {
     // Work out how many patterns are needed for the
     // specified rows and columns. Since we are trying to
@@ -71,6 +73,9 @@ GrayCode::GrayCode(const unsigned ipwidth, const unsigned ipheight,
     // zero the decode matrixes
     this->decodedColumns.storeZeros();
     this->decodedRows.storeZeros();
+
+    // Clear our mask
+    memset(this->mask, 0, this->cwidth * this->cheight);
 };
 
 
@@ -82,6 +87,8 @@ GrayCode::~GrayCode()
 
 	delete this->codedImages;
     }
+
+    delete this->mask;
 }
 
 bool GrayCode::next()
@@ -112,7 +119,7 @@ void GrayCode::buildGrayCodes()
     // this allows us to work out the region the graycodes are projected onto
     // We set the initial pattern here we calculate all inverts below
     unsigned char **codedColumnImages = this->codedImages;
-    memset( *codedColumnImages, 255, this->pwidth * this->pheight );
+    memset( *codedColumnImages, WHITE, this->pwidth * this->pheight );
     codedColumnImages+=2;
 
     // We start by building the graycoded columns.
@@ -159,7 +166,7 @@ void GrayCode::buildGrayCodes()
 
 	    // We now update the value of the column to be in the range 0
 	    // (black) or 255 (white). As this is what GL expects for a texture
-	    value *=255;
+	    value *=WHITE;
 
 	    // Store the value in the image
 	    this->setPixel(data,column,0 /* y */, this->pwidth, value);
@@ -176,7 +183,7 @@ void GrayCode::buildGrayCodes()
     // the columns
     //
     unsigned char **codedRowImages= codedColumnImages+(this->grayCodeColumnCount*2);
-    memset( *codedRowImages, 255, this->pwidth * this->pheight );
+    memset( *codedRowImages, WHITE, this->pwidth * this->pheight );
     codedRowImages+=2;
 
     for( unsigned row=0; row < this->pheight; row++){
@@ -187,7 +194,7 @@ void GrayCode::buildGrayCodes()
 	    unsigned char value  = imageCount ?
 		((realRow >> (this->grayCodeRowCount - imageCount - 1 ))&1)^ ((realRow >> (this->grayCodeRowCount - imageCount))&1)
 		: (realRow >> (this->grayCodeRowCount - imageCount -1)) & 1;
-	    value *=255;
+	    value *=WHITE;
 	    this->setPixel(data,0 /* X */,row, this->pwidth, value);
 	    for( unsigned column = 1; column < this->pwidth; column++ )
 		this->setPixel(data,column,row, this->pwidth, value);
@@ -201,7 +208,7 @@ void GrayCode::buildGrayCodes()
 	    for( unsigned row = 0; row < this->pheight; row++ ){
 		for( unsigned column = 0; column < this->pwidth; column++ ){
 		this->codedImages[count+1][row*this->pwidth+column] =
-		    this->codedImages[count][row*this->pwidth+column] ? 0 : 255;
+		    this->codedImages[count][row*this->pwidth+column] ? 0 : WHITE;
 	    }
 	}
     }
@@ -215,6 +222,8 @@ void GrayCode::createStorage()
     this->codedImages = new unsigned char *[this->totalGrayCodes];
     for( unsigned i = 0; i < this->totalGrayCodes; i++ )
 	this->codedImages[i] = new unsigned char [this->pwidth * this->pheight];
+
+    this->mask = new unsigned char[this->cwidth * this->cheight];
 }
 
 void GrayCode::setPixel(unsigned char *data, const unsigned x, const unsigned y, const unsigned stride, const unsigned char colour )
@@ -255,6 +264,8 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
     //TODO: Workout automatic threshold based on column/row first two images.
     //This can be a per image pixel threshold - benjsc 20101206
 
+    memset(mask, 0, this->cwidth * this->cheight );
+
     // We now begin the process of decoding the images back into the relevant
     // graycodes. The decoding works as follows. When capturing the graycodes
     // we generated both the gray code image and the image invert. By looking
@@ -285,14 +296,16 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 		else
 		    bitvalue = gray[offset]>=invgray[offset];
 
+		mask[offset] |= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
 #if 0
-		printf("G:%d, IV:%d, BV:%d | GREY %d |  ABS:%d,TH%d\n",
+		printf("G:%d, IV:%d, BV:%d | GREY %d |  ABS:%d,TH%d | MASK: %d\n",
 		       gray[offset],
 		       invgray[offset],
 		       gray[offset]>=invgray[offset],
 		       bitvalue,
 		       abs(gray[offset]-invgray[offset]),
-		       threshold);
+		       threshold,
+		       mask[offset]);
 #endif
 		// Store the value of this bit in decoded matrix at the correct
 		// location. The columnCount indicates the significance of the
@@ -307,7 +320,6 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 	}
 
     }
-    printf("\n");
 
 
     // Repeat for rows
@@ -331,6 +343,8 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 		else
 		bitvalue = gray[offset]>=invgray[offset];
 
+		mask[offset] |= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
+
 		int bit = this->grayCodeRowCount - rowCount - 1;
 		if( bitvalue ){
 		    int value = (int)this->decodedRows[x][y];
@@ -346,17 +360,20 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
     // height of the original graycode)
     for(unsigned y=0; y < this->cheight; y++ ){
 	for(unsigned x=0; x < this->cwidth; x++){
+	    int offset = y*this->cwidth+x;
 	    this->decodedRows[x][y] -= this->grayCodeRowPhase;
 	    this->decodedColumns[x][y] -= this->grayCodeColumnPhase;
 	    if( this->decodedRows[x][y] > this->cheight )
-		this->decodedRows[x][y] = 0.0;
+		this->mask[offset]=0;
 	    if( this->decodedColumns[x][y] > this->cwidth )
-		this->decodedColumns[x][y] = 0.0;
+		this->mask[offset]=0;
 	    if( this->decodedRows[x][y] < 0.0 )
-		this->decodedRows[x][y] = 0.0;
+		this->mask[offset]=0;
 	    if( this->decodedColumns[x][y] < 0.0 )
-		this->decodedColumns[x][y] = 0.0;
+		this->mask[offset]=0;
+	    this->mask[offset]*=255;
 	}
+
     }
 }
 
@@ -371,6 +388,8 @@ void GrayCode::reset()
     this->decodedColumns.storeZeros();
     this->decodedRows.storeZeros();
     this->stage=0;
+
+    memset(this->mask, 0, this->cwidth * this->cheight);
 }
 
 const unsigned char *GrayCode::getDebugImage()
@@ -389,7 +408,28 @@ const unsigned char *GrayCode::getDebugImage()
     return buffer;
 }
 
+const unsigned char *GrayCode::getMaskImage()
+{
+    return this->mask;
+}
+
 const unsigned char **GrayCode::getCodedImages()
 {
     return (const unsigned char **)this->codedImages;
+}
+
+const unsigned char *GrayCode::getMaskedDebugImage()
+{
+    const unsigned char *debug = getDebugImage();
+
+    // Walk the image and apply the mask
+    for(unsigned y = 0; y < this->cheight; y++ ){
+	for(unsigned x = 0; x < this->cwidth; x++){
+	    int offset=y*this->cwidth+x;
+	    if( this->mask[offset] == 0)
+		this->setPixel((unsigned char *)debug, x, y, this->cwidth, 0);
+	}
+    }
+
+    return debug;
 }

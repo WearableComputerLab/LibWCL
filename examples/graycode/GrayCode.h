@@ -31,8 +31,18 @@
 #include <wcl/maths/Matrix.h>
 
 /**
- * A class that generates different patterns that can be used for
- * projector calibration, object detection, object capture
+ * A class that provides structured light via the GrayCode encoding method.
+ * Given a projector (pwidth, pheight) and a camera (cwidth,cheight) the class
+ * builds the required sequence of images that are needed to represent every
+ * pixel in the projector image, allowing detection by the camera. The actual
+ * projection and detection must be performed external to this class. Once all
+ * the required images have been captured (cwidthxcheightxmono8) then they can
+ * be fed to the decode method.
+ *
+ * At the end of the decode method a mask (getMaskImage) and the offset
+ * row/column for each camera coordinate can be found (getRowCol).
+ * Additionally a maskedDebugImage (showing detection masked) or a raw debug
+ * image can be used to display detection results.
  */
 class GrayCode
 {
@@ -40,16 +50,52 @@ public:
     GrayCode(const unsigned pwidth, const unsigned pheight, const unsigned cwidth, const unsigned cheight );
     ~GrayCode();
 
+    /**
+     * Reset the internal decoder  to the first image, clear all results from
+     * the previous decoding
+     */
     void reset();
+
+    /**
+     * Cycle to the next image needed for decoding
+     */
     bool next();
+
+    /**
+     * Obtain the image to be displayed
+     */
     const unsigned char *generate();
 
-    wcl::Vector getRowCol(const wcl::Vector &) const;
+    wcl::Vector /*ProjectorPixel*/ getRowCol(const wcl::Vector &cameraPixel) const;
     void decode(const unsigned char **capturedImages, const unsigned int threshold=64);
 
+    /**
+     * Obtain a list of images required to be captured
+     */
     unsigned getRequiredImageCount() const;
+
+    /**
+     * Obtain an image showing raw decoding output with no mask
+     */
     const unsigned char *getDebugImage();
 
+    /**
+     * Obtain a mask of valid detected pixels. The mask is constructed during
+     * the decoding routine. As decoding takes place, the mask is generated.
+     * The mask image contains values of 0 or 255 so can be used directly with
+     * OpenGL textures. The returned image size is cwidthxcheight
+     */
+    const unsigned char *getMaskImage();
+
+    /**
+     * Obtain the merged debug image and mask image, showing only valid
+     * detection details
+     */
+    const unsigned char *getMaskedDebugImage();
+
+    /**
+     * Get images that can be used for displaying. These are pwidhtxpheight
+     */
     const unsigned char **getCodedImages();
 
 private:
@@ -67,6 +113,7 @@ private:
     wcl::Matrix decodedRows;
     unsigned cwidth;
     unsigned cheight;
+    unsigned char *mask;
 
     void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned, const unsigned char);
     void createStorage();
