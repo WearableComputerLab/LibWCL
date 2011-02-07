@@ -38,9 +38,9 @@
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
 
-#define IMAGE_WIDTH 640
-#define IMAGE_HEIGHT 480
-#define TIMER_VALUE 100
+#define IMAGE_WIDTH 800
+#define IMAGE_HEIGHT 600
+#define TIMER_VALUE 300
 #define CROSS_DENSITY 30
 
 using namespace std;
@@ -48,6 +48,7 @@ using namespace wcl;
 
 GLvoid captureTimer(int value );
 
+enum DebugState {DEBUG,MASK,DEBUGNMASK,LINE} debugState;
 bool automated=false;
 bool capturing=false;
 unsigned image=0;
@@ -103,6 +104,12 @@ void keyboard(unsigned char key, int w, int h)
 	capturing=true;
 	glutTimerFunc(TIMER_VALUE,captureTimer,0);
     }
+    if(key == 't' ){
+	if(debugState == LINE )
+	    debugState= DEBUG;
+	else
+	    debugState = (DebugState)(debugState+1);
+    }
 }
 
 void drawCross(const unsigned x, const unsigned y)
@@ -132,21 +139,74 @@ GLvoid displayProjector()
 	if( capturing )
 	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.generate());
 	else {
-	    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getDebugImage());
+	    switch(debugState){
+		case MASK:
+		    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getMaskImage());
+		    break;
+		case DEBUG:
+		    {
+			glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getDebugImage());
 
-	    glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, -1.0, 1.0);
+			glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, -1.0, 1.0);
 
-	    for(unsigned y=0; y < IMAGE_HEIGHT; y+=CROSS_DENSITY){
-		for(unsigned x=0; x < IMAGE_WIDTH; x+=CROSS_DENSITY){
-		    Vector v(2);
-		    v[0]=x;
-		    v[1]=y;
-		    v = g.getRowCol(v);
-		    glColor3f(0.3,0.0,0.0);
-		    drawCross(x,y);
-		    glColor3f(0.0,0.0,1.0);
-		    drawCross(v[0],v[1]);
-		}
+			for(unsigned y=0; y < IMAGE_HEIGHT; y+=CROSS_DENSITY){
+			    for(unsigned x=0; x < IMAGE_WIDTH; x+=CROSS_DENSITY){
+				Vector v(2);
+				v[0]=x;
+				v[1]=y;
+				v = g.getRowCol(v);
+				glColor3f(0.3,0.0,0.0);
+				drawCross(x,y);
+				glColor3f(0.0,0.0,1.0);
+				drawCross(v[0],v[1]);
+			    }
+			}
+			break;
+		    }
+		case DEBUGNMASK:
+		    glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getMaskedDebugImage());
+		    break;
+		case LINE:
+		    {
+			glDrawPixels( IMAGE_WIDTH, IMAGE_HEIGHT, GL_LUMINANCE, GL_UNSIGNED_BYTE, g.getMaskedDebugImage());
+
+			glOrtho(0, IMAGE_WIDTH, IMAGE_HEIGHT, 0, -1.0, 1.0);
+
+			const unsigned char *mask =  g.getMaskImage();
+
+			for(unsigned y=0; y < IMAGE_HEIGHT; y++){
+			    for(unsigned x=0; x < IMAGE_WIDTH; x++){
+				Vector v(2);
+				v[0]=x;
+				v[1]=y;
+				if(mask[y*IMAGE_WIDTH+x]){
+				    v = g.getRowCol(v);
+				    if((int)v[0] % CROSS_DENSITY == 0 ||
+				       (int)v[0] % CROSS_DENSITY == 1 ||
+				       (int)v[0] % CROSS_DENSITY == 2  ){
+					glColor3f(1.0,0.0,1.0);
+					glBegin(GL_POINTS);
+					glVertex3d(x,y,0);
+					glEnd();
+				    }
+				    if((int)v[1] % CROSS_DENSITY == 0 ||
+				       (int)v[1] % CROSS_DENSITY == 1 ||
+				       (int)v[1] % CROSS_DENSITY == 2  ){
+					glColor3f(0.0,1.0,1.0);
+					glBegin(GL_POINTS);
+					glVertex3d(x,y,0);
+					glEnd();
+				    }
+				    if( v[1] > 0 && v[0] / (float)v[1] == 1.0 ){
+					glColor3f(1.0,1.0,0.0);
+					glBegin(GL_POINTS);
+					glVertex3d(x,y,0);
+					glEnd();
+				    }
+				}
+			    }
+			}
+		    }
 	    }
 	}
 
@@ -250,6 +310,7 @@ int main(int argc, char** argv)
     try {
 	camera->setControlValue(Camera::POWER_FREQUENCY, 1);
     }catch(CameraException &e){}
+    camera->setControlValue(Camera::AUTOFOCUS,0);
 
     init();
     glutInit(&argc, argv);
