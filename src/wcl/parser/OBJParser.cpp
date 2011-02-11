@@ -468,4 +468,11 @@ const OBJGeometry& OBJParser::getGeometry()
 	return data;
 }
 
+int wcl::OBJParser::getLineNo()
+{
+    OBJFormatScanner *lexer = this->stack.top();
+    return lexer->lineno();
+}
+
+
 };

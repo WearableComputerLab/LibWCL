@@ -18,10 +18,11 @@ using namespace wcl;
 %}
 
 // Tokens returned by lex
-%token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SMOOTHING_GROUP COMMENT
+%token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SMOOTHING_GROUP COMMENT SEPARATOR
 %token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM 
 %token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
-%expect 2
+%error-verbose
+%expect 4
 %parse-param { wcl::OBJParser *parser }
 %lex-param { wcl::OBJParser *parser }
 %debug
@@ -163,10 +164,22 @@ facestart:	FACE
 vertexgroup:	vertex
 		| vertexgroup vertex
 
-vertex: 	INT INT INT
+vertex: 	INT SEPARATOR INT SEPARATOR INT
 		{
-		    parser->addFaceVertex($1,$2,$3);
+		    parser->addFaceVertex($1,$3,$5);
 		} 
+		| INT SEPARATOR SEPARATOR INT
+		{
+		    parser->addFaceVertex($1,0,$4);
+		}
+		| INT SEPARATOR INT SEPARATOR
+		{
+		    parser->addFaceVertex($1,$3,0);
+		}
+		| INT SEPARATOR SEPARATOR
+		{
+		    parser->addFaceVertex($1,0,0);
+		}
 		;
 
 use_material:	USE_MTL STRING
@@ -184,5 +197,12 @@ use_material:	USE_MTL STRING
  */
 void yyerror( wcl::OBJParser *parser, const char *m)
 {
-    parser->parseError(ParserException::INVALID_SYNTAX, m);
+    std::stringstream s;
+    s << m;
+    s << " Line:";
+    int i = parser->getLineNo();
+    printf("%d\n", i);
+    s << i;
+    s << "";
+    parser->parseError(ParserException::INVALID_SYNTAX, s.str());
 }
