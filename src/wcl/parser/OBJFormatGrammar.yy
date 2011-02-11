@@ -89,6 +89,10 @@ material_property:
 		{
 		    parser->setMaterialOpacity($2,$3,$4);
 		}
+		| OPACITY DOUBLE
+		{
+		    parser->setMaterialOpacity($2,$2,$2);
+		}
 		| REFRACTION_INDEX DOUBLE
 		{
 		    parser->setMaterialRefractionIndex($2);
