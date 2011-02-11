@@ -31,12 +31,11 @@
  */
 
 #include <cassert>
-#include "OBJParser.h"
-#define yyFlexLexer OBJFormat_FlexLexer
-#include <FlexLexer.h>
 #include <fstream>
+#include "OBJParser.h"
+#include "OBJFormatScanner.h"
 
-extern int yyparse(void *);
+extern int yyparse(wcl::OBJParser *);
 extern int yydebug;
 
 using namespace std;
@@ -98,7 +97,7 @@ void wcl::OBJParser::parse() throw (ParserException)
 {
     yydebug=this->debug;
 
-    OBJFormat_FlexLexer *lexer = new OBJFormat_FlexLexer(this->input,&clog);
+    OBJFormatScanner *lexer = new OBJFormatScanner(this->input,&clog);
     lexer->set_debug(this->debug);
     this->stack.push(lexer);
 
@@ -112,8 +111,8 @@ void wcl::OBJParser::parse() throw (ParserException)
 
 int wcl::OBJParser::scanner(OBJParser *p)
 {
-    OBJFormat_FlexLexer *lexer = p->stack.top();
-    return lexer->yylex();
+    OBJFormatScanner *lexer = p->stack.top();
+    return lexer->yylex(p);
 }
 
 void OBJParser::OBJParser::addMaterialLibrary( const std::string &lib)

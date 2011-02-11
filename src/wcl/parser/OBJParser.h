@@ -32,10 +32,10 @@
 #include <wcl/geometry/OBJGeometry.h>
 
 
-// Forward declare the FlexScanner needed for the stack in this class
-struct OBJFormat_FlexLexer;
-
 namespace wcl {
+
+// Forward declare the FlexScanner needed for the stack in this class
+class OBJFormatScanner;
 
 /**
  * An OBJParser that understands the .obj File format. The parser
@@ -89,10 +89,13 @@ class WCL_API OBJParser: public Parser
 
         static int scanner(OBJParser *);
 
+	// We expose this so yacc can use it
+	Parser::parseError;
+
     private:
 	RelativeToAbsolute func;
         std::istream *input;
-        std::stack<OBJFormat_FlexLexer *> stack;
+        std::stack<OBJFormatScanner *> stack;
         OBJGeometry data;
         OBJMaterial *material;
         OBJGroup *group;

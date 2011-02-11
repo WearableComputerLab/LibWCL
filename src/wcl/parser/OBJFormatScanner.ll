@@ -3,21 +3,25 @@
  *
  */
 
+%option yyclass="wcl::OBJFormatScanner"
 %option nomain
 %option noyywrap
-%option prefix="OBJFormat_" outfile="lex.yy.c"
+%option prefix="OBJFormatScanner_yy" outfile="lex.yy.c"
 %option debug
 %option c++
+%option yylineno
 %x DATA
 %x FACEDATA
+
      
 %{
+#include <sstream>
 #include "parser/OBJParser.h"
 #include "OBJFormatGrammar.h"
+#include "parser/OBJFormatScanner.h"
 #include <string.h>
 
-#define YY_FATAL_ERROR(msg) doFatal(msg)
-extern void doFatal( const char *);
+using namespace std;
 %}
 
 %%
@@ -90,6 +94,24 @@ extern void doFatal( const char *);
 
 <FACEDATA>\n	{ BEGIN INITIAL; }
 
-. { printf("lex Unknown character, ignoring = '%s'\n", yytext); };
+. { 
+    stringstream s;
+    s << "Invalid Character: \"";
+    s << yytext;
+    s << "\" line: " ;
+    s << lineno();
+
+    parser->parseError(ParserException::INVALID_SYNTAX, s.str()); 
+}
 
 %%
+
+void wcl::OBJFormatScanner::LexerError(const char *str)
+{
+    stringstream s;
+    s << "You Found A Bug in the Scanner" << endl;
+    s << "Please Contact libWCL writers with the file your trying to read for a fix" << endl;
+    s << "Error is: " << str;
+    s << "Last Character: " << yytext << " Last Line: " << lineno();
+    parser->parseError(ParserException::INVALID_SYNTAX, s.str());
+}
