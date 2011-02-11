@@ -258,14 +258,25 @@ void OBJParser::setMaterialSpecular(const double c1, const double c2, const doub
     this->material->specular=Vector(c1,c2,c3);
 }
 
-void OBJParser::setMaterialOpacity(const double c1, const double c2, const double c3)
+void OBJParser::setMaterialSpecularExponent(const double value)
+{
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
+    this->material->valid |= OBJMaterial::M_SPECULAREXP;
+    this->material->specularExp = value;
+}
+
+
+void OBJParser::setMaterialOpacity(const double c1)
 {
     if( ! this->material ){
         this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set opacity value with no material present");
     }
     this->material->valid |= OBJMaterial::M_OPACITY;
-    this->material->opacity=Vector(c1,c2,c3);
+    this->material->opacity=c1;
 }
+
 
 void OBJParser::setMaterialRefractionIndex( const double index)
 {
@@ -278,39 +289,67 @@ void OBJParser::setMaterialRefractionIndex( const double index)
 
 void OBJParser::setMaterialIlluminationGroup(const int group)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_ILLUMGROUP;
     this->material->illumGroup = group;
 }
 
+void OBJParser::setMaterialEmissive(const double e1, const double e2, const double e3)
+{
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
+    this->material->valid |= OBJMaterial::M_EMISSIVE;
+    this->material->emissive=Vector(e1,e2,e3);
+}
+
 void OBJParser::setMaterialDiffuseMap(const std::string &path)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_DIFFUSE_MAP;
     this->material->diffuseMap = path;
 }
 
 void OBJParser::setMaterialAmbientMap(const std::string &path)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_AMBIENT_MAP;
     this->material->ambientMap = path;
 }
 
 void OBJParser::setMaterialSpecularMap(const std::string &path)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_SPECULAR_MAP;
     this->material->specularMap = path;
 }
 
 void OBJParser::setMaterialAlphaMap(const std::string &path)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_ALPHA_MAP;
     this->material->alphaMap = path;
 }
 
 void OBJParser::setMaterialBumpMap(const std::string &path)
 {
+    if( ! this->material ){
+        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
+    }
     this->material->valid |= OBJMaterial::M_BUMP_MAP;
     this->material->bumpMap = path;
 }
+
 
 void OBJParser::addMaterial(const std::string &name)
 {
@@ -331,15 +370,6 @@ void OBJParser::addMaterial(const std::string &name)
     }
 }
 
-void OBJParser::setMaterialSpecularExponent(const double value)
-{
-    if( ! this->material ){
-        this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
-    }
-    this->material->valid |= OBJMaterial::M_SPECULAREXP;
-    this->material->specularExp = value;
-}
-
 void OBJParser::print()
 {
     printf("Materials:\n"
@@ -358,8 +388,7 @@ void OBJParser::print()
             printf("   spec [%f,%f,%f]\n",
                    m->specular[0], m->specular[1], m->specular[2]);
         if(m->valid & OBJMaterial::M_OPACITY )
-            printf("   opac [%f,%f,%f]\n",
-                   m->opacity[0], m->opacity[1], m->opacity[2]);
+            printf("   opac [%f]\n", m->opacity);
         if(m->valid & OBJMaterial::M_REFRACTION)
             printf( "  refInd %f\n", m->refractionIndex);
         if(m->valid & OBJMaterial::M_SPECULAREXP)

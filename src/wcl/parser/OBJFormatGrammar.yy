@@ -19,7 +19,7 @@ using namespace wcl;
 
 // Tokens returned by lex
 %token GROUP VERTEX TEX_COORD NORMAL FACE MTL_LIB DOUBLE INT STRING USE_MTL SMOOTHING_GROUP COMMENT SEPARATOR
-%token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM 
+%token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM EMISSIVE
 %token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
 %error-verbose
 %expect 4
@@ -85,9 +85,9 @@ material_property:
 		{
 		    parser->setMaterialSpecular($2,$3,$4);
 		}
-		| OPACITY DOUBLE DOUBLE DOUBLE
+		| OPACITY DOUBLE
 		{
-		    parser->setMaterialOpacity($2,$3,$4);
+		    parser->setMaterialOpacity($2);
 		}
 		| REFRACTION_INDEX DOUBLE
 		{
@@ -120,6 +120,10 @@ material_property:
 		| BUMP_MAP STRING
 		{
 		    parser->setMaterialBumpMap($2);
+		}
+		| EMISSIVE DOUBLE DOUBLE DOUBLE
+		{
+		    parser->setMaterialEmissive($2,$3,$4);
 		}
 		;
 

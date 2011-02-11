@@ -59,6 +59,7 @@ namespace wcl
                        M_REFRACTION=16,
                        M_SPECULAREXP=32,
 		       M_ILLUMGROUP=64,
+		       M_EMISSIVE=128,
 
                        // Valid maps
                        M_DIFFUSE_MAP=1,
@@ -73,7 +74,7 @@ namespace wcl
                 Vector diffuse;             // Kd
                 Vector ambient;             // Ka
                 Vector specular;            // Ks
-                Vector opacity;             // Tr
+                double opacity;             // Tr|Tf|d
                 double refractionIndex;     // Ni
                 double specularExp;         // Ns
 		uint32_t illumGroup;	    // illum
@@ -82,6 +83,7 @@ namespace wcl
                 std::string specularMap;    // map_Ks
                 std::string alphaMap;	    // map_d
                 std::string bumpMap;	    // map_bump | bump
+		Vector emissive;	    // Ke
 	};
 
 	struct OBJSmoothing; //forward dec
