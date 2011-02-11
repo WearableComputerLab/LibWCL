@@ -55,7 +55,7 @@ int main ( int argc, char **argv )
     try {
         p.parse();
     } catch ( ParserException e){
-        cout << "Parsing Failed: " << e.what();
+        cout << "Parsing Failed: " << e.what() << endl;
         exit(EXIT_FAILURE);
     }
 
