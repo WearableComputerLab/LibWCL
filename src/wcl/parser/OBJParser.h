@@ -76,7 +76,7 @@ class WCL_API OBJParser: public Parser
         void setMaterialDiffuse(const double, const double, const double);
         void setMaterialAmbience(const double, const double, const double);
         void setMaterialSpecular(const double, const double, const double);
-        void setMaterialOpacity(const double);
+        void setMaterialOpacity(const double, const double, const double);
         void setMaterialRefractionIndex( const double );
         void setMaterialSpecularExponent(const double );
 	void setMaterialEmissive(const double, const double, const double);

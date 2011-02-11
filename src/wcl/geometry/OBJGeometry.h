@@ -74,7 +74,7 @@ namespace wcl
                 Vector diffuse;             // Kd
                 Vector ambient;             // Ka
                 Vector specular;            // Ks
-                double opacity;             // Tr|Tf|d
+                Vector opacity;             // Tr
                 double refractionIndex;     // Ni
                 double specularExp;         // Ns
 		uint32_t illumGroup;	    // illum
