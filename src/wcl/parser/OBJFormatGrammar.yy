@@ -204,9 +204,7 @@ void yyerror( wcl::OBJParser *parser, const char *m)
     std::stringstream s;
     s << m;
     s << " Line:";
-    int i = parser->getLineNo();
-    printf("%d\n", i);
-    s << i;
+    s << parser->getLineNo();
     s << "";
     parser->parseError(ParserException::INVALID_SYNTAX, s.str());
 }
