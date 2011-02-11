@@ -183,8 +183,10 @@ void OBJParser::setSmoothingGroup( const std::string &name )
 
 void OBJParser::newFace()
 {
-    if( !this->group )
-        this->parseError(ParserException::INVALID_SYNTAX,"No Group, to add Face too");
+    if( !this->group ){
+	if(this->debug) clog << "parser: No Group to put faces into, creating a default" << endl;
+	this->addGroup("-parserCreated-");
+    }
 
     OBJFace *face = new OBJFace;
     face->material = this->material;
