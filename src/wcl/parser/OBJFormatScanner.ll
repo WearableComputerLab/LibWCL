@@ -67,7 +67,7 @@ using namespace std;
  **************************************************************/
 
  /* Floating point number */
-<INITIAL>[-+0-9]+\.[0-9]+ {
+<INITIAL>[-+0-9]+\.[0-9]+(e[-0-9]+){0,1} {
 	yylval.d = atof(yytext);
 	return DOUBLE;
 }
