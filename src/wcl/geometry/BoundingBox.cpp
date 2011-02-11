@@ -29,6 +29,7 @@
 #include <assert.h>
 
 #include "BoundingBox.h"
+#include <GL/gl.h>
 
 namespace wcl
 {
@@ -195,6 +196,21 @@ namespace wcl
 	{
 	    this->addPoint(box.min);
 		this->addPoint(box.max);
+	}
+	
+	void BoundingBox::draw() const
+	{
+		float vertices[] = { 	min[0], min[1], min[2], min[0], min[1], max[2], max[0], min[1], max[2], max[0], min[1], min[2], 
+								min[0], max[1], min[2], min[0], max[1], max[2], max[0], max[1], max[2], max[0], max[1], min[2] }; 
+		
+		
+		static const unsigned char indices[] = {0, 1, 1, 2, 2, 3, 3, 0, 4, 5, 5, 6, 6, 7, 7, 4, 0, 4, 1, 5, 2, 6, 3, 7 };
+	
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glVertexPointer(3, GL_FLOAT, 0, vertices );
+		glDrawElements( GL_LINES, 24, GL_UNSIGNED_BYTE, indices);
+		
+		glDisableClientState(GL_VERTEX_ARRAY);
 	}
 }
 
