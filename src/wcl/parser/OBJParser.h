@@ -87,6 +87,8 @@ class WCL_API OBJParser: public Parser
         void setMaterialAlphaMap(const std::string &);
         void setMaterialBumpMap(const std::string &);
 
+	int getLineNo();
+
         static int scanner(OBJParser *);
 
 	// We expose this so yacc can use it

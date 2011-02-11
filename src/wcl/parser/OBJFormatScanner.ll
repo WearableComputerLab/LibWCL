@@ -90,7 +90,8 @@ using namespace std;
 <INITIAL,DATA>[ \t\n\r]  ;
 
  /* Face separators */
-<FACEDATA>[/ \t]	;
+<FACEDATA>[ \t]+ ;
+<FACEDATA>\/ { return SEPARATOR; };
 
 <FACEDATA>\n	{ BEGIN INITIAL; }
 
