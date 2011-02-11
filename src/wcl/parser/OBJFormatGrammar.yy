@@ -85,9 +85,9 @@ material_property:
 		{
 		    parser->setMaterialSpecular($2,$3,$4);
 		}
-		| OPACITY DOUBLE
+		| OPACITY DOUBLE DOUBLE DOUBLE
 		{
-		    parser->setMaterialOpacity($2);
+		    parser->setMaterialOpacity($2,$3,$4);
 		}
 		| REFRACTION_INDEX DOUBLE
 		{
