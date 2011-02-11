@@ -36,6 +36,12 @@
 
 namespace wcl
 {
+	/**
+	 * An OBJVertex represents an index into the Vertex/normal/uv
+	 * vectors. It is possible that a point in an obj file does not
+	 * have a normal or uv associated with it. In that case the value
+	 * for normalIndex/uvIndex will be -1.
+	 */
 	struct WCL_API OBJVertex
 	{
 		int pointIndex;
