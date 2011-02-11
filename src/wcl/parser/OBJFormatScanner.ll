@@ -37,6 +37,7 @@ using namespace std;
 ^f      { BEGIN FACEDATA; return FACE;             }
 ^mtllib { BEGIN DATA; return MTL_LIB; }
 ^usemtl { BEGIN DATA; return USE_MTL;          }
+^o	{ BEGIN DATA; return GROUP;	       } /* We treat objects as groups */
 #.*\n  { return COMMENT;          }
 
 
@@ -47,7 +48,10 @@ using namespace std;
 ^Kd     { return DIFFUSE;          }
 ^Ka     { return AMBIENT;          }
 ^Ks     { return SPECULAR;         }
-^Tf|^Tr { return OPACITY;          }
+^Ke     { return EMISSIVE;         }
+^Tf     { return OPACITY;          }
+^Tr     { return OPACITY;	   }
+^d      { return OPACITY;          }
 ^Ni     { return REFRACTION_INDEX; }
 ^Ns     { return SPECULAR_EXP;     }
 ^map_Kd { BEGIN DATA; return DIFFUSE_MAP;      }
