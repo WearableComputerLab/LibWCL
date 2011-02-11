@@ -435,12 +435,19 @@ void OBJParser::print()
                  ++vit ){
                 OBJVertex *v = *vit;
                 Vector vec=this->data.points[v->pointIndex];
-                Vector t=this->data.texcoords[v->uvIndex];
-                Vector n=this->data.normals[v->normalIndex];
-                printf("    | V %d (%f,%f,%f)  N %d (%f,%f,%f) T %d (%f,%f)\n",
-                       v->pointIndex, vec[0],vec[1],vec[2],
-                       v->uvIndex,  n[0],n[1],n[2],
-                       v->normalIndex, t[0],t[1]);
+                printf("    | V %d (%f,%f,%f) ",
+                       v->pointIndex, vec[0],vec[1],vec[2]);
+		if( v->normalIndex >= 0 ){
+		    Vector n=this->data.normals[v->normalIndex];
+		    printf("N %d (%f,%f,%f) ", v->normalIndex, n[0],n[1],n[2]);
+		} else
+		    printf("(No Normal) ");
+
+		if( v->uvIndex>=0 ){
+		    Vector t=this->data.texcoords[v->uvIndex];
+		    printf("T %d (%f,%f)\n", v->uvIndex,  t[0],t[1]);
+		} else
+		    printf("(No TexCoords)\n");
             }
 
         }
