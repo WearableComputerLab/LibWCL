@@ -40,7 +40,7 @@
 
 #define IMAGE_WIDTH 800
 #define IMAGE_HEIGHT 600
-#define TIMER_VALUE 300
+#define TIMER_VALUE 150
 #define CROSS_DENSITY 30
 
 using namespace std;
