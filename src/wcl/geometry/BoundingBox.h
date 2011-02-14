@@ -97,9 +97,6 @@ namespace wcl
 			 * Resets the bounding box to an invalid state
 			 */
 			void clear();
-			
-			///	Draws the bounding box with lines.
-			void draw() const; 
 
 			/**
 			 * Returns the centroid of the bounding box.
