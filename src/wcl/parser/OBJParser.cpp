@@ -376,7 +376,40 @@ void OBJParser::print()
     for(vector<OBJMaterial *>::iterator it = this->data.materials.begin();
         it != this->data.materials.end(); ++it ){
         OBJMaterial *m=*it;
-        printf(" + Name: %s valid[%llu]\n", m->name.c_str(), m->valid);
+        printf(" + Name: %s\n",m->name.c_str());
+	printf("   valid[%llu]:", m->valid);
+	for(int i = 0; i <= 128; i++){
+	    if( m->valid & i ){
+		switch(i)
+		{
+		    case 0: printf(" M_NONE"); break;
+		    case 1: printf(" M_DIFFUSE"); break;
+		    case 2: printf(" M_AMBIENT"); break;
+		    case 4: printf(" M_SPECULAR"); break;
+		    case 8: printf(" M_OPACITY"); break;
+		    case 16: printf(" M_REFRACTION"); break;
+		    case 32: printf(" M_SPECULAREXP"); break;
+		    case 64: printf(" M_ILLUMGROUP"); break;
+		    case 128: printf(" M_EMISSIVE"); break;
+		}
+	    }
+	}
+	printf("\n");
+	printf("   maps[%u]:", m->maps);
+	for(int i = 0; i <= 128; i++){
+	    if( m->maps & i ){
+		switch(i)
+		{
+		    case 0: printf(" M_NONE"); break;
+		    case 1: printf(" M_DIFFUSE_MAP"); break;
+		    case 2: printf(" M_AMBIENT_MAP"); break;
+		    case 4: printf(" M_SPECULAR_MAP"); break;
+		    case 8: printf(" M_ALPHA_MAP"); break;
+		    case 16: printf(" M_BUMP_MAP"); break;
+		}
+	    }
+	}
+	printf("\n");
         if( m->valid & OBJMaterial::M_DIFFUSE )
             printf("   dif  [ %f,%f,%f]\n",
                    m->diffuse[0], m->diffuse[1], m->diffuse[2]);
@@ -389,8 +422,10 @@ void OBJParser::print()
         if(m->valid & OBJMaterial::M_OPACITY )
             printf("   opac [%f,%f,%f]\n",
                    m->opacity[0], m->opacity[1], m->opacity[2]);
+        if(m->valid & OBJMaterial::M_EMISSIVE)
+            printf("   emissive [%f,%f,%f]\n",m->emissive[0], m->emissive[1], m->emissive[2]);
         if(m->valid & OBJMaterial::M_REFRACTION)
-            printf( "  refInd %f\n", m->refractionIndex);
+            printf("   refInd %f\n", m->refractionIndex);
         if(m->valid & OBJMaterial::M_SPECULAREXP)
             printf("   specexp %f\n",m->specularExp);
         if(m->valid & OBJMaterial::M_ILLUMGROUP)
