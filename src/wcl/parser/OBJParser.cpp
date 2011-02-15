@@ -300,7 +300,7 @@ void OBJParser::setMaterialDiffuseMap(const std::string &path)
     if( ! this->material ){
         this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
-    this->material->valid |= OBJMaterial::M_DIFFUSE_MAP;
+    this->material->maps |= OBJMaterial::M_DIFFUSE_MAP;
     this->material->diffuseMap = path;
 }
 
@@ -309,7 +309,7 @@ void OBJParser::setMaterialAmbientMap(const std::string &path)
     if( ! this->material ){
         this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
-    this->material->valid |= OBJMaterial::M_AMBIENT_MAP;
+    this->material->maps |= OBJMaterial::M_AMBIENT_MAP;
     this->material->ambientMap = path;
 }
 
@@ -327,7 +327,7 @@ void OBJParser::setMaterialAlphaMap(const std::string &path)
     if( ! this->material ){
         this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
-    this->material->valid |= OBJMaterial::M_ALPHA_MAP;
+    this->material->maps |= OBJMaterial::M_ALPHA_MAP;
     this->material->alphaMap = path;
 }
 
@@ -336,7 +336,7 @@ void OBJParser::setMaterialBumpMap(const std::string &path)
     if( ! this->material ){
         this->parseError(ParserException::INVALID_SYNTAX, "Attempt to set refraction index with no material present");
     }
-    this->material->valid |= OBJMaterial::M_BUMP_MAP;
+    this->material->maps |= OBJMaterial::M_BUMP_MAP;
     this->material->bumpMap = path;
 }
 
@@ -379,7 +379,7 @@ void OBJParser::print()
         printf(" + Name: %s\n",m->name.c_str());
 	printf("   valid[%llu]:", m->valid);
 	for(int i = 0; i <= 128; i++){
-	    if( m->valid & i ){
+	    if( m->valid & i || (m->valid == 0 && i == 0)){
 		switch(i)
 		{
 		    case 0: printf(" M_NONE"); break;
@@ -397,7 +397,7 @@ void OBJParser::print()
 	printf("\n");
 	printf("   maps[%u]:", m->maps);
 	for(int i = 0; i <= 128; i++){
-	    if( m->maps & i ){
+	    if( m->maps & i || (m->maps == 0 && i == 0) ){
 		switch(i)
 		{
 		    case 0: printf(" M_NONE"); break;
@@ -430,15 +430,15 @@ void OBJParser::print()
             printf("   specexp %f\n",m->specularExp);
         if(m->valid & OBJMaterial::M_ILLUMGROUP)
             printf("   illumgrp: %d\n",m->illumGroup);
-        if(m->valid & OBJMaterial::M_DIFFUSE_MAP)
+        if(m->maps & OBJMaterial::M_DIFFUSE_MAP)
             printf("   diffusemap: %s\n",m->diffuseMap.c_str());
-        if(m->valid & OBJMaterial::M_AMBIENT_MAP)
+        if(m->maps & OBJMaterial::M_AMBIENT_MAP)
             printf("   ambientmap: %s\n",m->ambientMap.c_str());
-        if(m->valid & OBJMaterial::M_SPECULAR_MAP)
+        if(m->maps & OBJMaterial::M_SPECULAR_MAP)
             printf("   specularmap: %s\n",m->specularMap.c_str());
-        if(m->valid & OBJMaterial::M_ALPHA_MAP)
+        if(m->maps & OBJMaterial::M_ALPHA_MAP)
             printf("   specularmap: %s\n",m->alphaMap.c_str());
-        if(m->valid & OBJMaterial::M_BUMP_MAP)
+        if(m->maps & OBJMaterial::M_BUMP_MAP)
             printf("   bumpmap: %s\n",m->bumpMap.c_str());
     }
 
