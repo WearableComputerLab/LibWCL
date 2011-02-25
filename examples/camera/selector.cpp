@@ -220,10 +220,11 @@ void mouse(int button, int state, int x, int y)
 
 	// Display information to console
 	printf("--------------------------\n"
-	       "Point: %d x, %d y\n"
+	       "Point: %d x, %d y   (OpenGL: %d x, %d y)\n"
 	       "RGB: r %f, g %f, b %f\n"
 	       "YUV: y %f, u %f, v %f\n",
 	       x,y,
+	       x, cam->getActiveConfiguration().height-y,
 	       r,g,b,
 	       Y,U,V );
     }
