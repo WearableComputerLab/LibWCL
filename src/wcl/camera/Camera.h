@@ -299,6 +299,8 @@ namespace wcl
 			 *               size for the ImageFormat requested. 
 			 *
 			 * @param format The desired image format.
+			 *
+			 * Note buffer may be NULL if the camera has not captured a frame yet
 			 */
 			virtual void getCurrentFrame(unsigned char* buffer, const ImageFormat& format) const;
 

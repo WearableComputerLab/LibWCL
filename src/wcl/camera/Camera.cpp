@@ -417,6 +417,14 @@ NOTIMP:
 
 	void Camera::getCurrentFrame(unsigned char* buffer, const ImageFormat& format) const
 	{
+		// Handle the case where this method is called before any other
+		// method that actually performs a capture. If the currentFrame
+		// is not set then most the conversions below will fail
+		if(this->currentFrame == NULL ){
+		    buffer = NULL;
+		    return;
+		}
+
 		// Handle the same image format being requested
 		if( this->activeConfiguration.format == format )
 		{
