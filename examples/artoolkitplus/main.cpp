@@ -173,7 +173,7 @@ GLvoid display()
 	    it != objects.end();
 	    ++it ){
 
-	    TrackedObject *object = *it;
+	    ARToolKitPlusTrackedObject *object = (ARToolKitPlusTrackedObject *)*it;
 	    if( object->isVisible() == false )
 		continue;
 
@@ -199,6 +199,24 @@ GLvoid display()
 	    glVertex3f(size,size,0.0);
 	    glVertex3f(size,-size,0.0);
 	    glEnd();
+
+
+	    const Vector *corners = object->getCorners();
+	    glMatrixMode(GL_PROJECTION);
+	    glLoadIdentity();
+	    glOrtho(0,cam->getActiveConfiguration().width, cam->getActiveConfiguration().height,0.,0.,1.0);
+	    glMatrixMode(GL_MODELVIEW);
+	    glLoadIdentity();
+		glPointSize(3.0);
+	    glBegin(GL_POINTS);
+	    glColor3f(1.0,0.0,0.0);
+	    glVertex2f( corners[0][0], corners[0][1]);
+	    glColor3f(0.0,1.0,0.0);
+	    glVertex2f( corners[1][0], corners[1][1]);
+	    glColor3f(0.0,1.0,1.0);
+	    glVertex2f( corners[2][0], corners[2][1]);
+	    glEnd();
+		glPointSize(1.0);
 	}
 
 	glFlush();
