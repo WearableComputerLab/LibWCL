@@ -56,7 +56,8 @@ namespace wcl {
 			/**
 			 * Obtain the screen coordinates of the maker. These are
 			 * accessable via:  Vector *v = o.getCorners();
-			 * v[0][0],v[0][1]...v[3][1]
+			 * v[0][0],v[0][1]...v[3][1]  
+			 * Corners clockwise starting top left
 			 */
 			const Vector *getCorners() const;
 			void setCorners( const float [4][2]);
