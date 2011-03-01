@@ -175,11 +175,6 @@ void ARToolKitPlusTracker::update()
 
     assert( this->inited && "ARToolKitPlusTracker:update() : The tracker has not yet been inited, please call setCamera First" );
 
-	this->camera->getCurrentFrame(cameraBuffer, this->cameraFormat);
-    this->bestMarker=this->tracker->calc(cameraBuffer, -1, true, &markers, &this->markersFound);
-    this->confidence = (float)tracker->getConfidence();
-
-
     // set all markers to not visable
 	for(std::vector<ARToolKitPlusTrackedObject *>::iterator it = this->objects.begin();
 			it != this->objects.end();
@@ -189,6 +184,14 @@ void ARToolKitPlusTracker::update()
 		// invisible markers are not very confident markers.
 		marker->setConfidence(0.0f);
 	}
+
+	this->camera->getCurrentFrame(cameraBuffer, this->cameraFormat);
+	// Check a frame is available 
+	if( cameraBuffer == NULL )
+		return;
+
+    this->bestMarker=this->tracker->calc(cameraBuffer, -1, true, &markers, &this->markersFound);
+    this->confidence = (float)tracker->getConfidence();
 
     // Update the found markers
     while( i < this->markersFound ){
