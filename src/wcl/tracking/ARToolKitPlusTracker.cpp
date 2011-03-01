@@ -171,7 +171,7 @@ void ARToolKitPlusTracker::update()
     int i=0;
     ARMarkerInfo *markers;
     ARFloat conv[3][4];
-    ARFloat center[2]={0.0,0.0};// XXX Hard coded as per ARToolKitPlus::TrackerSingleMarkerImpl.cxx
+    ARFloat center[2]={0.0,0.0};// Hard coded as per ARToolKitPlus::TrackerSingleMarkerImpl.cxx
 
     assert( this->inited && "ARToolKitPlusTracker:update() : The tracker has not yet been inited, please call setCamera First" );
 
@@ -239,6 +239,7 @@ void ARToolKitPlusTracker::update()
 		marker->setTransform(m);
 		marker->setVisible(true);
 		marker->setConfidence(markers[i].cf);
+		marker->setCorners(markers[i].vertex);
 	    }
 	}
 	i++;
@@ -297,7 +298,13 @@ void ARToolKitPlusTracker::toString()
 	it != allobjects.end();
 	++it ){
 	ARToolKitPlusTrackedObject *marker = (ARToolKitPlusTrackedObject *)*it;
-	printf("%5d : Confidence %f\n", marker->getID(), marker->getConfidence());
+	printf("%5d : Confidence %f, ", marker->getID(), marker->getConfidence());
+	const Vector *corners = marker->getCorners();
+	printf("Corners: 1. (%.f,%.f) 2. (%.f,%.f), 3. (%.f,%.f), 4. (%.f,%.f)\n",
+		   corners[0][0], corners[0][1],
+		   corners[1][0], corners[1][1],
+		   corners[2][0], corners[2][1],
+		   corners[3][0], corners[3][1]);
     }
     if( this->markersFound > 0 ){
 	printf("Best Marker Matrix:\n");

@@ -45,6 +45,10 @@ ARToolKitPlusTrackedObject::ARToolKitPlusTrackedObject(
     this->name=sid.str();
     this->type=SIX_DOF;
     this->id =id;
+    corners[0].setSize(2);
+    corners[1].setSize(2);
+    corners[2].setSize(2);
+    corners[3].setSize(2);
 }
 
 ARToolKitPlusTrackedObject::~ARToolKitPlusTrackedObject()
@@ -122,6 +126,19 @@ unsigned ARToolKitPlusTrackedObject::getWidth() const
 void ARToolKitPlusTrackedObject::setConfidence( const float value )
 {
     this->confidence = value;
+}
+
+const Vector *ARToolKitPlusTrackedObject::getCorners() const
+{
+    return this->corners;
+}
+
+void ARToolKitPlusTrackedObject::setCorners(const float corners[4][2])
+{
+    for(unsigned i = 0; i < 4; i++ ){
+	this->corners[i][0]=corners[i][0];
+	this->corners[i][1]=corners[i][1];
+    }
 }
 
 }

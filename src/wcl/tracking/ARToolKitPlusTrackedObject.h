@@ -53,6 +53,14 @@ namespace wcl {
 			virtual bool hasBeenSeen() const;
 			unsigned getWidth() const;
 
+			/**
+			 * Obtain the screen coordinates of the maker. These are
+			 * accessable via:  Vector *v = o.getCorners();
+			 * v[0][0],v[0][1]...v[3][1]
+			 */
+			const Vector *getCorners() const;
+			void setCorners( const float [4][2]);
+
 		private:
 			unsigned id;
 			unsigned width;
@@ -60,6 +68,7 @@ namespace wcl {
 			bool seen;
 
 			SMatrix transform;
+			Vector corners[4];
 	};
 
 };
