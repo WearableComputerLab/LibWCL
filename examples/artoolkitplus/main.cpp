@@ -181,6 +181,7 @@ GLvoid display()
 	    cout << object->toString();
 
 	    m = object->getTransform();
+		glMatrixMode(GL_MODELVIEW);
 	    glLoadMatrixd(toGL(m));
 	    glPolygonMode(GL_FRONT_AND_BACK,GL_FILL);
 	    glEnable(GL_LIGHTING);
@@ -203,6 +204,7 @@ GLvoid display()
 
 	    const Vector *corners = object->getCorners();
 	    glMatrixMode(GL_PROJECTION);
+	    glPushMatrix();
 	    glLoadIdentity();
 	    glOrtho(0,cam->getActiveConfiguration().width, cam->getActiveConfiguration().height,0.,0.,1.0);
 	    glMatrixMode(GL_MODELVIEW);
@@ -217,6 +219,8 @@ GLvoid display()
 	    glVertex2f( corners[2][0], corners[2][1]);
 	    glEnd();
 		glPointSize(1.0);
+	    glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
 	}
 
 	glFlush();
