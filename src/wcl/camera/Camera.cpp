@@ -58,7 +58,8 @@ namespace wcl
 		numBuffers(0),
 		areParametersSet(false),
 		conversionBuffer(NULL),
-		internal(NULL)
+		internal(NULL),
+		currentFrame(NULL)
 	{
 	}
 
