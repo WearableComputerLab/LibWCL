@@ -242,7 +242,17 @@ void ARToolKitPlusTracker::update()
 		marker->setTransform(m);
 		marker->setVisible(true);
 		marker->setConfidence(markers[i].cf);
-		marker->setCorners(markers[i].vertex);
+		ARFloat corners[4][2];
+		int dir = markers[i].dir;
+		corners[0][0] = markers[i].vertex[(4-dir)%4][0];
+		corners[0][1] = markers[i].vertex[(4-dir)%4][1];
+		corners[1][0] = markers[i].vertex[(5-dir)%4][0];
+		corners[1][1] = markers[i].vertex[(5-dir)%4][1];
+		corners[2][0] = markers[i].vertex[(6-dir)%4][0];
+		corners[2][1] = markers[i].vertex[(6-dir)%4][1];
+		corners[3][0] = markers[i].vertex[(7-dir)%4][0];
+		corners[3][1] = markers[i].vertex[(7-dir)%4][1];
+		marker->setCorners(corners);
 	    }
 	}
 	i++;
