@@ -27,9 +27,11 @@ common_headers=debug.h\
 	      CircularQueue\
 	      Singleton\
 	      Exception.h\
-	      api.h
+	      api.h\
+	      IO.h
 
-common_sources=Exception.cpp
+common_sources=Exception.cpp\
+	       IO.cpp
     
 
 ########################################################
