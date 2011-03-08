@@ -35,6 +35,7 @@
 #include <fstream>
 #include <string.h>
 #include <stdlib.h>
+#include "IO.h"
 #include "UVCCamera.h"
 #include "CameraException.h"
 
@@ -353,8 +354,8 @@ void UVCCamera::printDetails(bool state)
 	    v4l2_capability info;
 	    ioctl(cam, VIDIOC_QUERYCAP, &info);
 
-	    cout << "Camera: " << info.card << endl;
-	    cout << "Bus: " << info.bus_info << endl;
+	    wclclog << "Camera: " << info.card << endl;
+	    wclclog << "Bus: " << info.bus_info << endl;
 
 	    loadControls();
 	}
@@ -452,10 +453,10 @@ void UVCCamera::loadControls()
 
 		if (ctrl.type != V4L2_CTRL_TYPE_MENU)
 		{
-			cout << "Control: " << ctrl.name << endl;
-			cout << "   Min: " << ctrl.minimum << endl;
-			cout << "   Max: " << ctrl.maximum << endl;
-			cout << "   ID : " << ctrl.id << endl;
+			wclclog << "Control: " << ctrl.name << endl;
+			wclclog << "   Min: " << ctrl.minimum << endl;
+			wclcout << "   Max: " << ctrl.maximum << endl;
+			wclcout << "   ID : " << ctrl.id << endl;
 		}
 		ctrl.id |= V4L2_CTRL_FLAG_NEXT_CTRL;
 	}

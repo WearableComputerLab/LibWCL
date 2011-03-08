@@ -24,8 +24,8 @@
  * SUCH DAMAGE.
  */
 
-#include <iostream>
-#include "VirtualCamera.h"
+#include "wcl/IO.h"
+#include "wcl/camera/VirtualCamera.h"
 
 #define guint int
 #define guint8 const char *
@@ -63,12 +63,12 @@ void VirtualCamera::printDetails(bool state)
 
     if ( state ){
 	if ( this->buffers ){
-	    cout << "Using Provided Frames" << endl;
-	    cout << "| Current Frame: " << inUseBuffer << endl;
-	    cout << "| Total Frames: " << this->numBuffers << endl;
+	    wclclog << "Using Provided Frames" << endl;
+	    wclclog << "| Current Frame: " << inUseBuffer << endl;
+	    wclclog << "| Total Frames: " << this->numBuffers << endl;
 	} else {
 
-	    cout << "Using Default Frame" << endl;
+	    wclclog << "Using Default Frame" << endl;
 	}
     }
 }
@@ -78,18 +78,18 @@ void VirtualCamera::setConfiguration(const Configuration &c)
 	if(c.format == Camera::RGB8)
 		Camera::setConfiguration(c);
 	else
-		cout << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
+		wclclog << "VirtualCamera:SetFormat: Virtual Camera default image only supports RGB" << endl;
 }
 
 void VirtualCamera::setExposureMode(const ExposureMode t)
 {
-    cout << "VirtualCamera: Confirming Exposure Mode change "
+    wclclog << "VirtualCamera: Confirming Exposure Mode change "
 	 << "(Note: No change to the image will occur)" << endl;
 }
 
 void VirtualCamera::setControlValue(const Control control, const int value)
 {
-    cout << "VirtualCamera: Confirming control " << control << "Set to value "
+    wclclog << "VirtualCamera: Confirming control " << control << "Set to value "
 	 << value << "(Note: No change to the image will occur)" << endl;
 }
 

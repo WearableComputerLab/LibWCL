@@ -25,10 +25,10 @@
  * SUCH DAMAGE.
  */
 #include <stdlib.h>
-#include <iostream>
 #include <sstream>
-#include <wcl/camera/CameraException.h>
-#include <wcl/camera/PTGreyCamera.h>
+#include "wcl/IO.h"
+#include "wcl/camera/CameraException.h"
+#include "wcl/camera/PTGreyCamera.h"
 
 using namespace std;
 using namespace FlyCapture2;
@@ -108,7 +108,7 @@ void PTGreyCamera::setControlValue(const Control control, const int value)
 
 void PTGreyCamera::setConfiguration(const Configuration &c)
 {
-    cout << "PTGreyCamera::setConfigureation:: NOT IMPLEMENTED" << endl;
+    wclcerr << "PTGreyCamera::setConfigureation:: NOT IMPLEMENTED" << endl;
     //exit(1);
     this->activeConfiguration = c;
 }

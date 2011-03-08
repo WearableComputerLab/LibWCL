@@ -24,11 +24,9 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
-#include <iostream>
+#include <IO.h>
 #include <sstream>
 #include <dc1394/dc1394.h>
 #include <dc1394/utils.h>

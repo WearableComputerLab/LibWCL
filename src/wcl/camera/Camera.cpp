@@ -28,6 +28,7 @@
 #include <config.h>
 #include <iostream>
 #include <string.h>
+#include "IO.h"
 #include "Camera.h"
 #include "CameraException.h"
 
@@ -578,11 +579,11 @@ NOTIMP:
 	{
 
 	    Configuration a = this->getActiveConfiguration();
-	    cout << "Camera: " << this->id << " (" << this->getTypeIdentifier() << ")"
+	    wclcout << "Camera: " << this->id << " (" << this->getTypeIdentifier() << ")"
 		 << this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps << endl;
 
 	    if ( state ){
-		cout << "Features/Modes" << endl;
+		wclcout << "Features/Modes" << endl;
 		for(std::vector<Configuration>::iterator it =
 		    supportedConfigurations.begin(); it !=
 		    supportedConfigurations.end(); ++it ){
@@ -596,15 +597,15 @@ NOTIMP:
 			Configuration prev = *it;
 			++it;
 			if( c.format == prev.format && c.width == prev.width && c.height == prev.height )
-			    cout << "," << c.fps;
+			    wclcout << "," << c.fps;
 			else {
-			    cout << "\n";
-			    cout << "\t" << this->imageFormatToString(c.format) << " "
+			    wclcout << "\n";
+			    wclcout << "\t" << this->imageFormatToString(c.format) << " "
 				<< c.width << "x" << c.height << " @" << c.fps;
 			}
 		    }
 		}
-		cout << "\n";
+		wclcout << "\n";
 	    }
 	}
 
