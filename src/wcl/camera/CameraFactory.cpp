@@ -45,22 +45,23 @@ namespace wcl
 
 CameraFactory *CameraFactory::instance;
 
-CameraFactory::CameraFactory()
+CameraFactory::CameraFactory():
+    debug(false)
 {}
 
 
-Camera *CameraFactory::getCamera()
+Camera *CameraFactory::getCamera(const SearchScope scope)
 {
-    std::vector<Camera *> cameras = CameraFactory::getCameras();
+    std::vector<Camera *> cameras = CameraFactory::getCameras(scope);
     if( cameras.size() > 0 )
 	return cameras[0];
 
     return NULL;
 }
 
-Camera *CameraFactory::getCamera(const Camera::CameraID id)
+Camera *CameraFactory::getCamera(const Camera::CameraID id, const SearchScope scope)
 {
-    std::vector<Camera *> cameras = CameraFactory::getCameras();
+    std::vector<Camera *> cameras = CameraFactory::getCameras(scope);
     for(std::vector<Camera *>::iterator it = cameras.begin();
 	it!= cameras.end();
 	++it ){
@@ -72,47 +73,54 @@ Camera *CameraFactory::getCamera(const Camera::CameraID id)
     return NULL;
 }
 
-std::vector<Camera *> CameraFactory::getCameras()
+std::vector<Camera *> CameraFactory::getCameras(const SearchScope scope)
 {
     std::vector<Camera *>all;
 
 #ifdef ENABLE_CAMERA_PTGREY
-    try {
-	std::vector<PTGreyCamera *>ptgrey = PTGreyCameraFactory::getCameras();
-	for(std::vector<PTGreyCamera *>::iterator it = ptgrey.begin();
-	    it != ptgrey.end();
-	    ++it )
-	    all.push_back( *it );
+    if( scope != LOCAL ){
 
-    } catch ( CameraException &e ){
-	std::clog << "PTGreyCameras Unavailable:" << e.what() << std::endl;
+	try {
+	    std::vector<PTGreyCamera *>ptgrey = PTGreyCameraFactory::getCameras();
+	    for(std::vector<PTGreyCamera *>::iterator it = ptgrey.begin();
+		it != ptgrey.end();
+		++it )
+		all.push_back( *it );
+
+	} catch ( CameraException &e ){
+	    std::clog << "PTGreyCameras Unavailable:" << e.what() << std::endl;
+	}
     }
 #endif
 
 #ifdef ENABLE_CAMERA_DC1394
-    try {
+    if( scope ! = NETWORK ){
+	try {
 
-    std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
+	    std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
 
-    for(std::vector<DC1394Camera *>::iterator it = dc1394.begin();
-	it != dc1394.end();
-	++it )
-	all.push_back( *it );
+	    for(std::vector<DC1394Camera *>::iterator it = dc1394.begin();
+		it != dc1394.end();
+		++it )
+		all.push_back( *it );
 
-    } catch ( CameraException &e ){
-	std::clog << "DC1394Cameras Unavailable:" << e.what() << std::endl;
+	} catch ( CameraException &e ){
+	    std::clog << "DC1394Cameras Unavailable:" << e.what() << std::endl;
+	}
     }
 #endif
 
 #ifdef ENABLE_CAMERA_UVC
-    try {
-	std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
-	for(std::vector<UVCCamera *>::iterator it = uvc.begin();
-	    it != uvc.end();
-	    ++it )
-	    all.push_back( *it );
-    } catch (CameraException &e){
-	std::clog << "UVC Camera(s) Unavailable:" << e.what() << std::endl;
+    if ( scope != NETWORK ){
+	try {
+	    std::vector<UVCCamera *> uvc = UVCCameraFactory::getCameras();
+	    for(std::vector<UVCCamera *>::iterator it = uvc.begin();
+		it != uvc.end();
+		++it )
+		all.push_back( *it );
+	} catch (CameraException &e){
+	    std::clog << "UVC Camera(s) Unavailable:" << e.what() << std::endl;
+	}
     }
 #endif
 
@@ -120,18 +128,18 @@ std::vector<Camera *> CameraFactory::getCameras()
 }
 
 
-Camera *CameraFactory::findCamera(Camera::Configuration partialConfig)
+Camera *CameraFactory::findCamera(Camera::Configuration partialConfig, const SearchScope scope)
 {
-    std::vector<Camera *> cameras =  CameraFactory::findCameras(partialConfig);
+    std::vector<Camera *> cameras =  CameraFactory::findCameras(partialConfig, scope);
     if( cameras.size() > 0 ){
 	return cameras[0];
     }
     return NULL;
 }
 
-std::vector<Camera *> CameraFactory::findCameras(Camera::Configuration partialConfig)
+std::vector<Camera *> CameraFactory::findCameras(Camera::Configuration partialConfig, const SearchScope scope)
 {
-    std::vector<Camera *> cameras = getCameras();
+    std::vector<Camera *> cameras = getCameras(scope);
     std::vector<Camera *> matches;
 
     for(std::vector<Camera *>::iterator it = cameras.begin();
@@ -141,7 +149,7 @@ std::vector<Camera *> CameraFactory::findCameras(Camera::Configuration partialCo
 		Camera *c = *it;
 		try
 		{
-			Camera::Configuration config = c->findConfiguration(partialConfig);
+			Camera::Configuration config = c->findConfiguration(partialConfig, scope);
 			c->setConfiguration(config);
 			matches.push_back(c);
 		}
