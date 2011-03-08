@@ -25,10 +25,10 @@
  */
 
 #include <stdio.h>
-#include <iostream>
 #include <sstream>
-#include <wcl/camera/UVCCameraFactory.h>
-#include <wcl/camera/CameraException.h>
+#include "wcl/IO.h"
+#include "wcl/camera/UVCCameraFactory.h"
+#include "wcl/camera/CameraException.h"
 
 #define MAX_DEVICES 64
 
@@ -88,7 +88,7 @@ void UVCCameraFactory::probeCameras()
 	    // the devices are not found as we loop through the list of 
 	    // devices.
 	    if(c.what() != CameraException::NOTFOUND)
-		printf("UVCCameraFactory:Exception Raised: %s\n", c.what());
+			wclclog << "UVCCameraFactory:Exception Raised:" << c.what() << endl;
 	    break;
 	}
 

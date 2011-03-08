@@ -35,10 +35,10 @@
  */
 namespace wcl {
 
-    extern WCL_API std::ostream wclclog;
-    extern WCL_API std::ostream wclcout;
-    extern WCL_API std::istream wclcin;
-    extern WCL_API std::ostream wclcerr;
+    extern WCL_API std::ostream &wclclog;
+    extern WCL_API std::ostream &wclcout;
+    extern WCL_API std::istream &wclcin;
+    extern WCL_API std::ostream &wclcerr;
 
 };
 

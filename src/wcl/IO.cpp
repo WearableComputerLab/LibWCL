@@ -27,9 +27,9 @@
 
 namespace wcl {
 
-std::ostream wclclog = std::clog;
-std::ostream wclcerr = std::cerr;
-std::ostream wclcout = std::cout;
-std::ostream wclcin  = std::cin;
+std::ostream &wclclog = std::clog;
+std::ostream &wclcerr = std::cerr;
+std::ostream &wclcout = std::cout;
+std::istream &wclcin  = std::cin;
 
 };

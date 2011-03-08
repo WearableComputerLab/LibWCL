@@ -25,7 +25,7 @@
  */
 
 #include <config.h>
-#include <iostream>
+#include <wcl/IO.h>
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
 #ifdef ENABLE_CAMERA_DC1394
@@ -45,8 +45,7 @@ namespace wcl
 
 CameraFactory *CameraFactory::instance;
 
-CameraFactory::CameraFactory():
-    debug(false)
+CameraFactory::CameraFactory()
 {}
 
 
@@ -88,13 +87,13 @@ std::vector<Camera *> CameraFactory::getCameras(const SearchScope scope)
 		all.push_back( *it );
 
 	} catch ( CameraException &e ){
-	    std::clog << "PTGreyCameras Unavailable:" << e.what() << std::endl;
+	    wclclog << "PTGreyCameras Unavailable:" << e.what() << std::endl;
 	}
     }
 #endif
 
 #ifdef ENABLE_CAMERA_DC1394
-    if( scope ! = NETWORK ){
+    if( scope != NETWORK ){
 	try {
 
 	    std::vector<DC1394Camera *> dc1394 = DC1394CameraFactory::getCameras();
@@ -105,7 +104,7 @@ std::vector<Camera *> CameraFactory::getCameras(const SearchScope scope)
 		all.push_back( *it );
 
 	} catch ( CameraException &e ){
-	    std::clog << "DC1394Cameras Unavailable:" << e.what() << std::endl;
+	    wclclog << "DC1394Cameras Unavailable:" << e.what() << std::endl;
 	}
     }
 #endif
@@ -119,7 +118,7 @@ std::vector<Camera *> CameraFactory::getCameras(const SearchScope scope)
 		++it )
 		all.push_back( *it );
 	} catch (CameraException &e){
-	    std::clog << "UVC Camera(s) Unavailable:" << e.what() << std::endl;
+	    wclclog << "UVC Camera(s) Unavailable:" << e.what() << std::endl;
 	}
     }
 #endif
@@ -149,7 +148,7 @@ std::vector<Camera *> CameraFactory::findCameras(Camera::Configuration partialCo
 		Camera *c = *it;
 		try
 		{
-			Camera::Configuration config = c->findConfiguration(partialConfig, scope);
+			Camera::Configuration config = c->findConfiguration(partialConfig);
 			c->setConfiguration(config);
 			matches.push_back(c);
 		}
@@ -172,10 +171,10 @@ void CameraFactory::printDetails(bool state)
     CameraFactory *f = CameraFactory::getInstance();
     std::vector<Camera *>cameras = f->getCameras();
 
-    cout << cameras.size() << " Cameras Found" <<endl;
+    wclcout << cameras.size() << " Cameras Found" <<endl;
 
     if ( cameras.size() ){
-	cout << "-----------------------------------" <<endl;
+	wclcout << "-----------------------------------" <<endl;
 
 	for(std::vector<Camera *>::iterator it = cameras.begin();
 	    it != cameras.end();
@@ -184,7 +183,7 @@ void CameraFactory::printDetails(bool state)
 	    c->printDetails(state);
 	}
 
-	cout << "-----------------------------------" <<endl;
+	wclcout << "-----------------------------------" <<endl;
     }
 }
 
