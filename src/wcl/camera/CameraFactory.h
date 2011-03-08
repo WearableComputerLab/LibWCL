@@ -42,33 +42,61 @@ namespace wcl
 	class WCL_API CameraFactory
 	{
 		public:
+			enum SearchScope { LOCAL, NETWORK, ALL };
 
 			/**
-			 * Obtain any camera
+			 * Obtain any camera, by default this will obtain the
+			 * first available camera locally. Specifying NETWORK or
+			 * ALL will return the first available local camera if
+			 * available or the first available network camera if
+			 * available. If no cameras are available an exception
+			 * is thrown
+			 *
+			 * @param SearchScope The scope to search for a camera
+			 * @throw CameraException if no camera of that search scope is found
+			 * @return A valid camera object
 			 */
-			static Camera *getCamera();
+			static Camera *getCamera(const SearchScope = LOCAL);
 
 			/**
-			 * Obtain the camera with the specified ID
+			 * Obtain the camera with the specified ID. The camera
+			 * is search across all available SearchMedia unless
+			 * restricted
+			 *
+			 * @param CameraID The id of the camera to find
+			 * @param SearchScope The scope to search for a camera
+			 * @throw CameraException if a camera with the given ID cannot be found
+			 * @return A valid camera object
 			 */
-			static Camera *getCamera(const Camera::CameraID);
+			static Camera *getCamera(const Camera::CameraID, const SearchScope = ALL);
 
 			/**
-			 * Obtain a list of all usable cameras
+			 * Obtain a list of all usable cameras based on the
+			 * given search Scope
+			 *
+			 * @param SearchScope The scope to search for a camera
+			 * @return A vector of available cameras, if no camera is avaliable the vector is empty
 			 */
-			static std::vector<Camera *>getCameras();
+			static std::vector<Camera *>getCameras(const SearchScope = LOCAL);
 
 			/**
 			 * Find a camera with the specified image format,
 			 * optionally restricting the matched camera by widht,
 			 * height or fps if that parameter is not zero
+			 *
+			 * @param partialConfig A partially/complete filled in configuration for the camera
+			 * @param SearchScope The scope to search for a camera
 			 */
-			static Camera *findCamera(Camera::Configuration partialConfig);
+			static Camera *findCamera(Camera::Configuration partialConfig, const SearchScope=LOCAL);
 
 			/**
-			 * Find all cameras matching the specified critieria
+			 * Find all cameras matching the specified critieria.
+			 * The searching scope is restricted to local cameras by default
+			 *
+			 * @param partialConfig A partially/complete filled in configuration for the camera
+			 * @param SearchScope The scope to search for a camera
 			 */
-			static std::vector<Camera *> findCameras(Camera::Configuration partialConfig);
+			static std::vector<Camera *> findCameras(Camera::Configuration partialConfig, const SearchScope=LOCAL);
 
 			/**
 			 * Display information about all cameras in the system
