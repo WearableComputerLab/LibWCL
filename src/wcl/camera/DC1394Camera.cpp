@@ -304,7 +304,7 @@ notfound:
 			case EXPOSURE:
 			case FOCUS:
 			case AUTOFOCUS:
-					   throw CameraException("DC1394 Cameras do not yet support setting control values");
+				   throw CameraException(CameraException::CONTROLERROR);
 		}
 	}
 
