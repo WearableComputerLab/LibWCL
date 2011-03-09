@@ -184,17 +184,17 @@ int main(int argc, char** argv)
 
 	if( argc == 2 ){
 	    cout << "Attempting to use Camera specified:" << argv[1] <<endl;
-	    cam = CameraFactory::getCamera(argv[1]);
+	    cam = CameraFactory::getCamera(argv[1], CameraFactory::ALL);
 	} else {
 	    cout << "No Camera Specified, using CameraFactory to find the first camera..." << endl;
-	    std::vector<Camera *> cameras = CameraFactory::getCameras();
+	    std::vector<Camera *> cameras = CameraFactory::getCameras(CameraFactory::ALL);
 	    CameraFactory::printDetails(false);
 
 	    if( cameras.size() == 0 ){
 		cout << "No physical camera's found, using virtual camera" << endl;
 		cam = new VirtualCamera();
 	    } else {
-		cam = CameraFactory::getCamera();
+		cam = CameraFactory::getCamera(CameraFactory::ALL);
 	    }
 	}
 	if (cam == NULL ){
