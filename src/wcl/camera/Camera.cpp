@@ -579,8 +579,9 @@ NOTIMP:
 	{
 
 	    Configuration a = this->getActiveConfiguration();
-	    wclcout << "Camera: " << this->id << " (" << this->getTypeIdentifier() << ")"
+	    wclcout << "Camera ID:" << this->id << " (" << this->getTypeIdentifier() << ")"
 		 << this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps << endl;
+
 
 	    if ( state ){
 		wclcout << "Features/Modes" << endl;
