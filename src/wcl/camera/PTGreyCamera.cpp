@@ -104,7 +104,22 @@ void PTGreyCamera::printDetails(bool full)
 }
 
 void PTGreyCamera::setControlValue(const Control control, const int value)
-{}
+{
+    switch(control)
+    {
+	default:
+	    throw CameraException(CameraException::CONTROLERROR);
+    }
+}
+
+int PTGreyCamera::getControlValue(const Control control)
+{
+    switch(control)
+    {
+	default:
+	    throw CameraException(CameraException::CONTROLERROR);
+    }
+}
 
 void PTGreyCamera::setConfiguration(const Configuration &c)
 {

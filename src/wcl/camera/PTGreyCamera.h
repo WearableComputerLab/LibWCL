@@ -56,7 +56,9 @@ public:
 
 
 	void setExposureMode(ExposureMode) { /*FIXME*/ }
+
 	void setControlValue(const Control control, const int value);
+	int  getControlValue(const Control control);
 	void setConfiguration(const Configuration &c);
 	const char *getTypeIdentifier() const { return "PTGrey"; };
 
