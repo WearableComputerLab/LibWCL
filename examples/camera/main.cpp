@@ -51,10 +51,14 @@ unsigned char* data;
 
 void usage()
 {
-    printf("Usage: camera [devicenode]\n"
+    printf("Usage: camera [-l|-h|devicenode]\n"
 	   "\n"
 	   "eg: camera /dev/video0\n"
 	   "\n"
+	   "Options:\n"
+	   "\n"
+	   "-h = List this help\n"
+	   "-l = List available cameras then exit\n"
 	   "If no device node is given the first available camera is used. If no physical camera exists, the virtual camera is used\n"
 	  );
 }
@@ -171,13 +175,24 @@ void keyboard(unsigned char key, int w, int h)
 	exit(EXIT_SUCCESS);
 }
 
+void listCameras()
+{
+    cout << "Searching for Cameras..." << endl;
+    std::vector<Camera *> cameras = CameraFactory::getCameras(CameraFactory::ALL);
+    CameraFactory::printDetails(false);
+}
+
 int main(int argc, char** argv)
 {
-    if(argc >=  2 &&
-       (strcmp(argv[1],"--help") == 0 ||
-        strcmp(argv[1],"-h" ) == 0)){
+    if(argc >= 2){
+       if( strcmp(argv[1],"--help") == 0 || strcmp(argv[1],"-h" ) == 0){
 	usage();
 	return 1;
+       }
+       if( strcmp(argv[1],"-l") == 0){
+	   listCameras();
+	   return 1;
+       }
     }
 
     try {
@@ -187,6 +202,7 @@ int main(int argc, char** argv)
 	    cam = CameraFactory::getCamera(argv[1], CameraFactory::ALL);
 	} else {
 	    cout << "No Camera Specified, using CameraFactory to find the first camera..." << endl;
+	    cout << "Searching for Cameras..." << endl;
 	    std::vector<Camera *> cameras = CameraFactory::getCameras(CameraFactory::ALL);
 	    CameraFactory::printDetails(false);
 
