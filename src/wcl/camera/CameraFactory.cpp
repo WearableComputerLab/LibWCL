@@ -171,10 +171,10 @@ void CameraFactory::printDetails(bool state)
     CameraFactory *f = CameraFactory::getInstance();
     std::vector<Camera *>cameras = f->getCameras();
 
-    wclcout << cameras.size() << " Cameras Found" <<endl;
+    wclcout << cameras.size() << " Camera(s) Found" <<endl;
 
     if ( cameras.size() ){
-	wclcout << "-----------------------------------" <<endl;
+	wclcout << "-----------------------------------------------------" <<endl;
 
 	for(std::vector<Camera *>::iterator it = cameras.begin();
 	    it != cameras.end();
@@ -183,7 +183,7 @@ void CameraFactory::printDetails(bool state)
 	    c->printDetails(state);
 	}
 
-	wclcout << "-----------------------------------" <<endl;
+	wclcout << "-----------------------------------------------------" <<endl;
     }
 }
 
