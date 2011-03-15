@@ -42,6 +42,7 @@ const char *CameraException::GAINERROR="Invalid GAIN Setting";
 const char *CameraException::BRIGHTNESSERROR="Invalid Brightness Setting";
 const char *CameraException::INVALIDCONFIGURATION="No Configuration matches the one requested";
 const char *CameraException::ISOERROR="Invalid ISOSetting Provided / ISO Setting could not be set";
+const char *CameraException::CONNECTIONISSUE="An error occurred connecting to the camera";
 
 CameraException::CameraException(const char *why):
     reason(why)
