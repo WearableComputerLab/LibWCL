@@ -26,8 +26,8 @@
 
 #include <assert.h>
 #include <config.h>
-#include <iostream>
 #include <string.h>
+#include <algorithm>
 #include "IO.h"
 #include "Camera.h"
 #include "CameraException.h"
@@ -38,8 +38,52 @@
 
 using namespace std;
 
+
 namespace wcl
 {
+/**
+ * Helper function to sort the configuration list
+ */
+
+static bool configurationSort ( Camera::Configuration a, Camera::Configuration b)
+{
+	if(((int)a.format) > (int)b.format)
+		return true;
+	if(((int)a.format) < (int)b.format)
+		return false;
+
+	// Format Equal
+	if(a.format == Camera::FORMAT7){
+		if ( ((int)a.format7.format) > ((int)b.format7.format))
+			return true;
+		if ( ((int)a.format7.format) < ((int)b.format7.format))
+			return false;
+
+		// Format Equal
+		if( a.format7.xMax > b.format7.xMax )
+			return true;
+		else
+			return false;
+	} else {
+		if ( a.width > b.width )
+			return true;
+		if( a.width < b.width )
+			return false;
+		// Width Equal
+		if ( a.height > b.height )
+			return true;
+		if( a.height < b.height )
+			return false;
+		// Height Equal
+		if( a.fps > b.fps )
+			return true;
+
+		// Equal or < fps
+		return false;
+	}
+}
+
+
 	struct Camera::Priv
 	{
 #if ENABLE_VIDEO
@@ -264,9 +308,8 @@ namespace wcl
 
 	void Camera::setConfiguration(const Configuration &c)
 	{
-		assert (c.width != 0);
-		assert (c.height != 0);
-		assert (c.fps != 0);
+		assert ( (c.format == FORMAT7 && c.format7.xMax > 0 && c.format7.yMax > 0 && c.format7.xOffset >= 0 && c.format7.yOffset >= 0 ) ||
+			 ( c.format != FORMAT7 && c.width > 0 && c.height > 0 && c.fps > 0));
 
 		this->activeConfiguration = c;
 	}
@@ -575,38 +618,65 @@ NOTIMP:
 		this->parameters = p;
 	}
 
+	void Camera::printFormat7(const Format7 f,const bool inUse)
+	{
+	    if(inUse)
+		wclclog << "FORMAT7 (" << this->imageFormatToString(f.format) << ") "
+		    << " Region: (" << f.xOffset << "," << f.yOffset << ")"
+		    << " -> (" << f.xMax << "," << f.yMax << ")";
+	    else
+		wclclog << "FORMAT7 (" << this->imageFormatToString(f.format) << ") "
+		    << " Region Available: (" << f.xOffset << "," << f.yOffset << ")"
+		    << " -> (" << f.xMax << "," << f.yMax << ")"
+		    << " OffsetStepSize: (" << f.xOffsetStepSize << "," << f.yOffsetStepSize << ")"
+		    << " ExtentStepSize: (" << f.xStepSize << "," << f.yStepSize << ")";
+	}
+
 	void Camera::printDetails(bool state)
 	{
 
 	    Configuration a = this->getActiveConfiguration();
-	    wclcout << "Camera ID:" << this->id << " (" << this->getTypeIdentifier() << ")"
-		 << this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps << endl;
+	    wclclog << "Camera ID:" << this->id << " (" << this->getTypeIdentifier() << ") |";
+	    if( a.format == FORMAT7)
+		this->printFormat7(a.format7,true);
+	    else
+		wclclog<< this->imageFormatToString(a.format) << ":" << a.width << "x" << a.height << "@" << a.fps;
 
+	    wclclog << endl;
 
 	    if ( state ){
-		wclcout << "Features/Modes" << endl;
-		for(std::vector<Configuration>::iterator it =
-		    supportedConfigurations.begin(); it !=
-		    supportedConfigurations.end(); ++it ){
-		    Configuration c = *it;
+			sort(this->supportedConfigurations.begin(),
+				 this->supportedConfigurations.end(), configurationSort);
 
-		    if( it == supportedConfigurations.begin()){
-			cout << "\t" << this->imageFormatToString(c.format) << " " << c.width << "x" << c.height << " @" << c.fps;
-		    }
-		    else {
-			--it;
-			Configuration prev = *it;
-			++it;
-			if( c.format == prev.format && c.width == prev.width && c.height == prev.height )
-			    wclcout << "," << c.fps;
-			else {
-			    wclcout << "\n";
-			    wclcout << "\t" << this->imageFormatToString(c.format) << " "
-				<< c.width << "x" << c.height << " @" << c.fps;
+			wclcout << "Features/Modes" << endl;
+			for(std::vector<Configuration>::iterator it =
+				supportedConfigurations.begin(); it !=
+				supportedConfigurations.end(); ++it ){
+				Configuration c = *it;
+
+				if(c.format == FORMAT7 ){
+					wclclog << "\t";
+					this->printFormat7(c.format7,false);
+					wclclog << endl;
+				} else {
+					if( it == supportedConfigurations.begin()){
+						wclclog << "\t" << this->imageFormatToString(c.format) << " " << c.width << "x" << c.height << " @" << c.fps;
+					}
+					else {
+						--it;
+						Configuration prev = *it;
+						++it;
+						if( c.format == prev.format && c.width == prev.width && c.height == prev.height )
+							wclclog << "," << c.fps;
+						else {
+							wclclog << endl;
+							wclclog << "\t" << this->imageFormatToString(c.format) << " "
+								<< c.width << "x" << c.height << " @" << c.fps;
+						}
+					}
+				}
 			}
-		    }
-		}
-		wclcout << "\n";
+			wclclog << endl;
 	    }
 	}
 
@@ -615,14 +685,18 @@ NOTIMP:
 	    switch(f)
 	    {
 		case MJPEG: return "MJPEG";
-		case YUYV422: return "YUYV422";
 		case YUYV411: return "YUYV411";
+		case YUYV422: return "YUYV422";
+		case YUYV444: return "YUYV444";
 		case RGB8: return "RGB8";
 		case RGB16: return "RGB16";
 		case RGB32: return "RGB32";
 		case BGR8: return "BGR8";
 		case MONO8: return "MONO8";
 		case MONO16: return "MONO16";
+		case RAW8: return "RAW8";
+		case RAW16: return "RAW16";
+		case FORMAT7: return "FORMAT7";
 		case ANY:
 		default:
 		    return "UNKNOWN:";

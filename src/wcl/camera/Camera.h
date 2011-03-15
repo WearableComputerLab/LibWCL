@@ -1,6 +1,6 @@
 /*-
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
- * Copyright (c) 2010 Benjamin Close <Benjamin.Close@clearchain.com>
+ * Copyright (c) 2010-2011 Benjamin Close <Benjamin.Close@clearchain.com>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -111,32 +111,72 @@ namespace wcl
 			enum ImageFormat
 			{
 				ANY,
-				MJPEG, //Motion JPEG Format.
+				MJPEG,   // Motion JPEG Format.
 				YUYV422, // YUYV 4:2:2 format.
 				YUYV411, // YUYV 4:1:1 format.
-				RGB8, //  8 8 8
-				RGB16, // 16 16 16
-				RGB32, // 32 32 32
-				BGR8, // 8 8 8
-				MONO8, //greyscale 8bpp
-				MONO16 // greyscale 16bpp
-					/*
-					   FORMAT7,
-					   BAYER,
-					   EXIF
+				YUYV444, // YUYV 4:4:4 format.
+				RGB8,    //  8 8 8
+				RGB16,   // 16 16 16
+				RGB32,   // 32 32 32
+				BGR8,    // 8 8 8
+				MONO8,   // greyscale 8bpp
+				MONO16,  // greyscale 16bpp
+				RAW8,
+				RAW16,
+				FORMAT7
+				/*
+				   BAYER,
+				   EXIF
 					   */
 
 			};
 
+			/**
+			 * A camera that supports format7 as an imaging format
+			 * is able to image more than just the entire CCD.
+			 * Format7 provides the ability to define a region
+			 * that can be imaged. Hence Format7 doesn't provide the
+			 * ability to specify a frame rate, only the ability to
+			 * query a frame rate. This is because the rate is
+			 * dependant upon the region to be imaged.
+			 */
+			struct Format7
+			{
+			    unsigned xOffset; // Starting Offset from 0
+			    unsigned yOffset; // Starting Offset from 0
+			    unsigned xMax;   // The maximum Width of an image
+			    unsigned yMax;   // The maximum Height of an image
+			    unsigned yOffsetStepSize; // Size of xOffsetStep Allowed
+			    unsigned xOffsetStepSize; // Size of yOffsetStep Allowed
+			    unsigned xStepSize; // The x step size from offset
+			    unsigned yStepSize; // The y step size from offet
+			    ImageFormat format;// The supported image format
+			};
+
+			/**
+			 * The configuration of a camera. Depending on whether
+			 * the camera camera with normal modes or a camera with
+			 * format 7 support depends on what is used in the
+			 * struct. Format 7 cameras don't need a frame rate as
+			 * this is determined based upon the region selected.
+			 * (See Format7 Struct)
+			 */
 			struct Configuration
 			{
-				float fps;
-				unsigned width;
-				unsigned height;
+				// The anonymous structs & union allow direct access into
+				// the modes. Ie: c.isFormat7 = false; c.fps=x; ...
+				union {
+					struct {
+						float fps;
+						unsigned width;
+						unsigned height;
+					};
+					Format7 format7;
+				};
 				ImageFormat format;
 
 				Configuration()
-					: fps(0), width(0), height(0), format(ANY) {}
+					:fps(0), width(0), height(0), format(ANY) {}
 			};
 
 
@@ -221,8 +261,21 @@ namespace wcl
 			unsigned getFormatBufferSize() const;
 			unsigned getFormatBufferSize(const ImageFormat) const;
 
+			/**
+			 * Obtain the list of supported configurations. Note if
+			 * a camera supports format7 then the format7 modes as
+			 * well as emulated modes may be returned
+			 */
 			std::vector<Configuration> getSupportedConfigurations() const;
 
+			/**
+			 * Find a configuration matchin the requested partial
+			 * configuration. For the partial configuration -1/ANY
+			 * indicates 'dont care' settings
+			 *
+			 * @returns A configuration matching the required
+			 * @throws CameraException if the requested configuration can't be found
+			 */
 			Configuration findConfiguration(Configuration partialConfig) const;
 
 			/**
@@ -404,6 +457,7 @@ namespace wcl
 
 			void setupConversionBuffer( const size_t buffersize );
 			const char *imageFormatToString( const ImageFormat );
+			void printFormat7(const Format7, const bool);
 	};
 
 };
