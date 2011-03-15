@@ -42,6 +42,7 @@
 #include <wcl/camera/CameraFactory.h>
 
 #define WIDTH 640
+#define SEARCHSCOPE CameraFactory::NETWORK
 
 using namespace std;
 using namespace wcl;
@@ -178,8 +179,8 @@ void keyboard(unsigned char key, int w, int h)
 void listCameras()
 {
     cout << "Searching for Cameras..." << endl;
-    std::vector<Camera *> cameras = CameraFactory::getCameras(CameraFactory::ALL);
-    CameraFactory::printDetails(false);
+    std::vector<Camera *> cameras = CameraFactory::getCameras(SEARCHSCOPE);
+    CameraFactory::printDetails(false,SEARCHSCOPE);
 }
 
 int main(int argc, char** argv)
@@ -199,18 +200,18 @@ int main(int argc, char** argv)
 
 	if( argc == 2 ){
 	    cout << "Attempting to use Camera specified:" << argv[1] <<endl;
-	    cam = CameraFactory::getCamera(argv[1], CameraFactory::ALL);
+	    cam = CameraFactory::getCamera(argv[1], SEARCHSCOPE);
 	} else {
 	    cout << "No Camera Specified, using CameraFactory to find the first camera..." << endl;
 	    cout << "Searching for Cameras..." << endl;
-	    std::vector<Camera *> cameras = CameraFactory::getCameras(CameraFactory::ALL);
-	    CameraFactory::printDetails(false);
+	    std::vector<Camera *> cameras = CameraFactory::getCameras(SEARCHSCOPE);
+	    CameraFactory::printDetails(false, SEARCHSCOPE);
 
 	    if( cameras.size() == 0 ){
 		cout << "No physical camera's found, using virtual camera" << endl;
 		cam = new VirtualCamera();
 	    } else {
-		cam = CameraFactory::getCamera(CameraFactory::ALL);
+		cam = CameraFactory::getCamera(SEARCHSCOPE);
 	    }
 	}
 	if (cam == NULL ){
