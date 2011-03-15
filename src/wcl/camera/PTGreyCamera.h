@@ -30,7 +30,6 @@
 #include <flycapture/FlyCapture2.h>
 #include <wcl/api.h>
 #include <wcl/camera/Camera.h>
-#warning "PTGreyCamera: Note this class is a minimal implementation to test the GIGECamera, and will need more work to be useable"
 
 namespace wcl {
 
@@ -65,10 +64,9 @@ public:
 private:
 	FlyCapture2::PGRGuid ptid;
 	FlyCapture2::Image rawImage;
-	FlyCapture2::GigECamera camera;
+	FlyCapture2::Camera camera;
+	FlyCapture2::Format7Info cameraInfo;
 	void probeCamera();
-	Camera::ImageFormat ptGreyPixelFormatTolibWCLImageFormat(const FlyCapture2::PixelFormat p);
-
 };
 
 };
