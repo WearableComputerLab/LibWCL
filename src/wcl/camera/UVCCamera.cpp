@@ -229,9 +229,7 @@ void UVCCamera::setConfiguration(const Configuration &c)
 			break;
 
 		case YUYV411:
-		case RGB16:
-		case RGB32:
-		case ANY:
+		default:
 			throw CameraException(CameraException::INVALIDFORMAT);
 	}
 
