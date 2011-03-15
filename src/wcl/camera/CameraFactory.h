@@ -102,8 +102,9 @@ namespace wcl
 			 * Display information about all cameras in the system
 			 *
 			 * @param full If true display full details about each camera, else short info about the cameras
+			 * @param SearchScope The scope to print details about the cameras
 			 */
-			static void printDetails(bool full);
+			static void printDetails(bool full, const SearchScope=ALL);
 
 		private:
 			CameraFactory();
