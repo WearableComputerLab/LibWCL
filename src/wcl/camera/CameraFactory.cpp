@@ -166,15 +166,15 @@ CameraFactory * CameraFactory::getInstance()
     return CameraFactory::instance;
 };
 
-void CameraFactory::printDetails(bool state)
+void CameraFactory::printDetails(bool state,const SearchScope scope)
 {
     CameraFactory *f = CameraFactory::getInstance();
-    std::vector<Camera *>cameras = f->getCameras();
+    std::vector<Camera *>cameras = f->getCameras(scope);
 
-    wclcout << cameras.size() << " Camera(s) Found" <<endl;
+    wclclog << cameras.size() << " Camera(s) Found" <<endl;
 
     if ( cameras.size() ){
-	wclcout << "-----------------------------------------------------" <<endl;
+	wclclog << "-----------------------------------------------------" <<endl;
 
 	for(std::vector<Camera *>::iterator it = cameras.begin();
 	    it != cameras.end();
@@ -183,7 +183,7 @@ void CameraFactory::printDetails(bool state)
 	    c->printDetails(state);
 	}
 
-	wclcout << "-----------------------------------------------------" <<endl;
+	wclclog << "-----------------------------------------------------" <<endl;
     }
 }
 
