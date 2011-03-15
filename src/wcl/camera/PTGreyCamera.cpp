@@ -33,7 +33,38 @@
 using namespace std;
 using namespace FlyCapture2;
 
+#define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+
 namespace wcl {
+
+struct ptGreylibWCL
+{
+    PixelFormat ptGrey;
+    Camera::ImageFormat libwcl;
+};
+
+static ptGreylibWCL formatConversion[10] =
+{
+	{ PIXEL_FORMAT_MONO8, Camera::MONO8 },
+	{ PIXEL_FORMAT_RGB8, Camera::RGB8 },
+	{ PIXEL_FORMAT_MONO16, Camera::MONO16 },
+	{ PIXEL_FORMAT_RGB16, Camera::RGB16 },
+	{ PIXEL_FORMAT_411YUV8, Camera::YUYV411 },
+	{ PIXEL_FORMAT_422YUV8, Camera::YUYV422 },
+	{ PIXEL_FORMAT_444YUV8, Camera::YUYV444 },
+	{ PIXEL_FORMAT_RAW8, Camera::RAW8 },
+	{ PIXEL_FORMAT_RAW16, Camera::RAW16 },
+	{ PIXEL_FORMAT_BGR, Camera::BGR8 }
+
+       /* The following modes are not implemented in libwcl - benjsc 20110310
+	PIXEL_FORMAT_S_MONO16
+	PIXEL_FORMAT_S_RGB16
+	PIXEL_FORMAT_MONO12
+	PIXEL_FORMAT_RAW12
+	PIXEL_FORMAT_BGRU
+	PIXEL_FORMAT_RGBU
+	*/
+};
 
 PTGreyCamera::PTGreyCamera(const PGRGuid iguid):
     ptid(iguid)
@@ -47,9 +78,6 @@ PTGreyCamera::PTGreyCamera(const PGRGuid iguid):
     stream << iguid.value[3];
     this->id = stream.str();
     this->probeCamera();
-
-    this->setConfiguration(this->supportedConfigurations[0]);
-
     this->startup();
 
 }
@@ -62,12 +90,6 @@ PTGreyCamera::~PTGreyCamera()
 void PTGreyCamera::startup()
 {
     Error error;
-    /*
-    this->camera.Connect(&this->ptid);
-    if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR");
-	*/
-
     error=this->camera.StartCapture();
     if(error != PGRERROR_OK){
 	error.PrintErrorTrace();
@@ -78,7 +100,6 @@ void PTGreyCamera::startup()
 void PTGreyCamera::shutdown()
 {
     this->camera.StopCapture();
-    this->camera.Disconnect();
 }
 
 void PTGreyCamera::update()
@@ -123,9 +144,55 @@ int PTGreyCamera::getControlValue(const Control control)
 
 void PTGreyCamera::setConfiguration(const Configuration &c)
 {
-    wclcerr << "PTGreyCamera::setConfigureation:: NOT IMPLEMENTED" << endl;
-    //exit(1);
-    this->activeConfiguration = c;
+    bool valid;
+    Error error;
+    Format7PacketInfo fmt7PacketInfo;
+    Format7ImageSettings imageSettings;
+    Camera::ImageFormat which;
+
+    // Set the format we want first
+    // Find out the actual format requested
+    if( c.format == Camera::FORMAT7){
+	which = c.format7.format;
+    } else {
+	which = c.format;
+    }
+
+    unsigned i;
+    for(i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
+	if( formatConversion[i].libwcl == which ){
+	    imageSettings.pixelFormat = formatConversion[i].ptGrey;
+	    break;
+	}
+    }
+    if( i == ARRAY_SIZE(formatConversion))
+	throw CameraException(CameraException::INVALIDFORMAT);
+
+    // Now the format is set setup the camera's viewports
+    // If we are emulating the camera mode we use the full viewport
+    // and software scale the image
+    if( c.format == Camera::FORMAT7){
+	imageSettings.offsetX = c.format7.xOffset;
+	imageSettings.offsetY = c.format7.yOffset;
+	imageSettings.width = c.format7.xMax;
+	imageSettings.height = c.format7.yMax;
+    } else {
+
+	// Emulation mode
+	imageSettings.offsetX = 0;
+	imageSettings.offsetY = 0;
+	imageSettings.width = this->cameraInfo.maxWidth;
+	imageSettings.height = this->cameraInfo.maxHeight;
+    }
+
+    error = this->camera.ValidateFormat7Settings( &imageSettings, &valid, &fmt7PacketInfo );
+    if (error != PGRERROR_OK || !valid) {
+	throw CameraException(CameraException::INVALIDFORMAT);
+    }
+
+    this->camera.SetFormat7Configuration(&imageSettings, fmt7PacketInfo.recommendedBytesPerPacket);
+    if( error != PGRERROR_OK )
+	throw CameraException(CameraException::INVALIDFORMAT);
 }
 
 void PTGreyCamera::probeCamera()
@@ -133,12 +200,16 @@ void PTGreyCamera::probeCamera()
     Error error;
     error=this->camera.Connect(&this->ptid);
     if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR1");
+	throw CameraException(CameraException::CONNECTIONISSUE);
 
     CameraInfo camInfo;
     error=this->camera.GetCameraInfo(&camInfo);
     if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR2");
+	throw CameraException(CameraException::CONNECTIONISSUE);
+
+    // The PTGrey GigECameras are all format 7. We emulate the
+    // other modes supported by libwcl Camera by displaying the width and the
+    // height of each of these. 
 
     /*
     for( int i = 0; i < NUM_MODES; i++ ){
@@ -149,57 +220,119 @@ void PTGreyCamera::probeCamera()
 	    continue;
 	}
     }
-
-    // Get supported pixelformts
-    GigEImageSettingsInfo info;
-    error=this->camera->getGigEImageSettingsInfo(&info);
-    if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR");
     */
 
-
-    GigEImageSettings imageSettings;
-    error=this->camera.GetGigEImageSettings(&imageSettings);
+    // Get supported pixelformts
+    bool supported;
+    error=this->camera.GetFormat7Info(&this->cameraInfo,&supported);
     if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR3");
+	throw CameraException(CameraException::CONNECTIONISSUE);
 
-    // Fake the following modes
+    // We now have the format 7 mode information hence we can use this
+    // to determine supported configurations
+#if 0
+    wclclog << "maxWidth: " << info.maxWidth << endl;
+    wclclog << "maxHeight: " << info.maxHeight << endl;
+    wclclog << "imageHStep: " << info.imageHStepSize << endl;
+    wclclog << "imageVStep: " << info.imageVStepSize << endl;
+    wclclog << "bitfield: " << info.pixelFormatBitField << endl;
+#endif
     Configuration c;
-    c.format = this->ptGreyPixelFormatTolibWCLImageFormat(imageSettings.pixelFormat);
-    c.width = imageSettings.width;
-    c.height = imageSettings.height;
-    c.fps = 0;
-    this->supportedConfigurations.push_back(c);
+    c.format = FORMAT7;
+    for(unsigned i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
+	c.format7.xOffset = 0;
+	c.format7.yOffset = 0;
+	c.format7.xOffsetStepSize = this->cameraInfo.offsetHStepSize;
+	c.format7.yOffsetStepSize = this->cameraInfo.offsetVStepSize;
+	c.format7.xMax = this->cameraInfo.maxWidth;
+	c.format7.yMax = this->cameraInfo.maxHeight;
+	c.format7.xStepSize = this->cameraInfo.imageHStepSize;
+	c.format7.yStepSize = this->cameraInfo.imageVStepSize;
+	c.format7.format = formatConversion[i].libwcl;
+	this->supportedConfigurations.push_back(c);
+    }
 
-    this->camera.SetGigEImageSettings(&imageSettings);
+    // Create the emulated modes
+    // These use common sizes to build modes
+    struct Sizes {
+	unsigned width;
+	unsigned height;
+    } commonSizes[] = {
+	{320,200},
+	{640,480},
+	{800,600},
+	{1024,768},
+	{1280,720},
+	{1280,800},
+	{1280,1024}
+    };
+
+    c.fps = -1;
+    for(unsigned i= 0; i < ARRAY_SIZE(commonSizes) + 1; i++ ){
+	if( i == ARRAY_SIZE(commonSizes)){
+	    // Add the maximum resolution if not already
+	    // recored
+	    if( this->cameraInfo.maxWidth != commonSizes[i-1].width &&
+		this->cameraInfo.maxHeight != commonSizes[i-1].height ){
+		c.width = this->cameraInfo.maxWidth;
+		c.height = this->cameraInfo.maxHeight;
+	    }
+	} else {
+	    // Add the preset resolutions if supported
+	    // by the camera
+	    Sizes s = commonSizes[i];
+	    if( s.width < this->cameraInfo.maxWidth &&
+		s.width % this->cameraInfo.imageHStepSize == 0 &&
+		s.height < this->cameraInfo.maxHeight &&
+		s.height % this->cameraInfo.imageVStepSize == 0 ){
+		c.width = s.width;
+		c.height = s.height;
+	    }
+	    else {
+		continue;
+	    }
+	}
+	for(unsigned i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
+	    if(this->cameraInfo.pixelFormatBitField & formatConversion[i].ptGrey){
+		c.format = formatConversion[i].libwcl;
+		this->supportedConfigurations.push_back(c);
+	    }
+	}
+    }
+
+    //
+    // Set the current resolution
+    //
+    unsigned packetSize;
+    float percent;
+    Format7ImageSettings imageSettings;
+    error=this->camera.GetFormat7Configuration(&imageSettings,&packetSize,&percent );
     if( error != PGRERROR_OK )
-	throw CameraException("CAMERA PROBE ERROR4");
+	throw CameraException(CameraException::CONNECTIONISSUE);
+
+    // Add the max resolution
+    c.format7.xOffset = imageSettings.offsetX;
+    c.format7.yOffset = imageSettings.offsetY;
+    c.format7.xMax = imageSettings.width;
+    c.format7.yMax = imageSettings.height;
+    c.format7.xStepSize = 0;
+    c.format7.yStepSize = 0;
+    c.format = FORMAT7;
+
+    unsigned i;
+    for(i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
+	if( imageSettings.pixelFormat == formatConversion[i].ptGrey ){
+	    c.format7.format = formatConversion[i].libwcl;
+	    break;
+	}
+    }
+    if( i == ARRAY_SIZE(formatConversion))
+	throw CameraException(CameraException::INVALIDFORMAT);
+
+    Camera::setConfiguration(c);
 
 //    this->camera.Disconnect();
 }
 
-Camera::ImageFormat PTGreyCamera::ptGreyPixelFormatTolibWCLImageFormat(const PixelFormat p)
-{
-    switch(p)
-    {
-	case PIXEL_FORMAT_MONO8: return MONO8;
-	case PIXEL_FORMAT_RGB8: return RGB8;
-	case PIXEL_FORMAT_MONO16: return MONO16;
-	case PIXEL_FORMAT_RGB16: return RGB16;
-	case PIXEL_FORMAT_S_MONO16:
-	case PIXEL_FORMAT_S_RGB16:
-	case PIXEL_FORMAT_RAW8:
-	case PIXEL_FORMAT_RAW16:
-	case PIXEL_FORMAT_MONO12:
-	case PIXEL_FORMAT_RAW12:
-	case PIXEL_FORMAT_BGR:
-	case PIXEL_FORMAT_BGRU:
-	case PIXEL_FORMAT_RGBU:
-	case PIXEL_FORMAT_411YUV8:
-	case PIXEL_FORMAT_422YUV8:
-	case PIXEL_FORMAT_444YUV8:
-				 throw CameraException("Unknown Format");
-    }
-}
 
 } //namespace wcl

@@ -64,22 +64,20 @@ namespace wcl {
 
 	error = BusManager::DiscoverGigECameras(camInfo, &numCameras);
 	if( error != PGRERROR_OK ){
-	    throw CameraException("PROBE ISSUE");
+	    throw CameraException("PROBE ISSUE1");
 	}
-
-	printf("%u PTGrey Cameras Found\n", numCameras);
 
 	for( unsigned i = 0; i < numCameras; i++ ){
 	    PGRGuid guid;
 	    error = busMgr.GetCameraFromIndex(i, &guid );
 	    if( error  != PGRERROR_OK )
-		throw CameraException("PROBE ISSUE");
+		throw CameraException("PROBE ISSUE2");
 
 	    try {
 		PTGreyCamera *camera = new PTGreyCamera(guid);
 		this->cameras.push_back(camera);
 	    } catch (CameraException e ) {
-		std::clog << "Can't use camera " << e.what() << std::endl;
+		throw CameraException(e.what());
 	    }
 
 	}
