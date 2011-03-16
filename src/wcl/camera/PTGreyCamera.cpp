@@ -207,11 +207,11 @@ void PTGreyCamera::probeCamera()
     if( error != PGRERROR_OK )
 	throw CameraException(CameraException::CONNECTIONISSUE);
 
-    // The PTGrey GigECameras are all format 7. We emulate the
-    // other modes supported by libwcl Camera by displaying the width and the
-    // height of each of these. 
+#if 0
+    // Format7 consists of defined modes for pixel binning. For now we don't
+    // care about these. Hence we simply keep this here for possible future
+    // reference - benjsc 20100316
 
-    /*
     for( int i = 0; i < NUM_MODES; i++ ){
 	bool supported;
 	Mode aMode = (Mode)i;
@@ -220,9 +220,12 @@ void PTGreyCamera::probeCamera()
 	    continue;
 	}
     }
-    */
+#endif
 
-    // Get supported pixelformts
+    // The PTGrey GigECameras are all format 7. We emulate the
+    // other modes supported by libwcl Camera by displaying the width and the
+    // height of each of these. 
+
     bool supported;
     error=this->camera.GetFormat7Info(&this->cameraInfo,&supported);
     if( error != PGRERROR_OK )
