@@ -580,6 +580,10 @@ NOTIMP:
 				return 4;
 			case MJPEG:
 				return 12;
+			case RAW8:
+				return 3;
+			case RAW16:
+				return 6;
 			default:
 				return 0;
 		}
