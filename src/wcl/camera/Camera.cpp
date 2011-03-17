@@ -325,20 +325,31 @@ static bool configurationSort ( Camera::Configuration a, Camera::Configuration b
 		for (std::vector<Configuration>::const_iterator it = supportedConfigurations.begin(); it < supportedConfigurations.end(); ++it)
 		{
 			// does this config match what we are looking for?
-			if (partialConfig.format != ANY && (*it).format != partialConfig.format)
+			if( partialConfig.format == FORMAT7 ){
+			    if(partialConfig.format7.format != ANY && (*it).format7.format != partialConfig.format7.format)
+				continue;
+			    if (partialConfig.format7.xMax != 0 && (*it).format7.xMax > partialConfig.format7.xMax)
+				continue;
+			    if (partialConfig.format7.yMax != 0 && (*it).format7.yMax > partialConfig.format7.yMax)
 				continue;
 
-			if (partialConfig.width != 0 && (*it).width != partialConfig.width)
+			    return *it;
+			} else {
+			    if (partialConfig.format != ANY && (*it).format != partialConfig.format)
 				continue;
 
-			if (partialConfig.height != 0 && (*it).height != partialConfig.height)
+			    if (partialConfig.width != 0 && (*it).width != partialConfig.width)
 				continue;
 
-			if (partialConfig.fps != 0 && (*it).fps != partialConfig.fps)
+			    if (partialConfig.height != 0 && (*it).height != partialConfig.height)
 				continue;
 
-			// matches everything we asked for!
-			return *it;
+			    if (partialConfig.fps != 0 && (*it).fps != partialConfig.fps)
+				continue;
+
+			    // matches everything we asked for!
+			    return *it;
+			}
 		}
 		throw CameraException(CameraException::INVALIDCONFIGURATION);
 	}
