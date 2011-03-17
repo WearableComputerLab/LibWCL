@@ -90,6 +90,15 @@ PTGreyCamera::~PTGreyCamera()
 void PTGreyCamera::startup()
 {
     Error error;
+
+    if( !this->camera.IsConnected()){
+	error=this->camera.Connect(&this->ptid);
+	if(error != PGRERROR_OK){
+	    error.PrintErrorTrace();
+	    throw CameraException("CAPTURE ERROR1");
+	}
+    }
+
     error=this->camera.StartCapture();
     if(error != PGRERROR_OK){
 	error.PrintErrorTrace();
@@ -99,12 +108,16 @@ void PTGreyCamera::startup()
 
 void PTGreyCamera::shutdown()
 {
-    this->camera.StopCapture();
+    if( this->camera.IsConnected())
+	this->camera.StopCapture();
 }
 
 void PTGreyCamera::update()
 {
     Error error;
+    if( !this->camera.IsConnected())
+	this->startup();
+
     error = this->camera.RetrieveBuffer( &this->rawImage );
     if( error != PGRERROR_OK ){
 	error.PrintErrorTrace();
@@ -184,6 +197,9 @@ void PTGreyCamera::setConfiguration(const Configuration &c)
 	imageSettings.width = this->cameraInfo.maxWidth;
 	imageSettings.height = this->cameraInfo.maxHeight;
     }
+
+    if( !this->camera.IsConnected())
+	this->startup();
 
     error = this->camera.ValidateFormat7Settings( &imageSettings, &valid, &fmt7PacketInfo );
     if (error != PGRERROR_OK || !valid) {
@@ -334,7 +350,7 @@ void PTGreyCamera::probeCamera()
 
     Camera::setConfiguration(c);
 
-//    this->camera.Disconnect();
+    this->camera.Disconnect();
 }
 
 
