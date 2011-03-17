@@ -133,7 +133,61 @@ void PTGreyCamera::printDetails(bool full)
 
     if( full )
     {
-	//TODO: Print IP Address Details, etc - benjsc 20101220
+	if(!this->camera.IsConnected())
+	    this->startup();
+
+
+	CameraInfo info;
+	Error error;
+
+	error = this->camera.GetCameraInfo(&info);
+	if( error != PGRERROR_OK)
+	    throw CameraException(CameraException::CONNECTIONISSUE);
+
+	char macAddress[64];
+	sprintf( macAddress,
+	    "%02X:%02X:%02X:%02X:%02X:%02X",
+	    info.macAddress.octets[0],
+	    info.macAddress.octets[1],
+	    info.macAddress.octets[2],
+	    info.macAddress.octets[3],
+	    info.macAddress.octets[4],
+	    info.macAddress.octets[5]);
+
+	char ipAddress[32];
+	sprintf( ipAddress,
+	    "%u.%u.%u.%u",
+	    info.ipAddress.octets[0],
+	    info.ipAddress.octets[1],
+	    info.ipAddress.octets[2],
+	    info.ipAddress.octets[3]);
+
+	char subnetMask[32];
+	sprintf( subnetMask,
+	    "%u.%u.%u.%u",
+	    info.subnetMask.octets[0],
+	    info.subnetMask.octets[1],
+	    info.subnetMask.octets[2],
+	    info.subnetMask.octets[3]);
+
+	char defaultGateway[32];
+	sprintf( defaultGateway,
+	    "%u.%u.%u.%u",
+	    info.defaultGateway.octets[0],
+	    info.defaultGateway.octets[1],
+	    info.defaultGateway.octets[2],
+	    info.defaultGateway.octets[3]);
+
+	wclclog << "Model: " << info.modelName << endl
+		<< "Vendor: " << info.vendorName << endl
+		<< "Sensor: " << info.sensorInfo << endl
+		<< "Resolution: " << info.sensorResolution << endl
+		<< "MAC address: " << macAddress << endl
+		<< "IP address: " << ipAddress << endl
+		<< "Submnet mask: " << subnetMask << endl
+		<< "Gateway: " << defaultGateway << endl
+		<< "Firmware Version: " << info.firmwareVersion << endl
+		<< "GigE Version: " << info.gigEMajorVersion << "." << info.gigEMinorVersion << endl;
     }
 }
 
