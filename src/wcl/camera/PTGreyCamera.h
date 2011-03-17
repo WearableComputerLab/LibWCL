@@ -67,6 +67,8 @@ private:
 	FlyCapture2::Camera camera;
 	FlyCapture2::Format7Info cameraInfo;
 	void probeCamera();
+	void connect();
+	bool capturing;
 };
 
 };
