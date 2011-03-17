@@ -309,7 +309,7 @@ static bool configurationSort ( Camera::Configuration a, Camera::Configuration b
 	void Camera::setConfiguration(const Configuration &c)
 	{
 		assert ( (c.format == FORMAT7 && c.format7.xMax > 0 && c.format7.yMax > 0 && c.format7.xOffset >= 0 && c.format7.yOffset >= 0 ) ||
-			 ( c.format != FORMAT7 && c.width > 0 && c.height > 0 && c.fps > 0));
+			 ( c.format != FORMAT7 && c.width > 0 && c.height > 0));
 
 		this->activeConfiguration = c;
 	}
