@@ -64,14 +64,14 @@ namespace wcl {
 
 	error = BusManager::DiscoverGigECameras(camInfo, &numCameras);
 	if( error != PGRERROR_OK ){
-	    throw CameraException("PROBE ISSUE1");
+	    throw CameraException(CameraException::CONNECTIONISSUE);
 	}
 
 	for( unsigned i = 0; i < numCameras; i++ ){
 	    PGRGuid guid;
 	    error = busMgr.GetCameraFromIndex(i, &guid );
 	    if( error  != PGRERROR_OK )
-		throw CameraException("PROBE ISSUE2");
+		throw CameraException(CameraException::CONNECTIONISSUE);
 
 	    try {
 		PTGreyCamera *camera = new PTGreyCamera(guid);

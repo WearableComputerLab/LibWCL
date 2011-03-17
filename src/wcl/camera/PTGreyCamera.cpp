@@ -95,14 +95,14 @@ void PTGreyCamera::startup()
 	error=this->camera.Connect(&this->ptid);
 	if(error != PGRERROR_OK){
 	    error.PrintErrorTrace();
-	    throw CameraException("CAPTURE ERROR1");
+	    throw CameraException(CameraException::CONNECTIONISSUE);
 	}
     }
 
     error=this->camera.StartCapture();
     if(error != PGRERROR_OK){
 	error.PrintErrorTrace();
-	throw CameraException("CAPTURE ERROR1");
+	throw CameraException(CameraException::CONNECTIONISSUE);
     }
 }
 
@@ -121,7 +121,7 @@ void PTGreyCamera::update()
     error = this->camera.RetrieveBuffer( &this->rawImage );
     if( error != PGRERROR_OK ){
 	error.PrintErrorTrace();
-	throw CameraException("CAPTURE ERROR2");
+	throw CameraException(CameraException::BUFFERERROR);
     }
 
     this->currentFrame = this->rawImage.GetData();
