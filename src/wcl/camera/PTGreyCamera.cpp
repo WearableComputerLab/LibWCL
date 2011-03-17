@@ -34,6 +34,7 @@ using namespace std;
 using namespace FlyCapture2;
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+#define DEBUG(x) x
 
 namespace wcl {
 
@@ -67,7 +68,7 @@ static ptGreylibWCL formatConversion[10] =
 };
 
 PTGreyCamera::PTGreyCamera(const PGRGuid iguid):
-    ptid(iguid)
+    ptid(iguid),capturing(false)
 {
     Error error;
 
@@ -78,8 +79,6 @@ PTGreyCamera::PTGreyCamera(const PGRGuid iguid):
     stream << iguid.value[3];
     this->id = stream.str();
     this->probeCamera();
-    this->startup();
-
 }
 
 PTGreyCamera::~PTGreyCamera()
@@ -91,36 +90,50 @@ void PTGreyCamera::startup()
 {
     Error error;
 
-    if( !this->camera.IsConnected()){
-	error=this->camera.Connect(&this->ptid);
+    if( !this->camera.IsConnected())
+	this->connect();
+
+    if( !this->capturing ){
+	error=this->camera.StartCapture();
 	if(error != PGRERROR_OK){
-	    error.PrintErrorTrace();
+	    DEBUG(error.PrintErrorTrace());
 	    throw CameraException(CameraException::CONNECTIONISSUE);
 	}
-    }
-
-    error=this->camera.StartCapture();
-    if(error != PGRERROR_OK){
-	error.PrintErrorTrace();
-	throw CameraException(CameraException::CONNECTIONISSUE);
+	this->capturing = true;
     }
 }
 
 void PTGreyCamera::shutdown()
 {
-    if( this->camera.IsConnected())
+    if( this->capturing ){
 	this->camera.StopCapture();
+	this->capturing = false;
+    }
+
+    if( this->camera.IsConnected())
+	this->camera.Disconnect();
+}
+
+void PTGreyCamera::connect()
+{
+    Error error;
+
+    error=this->camera.Connect(&this->ptid);
+    if(error != PGRERROR_OK){
+	DEBUG(error.PrintErrorTrace());
+	throw CameraException(CameraException::CONNECTIONISSUE);
+    }
 }
 
 void PTGreyCamera::update()
 {
     Error error;
-    if( !this->camera.IsConnected())
+    if( !this->capturing)
 	this->startup();
 
     error = this->camera.RetrieveBuffer( &this->rawImage );
     if( error != PGRERROR_OK ){
-	error.PrintErrorTrace();
+	DEBUG(error.PrintErrorTrace());
 	throw CameraException(CameraException::BUFFERERROR);
     }
 
@@ -134,8 +147,7 @@ void PTGreyCamera::printDetails(bool full)
     if( full )
     {
 	if(!this->camera.IsConnected())
-	    this->startup();
-
+	    this->connect();
 
 	CameraInfo info;
 	Error error;
@@ -253,7 +265,7 @@ void PTGreyCamera::setConfiguration(const Configuration &c)
     }
 
     if( !this->camera.IsConnected())
-	this->startup();
+	this->connect();
 
     error = this->camera.ValidateFormat7Settings( &imageSettings, &valid, &fmt7PacketInfo );
     if (error != PGRERROR_OK || !valid) {
@@ -263,6 +275,8 @@ void PTGreyCamera::setConfiguration(const Configuration &c)
     this->camera.SetFormat7Configuration(&imageSettings, fmt7PacketInfo.recommendedBytesPerPacket);
     if( error != PGRERROR_OK )
 	throw CameraException(CameraException::INVALIDFORMAT);
+
+    Camera::setConfiguration(c);
 }
 
 void PTGreyCamera::probeCamera()
