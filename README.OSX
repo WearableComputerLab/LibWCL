@@ -1,0 +1,54 @@
+ OSX compilation guide for the brave
+-------------------------------------
+
+ General
+---------
+This requires a lot of manual installations.
+
+Download package, untar it. Run configure and make install:
+tar xvfz package.tar.gz
+./configure
+make
+make install
+
+Have the Apple Developer Tools (Xcode, etc) installed 
+Work with the terminal ...
+
+ Prerequisites
+---------------
+
+Get and install pkg-config
+
+git clone git://anongit.freedesktop.org/pkg-config
+set PKG_CONFIG_PATH in to /usr/local/lib in bash profile
+
+Get and extract libwcl. You might have to copy libtool.sh into libwcl/cfg
+
+ What doesn't work
+-------------------
+UVC Camera, depends on video4linux
+Wiimote, depends on libbluetooth and on bluez
+Rawports, also depend on bluetooth
+ARToolkit, did not even bother to check ...
+
+Examples.
+
+
+ Packages
+----------
+Get libavcodec / ffmpeg git clone git://git.videolan.org/ffmpeg.git
+./configure --disable-yasm
+TODO: interop with libdc1394
+
+download libdc1394, compile and install; it should be in /usr/local/include or lib
+Make sure it's version 2!
+
+ Options that work
+-------------------
+--enable-network
+--enable-video
+--enable-geometry
+--enable-gestures
+--enable-camera-1394
+--enable-parsers
+--enable-camera-virtual
