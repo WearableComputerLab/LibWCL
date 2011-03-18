@@ -70,14 +70,14 @@ namespace wcl {
 		using namespace std;
 
 		// attempt to located the cameras on the firewire bus
-		dc1394error_t err;
 		dc1394_t * d;
 		dc1394camera_list_t * list;
 		d = dc1394_new ();
 		if( !d )
 		    throw CameraException(CameraException::EACCESS);
 
-		err=dc1394_camera_enumerate (d, &list);
+		if(dc1394_camera_enumerate (d, &list) !=  DC1394_SUCCESS )
+		    throw CameraException(CameraException::CONNECTIONISSUE);
 
 		for( unsigned i = 0 ; i < list->num; i++ ){
 			DC1394Camera *c = new DC1394Camera(list->ids[i].guid);
