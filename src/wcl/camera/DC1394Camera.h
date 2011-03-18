@@ -79,9 +79,6 @@ private:
 
 	//XXX NOTE THE Below should be adapted to the wcl/camera/Camera.h API
 	//XXX Or the api updated! - benjsc 20100211
-
-	// method to change to the framerate specified by the string.
-	//XXXvoid setFramerate( char* newFramerate );
 	/*
 
 	// method to change to the ISO speed
@@ -97,8 +94,7 @@ private:
 
 	// a frame returned from the dc1394 capture device
 	dc1394_t *d;
-	dc1394video_frame_t* frame;
-	dc1394framerate_t framerate;
+	dc1394video_frame_t lastFrame;
 	uint64_t guid;
 
 	/** If the camera is currently capturing */
