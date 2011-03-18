@@ -611,6 +611,8 @@ void DC1394Camera::loadCapabilities()
     if( dc1394_video_get_framerate(this->camera, &rate ) != DC1394_SUCCESS )
 	throw CameraException(CameraException::CONNECTIONISSUE);
 
+    // TODO: Note we don't currently support format 7 - benjsc 20110318
+
     // Walk through all supported modes and frame rates of the camera, whilst
     // doing this we also check for the current mode the camera is in
     for( unsigned i = 0; i < videoModes.num; i++ )
@@ -635,19 +637,6 @@ void DC1394Camera::loadCapabilities()
 	// If a mode exists that libwcl doesn't support simply process the next mode
 	if ( j == ARRAY_SIZE(formatConversion))
 	    continue;
-
-#if notyet
-	case DC1394_VIDEO_MODE_EXIF:
-	case DC1394_VIDEO_MODE_160x120_YUV444:
-	case DC1394_VIDEO_MODE_FORMAT7_0:
-	case DC1394_VIDEO_MODE_FORMAT7_1:
-	case DC1394_VIDEO_MODE_FORMAT7_2:
-	case DC1394_VIDEO_MODE_FORMAT7_3:
-	case DC1394_VIDEO_MODE_FORMAT7_4:
-	case DC1394_VIDEO_MODE_FORMAT7_5:
-	case DC1394_VIDEO_MODE_FORMAT7_6:
-	case DC1394_VIDEO_MODE_FORMAT7_7:
-#endif
 
 	// loop through all of the framerates and add them as available
 	// configurations. We also check for the current framerate here
