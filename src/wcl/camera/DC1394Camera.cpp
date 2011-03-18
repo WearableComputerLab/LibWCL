@@ -24,6 +24,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+#include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <IO.h>
@@ -108,7 +109,6 @@ namespace wcl {
 
     DC1394Camera::DC1394Camera(const uint64_t myguid):
 	d(NULL),
-	frame(NULL),
 	guid(myguid),
 	running(false)
     {
@@ -128,6 +128,8 @@ namespace wcl {
 	// Just a safety thing, 1394 is a little touchy
 	dc1394_reset_bus (this->camera);
 
+	// Clear the frame data
+	memset(&this->lastFrame, 0, sizeof(dc1394video_frame_t));
 
 	this->loadCapabilities();
     }
@@ -248,6 +250,11 @@ namespace wcl {
 	    throw CameraException(CameraException::CONTROLERROR);
 
 	Camera::setConfiguration(c);
+
+	// Finally we've changed frame sizes, indicate we need to reset the
+	// internal buffer as the allocated space may not be enough
+	free(this->lastFrame.image);
+	memset(&this->lastFrame,0, sizeof(dc1394video_frame_t));
     }
 
     void DC1394Camera::setExposureMode( const ExposureMode t )
@@ -349,7 +356,7 @@ namespace wcl {
     void DC1394Camera::startup()
     {
 	// setup up the capture and define the number of DMA buffers to use.
-	if( dc1394_capture_setup( this->camera, 4, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
+	if( dc1394_capture_setup( this->camera, 1, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
 	    throw CameraException(CameraException::BUFFERERROR);
 
 	//  have the camera start sending us data?
@@ -370,31 +377,47 @@ namespace wcl {
 	dc1394_video_set_transmission( this->camera, DC1394_OFF );
 	dc1394_capture_stop( this->camera );
 
+	// Free the internal buffer
+	free(this->lastFrame.image);
+	memset(&this->lastFrame,0, sizeof(dc1394video_frame_t));
+
 	this->running=false;
     }
 
     // method to get a frame from the camera
     void DC1394Camera::update()
     {
+	dc1394video_frame_t *frame=NULL;
 	dc1394error_t result;
 
 	if(!this->running)
 	    this->startup();
 
-	// check if there is a valid frame left over in the buffer
-	if( this->frame != NULL )
-	{
-	    result = dc1394_capture_enqueue( this->camera, this->frame );
-	    if( result != DC1394_SUCCESS )
-		throw CameraException(CameraException::BUFFERERROR);
-	}
-
 	// capture one frame
-	result = dc1394_capture_dequeue( this->camera, DC1394_CAPTURE_POLICY_WAIT, &this->frame );
+	result = dc1394_capture_dequeue( this->camera, DC1394_CAPTURE_POLICY_WAIT, &frame );
 	if( result != DC1394_SUCCESS )
 	    throw CameraException(CameraException::BUFFERERROR);
 
-	currentFrame = frame->image;
+	// Allocate image memory if required
+	if( this->lastFrame.image == NULL ){
+	    memcpy(&this->lastFrame,frame, sizeof(dc1394video_frame_t));
+	    this->lastFrame.image = (uint8_t *)malloc(frame->total_bytes * sizeof(uint8_t));
+	    if( this->lastFrame.image == NULL ){
+		dc1394_capture_enqueue( this->camera, frame );
+		throw CameraException(CameraException::BUFFERERROR);
+	    }
+	}
+
+	// Copy the frame from the DMA buffer. We can't give the frame to other
+	// users then tell the kernel the DMA buffer is free, this causes problems
+	memcpy(this->lastFrame.image,frame->image,this->lastFrame.total_bytes*sizeof(uint8_t));
+
+	// check if there is a valid frame left over in the buffer
+	result = dc1394_capture_enqueue( this->camera, frame );
+	if( result != DC1394_SUCCESS )
+	    throw CameraException(CameraException::BUFFERERROR);
+
+	currentFrame = this->lastFrame.image;
     }
 
 
