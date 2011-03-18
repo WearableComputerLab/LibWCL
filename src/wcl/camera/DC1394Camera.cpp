@@ -34,9 +34,77 @@
 #include "CameraException.h"
 #include "DC1394Camera.h"
 
+#define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
+
 using namespace std;
 
 namespace wcl {
+
+struct DC1394tolibWCLModes
+{
+    dc1394video_mode_t  dc1394mode;
+    Camera::ImageFormat libwclmode;
+    unsigned		libwclwidth;
+    unsigned		libwclheight;
+
+};
+
+struct DC1394tolibWCLFPS
+{
+    dc1394framerate_t   dc1394fps;
+    unsigned		libwclfps;
+};
+
+static DC1394tolibWCLModes formatConversion[] =
+{
+	{ DC1394_VIDEO_MODE_320x240_YUV422, Camera:: YUYV422, 320, 240},
+	{ DC1394_VIDEO_MODE_640x480_YUV411, Camera::YUYV411, 640, 480},
+	{ DC1394_VIDEO_MODE_640x480_YUV422, Camera::YUYV422, 640, 480},
+	{ DC1394_VIDEO_MODE_640x480_RGB8, Camera::RGB8, 640, 480},
+	{ DC1394_VIDEO_MODE_640x480_MONO8, Camera::MONO8, 640, 480},
+	{ DC1394_VIDEO_MODE_640x480_MONO16, Camera::MONO16, 640, 480},
+	{ DC1394_VIDEO_MODE_800x600_YUV422, Camera::YUYV422, 800, 600},
+	{ DC1394_VIDEO_MODE_800x600_RGB8, Camera::RGB8, 800, 600},
+	{ DC1394_VIDEO_MODE_800x600_MONO8, Camera::MONO8, 800, 600},
+	{ DC1394_VIDEO_MODE_1024x768_YUV422, Camera::YUYV422, 1024, 768},
+	{ DC1394_VIDEO_MODE_1024x768_RGB8, Camera::RGB8, 1024, 768},
+	{ DC1394_VIDEO_MODE_1024x768_MONO8, Camera:: MONO8, 1024, 768},
+	{ DC1394_VIDEO_MODE_800x600_MONO16, Camera::MONO16, 800, 600},
+	{ DC1394_VIDEO_MODE_1024x768_MONO16, Camera::MONO16, 1024, 768},
+	{ DC1394_VIDEO_MODE_1280x960_YUV422, Camera::YUYV422, 1280, 960},
+	{ DC1394_VIDEO_MODE_1280x960_RGB8, Camera::RGB8, 1280, 960},
+	{ DC1394_VIDEO_MODE_1280x960_MONO8, Camera::MONO8, 1280, 960},
+	{ DC1394_VIDEO_MODE_1600x1200_YUV422, Camera::YUYV422, 1600, 1200},
+	{ DC1394_VIDEO_MODE_1600x1200_RGB8, Camera::RGB8, 1600, 1200},
+	{ DC1394_VIDEO_MODE_1600x1200_MONO8, Camera::MONO8, 1600, 1200},
+	{ DC1394_VIDEO_MODE_1280x960_MONO16, Camera::MONO16, 1280, 960},
+	{ DC1394_VIDEO_MODE_1600x1200_MONO16, Camera::MONO16, 1600, 1200}
+#if 0
+			case DC1394_VIDEO_MODE_EXIF:
+			case DC1394_VIDEO_MODE_160x120_YUV444:
+			case DC1394_VIDEO_MODE_FORMAT7_0:
+			case DC1394_VIDEO_MODE_FORMAT7_1:
+			case DC1394_VIDEO_MODE_FORMAT7_2:
+			case DC1394_VIDEO_MODE_FORMAT7_3:
+			case DC1394_VIDEO_MODE_FORMAT7_4:
+			case DC1394_VIDEO_MODE_FORMAT7_5:
+			case DC1394_VIDEO_MODE_FORMAT7_6:
+			case DC1394_VIDEO_MODE_FORMAT7_7:
+#endif
+};
+
+static DC1394tolibWCLFPS fpsConversion[] =
+{
+    { DC1394_FRAMERATE_1_875, 1.875 },
+    { DC1394_FRAMERATE_3_75, 3.75 },
+    { DC1394_FRAMERATE_7_5, 7.5 },
+    { DC1394_FRAMERATE_15, 15.0 },
+    { DC1394_FRAMERATE_30, 30.0 },
+    { DC1394_FRAMERATE_60, 60.0 },
+    { DC1394_FRAMERATE_120, 120.0 },
+    { DC1394_FRAMERATE_240, 240.0 },
+};
+
 
 	DC1394Camera::DC1394Camera(const uint64_t myguid):
 		d(NULL),
@@ -73,44 +141,37 @@ namespace wcl {
 
 	void DC1394Camera::setConfiguration(const Configuration &c)
 	{
-		dc1394video_mode_t mode = DC1394_VIDEO_MODE_640x480_RGB8; // Default
+		dc1394video_mode_t mode;
+		dc1394framerate_t rate;
+		unsigned i;
 
-		//DC1349:setFormat This methods needs work.. benjsc - 20100205
-		//XXX This needs to be redone
-		switch( c.format ){
-			case YUYV422:
-				if( c.width == 160 ) { mode = DC1394_VIDEO_MODE_160x120_YUV444; break; }
-				if( c.width == 320 ) { mode = DC1394_VIDEO_MODE_320x240_YUV422; break; }
-				if( c.width == 640 ){  mode = DC1394_VIDEO_MODE_640x480_YUV422; break; }
-				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_YUV422; break; }
-				if( c.width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_YUV422; break; }
-				if( c.width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_YUV422; break; }
-				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_YUV422; break; }
-				goto notfound;
-			case YUYV411:
-				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_YUV411; break; }
-				goto notfound;
-			case RGB8:
-				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_RGB8; break; }
-				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_RGB8; break; }
-				if( c.width == 1024 ) { mode = DC1394_VIDEO_MODE_1024x768_RGB8; break; }
-				if( c.width == 1280 ) { mode = DC1394_VIDEO_MODE_1280x960_RGB8; break; }
-				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_RGB8; break; }
-				goto notfound;
-			case MONO8:
-				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO8; break; }
-				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO8; break; }
-				if( c.width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO8; break; }
-				if( c.width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO8; break; }
-				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO8; break; }
-				goto notfound;
-			case MONO16:
-				if( c.width == 640 ) { mode = DC1394_VIDEO_MODE_640x480_MONO16; break; }
-				if( c.width == 800 ) { mode = DC1394_VIDEO_MODE_800x600_MONO16; break; }
-				if( c.width == 1024) { mode = DC1394_VIDEO_MODE_1024x768_MONO16; break; }
-				if( c.width == 1280) { mode = DC1394_VIDEO_MODE_1280x960_MONO16; break; }
-				if( c.width == 1600) { mode = DC1394_VIDEO_MODE_1600x1200_MONO16; break; }
-				goto notfound;
+		// Find the format requested
+		for(i = 0; i < ARRAY_SIZE(formatConversion); i++){
+			if(formatConversion[i].libwclmode == c.format &&
+			   formatConversion[i].libwclwidth == c.width &&
+			   formatConversion[i].libwclheight == c.height ){
+				mode = formatConversion[i].dc1394mode;
+				break;
+			}
+		}
+
+		if( i == ARRAY_SIZE(formatConversion)){
+			throw CameraException(CameraException::INVALIDFORMAT);
+		}
+
+
+		// Find the requested frame rate
+		for(i = 0; i < ARRAY_SIZE(fpsConversion); i++ ) {
+			if( fpsConversion[i].libwclfps == c.fps ){
+				rate = fpsConversion[i].dc1394fps;
+				break;
+			}
+		}
+
+		if( i == ARRAY_SIZE(fpsConversion)){
+			throw CameraException(CameraException::INVALIDFORMAT);
+		}
+
 #if notyet
 			case FORMAT7:
 				{ mode = DC1394_VIDEO_MODE_FORMAT7_0; break; }
@@ -172,33 +233,6 @@ namespace wcl {
 				*/
 
 #endif
-			case BGR8:
-			case MJPEG:
-notfound:
-			default:
-				throw CameraException(CameraException::INVALIDFORMAT);
-		}
-
-		//XXX This works but isn't clean - benjsc 20100921
-		dc1394framerate_t rate;
-		if( c.fps == 1.875 )
-		    rate = DC1394_FRAMERATE_1_875;
-		else if ( c.fps == 3.75 )
-		    rate = DC1394_FRAMERATE_3_75;
-		else if ( c.fps == 7.5 )
-		    rate = DC1394_FRAMERATE_7_5;
-		else if ( c.fps == 15.0 )
-		    rate = DC1394_FRAMERATE_15;
-		else if ( c.fps == 30.0 )
-		    rate = DC1394_FRAMERATE_30;
-		else if ( c.fps == 60.0 )
-		    rate = DC1394_FRAMERATE_60;
-		else if ( c.fps == 120.0 )
-		    rate = DC1394_FRAMERATE_120;
-		else if ( c.fps == 240.0 )
-		    rate = DC1394_FRAMERATE_240;
-		else
-		    throw CameraException(CameraException::INVALIDFORMAT);
 
 		// With the modes and framerates worked out we
 		// actually try and setup the camera. We don't do this after
@@ -557,174 +591,52 @@ fprintf( stderr, "Will be using color filter: %s", colorFilter );
 
 void DC1394Camera::loadCapabilities()
 {
-	/*
-	   dc1394video_mode_t mode;
-	   dc1394_video_get_mode(this->camera, &mode);
-	   */
 	dc1394video_modes_t videoModes;
 	dc1394framerates_t framerates;
-	dc1394_video_get_supported_modes( camera, &videoModes );
+	dc1394video_mode_t mode;
+	dc1394framerate_t rate;
 	Camera::Configuration c;
+	Camera::Configuration current;
+	bool currentSet = false;
 
+	// Query available modes
+	if (dc1394_video_get_supported_modes( camera, &videoModes ) != DC1394_SUCCESS )
+		throw CameraException(CameraException::CONNECTIONISSUE);
+
+	// Query the current mode
+	if( dc1394_video_get_mode(this->camera, &mode ) != DC1394_SUCCESS )
+		throw CameraException(CameraException::CONNECTIONISSUE);
+
+	// Query the current framerate
+	if( dc1394_video_get_framerate(this->camera, &rate ) != DC1394_SUCCESS )
+		throw CameraException(CameraException::CONNECTIONISSUE);
+
+	// Walk through all supported modes and frame rates of the camera, whilst
+	// doing this we also check for the current mode the camera is in
 	for( unsigned i = 0; i < videoModes.num; i++ )
 	{
-		switch( videoModes.modes[i] )
-		{
-			case DC1394_VIDEO_MODE_320x240_YUV422:
-				{
-					c.width = 320;
-					c.height= 240;
-					c.format = YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_640x480_YUV411:
-				{
-					c.width=640;
-					c.height=480;
-					c.format=YUYV411;
-					break;
-				}
-			case DC1394_VIDEO_MODE_640x480_YUV422:
-				{
-					c.width=640;
-					c.height=480;
-					c.format=YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_640x480_RGB8:
-				{
-					c.width=640;
-					c.height=480;
-					c.format=RGB8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_640x480_MONO8:
-				{
-					c.width=640;
-					c.height=480;
-					c.format=MONO8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_640x480_MONO16:
-				{
-					c.width=640;
-					c.height=480;
-					c.format=MONO16;
-					break;
-				}
-			case DC1394_VIDEO_MODE_800x600_YUV422:
-				{
-					c.width=800;
-					c.height=600;
-					c.format=YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_800x600_RGB8:
-				{
-					c.width=800;
-					c.height=600;
-					c.format=RGB8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_800x600_MONO8:
-				{
-					c.width=800;
-					c.height=600;
-					c.format=MONO8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1024x768_YUV422:
-				{
-					c.width=1024;
-					c.height=768;
-					c.format=YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1024x768_RGB8:
-				{
-					c.width=1024;
-					c.height=768;
-					c.format=RGB8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1024x768_MONO8:
-				{
-					c.width=1024;
-					c.height=768;
-					c.format = MONO8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_800x600_MONO16:
-				{
-					c.width=800;
-					c.height=600;
-					c.format=MONO16;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1024x768_MONO16:
-				{
-					c.width=1024;
-					c.height=768;
-					c.format=MONO16;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1280x960_YUV422:
-				{
-					c.width=1280;
-					c.height=960;
-					c.format=YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1280x960_RGB8:
-				{
-					c.width=1280;
-					c.height=960;
-					c.format=RGB8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1280x960_MONO8:
-				{
-					c.width=1280;
-					c.height=960;
-					c.format=MONO8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1600x1200_YUV422:
-				{
-					c.width=1600;
-					c.height=1200;
-					c.format=YUYV422;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1600x1200_RGB8:
-				{
-					c.width=1600;
-					c.height=1200;
-					c.format=RGB8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1600x1200_MONO8:
-				{
-					c.width=1600;
-					c.height=1200;
-					c.format=MONO8;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1280x960_MONO16:
-				{
-					c.width=1280;
-					c.height=960;
-					c.format=MONO16;
-					break;
-				}
-			case DC1394_VIDEO_MODE_1600x1200_MONO16:
-				{
-					c.width=1600;
-					c.height=1200;
-					c.format=MONO16;
-					break;
-				}
-#if 0
+		unsigned j;
+		for( j = 0; j < ARRAY_SIZE(formatConversion); j++ ){
+			// Check if we have the current mode
+			if( formatConversion[j].dc1394mode == mode ){
+				current.width = formatConversion[j].libwclwidth;
+				current.height = formatConversion[j].libwclheight;
+				current.format = formatConversion[j].libwclmode;
+			}
+
+			if( formatConversion[j].dc1394mode == videoModes.modes[i]){
+				c.width = formatConversion[j].libwclwidth;
+				c.height = formatConversion[j].libwclheight;
+				c.format = formatConversion[j].libwclmode;
+				break;
+			}
+
+		}
+		// If a mode exists that libwcl doesn't support simply process the next mode
+		if ( j == ARRAY_SIZE(formatConversion))
+			continue;
+
+#if notyet
 			case DC1394_VIDEO_MODE_EXIF:
 			case DC1394_VIDEO_MODE_160x120_YUV444:
 			case DC1394_VIDEO_MODE_FORMAT7_0:
@@ -736,35 +648,33 @@ void DC1394Camera::loadCapabilities()
 			case DC1394_VIDEO_MODE_FORMAT7_6:
 			case DC1394_VIDEO_MODE_FORMAT7_7:
 #endif
-			default:
-				continue;
-				;
-		}
 
+		// loop through all of the framerates and add them as available
+		// configurations. We also check for the current framerate here
 		dc1394_video_get_supported_framerates( this->camera, videoModes.modes[i], &framerates );
-		// loop through all of the framerates and print them as we come to them.
-		for( uint32_t i = 0; i <= framerates.num - 1; i++ )
-		{
-			switch( framerates.framerates[ i ] )
-			{
-				case DC1394_FRAMERATE_1_875: c.fps=1.875; break;
-				case DC1394_FRAMERATE_3_75: c.fps=3.75; break;
-				case DC1394_FRAMERATE_7_5: c.fps=7.5; break;
-				case DC1394_FRAMERATE_15: c.fps=15.0; break;
-				case DC1394_FRAMERATE_30: c.fps=30.0; break;
-				case DC1394_FRAMERATE_60: c.fps=60.0; break;
-				case DC1394_FRAMERATE_120: c.fps=120.0; break;
-				case DC1394_FRAMERATE_240: c.fps=240.0; break;
-				default:
-										   // unknown...
-										   continue;
+		for( uint32_t i = 0; i <= framerates.num - 1; i++ ) {
+			for( j = 0 ; j < ARRAY_SIZE(fpsConversion); j++ ){
 
+				// Check if we have the current framerate
+				if( fpsConversion[j].dc1394fps == rate ){
+					current.fps = fpsConversion[j].libwclfps;
+					currentSet = true;
+				}
 
+				if( fpsConversion[j].dc1394fps == framerates.framerates[i]){
+					c.fps = fpsConversion[j].libwclfps;
+					this->supportedConfigurations.push_back(c);
+				}
 			}
-
-			this->supportedConfigurations.push_back(c);
 		}
 	}
+
+	// During the loops we should have set the current mode/fps
+	// if we have store it here
+	if( currentSet == false )
+		throw CameraException(CameraException::INVALIDFORMAT);
+
+	Camera::setConfiguration(current);
 }
 
 void DC1394Camera::printDetails(bool state)
