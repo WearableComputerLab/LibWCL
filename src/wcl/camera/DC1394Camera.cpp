@@ -356,7 +356,12 @@ namespace wcl {
     void DC1394Camera::startup()
     {
 	// setup up the capture and define the number of DMA buffers to use.
-	if( dc1394_capture_setup( this->camera, 1, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
+	/* FSCK libdc ....
+	   Running with 1 DMA buffer segfaults the program somewhere in the kernel. Usleep(100)
+           solved the problem, kinda. 4 buffers solves it (slightly) better. 
+           Solution thanks to Ben.
+	*/		
+	if( dc1394_capture_setup( this->camera, 4, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
 	    throw CameraException(CameraException::BUFFERERROR);
 
 	//  have the camera start sending us data?
