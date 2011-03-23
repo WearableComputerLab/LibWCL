@@ -29,6 +29,7 @@
 #include <string>
 #include <X11/Xlib.h>
 #include <wcl/api.h>
+#include <wcl/Exception.h>
 
 namespace wcl {
 
@@ -39,19 +40,70 @@ namespace wcl {
 class WCL_API XDisplay
 {
     public:
+	/**
+	 * Open a connection to the XServer.
+	 *
+	 * @param displaynameandport A string with the display name and port ie: localhost:0
+	 * @throws XException on failed connection
+	 */
 	XDisplay(const char *displaynameandport);
+
+
+	/**
+	 * Turn a already open connection into an XDisplay object.
+	 * Note: Destroying the XDisplay object will not close the connection
+	 *       to the server in this case.
+	 *
+	 * @param x11 The already open connection
+	 */
 	XDisplay(::Display *); //Pass in an X Display
+
+	/**
+	 * Destroy the XDisplay object. If the XConnection was created
+	 * by this object it will be closed before the object is destroyed
+	 */
 	~XDisplay();
 
+	/**
+	 * Enable the screensaver under X windows
+	 */
 	void enableScreenSaver();
+
+	/**
+	 * Enable DPMS under X Windows
+	 */
 	void enableDPMS();
+
+	/**
+	 * Disable the Screen saver under X Windows
+	 * This is done by setting the timeout & interval to 0
+	 */
 	void disableScreenSaver();
+
+	/**
+	 * Enable DPMS under X Windows
+	 */
 	void disableDPMS();
 
+	/**
+	 * Enable both the screen saver and DPMS
+	 */
 	void enableAll();
+
+	/**
+	 * Disable both the screen saver and DPMS
+	 */
 	void disableAll();
 
+	/**
+	 * Obtain the connection to the X server
+	 */
 	::Display *getXConnection() const;
+
+	/**
+	 * Obtain the number of screens available on this display
+	 */
+	unsigned getNumberOfScreens() const;
 
     private:
 	::Display *connection; // X Windows Connection
@@ -59,11 +111,11 @@ class WCL_API XDisplay
 
 };
 
-class WCL_API XException
+class WCL_API XException: Exception
 {
 public:
-    XException(const XDisplay *){};
-    virtual ~XException(){};
+    XException(const XDisplay *) throw ();
+    virtual ~XException() throw ();
 
     int getCause() const { return 1;};
     const std::string getReason() const { return "Failed To Connect";};
