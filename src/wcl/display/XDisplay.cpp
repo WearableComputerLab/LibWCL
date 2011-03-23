@@ -31,7 +31,7 @@
 #define SERVER_DEFAULT (-1)
 #define DEFAULT_TIMEOUT (-600)
 
-using namespace wcl;
+namespace wcl {
 
 XDisplay::XDisplay(const char *displaynameandport):
     connectionOwner(true)
@@ -43,8 +43,6 @@ XDisplay::XDisplay(const char *displaynameandport):
 
 XDisplay::XDisplay(::Display *x11):
     connection(x11), connectionOwner(false)
-{}
-    connectionOwner(false),connection(x11)
 {
     assert(x11 != NULL && "Invalid X11 Display Connection");
 }
@@ -106,3 +104,5 @@ unsigned XDisplay::getNumberOfScreens() const
 {
     return ScreenCount(this->connection);
 }
+
+};

@@ -114,8 +114,8 @@ class WCL_API XDisplay
 class WCL_API XException: Exception
 {
 public:
-    XException(const XDisplay *) throw ();
-    virtual ~XException() throw ();
+    XException(const XDisplay *) throw (){};
+    virtual ~XException() throw (){};
 
     int getCause() const { return 1;};
     const std::string getReason() const { return "Failed To Connect";};
