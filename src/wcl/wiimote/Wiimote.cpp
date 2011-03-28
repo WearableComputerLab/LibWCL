@@ -32,6 +32,26 @@
 #include "Wiimote.h"
 #include "WiimoteException.h"
 
+// Work around a warning caused by
+// how BDADDR_ANY is defined in bluetooth.h/gcc being lax
+//
+// gcc requires the scope of any temporaries to be
+// resolvable to an lval in order to not treat it as
+// a temporary in expression in evaluation. By default
+// BDADDR_ANY is defined in bluetooth.h as:
+// #define BDADDR_ANY   (&(bdaddr_t) {{0, 0, 0, 0, 0, 0}})
+// which whilst c98 defines as lval ("The
+// operand [of the unary & operator] shall be an lvalue or a
+// qualified-id ) g++ seems to be a little lax allowing it to be a
+// rval. Hence a compiler warning is incorrectly generated. To get around this
+// we instead uninline the construct and define a file bound version of the variable
+// which will never be temporary. Bad g++.. this is a feature not a bug :?
+#ifdef BDADDR_ANY
+#undef BDADDR_ANY
+static bdaddr_t any = {{0, 0, 0, 0, 0, 0}};
+#define BDADDR_ANY &any
+#endif
+
 
 using namespace std;
 
