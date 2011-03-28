@@ -24,11 +24,13 @@
  * SUCH DAMAGE.
  */
 
-#ifndef PATTERNGENERATOR_H
-#define PATTERNGENERATOR_H
+#ifndef WCL_GRAPHICS_STRUCTUREDLIGHT_GRAYCODE
+#define WCL_GRAPHICS_STRUCTUREDLIGHT_GRAYCODE
 
 #include <wcl/maths/Vector.h>
 #include <wcl/maths/Matrix.h>
+
+namespace wcl {
 
 /**
  * A class that provides structured light via the GrayCode encoding method.
@@ -119,5 +121,7 @@ private:
     void createStorage();
     void buildGrayCodes();
 };
+
+}; // namespace wcl
 
 #endif

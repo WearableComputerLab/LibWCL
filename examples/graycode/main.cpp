@@ -34,7 +34,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
-#include "GrayCode.h"
+#include <wcl/graphics/structuredlight/GrayCode.h>
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
 

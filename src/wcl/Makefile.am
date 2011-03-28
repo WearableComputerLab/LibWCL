@@ -331,6 +331,17 @@ AM_LDFLAGS+=@X11_LIBS@
 endif
 
 
+#####################################################################
+#
+# Structured Light
+#
+structuredlight_headers=
+structuredlight_sources=
+if ENABLE_STRUCTUREDLIGHT
+structuredlight_headers+=graphics/structuredlight/GrayCode.h
+structuredlight_sources+=graphics/structuredlight/GrayCode.cpp
+endif
+
 
 ####################################################################
 #
@@ -353,8 +364,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(x11_headers)\
 				$(parser_headers)\
 				$(video_headers) \
-				$(wiimote_headers) 
-
+				$(wiimote_headers) \ 
+				$(structuredlight_headers) 
 
 libwcl_la_SOURCES=$(common_sources)\
                  $(network_sources)\
@@ -372,5 +383,6 @@ libwcl_la_SOURCES=$(common_sources)\
 		 $(x11_sources)\
 		 $(parser_sources)\
 		 $(video_sources) \
-		 $(wiimote_sources) 
+		 $(wiimote_sources) \
+		 $(structuredlight_sources)
 

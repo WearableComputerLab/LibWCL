@@ -34,6 +34,8 @@
 
 #define WHITE 255
 
+namespace wcl {
+
 using namespace std;
 
 GrayCode::GrayCode(const unsigned ipwidth, const unsigned ipheight,
@@ -433,3 +435,5 @@ const unsigned char *GrayCode::getMaskedDebugImage()
 
     return debug;
 }
+
+}; // namespace wcl

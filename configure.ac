@@ -50,70 +50,20 @@ AM_MAINTAINER_MODE([enable])
 #    When enabled: enable_network is defined to 'yes' or 'no'
 #
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
-
-#
-# Firewire/1394 Camera Support 
-# 	When enabled: enable_camera_1394 is defined to 'yes' or 'no'
-#
 AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/Firewire Camera Support]), enable_camera_1394="yes" , enable_camera_1394="no")
-
-#
-# UVC Camera Support 
-#
 AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), enable_camera_uvc="yes" , enable_camera_uvc="no")
-
-#
-# PTGrey Camera Support 
-#
 AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), enable_camera_ptgrey="yes" , enable_camera_ptgrey="no")
-
-# Support for Virtual Camera
-#
 AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), enable_camera_virtual="yes" , enable_camera_virtual="no")
-
-#
-# Gesture recognition support
-#
 AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), enable_gestures="yes" , enable_gestures="no")
-
-#
-# Support for Vicon system
-#
 AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
-
-#
-# Support for Geometry 
-#
 AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), enable_geometry="yes" , enable_geometry="no")
-
-#
-# Support for Raw ports
-#
 AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial,parallel, bluetooth]), enable_rawports="yes" , enable_rawports="no")
-
-# Support for X11
-#
 AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
-
-# Support for parsers
-#
 AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
-
-
-# Support for ARToolkitPlus Tracking
-#
 AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), enable_tracking_artoolkitplus="yes" , enable_tracking_artoolkitplus="no")
-
-# Support for Videos
-#
 AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
-
-# Support for wiimote
-#
 AC_ARG_ENABLE(wiimote, AC_HELP_STRING([--enable-wiimote], [Enable Wiimote interface]), enable_wiimote="yes" , enable_wiimote="no")
-
-# Enable Examples
-#
+AC_ARG_ENABLE(structuredlight, AC_HELP_STRING([--enable-structuredlight], [Enable Structured Light Encoding/Decoding Classes]), enable_structuredlight="yes" , enable_structuredlight="no")
 AC_ARG_ENABLE(examples, AC_HELP_STRING([--enable-examples], [Enable Relevant Examples for select options]), enable_examples="yes" , enable_examples="no")
 
 # 
@@ -134,6 +84,7 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_video="yes";
 	     enable_wiimote="yes";
 	     enable_camera_ptgrey="yes";
+	     enable_structuredlight="yes";
 	     )
 
 #
@@ -153,6 +104,7 @@ if test "x$enable_network" = "xno" && \
    test "x$enable_tracking_artoolkitplus" = "xno" && \
    test "x$enable_parsers" = "xno" && \
    test "x$enable_camera_ptgrey" = "xno" && \
+   test "x$enable_structuredlight" = "xno" && \
    test "x$enable_video" = "xno" ; then
    AC_MSG_RESULT([nup])
    AC_MSG_ERROR([You must select something to build!, use --help for details])
@@ -399,8 +351,9 @@ echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
 echo "Video Encoder/Decoder Support : $enable_video"
 echo "Wiimote Support               : $enable_wiimote"
-echo "Examples Compiled             : $enable_examples"
+echo "Structured Light Support      : $enable_structuredlight"
 echo "Maths Support                 : Enabled (default)"
+echo "Examples Compiled             : $enable_examples"
 echo "-------------------------------------------------"
 
 #
@@ -433,6 +386,7 @@ AM_CONDITIONAL(ENABLE_TRACKING_ARTOOLKITPLUS, test "x$enable_tracking_artoolkitp
 AM_CONDITIONAL(ENABLE_VIDEO, test "x$enable_video" = "xyes")
 AM_CONDITIONAL(ENABLE_WIIMOTE, test "x$enable_wiimote" = "xyes")
 AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
+AM_CONDITIONAL(ENABLE_STRUCTUREDLIGHT, test "x$enable_structuredlight" = "xyes")
 
 #
 # Files to create
