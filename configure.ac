@@ -52,7 +52,7 @@ AM_MAINTAINER_MODE([enable])
 AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
 AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/Firewire Camera Support]), enable_camera_1394="yes" , enable_camera_1394="no")
 AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), enable_camera_uvc="yes" , enable_camera_uvc="no")
-AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), enable_camera_ptgrey="yes" , enable_camera_ptgrey="no")
+AC_ARG_ENABLE(camera-ptgrey, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), enable_camera_ptgrey="yes" , enable_camera_ptgrey="no")
 AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), enable_camera_virtual="yes" , enable_camera_virtual="no")
 AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), enable_gestures="yes" , enable_gestures="no")
 AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
@@ -338,16 +338,17 @@ echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
 echo "network support               : $enable_network"
-echo "1394 (Firewire) Camera        : $enable_camera_1394"
 echo "Gesture recognition           : $enable_gestures"
 echo "Geometry classes              : $enable_geometry"
 echo "Vicon MoCap Support           : $enable_vicon"
 echo "X11 Support                   : $enable_x11"
 echo "Rawports Support(com/lpt/bt)  : $enable_rawports"
-echo "UVC Camera support            : $enable_camera_uvc"
-echo "UVC Camera support            : $enable_camera_ptgrey"
+echo "Cameras:                      :"
+echo "   UVC Camera support         : $enable_camera_uvc"
+echo "   PTGrey Camera support      : $enable_camera_ptgrey"
+echo "   1394 (Firewire) Camera     : $enable_camera_1394"
+echo "   Virtual Camera Support     : $enable_camera_virtual"
 echo "Parser Support                : $enable_parsers"
-echo "Virtual Camera Support        : $enable_camera_virtual"
 echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
 echo "Video Encoder/Decoder Support : $enable_video"
 echo "Wiimote Support               : $enable_wiimote"
