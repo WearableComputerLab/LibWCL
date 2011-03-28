@@ -22,6 +22,7 @@ int main(int argc, char* argv[])
 	cout << "Connecting to Lazy Susan... ";
 	LazySusan* ls = new LazySusan(argv[1]);
 	TrackedObject* to = ls->getObject("blah");
+	cout << to->getOrientation().toString() << endl;
 	cout << "Done!" << endl;
 
 	while (true)
