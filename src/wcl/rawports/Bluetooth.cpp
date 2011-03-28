@@ -50,7 +50,7 @@ namespace wcl
 		fd = socket(PF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM);
 
 		if(fd<=0){
-			std::cerr << ("Unable to create socket %s", destmac.c_str());
+			std::cerr << "Unable to create socket:" <<  destmac.c_str();
 			return false;
 		}
 
@@ -141,7 +141,6 @@ namespace wcl
 	/*Lets us know how much data is waiting on the socket, also a -1 occurs if the
 	 * device has been disconnected.*/
 	ssize_t Bluetooth::getAvailableCount(){
-		int readmask = 0;
 
 		fd_set rfds;
 		struct timeval tv;
@@ -149,9 +148,9 @@ namespace wcl
 		FD_SET(getFD(), &rfds);
 		tv.tv_sec = 0;
 		tv.tv_usec = 1;
-		int nfound;
-		//if ((nfound = select (getFD()+1, &rfds, 0, 0, &tv)) == -1){
 		/*
+		int nfound;
+		if ((nfound = select (getFD()+1, &rfds, 0, 0, &tv)) == -1){
 		   message("Sellecting...\n");
 		   if ((nfound = select (getFD(), &rfds, 0, 0, &tv)) == -1){
 		   std::cout << "Select failed" << std::endl;
@@ -165,8 +164,8 @@ namespace wcl
 		int MAX_BUF = 128;
 		char buf[MAX_BUF];
 		//int length = recv(getFD(), &buf, 128, 0);
-		int recvFlags =
-			MSG_PEEK;      /*Return data without removing it from the queue*/
+		//int recvFlags =
+		//	MSG_PEEK;      /*Return data without removing it from the queue*/
 		//| MSG_TRUNC;  /*Return the real length of the packet even if longer than the buffer*/
 		int length = recv(getFD(), buf, MAX_BUF, 0);
 		//std::cerr << "Ready for reading: " << length << std::endl;

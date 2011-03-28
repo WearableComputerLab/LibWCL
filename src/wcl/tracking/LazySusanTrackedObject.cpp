@@ -47,7 +47,7 @@ namespace wcl
 
 	SMatrix LazySusanTrackedObject::getTransform() const
 	{
-		mOrientation.getRotation();
+		return mOrientation.getRotation();
 	}
 
 	Vector LazySusanTrackedObject::getTranslation() const
