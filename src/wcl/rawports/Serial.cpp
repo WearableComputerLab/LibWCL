@@ -742,14 +742,14 @@ Serial::setLine ( const Line line, bool state)
             return false;
 
         switch( line ){
+	    // To set the TXD line to low the uart pulls the
+	    // line down at the start of the bit pulse. This
+	    // may not always keep the line low. However should
+	    // provide enough for most cases - benjsc 20100324
             case TXD:
-            assert(0 && "setLine: TXD signal setting is not yet supported");
-            /*
-            // Need to work this one out
-                if( state ) status |= TIOCM_DTR;
-                else status &= ~TIOCM_DTR;
+		if( state ) ioctl( fd, TIOCCBRK, NULL );
+		else ioctl( fd, TIOCSBRK, NULL );
                 break;
-                */
             case DTR:
                 if( state ) status |= TIOCM_DTR;
                 else status &= ~TIOCM_DTR;
@@ -805,17 +805,16 @@ Serial::getSignals()
         int status;
         int all=0;
 
+	// Since the serial port is actually a uart on
+	// most pc's access to the low level RXD pin is
+	// not available unless the hardware and therefore
+	// the driver supports it. We hence can't support
+	// the RXD pin universally.
         ioctl(fd, TIOCMGET, &status);
 
         //Convert the signals to the Signal class
         if(status & TIOCM_CAR)
             all |= DCD;
-#warning "serial: RXD signal is not yet corectly reported"
-        /*
-           // XXX Need to work this out - benjsc 20090909
-        if( status & TIOCM_SR)
-            all |= RXD;
-            */
         if( status & TIOCM_LE)
             all |= DSR;
         if( status & TIOCM_CTS)

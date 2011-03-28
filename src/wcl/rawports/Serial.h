@@ -141,7 +141,10 @@ public:
 
     enum Signal {
 		    DCD = 1,  // IN  Signal (Data Carrier Detect) D25 pin 8
-		    RXD = 2,  // IN  Signal (Received data) D25 pin 3
+		    //RXD = 2,  // IN  Signal (Received data) D25 pin 3
+		               //  This pin logic state can't be detected by most pc
+			       //  hardware as the uart doesn't provide gpio
+			       //  access to the line.
 		    DSR = 4,  // IN  Signal (Data Send Ready) D25 pin 6
 		    CTS = 8,  // IN  Signal (Clear To Send) D25 pin 5
 		    RI  = 16, // IN  Signal (Ring Indicator) D25 pin 22 };
