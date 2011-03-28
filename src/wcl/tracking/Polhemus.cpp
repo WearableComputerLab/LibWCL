@@ -133,12 +133,13 @@ namespace wcl
 			for (int i=0; i<activeSensorCount; i++)
 			{
 				connection.readUntil((void*) &response, expectedBytes);
-				size_t sz = connection.getAvailableCount();
 				response[expectedBytes] = '\0';
 					
 				//printf("%d %s\n", sz, response);
 				
-				int count = sscanf(response, "%d%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+				int count = sscanf(response, "%u%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
+				if( count != 8 )
+				    throw std::string("Invalid message received") + response;
 				assert (number <= sensors.size());
 				
 				if (units == MM)
