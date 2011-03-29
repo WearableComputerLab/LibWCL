@@ -49,68 +49,43 @@ AM_MAINTAINER_MODE([enable])
 # TCP/UDP Networking
 #    When enabled: enable_network is defined to 'yes' or 'no'
 #
-AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , enable_network="no")
-AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/Firewire Camera Support]), enable_camera_1394="yes" , enable_camera_1394="no")
-AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), enable_camera_uvc="yes" , enable_camera_uvc="no")
-AC_ARG_ENABLE(camera-ptgrey, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), enable_camera_ptgrey="yes" , enable_camera_ptgrey="no")
-AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), enable_camera_virtual="yes" , enable_camera_virtual="no")
-AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), enable_gestures="yes" , enable_gestures="no")
-AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), enable_vicon="yes" , enable_vicon="no")
-AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), enable_geometry="yes" , enable_geometry="no")
-AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial,parallel, bluetooth]), enable_rawports="yes" , enable_rawports="no")
-AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), enable_x11="yes" , enable_x11="no")
-AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), enable_parsers="yes" , enable_parsers="no")
-AC_ARG_ENABLE(tracker-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), enable_tracking_artoolkitplus="yes" , enable_tracking_artoolkitplus="no")
-AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable Video Encoding/Decoding Support]), enable_video="yes" , enable_video="no")
-AC_ARG_ENABLE(wiimote, AC_HELP_STRING([--enable-wiimote], [Enable Wiimote interface]), enable_wiimote="yes" , enable_wiimote="no")
-AC_ARG_ENABLE(structuredlight, AC_HELP_STRING([--enable-structuredlight], [Enable Structured Light Encoding/Decoding Classes]), enable_structuredlight="yes" , enable_structuredlight="no")
-AC_ARG_ENABLE(examples, AC_HELP_STRING([--enable-examples], [Enable Relevant Examples for select options]), enable_examples="yes" , enable_examples="no")
+AC_ARG_ENABLE(network, AC_HELP_STRING([--enable-network], [Enable basic TCP/UDP C++ Code]), , )
+AC_ARG_ENABLE(camera-1394, AC_HELP_STRING([--enable-camera-1394], [Enable 1394/Firewire Camera Support]), , )
+AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Camera Support]), , )
+AC_ARG_ENABLE(camera-ptgrey, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), , )
+AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), , )
+AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), , )
+AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), , )
+AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), , )
+AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial,parallel, bluetooth]), , )
+AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), , )
+AC_ARG_ENABLE(parsers, AC_HELP_STRING([--enable-parsers], [Enable FileParser Support]), , )
+AC_ARG_ENABLE(tracking-artoolkitplus, AC_HELP_STRING([--enable-tracker-artoolkitplus], [Enable ARToolKitPlus Tracking]), , )
+AC_ARG_ENABLE(video, AC_HELP_STRING([--enable-video], [Enable Video Encoding/Decoding Support]), , )
+AC_ARG_ENABLE(wiimote, AC_HELP_STRING([--enable-wiimote], [Enable Wiimote interface]), , )
+AC_ARG_ENABLE(structuredlight, AC_HELP_STRING([--enable-structuredlight], [Enable Structured Light Encoding/Decoding Classes]), , )
+AC_ARG_ENABLE(examples, AC_HELP_STRING([--enable-examples], [Enable Relevant Examples for select options]), , )
 
 # 
 #  Enable All Options
 # 	This simply enables each option
 AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything]), 
-	     enable_network="yes";
-	     enable_camera_1394="yes";
-	     enable_rawports="yes" ;
-	     enable_camera_uvc="yes";
-	     enable_gestures="yes";
-	     enable_vicon="yes";
-	     enable_geometry="yes";
-	     enable_x11="yes";
-	     enable_parsers="yes";
-	     enable_camera_virtual="yes";
-	     enable_tracking_artoolkitplus="yes";
-	     enable_video="yes";
-	     enable_wiimote="yes";
-	     enable_camera_ptgrey="yes";
-	     enable_structuredlight="yes";
+	     enable_network=${enable_network:-"yes"};
+	     enable_camera_1394=${enable_camera_1394:-"yes"};
+	     enable_camera_uvc=${enable_camera_uvc:-"yes"};
+	     enable_camera_ptgrey=${enable_camera_ptgrey:-"yes"};
+	     enable_camera_virtual=${enable_camera_virtual:-"yes"};
+	     enable_gestures=${enable_gestures:-"yes"};
+	     enable_vicon=${enable_vicon:-"yes"};
+	     enable_geometry=${enable_gemoetry:-"yes"};
+	     enable_rawports=${enable_rawports:-"yes"};
+	     enable_x11=${enable_x11:-"yes"};
+	     enable_parsers=${enable_parsers:-"yes"};
+	     enable_tracking_artoolkitplus=${enable_tracking_artoolkit:-"yes"};
+	     enable_video=${enable_video:-"yes"};
+	     enable_wiimote=${enable_wiimote:-"yes"};
+	     enable_structuredlight=${enable_structuredlight:-"yes"};
 	     )
-
-#
-#  Check to see if anything is configured
-#
-AC_MSG_CHECKING([Checking we need to build something]);
-if test "x$enable_network" = "xno" && \
-   test "x$enable_camera_1394" = "xno" && \
-   test "x$enable_vicon" = "xno" && \
-   test "x$enable_osg" = "xno" && \
-   test "x$enable_geometry" = "xno" && \
-   test "x$enable_gestures" = "xno" && \
-   test "x$enable_rawports" = "xno" && \ 
-   test "x$enable_camera_uvc" = "xno" && \
-   test "x$enable_x11" = "xno" && \
-   test "x$enable_camera_virtual" = "xno" && \
-   test "x$enable_tracking_artoolkitplus" = "xno" && \
-   test "x$enable_parsers" = "xno" && \
-   test "x$enable_camera_ptgrey" = "xno" && \
-   test "x$enable_structuredlight" = "xno" && \
-   test "x$enable_video" = "xno" ; then
-   AC_MSG_RESULT([nup])
-   AC_MSG_ERROR([You must select something to build!, use --help for details])
-fi
-AC_MSG_RESULT([yes])
-
 
 #
 # Automatically turn on network if we are building the vicon module.
@@ -337,24 +312,24 @@ AC_CHECK_FUNCS([memset])
 echo "-------------------------------"
 echo "libwcl Configuration Summary "
 echo "-----------------------------"
-echo "network support               : $enable_network"
-echo "Gesture recognition           : $enable_gestures"
-echo "Geometry classes              : $enable_geometry"
-echo "Vicon MoCap Support           : $enable_vicon"
-echo "X11 Support                   : $enable_x11"
-echo "Rawports Support(com/lpt/bt)  : $enable_rawports"
+echo "network support               : ${enable_network:-no}"
+echo "Gesture recognition           : ${enable_gestures:-no}"
+echo "Geometry classes              : ${enable_geometry:-no}"
+echo "Vicon MoCap Support           : ${enable_vicon:-no}"
+echo "X11 Support                   : ${enable_x11:-no}"
+echo "Rawports Support(com/lpt/bt)  : ${enable_rawports:-no}"
 echo "Cameras:                      :"
-echo "   UVC Camera support         : $enable_camera_uvc"
-echo "   PTGrey Camera support      : $enable_camera_ptgrey"
-echo "   1394 (Firewire) Camera     : $enable_camera_1394"
-echo "   Virtual Camera Support     : $enable_camera_virtual"
-echo "Parser Support                : $enable_parsers"
-echo "ARToolkitPlus Tracker Support : $enable_tracking_artoolkitplus"
-echo "Video Encoder/Decoder Support : $enable_video"
-echo "Wiimote Support               : $enable_wiimote"
-echo "Structured Light Support      : $enable_structuredlight"
+echo "   UVC Camera support         : ${enable_camera_uvc:-no}"
+echo "   PTGrey Camera support      : ${enable_camera_ptgrey:-no}"
+echo "   1394 (Firewire) Camera     : ${enable_camera_1394:-no}"
+echo "   Virtual Camera Support     : ${enable_camera_virtual:-no}"
+echo "Parser Support                : ${enable_parsers:-no}"
+echo "ARToolkitPlus Tracker Support : ${enable_tracking_artoolkitplus:-no}"
+echo "Video Encoder/Decoder Support : ${enable_video:-no}"
+echo "Wiimote Support               : ${enable_wiimote:-no}"
+echo "Structured Light Support      : ${enable_structuredlight:-no}"
 echo "Maths Support                 : Enabled (default)"
-echo "Examples Compiled             : $enable_examples"
+echo "Examples Compiled             : ${enable_examples:-no}"
 echo "-------------------------------------------------"
 
 #
