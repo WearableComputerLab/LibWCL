@@ -46,7 +46,7 @@ namespace wcl {
  * Additionally a maskedDebugImage (showing detection masked) or a raw debug
  * image can be used to display detection results.
  */
-class GrayCode
+class WCL_API GrayCode
 {
 public:
     GrayCode(const unsigned pwidth, const unsigned pheight, const unsigned cwidth, const unsigned cheight );

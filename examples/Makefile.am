@@ -40,7 +40,11 @@ if ENABLE_WIIMOTE
 SUBDIRS+=wiimote
 endif
 
+if ENABLE_STRUCTUREDLIGHT
+SUBDIRS+=graycode
+endif
 
 SUBDIRS+=lazysusan
+
 
 endif
