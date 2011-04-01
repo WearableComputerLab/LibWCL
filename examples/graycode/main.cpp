@@ -289,10 +289,6 @@ int main(int argc, char** argv)
 	    camera = CameraFactory::findCamera(config);
 	} else {
 	    camera = CameraFactory::getCamera(argv[1]);
-	    Camera::Configuration config = camera->getActiveConfiguration();
-	    config.width=IMAGE_WIDTH;
-	    config.height=IMAGE_HEIGHT;
-	    camera->setConfiguration(config);
 	}
     } catch(CameraException &e)
     {
@@ -304,6 +300,11 @@ int main(int argc, char** argv)
 	cout << "Camera Not Found" << endl;
 	exit(0);
     }
+
+    Camera::Configuration config = camera->getActiveConfiguration();
+    config.width=IMAGE_WIDTH;
+    config.height=IMAGE_HEIGHT;
+    camera->setConfiguration(config);
 
     //Set power frequency compensation to 50 Hz
     //this is noncritical so don't stop the program if it fails
