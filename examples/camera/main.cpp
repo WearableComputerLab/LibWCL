@@ -42,7 +42,7 @@
 #include <wcl/camera/CameraFactory.h>
 
 #define WIDTH 640
-#define SEARCHSCOPE CameraFactory::NETWORK
+#define SEARCHSCOPE CameraFactory::LOCAL
 
 using namespace std;
 using namespace wcl;
