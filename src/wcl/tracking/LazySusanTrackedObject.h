@@ -46,11 +46,15 @@ namespace wcl
 			virtual Quaternion getOrientation() const;
 			virtual bool isVisible() const;
 
+			double getRotation() const;
+
 			friend class LazySusan;
 
 		private:
 			void setRotation(double rotation);
 			Quaternion mOrientation;
+
+			double	   mRotation;
 	};
 };
 

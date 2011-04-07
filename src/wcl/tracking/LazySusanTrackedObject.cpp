@@ -30,7 +30,7 @@
 namespace wcl
 {
 
-	LazySusanTrackedObject::LazySusanTrackedObject()
+	LazySusanTrackedObject::LazySusanTrackedObject() :  mRotation(0)
 	{
 		name = "LazySusan";
 	}
@@ -59,7 +59,11 @@ namespace wcl
 	{
 		return mOrientation;
 	}
-
+	
+	double LazySusanTrackedObject::getRotation() const
+	{
+		return mRotation;
+	}
 
 	bool LazySusanTrackedObject::isVisible() const
 	{
@@ -70,6 +74,8 @@ namespace wcl
 	{
 		//in degrees...
 		rotation *= 360;
+	
+		mRotation = rotation;
 		// to radians
 		static double pi = 3.14159265;
 		double radian = rotation * (pi/180);
