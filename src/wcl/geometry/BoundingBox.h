@@ -77,6 +77,8 @@ namespace wcl
 
 			bool intersect(const wcl::LineSegment& s) const;
 
+			bool contains(const wcl::Vector& v) const;
+
 			/**
 			 * Adds a point to the bounding box, adjusting
 			 * the size if needed.

@@ -76,6 +76,18 @@ namespace wcl
 	}
 
 
+	bool BoundingBox::contains(const wcl::Vector& v) const
+	{
+		if (v[0] < min[0] || v[0] > max[0])
+			return false;
+		if (v[1] < min[1] || v[1] > max[1])
+			return false;
+		if (v[2] < min[2] || v[2] > max[2])
+			return false;
+		return true;
+	}
+
+
 	bool BoundingBox::overlaps(const wcl::BoundingBox& b) const
 	{
 		//this is going to be a big if statement
