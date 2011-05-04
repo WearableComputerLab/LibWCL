@@ -379,6 +379,13 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
     }
 }
 
+
+bool GrayCode::isValidRowCol(const Vector &p) const
+{
+    int offset=p[1]*this->cwidth+p[0];
+    return this->mask[offset] ? "true" : false;
+}
+
 unsigned GrayCode::getRequiredImageCount() const
 {
     return this->totalGrayCodes;

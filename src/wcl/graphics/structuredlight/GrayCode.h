@@ -69,6 +69,7 @@ public:
     const unsigned char *generate();
 
     wcl::Vector /*ProjectorPixel*/ getRowCol(const wcl::Vector &cameraPixel) const;
+    bool isValidRowCol(const wcl::Vector &cameraPixel) const;
     void decode(const unsigned char **capturedImages, const unsigned int threshold=64);
 
     /**
