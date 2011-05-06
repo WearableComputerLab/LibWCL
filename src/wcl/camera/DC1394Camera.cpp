@@ -34,6 +34,7 @@
 
 #include "CameraException.h"
 #include "DC1394Camera.h"
+#warning "[Note]: DC1394Camera: Doesn't currently support format7"
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
@@ -81,7 +82,7 @@ namespace wcl {
 	{ DC1394_VIDEO_MODE_1600x1200_MONO8, Camera::MONO8, 1600, 1200},
 	{ DC1394_VIDEO_MODE_1280x960_MONO16, Camera::MONO16, 1280, 960},
 	{ DC1394_VIDEO_MODE_1600x1200_MONO16, Camera::MONO16, 1600, 1200}
-#if 0
+#if notyet
 	case DC1394_VIDEO_MODE_EXIF:
 	case DC1394_VIDEO_MODE_FORMAT7_0:
 	case DC1394_VIDEO_MODE_FORMAT7_1:
@@ -130,6 +131,8 @@ namespace wcl {
 
 	// Clear the frame data
 	memset(&this->lastFrame, 0, sizeof(dc1394video_frame_t));
+
+
 
 	this->loadCapabilities();
     }
@@ -235,6 +238,17 @@ namespace wcl {
 	*/
 
 #endif
+	// Shutdown any isotransports that are setup for the camera.
+	// It turns out that libDC1394 will quite happily let you set modes,
+	// framerates, etc but if there is an iso stream running none of them
+	// will actually take affect. Hence you can set a 800x600 res and get
+	// back 640x480 video frame - really nice libdc1394. It could at least
+	// indicate there was a active stream when setting the mode!
+	// Anyway to deal with this we force the camera to stop capturing
+	// before we change the settings, if the camera was capturing prior to
+	// setConfiguration being called, we restart the capture
+	bool running = this->running;
+	this->shutdown();
 
 	// With the modes and framerates worked out we
 	// actually try and setup the camera. We don't do this after
@@ -251,10 +265,9 @@ namespace wcl {
 
 	Camera::setConfiguration(c);
 
-	// Finally we've changed frame sizes, indicate we need to reset the
-	// internal buffer as the allocated space may not be enough
-	free(this->lastFrame.image);
-	memset(&this->lastFrame,0, sizeof(dc1394video_frame_t));
+	// Restart the capture if it was already capturing
+	if( running)
+	    this->startup();
     }
 
     void DC1394Camera::setExposureMode( const ExposureMode t )
@@ -364,7 +377,6 @@ namespace wcl {
 	if( dc1394_capture_setup( this->camera, 4, DC1394_CAPTURE_FLAGS_DEFAULT ) != DC1394_SUCCESS )
 	    throw CameraException(CameraException::BUFFERERROR);
 
-	//  have the camera start sending us data?
 	if( dc1394_video_set_transmission( this->camera, DC1394_ON ) != DC1394_SUCCESS ){
 	    this->shutdown();
 	    throw CameraException(CameraException::BUFFERERROR);
