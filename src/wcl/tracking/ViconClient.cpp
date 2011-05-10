@@ -34,6 +34,7 @@
 
 #include "config.h"
 #include "ViconClient.h"
+#include "../Exception.h"
 #include <iostream>
 
 using namespace std;
@@ -138,7 +139,7 @@ std::vector<std::string> ViconClient::getChannelNames()
 	//This is taken from the example source...
 	if (!socket->isValid())
 	{
-		throw std::string("Error: Trying to get channel names, but socket is not valid");
+		throw Exception("Error: Trying to get channel names, but socket is not valid");
 	}
 	//send it an info request...
 	int32_t request[] = {ViconClient::INFO, ViconClient::REQUEST};
@@ -180,7 +181,7 @@ void ViconClient::loadTrackedObjects()
 	int32_t request = ViconClient::REQUEST;
 	if (!socket->isValid())
 	{
-		throw std::string("Socket is not open!");
+		throw Exception("Socket is not open!");
 	}
 	
 	//send it an info request...
@@ -247,7 +248,7 @@ void ViconClient::loadTrackedObjects()
 						objects.push_back(sdo);
 					}
 					else {
-						throw std::string("Unexpected number of DOF");
+						throw Exception("Unexpected number of DOF");
 					}
 					//reset for the next run through the loop
 					prevName = channel;
@@ -265,12 +266,12 @@ void ViconClient::loadTrackedObjects()
 			objects.push_back(sdo);
 		}
 		else {
-			throw std::string("Unexpected number of DOF");
+			throw Exception("Unexpected number of DOF");
 		}
 	}
 	else
 	{
-		throw std::string("Incorrect Packet/type when reading channel names");
+		throw Exception("Incorrect Packet/type when reading channel names");
 	}
 }
 
@@ -335,7 +336,7 @@ void ViconClient::update()
 	}
 	else 
 	{
-		throw std::string ("Unexpected packet type");
+		throw Exception("Unexpected packet type");
 	}
 }
 
