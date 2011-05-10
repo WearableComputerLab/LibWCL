@@ -27,6 +27,7 @@
 #define WCL_EXCEPTION_H
 
 #include <exception>
+#include <string>
 #include <wcl/api.h>
 
 namespace wcl {
@@ -39,6 +40,7 @@ class WCL_API Exception: public std::exception
     public:
 
 	Exception(const char *ireason) throw();
+	Exception(const std::string& ireason) throw();
 	virtual ~Exception() throw();
 	virtual const char *what() const throw();
 

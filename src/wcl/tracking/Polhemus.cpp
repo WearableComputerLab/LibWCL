@@ -30,6 +30,7 @@
 #include <iostream>
 #include <wcl/tracking/Polhemus.h>
 #include <wcl/tracking/TrackedObject.h>
+#include <wcl/Exception.h>
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
@@ -43,7 +44,7 @@ namespace wcl
 		std::cout << "About to connect to " << path << std::endl;
 		if (!connection.open(path.c_str(), Serial::BAUD_115200))
 		{
-			throw std::string(strerror(errno));
+			throw Exception(strerror(errno));
 		}
 		usleep(2000);
 		connection.setBlockingMode(Serial::BLOCKING);
@@ -53,7 +54,7 @@ namespace wcl
 		// clear whatever existing half completed commands exist
 		if (!connection.flush())
 		{
-			throw std::string(strerror(errno));
+			throw Exception(strerror(errno));
 		}
 		
 		
@@ -139,7 +140,11 @@ namespace wcl
 				
 				int count = sscanf(response, "%u%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
 				if( count != 8 )
-				    throw std::string("Invalid message received") + response;
+				{
+					std::stringstream ss;
+					ss << "Invalid message received from polhemus: " << response;
+				    throw Exception(ss.str());
+				}
 				assert (number <= sensors.size());
 				
 				if (units == MM)
@@ -155,7 +160,7 @@ namespace wcl
 		}
 		else
 		{
-			throw std::string("I don't know how many sensors there are!");
+			throw Exception("Could not figure out how many sensors are connected to polhemus");
 		}
 	}
 
@@ -170,7 +175,7 @@ namespace wcl
 		else if (name == "sensor4" && activeSensorCount >= 4)
 			return &sensors[3];
 		else
-			throw std::string("Invalid tracked object name");
+			throw Exception("Invalid tracked object name");
 	}
 
 	std::vector<TrackedObject *> Polhemus::getAllObjects()
@@ -239,7 +244,7 @@ namespace wcl
 		{
 			std::stringstream ss;
 			ss << "ERROR: Could not set units, expected to write " << expected << " bytes but only wrote " << bytesWritten;
-			throw std::string(ss.str());
+			throw Exception(ss.str());
 		}
 	}
 
@@ -307,7 +312,7 @@ namespace wcl
 		{
 			std::stringstream ss;
 			ss << "ERROR: Could not set ascii output, expected to write " << expected << " bytes but only wrote " << bytesWritten;
-			throw std::string(ss.str());
+			throw Exception(ss.str());
 		}
 	}
 
@@ -355,7 +360,7 @@ namespace wcl
 		{
 			std::stringstream ss;
 			ss << "ERROR: Could not set ascii output, expected to write " << expected << " bytes but only wrote " << bytesWritten;
-			throw std::string(ss.str());
+			throw Exception(ss.str());
 		}
 	}
 
@@ -385,7 +390,7 @@ namespace wcl
 			{
 				std::stringstream ss;
 				ss << "ERROR: Could not get sensor count, expected to write 3 bytes but only wrote " << bytesWritten;
-				throw std::string(ss.str());
+				throw Exception(ss.str());
 			}
 			unsigned char response[16] = {0};
 			response[15] = '\0';
@@ -408,12 +413,12 @@ namespace wcl
 			}
 			else
 			{
-				throw std::string("Michael needs to debug the getsensorcount code!");
+				throw Exception("Michael needs to debug the getsensorcount code!");
 			}
 		}
 		else
 		{
-			throw std::string("Only patriot supports getSensorCount");
+			throw Exception("Only patriot supports getSensorCount");
 		}
 	}
 }

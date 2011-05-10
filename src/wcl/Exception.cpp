@@ -35,6 +35,10 @@ Exception::Exception(const char *ireason) throw():
     reason(ireason)
 {}
 
+Exception::Exception(const std::string& ireason) throw():
+    reason(ireason.c_str())
+{}
+
 Exception::~Exception() throw ()
 {}
 
