@@ -28,6 +28,7 @@
 #include <config.h>
 #include <sstream>
 #include <wcl/geometry/Line.h>
+#include <wcl/Exception.h>
 
 namespace wcl
 {
@@ -97,7 +98,7 @@ namespace wcl
 		}
 		else
 		{
-			return NULL;
+			throw Exception("No Intersection!");
 		}
 
 		double x = pos[0] + dir[0]*t;
@@ -127,7 +128,7 @@ namespace wcl
 			}
 			else
 			{
-				return NULL;
+				throw Exception("No Intersection!");
 			}
 		}
 		else
