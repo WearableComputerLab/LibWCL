@@ -266,7 +266,7 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
     //TODO: Workout automatic threshold based on column/row first two images.
     //This can be a per image pixel threshold - benjsc 20101206
 
-    memset(mask, 0, this->cwidth * this->cheight );
+    memset(mask, 1, this->cwidth * this->cheight );
 
     // We now begin the process of decoding the images back into the relevant
     // graycodes. The decoding works as follows. When capturing the graycodes
@@ -298,7 +298,7 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 		else
 		    bitvalue = gray[offset]>=invgray[offset];
 
-		mask[offset] |= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
+		mask[offset] &= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
 #if 0
 		printf("G:%d, IV:%d, BV:%d | GREY %d |  ABS:%d,TH%d | MASK: %d\n",
 		       gray[offset],
@@ -345,7 +345,7 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 		else
 		bitvalue = gray[offset]>=invgray[offset];
 
-		mask[offset] |= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
+		mask[offset] &= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
 
 		int bit = this->grayCodeRowCount - rowCount - 1;
 		if( bitvalue ){
