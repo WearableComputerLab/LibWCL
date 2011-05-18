@@ -196,6 +196,12 @@ void GrayCode::buildGrayCodes()
 	    unsigned char value  = imageCount ?
 		((realRow >> (this->grayCodeRowCount - imageCount - 1 ))&1)^ ((realRow >> (this->grayCodeRowCount - imageCount))&1)
 		: (realRow >> (this->grayCodeRowCount - imageCount -1)) & 1;
+#if 0
+	    if(row == 0 )printf("row: %d, rowcount %d, imagecount %d, bit %d (%d), Bit Value %d, GC Value %d\n", 
+				realRow, this->grayCodeRowCount, imageCount, (this->grayCodeRowCount-imageCount-1),(int)pow(2,(this->grayCodeRowCount-imageCount-1)), 
+				(realRow >> (this->grayCodeRowCount - imageCount -1)) & 1,
+				value);
+#endif
 	    value *=WHITE;
 	    this->setPixel(data,0 /* X */,row, this->pwidth, value);
 	    for( unsigned column = 1; column < this->pwidth; column++ )
@@ -348,11 +354,28 @@ void GrayCode::decode(const unsigned char **capturedImages, const unsigned int t
 		mask[offset] &= ((unsigned)abs(gray[offset]-invgray[offset]))>= threshold;
 
 		int bit = this->grayCodeRowCount - rowCount - 1;
+#if 0
+		printf("G:%d, IV:%d, BV:%d | GREY %d |  ABS:%d,TH%d | MASK: %d| Bit %d (%d) | Value B4 %d\n",
+		       gray[offset],
+		       invgray[offset],
+		       gray[offset]>=invgray[offset],
+		       bitvalue,
+		       abs(gray[offset]-invgray[offset]),
+		       threshold,
+		       mask[offset],
+		       bit,
+		       (int)pow(2,bit),
+		       (int)this->decodedRows[x][y]);
+#endif
+
 		if( bitvalue ){
 		    int value = (int)this->decodedRows[x][y];
 		    value |= 1 << bit;
 		    this->decodedRows[x][y] = value;
 		}
+#if 0
+		printf("Value After: %d\n", (int)this->decodedRows[x][y]);
+#endif
 	    }
 	}
     }
