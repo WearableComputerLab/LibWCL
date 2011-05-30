@@ -64,4 +64,16 @@
   #define WCL_LOCAL
 #endif // WCL_DLL
 
+
+// Handle the depcrecated keyword
+#if defined __GNUC__
+    #if __GNUC__ >= 3 && __GNUC_MINOR__ >= 1
+	#ifndef wcldeprecated
+	    #define wcldeprecated __attribute__((deprecated))
+	#endif
+    #else
+	#define wcldeprecated
+    #endif
 #endif
+
+#endif // WCL_API_H
