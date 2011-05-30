@@ -5,8 +5,6 @@
 #   so do that by yourself, or configure using 
 #    $ configure --enable-all --enable-camera-ptgrey=no
 #   to get by without it. 
-# This script also assumes that you have seperatly installed ARToolKitPlus. 
-
 
 # Add the ARToolKitPlus repo to our sources. 
 # Copy, replace etc the file because otherwise it'll get run multipule times
