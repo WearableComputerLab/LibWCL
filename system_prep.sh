@@ -21,6 +21,7 @@ apt-get update
 
 apt-get install \
 build-essential \
+libtool \
 automake \
 flex \
 bison \
