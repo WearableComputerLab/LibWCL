@@ -23,6 +23,7 @@ apt-get install \
 build-essential \
 libtool \
 automake \
+libxext-dev \
 flex \
 bison \
 libraw1394-dev \
