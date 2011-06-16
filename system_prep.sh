@@ -30,7 +30,8 @@ libavcodec-dev \
 libavformat-dev \
 libswscale-dev \
 artoolkitplus-dev \
-libcwiid-dev 
+libcwiid-dev \
+vim 
 
 # Replace the sources.list with the backup
 mv /etc/apt/sources.list.backup /etc/apt/sources.list
