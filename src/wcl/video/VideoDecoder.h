@@ -27,9 +27,6 @@
 #define WCL_VIDEO_VIDEODECODER_H
 
 extern "C" {
-#ifndef __STDC_CONSTANT_MACROS
-#define __STDC_CONSTANT_MACROS
-#endif
 #include <stdint.h>
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
