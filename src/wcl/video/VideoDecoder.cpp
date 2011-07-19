@@ -187,7 +187,7 @@ const unsigned char *VideoDecoder::getFrame()
 
 	// Keep processing frames until we find the next frame we are
 	// after. This may be more than one frame if autofps limiting is enabled
-	while(av_read_frame(this->formatContext, &packet) >= 0 && !found){
+	while(!found && av_read_frame(this->formatContext, &packet) >= 0){
 		if( packet.stream_index==this->index){
 			avcodec_decode_video(this->codecContext, this->someFrame,
 					&this->isvalid, packet.data, packet.size);
