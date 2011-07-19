@@ -306,6 +306,7 @@ void VideoDecoder::rewind()
 		av_seek_frame(this->formatContext, this->index,0, AVSEEK_FLAG_BACKWARD);
 		avcodec_flush_buffers(this->codecContext);
 		playedFrames = 0;
+		startTime = av_gettime();
 	}
 }
 
