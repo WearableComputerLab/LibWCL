@@ -81,7 +81,7 @@ GLvoid init()
 	glMatrixMode(GL_PROJECTION);
 	gluOrtho2D(0,1,0,1);
 	glMatrixMode(GL_MODELVIEW);
-	delete data;
+	delete [] data;
 }
 
 
