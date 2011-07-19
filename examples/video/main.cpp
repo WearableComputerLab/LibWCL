@@ -102,9 +102,11 @@ GLvoid display()
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
 	const unsigned char* frame = decoder->getFrame();
-	if( frame == NULL ){
-	    // No more frames
-	    exit(1);
+
+	if (frame == NULL)
+	{
+		decoder->rewind();
+		return;
 	}
 
 	glTexSubImage2D(GL_TEXTURE_2D,

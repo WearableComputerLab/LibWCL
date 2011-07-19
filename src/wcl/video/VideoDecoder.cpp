@@ -29,9 +29,9 @@
 namespace wcl
 {
 
-VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit)
+VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit, const bool autoplay)
     throw( const std::string &):
-	isvalid(false),playedFrames(0),autoFPSLimit(iautofpslimit)
+	isvalid(false),playedFrames(0),autoFPSLimit(iautofpslimit), paused(!autoplay)
 {
     VideoDecoder::libraryInit();
 
@@ -61,13 +61,16 @@ VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit)
     this->height = this->codecContext->height;
 
     this->startTime = av_gettime();
+
+	if (paused)
+		this->pauseTime = this->startTime;
 }
 
 VideoDecoder::VideoDecoder(const unsigned iwidth, const unsigned iheight,
-			   const CodecID codec, const bool iautofpslimit):
+			   const CodecID codec, const bool iautofpslimit, const bool autoplay):
     formatContext(NULL),
     isvalid(false),width(iwidth),height(iheight),
-    index(-1),playedFrames(0),autoFPSLimit(iautofpslimit)
+    index(-1),playedFrames(0),autoFPSLimit(iautofpslimit), paused(!autoplay)
 {
     VideoDecoder::libraryInit();
 
@@ -87,6 +90,9 @@ VideoDecoder::VideoDecoder(const unsigned iwidth, const unsigned iheight,
     this->allocateConversionBuffer( this->width, this->height );
 
     this->startTime = av_gettime();
+
+	if (paused)
+		this->pauseTime = this->startTime;
 }
 
 
@@ -167,6 +173,9 @@ const unsigned char *VideoDecoder::getFrame()
 
 	int64_t neededFrame=0;;
 
+	if (paused)
+		return (unsigned char *)this->buffer;
+
 	// Check to see if we are being called faster than the movie should be
 	// played back if we are and we are limiting the frames, simply return
 	// the same buffer;
@@ -179,29 +188,29 @@ const unsigned char *VideoDecoder::getFrame()
 	// Keep processing frames until we find the next frame we are
 	// after. This may be more than one frame if autofps limiting is enabled
 	while(av_read_frame(this->formatContext, &packet) >= 0 && !found){
-	    if( packet.stream_index==this->index){
-		avcodec_decode_video(this->codecContext, this->someFrame,
-				     &this->isvalid, packet.data, packet.size);
-		if( this->isvalid ){
-		    this->playedFrames++;
-		    sws_scale(this->imageConvertContext,
-			      this->someFrame->data, this->someFrame->linesize,
-			      0, this->height,
-			      this->RGBFrame->data, this->RGBFrame->linesize);
+		if( packet.stream_index==this->index){
+			avcodec_decode_video(this->codecContext, this->someFrame,
+					&this->isvalid, packet.data, packet.size);
+			if( this->isvalid ){
+				this->playedFrames++;
+				sws_scale(this->imageConvertContext,
+						this->someFrame->data, this->someFrame->linesize,
+						0, this->height,
+						this->RGBFrame->data, this->RGBFrame->linesize);
 
-		    // If we are rate limiting, keep decoding frames until
-		    // we catch up to where we should be
-		    if(this->autoFPSLimit ){
-			if(this->playedFrames >= neededFrame )
-			    found=true;
-		    }
-		    // Else we simply return the next frame
-		    else {
-			found=true;
-		    }
+				// If we are rate limiting, keep decoding frames until
+				// we catch up to where we should be
+				if(this->autoFPSLimit ){
+					if(this->playedFrames >= neededFrame )
+						found=true;
+				}
+				// Else we simply return the next frame
+				else {
+					found=true;
+				}
+			}
 		}
-	    }
-	    av_free_packet(&packet);
+		av_free_packet(&packet);
 	}
 
 	// No more frames in the file
@@ -296,8 +305,25 @@ void VideoDecoder::rewind()
 	{
 		av_seek_frame(this->formatContext, this->index,0, AVSEEK_FLAG_BACKWARD);
 		avcodec_flush_buffers(this->codecContext);
+		playedFrames = 0;
 	}
 }
+
+void VideoDecoder::setPaused(bool p)
+{
+	if (p && !this->paused)
+	{
+		this->pauseTime = av_gettime();
+		this->paused = true;
+	}
+	else if (!p && this->paused)
+	{
+		int64_t diff = av_gettime() - pauseTime;
+		startTime += diff;
+		paused = false;
+	}
+}
+
 
 bool VideoDecoder::atEnd() const
 {

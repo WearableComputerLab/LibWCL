@@ -48,8 +48,8 @@ namespace wcl
     class WCL_API VideoDecoder
     {
     public:
-	VideoDecoder(const std::string &path, const bool autofpslimit=true) throw (const std::string &);
-	VideoDecoder(const unsigned width, const unsigned height, const CodecID codec, bool autofpslimit=true );
+	VideoDecoder(const std::string &path, const bool autofpslimit=true, const bool autoplay = true) throw (const std::string &);
+	VideoDecoder(const unsigned width, const unsigned height, const CodecID codec, bool autofpslimit=true, const bool autoplay = true);
 	~VideoDecoder();
 
 	void nextFrame(const unsigned char *inputbuffer, const unsigned buffersize);
@@ -96,6 +96,11 @@ namespace wcl
 	void rewind();
 
 	/**
+	 * Pauses/unpauses the video.
+	 */
+	void setPaused(bool pause);
+
+	/**
 	 * Obtain the Frames Per Second for this video. If the video comes from
 	 * a file the FPS will be dictated by the file (if autofpslimit is set).
 	 * If the video comes from a stream or autofpslimit is not set then fps
@@ -115,9 +120,10 @@ namespace wcl
 	unsigned height;
 	int index;
 	int64_t startTime;
+	int64_t pauseTime;
 	int64_t playedFrames;
 	bool autoFPSLimit; // Should this class limit the frame rate
-
+	bool paused;
 
 	/**
 	 * Find the nth video stream in the avcodec context and return the
