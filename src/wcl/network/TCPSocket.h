@@ -40,8 +40,8 @@ class WCL_API TCPSocket: public Socket
 {
 	public:
 		TCPSocket();
-		TCPSocket ( const std::string &, const unsigned port ) throw (SocketException);
-		void connect();
+		TCPSocket ( const std::string &, const unsigned port, bool autoConnect = true) throw (SocketException);
+		void connect() throw (SocketException);
 		void setFileDescriptor( const int );
 		void setRemoteAddress( const sockaddr_in );
 

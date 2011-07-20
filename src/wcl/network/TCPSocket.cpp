@@ -49,7 +49,7 @@ TCPSocket::TCPSocket()
  * @param port The remote port to connect to
  * @throws SocketError If there was a problem resolving the hostname or connecting to the host
  */
-TCPSocket::TCPSocket( const std::string &server, const unsigned port ) throw (SocketException)
+TCPSocket::TCPSocket( const std::string &server, const unsigned port, bool autoConnect) throw (SocketException)
 {
     // Create a new socket
     if ( !this->create()){
@@ -59,10 +59,21 @@ TCPSocket::TCPSocket( const std::string &server, const unsigned port ) throw (So
     this->storeResolve( server.c_str(), port );
 
     // Perform the connection
-    if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
-	this->close();
-	throw SocketException(this);
-    }
+	if (autoConnect)
+	{
+		if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
+			this->close();
+			throw SocketException(this);
+		}
+	}
+}
+
+void TCPSocket::connect() throw (SocketException)
+{
+	if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
+		this->close();
+		throw SocketException(this);
+	}
 }
 
 /**
