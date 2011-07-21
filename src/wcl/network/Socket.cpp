@@ -131,10 +131,12 @@ bool Socket::bind( const unsigned port )
  * @param size The size of the buffer
 *  @param peek To peak at the message and not remove it from the network queue
  * @return The amount of data read if all ok, -1 on a read error, not caused
- *         by the close of a socket, 0 on a graceful close Note, the amount
+ *         by the close of a socket, Note, the amount
  *        of data actually read may not match what you requested. This function
- *        will return as soon as some data has been read
- * @throws SocketException if the remote end has forcable closed the socket 
+ *        will return as soon as some data has been read. 0 will be returned
+ *        if data is not available or would cause blocking to occur in
+ *        NONBLOCKING mode
+ * @throws SocketException if the remote end has closed the socket
  */
 ssize_t Socket::read ( void *buffer, const size_t size, const bool peek) throw (SocketException)
 {
@@ -148,7 +150,18 @@ ssize_t Socket::read ( void *buffer, const size_t size, const bool peek) throw (
 	flags = MSG_PEEK;
 
     ssize_t retval = ::recv(this->sockfd, buffer, size, flags );
-    if ( retval == -1 && errno == ECONNRESET){
+    if ( retval == -1 ){
+	if (errno == ECONNRESET)
+	    throw SocketException(this);
+
+	// Non blocking will have errno set to
+	// EAGAIN, we return 0 in this case
+	if ( this->blocking == NONBLOCKING &&
+	     (errno == EAGAIN || errno == EWOULDBLOCK )){
+	    return 0;
+	}
+    } else if (retval == 0 && this->blocking == BLOCKING ){
+	// The remote has gracefully closed the connection.
 	throw SocketException(this);
     }
     return retval;
