@@ -70,6 +70,11 @@ TCPSocket::TCPSocket( const std::string &server, const unsigned port, bool autoC
 
 void TCPSocket::connect() throw (SocketException)
 {
+	if (!this->isValid() && !this->create())
+	{
+		throw SocketException(this);
+	}
+
 	if ( ::connect( this->sockfd, (sockaddr *)&address, sizeof(address)) == -1 ){
 		this->close();
 		throw SocketException(this);
