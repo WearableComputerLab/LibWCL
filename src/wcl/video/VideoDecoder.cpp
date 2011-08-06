@@ -164,71 +164,72 @@ void VideoDecoder::nextFrame(const unsigned char *ibuffer, const unsigned buffer
 
 const unsigned char *VideoDecoder::getFrame()
 {
-    // FormatContext is only defined if we are reading from a file. In that
-    // case, next frame will not be called hence we must read from the file
-    // We also rate limit based on the internal playback rate of the file
-    if( this->formatContext ){
-	AVPacket packet;
-	bool found=false;
+	// FormatContext is only defined if we are reading from a file. In that
+	// case, next frame will not be called hence we must read from the file
+	// We also rate limit based on the internal playback rate of the file
+	if( this->formatContext ){
+		AVPacket packet;
+		bool found=false;
 
-	int64_t neededFrame=0;;
+		int64_t neededFrame=0;;
 
-	if (paused)
-		return (unsigned char *)this->buffer;
+		if (paused)
+			return (unsigned char *)this->buffer;
 
-	// Check to see if we are being called faster than the movie should be
-	// played back if we are and we are limiting the frames, simply return
-	// the same buffer;
-	if( this->autoFPSLimit ){
-	    neededFrame= (int)(((av_gettime()-this->startTime)/1000000.0)*this->getFPS());
-	    if(neededFrame <= this->playedFrames )
-		return (unsigned char *)this->buffer;
-	}
+		// Check to see if we are being called faster than the movie should be
+		// played back if we are and we are limiting the frames, simply return
+		// the same buffer;
+		if( this->autoFPSLimit ){
+			neededFrame= (int)(((av_gettime()-this->startTime)/1000000.0)*this->getFPS());
+			if(neededFrame <= this->playedFrames )
+				return (unsigned char *)this->buffer;
+		}
 
-	// Keep processing frames until we find the next frame we are
-	// after. This may be more than one frame if autofps limiting is enabled
-	while(!found && av_read_frame(this->formatContext, &packet) >= 0){
-		if( packet.stream_index==this->index){
-			avcodec_decode_video(this->codecContext, this->someFrame,
-					&this->isvalid, packet.data, packet.size);
-			if( this->isvalid ){
-				this->playedFrames++;
-				sws_scale(this->imageConvertContext,
-						this->someFrame->data, this->someFrame->linesize,
-						0, this->height,
-						this->RGBFrame->data, this->RGBFrame->linesize);
+		// Keep processing frames until we find the next frame we are
+		// after. This may be more than one frame if autofps limiting is enabled
+		while(!found && av_read_frame(this->formatContext, &packet) >= 0){
+			if( packet.stream_index==this->index){
+				avcodec_decode_video(this->codecContext, this->someFrame,
+						&this->isvalid, packet.data, packet.size);
+				if( this->isvalid ){
+					this->playedFrames++;
+					sws_scale(this->imageConvertContext,
+							this->someFrame->data, this->someFrame->linesize,
+							0, this->height,
+							this->RGBFrame->data, this->RGBFrame->linesize);
 
-				// If we are rate limiting, keep decoding frames until
-				// we catch up to where we should be
-				if(this->autoFPSLimit ){
-					if(this->playedFrames >= neededFrame )
+					// If we are rate limiting, keep decoding frames until
+					// we catch up to where we should be
+					if(this->autoFPSLimit ){
+						if(this->playedFrames >= neededFrame )
+							found=true;
+					}
+					// Else we simply return the next frame
+					else {
 						found=true;
-				}
-				// Else we simply return the next frame
-				else {
-					found=true;
+					}
 				}
 			}
+			av_free_packet(&packet);
 		}
-		av_free_packet(&packet);
-	}
 
-	// No more frames in the file
-	if(!found)
-	    return NULL;
-    } else {
-	//
-	// Stream decoding
-	//
-	if( this->isvalid ){
-		this->playedFrames++;
-		sws_scale(this->imageConvertContext,
-			  this->someFrame->data, this->someFrame->linesize,
-			  0, this->height,
-			  this->RGBFrame->data, this->RGBFrame->linesize);
+		// No more frames in the file
+		if(!found)
+			return NULL;
+	} 
+	else {
+		//
+		// Stream decoding
+		//
+		if( this->isvalid ){
+			this->playedFrames++;
+			sws_scale(this->imageConvertContext,
+					this->someFrame->data, this->someFrame->linesize,
+					0, this->height,
+					this->RGBFrame->data, this->RGBFrame->linesize);
+		}
 	}
-    }
-    return (unsigned char *)this->buffer;
+	return (unsigned char *)this->buffer;
 }
 
 
