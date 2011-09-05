@@ -22,6 +22,29 @@ make install
 Note that the templates currently crash clang++
 
 
+* Developing 
+********************
+
+If you want to add code to LibWCL, then great! However, there are a few things
+you need to do before submitting code:
+
+1. Have a long hard think about whether you want to put your code under the BSD
+   license. LibWCL is only really distributed within the lab, so it's not like
+   you'll be giving away your code to evil corporations.
+
+2. Make sure Git knows your name and email address BEFORE you make any commits.
+
+      git config --global user.name "Firstname Lastname"
+      git config --global user.email "your_email@youremail.com"
+
+3. Edit AUTHORS and add your name and email address, signifying that you agree
+   to put your code under the BSD license. Commit and push this file when you
+   have done so.
+
+4. If you add any new files, ensure they have the BSD header in them. You can
+   copy/paste from an existing file.
+
+
 * DOCUMENTATION
 ********************
 
