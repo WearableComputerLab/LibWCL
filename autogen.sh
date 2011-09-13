@@ -9,7 +9,19 @@ ACLOCAL=`which aclocal`
 AUTOCONF=`which autoconf`
 AUTOHEADER=`which autoheader`
 AUTOMAKE=`which automake`
+
 LIBTOOLIZE=`which libtoolize`
+if [ "$?" -ne "0" ] ;
+then
+	echo "Libtoolize not on path! Trying glibtoolize (osx)"
+	LIBTOOLIZE=`which glibtoolize`
+	if [ "$?" -ne "0" ] ; then
+		echo "Nope, couldn't find libtoolize, bailing."
+		exit
+	else
+		echo "Yep, glibtoolize works"
+	fi
+fi
 
 #
 # LIBTOOLIZE
