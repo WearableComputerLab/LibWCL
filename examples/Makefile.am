@@ -14,7 +14,7 @@ if ENABLE_PARSERS
 SUBDIRS+=parsers
 endif
 
-if ENABLE_VICON
+if ENABLE_TRACKING_VICON
 SUBDIRS+=vicon
 endif
 

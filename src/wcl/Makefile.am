@@ -157,33 +157,47 @@ endif
 #
 # Vicon MoCap
 #
-tracking_headers=
+tracking_headers=\
+			tracking/TrackedObject.h \
+			tracking/Tracker.h 
+
 tracking_sources=
 
-if ENABLE_VICON
+if ENABLE_TRACKING_LAZYSUSAN
 tracking_headers+=\
 		    tracking/LazySusan.h \
-		    tracking/LazySusanTrackedObject.h \
-			tracking/Polhemus.h \
-			tracking/PolhemusTrackedObject.h \
-			tracking/TrackedObject.h \
-			tracking/Tracker.h \
+		    tracking/LazySusanTrackedObject.h 
+
+tracking_sources+=\
+		    tracking/LazySusan.cpp \
+		    tracking/LazySusanTrackedObject.cpp 
+endif
+
+if ENABLE_TRACKING_VICON
+tracking_headers+=\
 			tracking/ViconTrackedObject.h \
 			tracking/ViconClient.h \
 			tracking/VirtualTrackedObject.h \
 			tracking/VirtualTracker.h
 
 tracking_sources+=\
-		    tracking/LazySusan.cpp \
-		    tracking/LazySusanTrackedObject.cpp \
-			tracking/Polhemus.cpp \
-			tracking/PolhemusTrackedObject.cpp \
 			tracking/ViconTrackedObject.cpp \
 			tracking/ViconClient.cpp \
 			tracking/VirtualTrackedObject.cpp \
 			tracking/VirtualTracker.cpp
-
 endif
+
+if ENABLE_TRACKING_POLHEMUS
+tracking_headers+=\
+			tracking/Polhemus.h \
+			tracking/PolhemusTrackedObject.h 
+
+tracking_sources+=\
+			tracking/Polhemus.cpp \
+			tracking/PolhemusTrackedObject.cpp 
+endif
+
+
 
 if ENABLE_TRACKING_ARTOOLKITPLUS
 tracking_headers+=tracking/ARToolKitPlusTracker.h\

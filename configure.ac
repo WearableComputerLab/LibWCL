@@ -55,7 +55,11 @@ AC_ARG_ENABLE(camera-uvc, AC_HELP_STRING([--enable-camera-uvc], [Enable UVC Came
 AC_ARG_ENABLE(camera-ptgrey, AC_HELP_STRING([--enable-camera-ptgrey], [Enable PTGrey Camera Support (via libflycapture2)]), , )
 AC_ARG_ENABLE(camera-virtual, AC_HELP_STRING([--enable-camera-virtual], [Enable Virutal Camera Support]), , )
 AC_ARG_ENABLE(gestures, AC_HELP_STRING([--enable-gestures], [Enable Gesture Recognition Support]), , )
-AC_ARG_ENABLE(vicon, AC_HELP_STRING([--enable-vicon], [Enable Vicon System support]), , )
+
+AC_ARG_ENABLE(tracking-lazysusan, AC_HELP_STRING([--enable-tracking-lazysusan], [Enable Lazy Susan Tracker]), , )
+AC_ARG_ENABLE(tracking-polhemus, AC_HELP_STRING([--enable-tracking-polhemus], [Enable Polhemus Tracker]), , )
+AC_ARG_ENABLE(tracking-vicon, AC_HELP_STRING([--enable-tracking-vicon], [Enable Vicon System support]), , )
+
 AC_ARG_ENABLE(geometry, AC_HELP_STRING([--enable-geometry], [Enable geometry classes]), , )
 AC_ARG_ENABLE(rawports, AC_HELP_STRING([--enable-rawports], [Enable Raw ports support - serial,parallel, bluetooth]), , )
 AC_ARG_ENABLE(x11, AC_HELP_STRING([--enable-x11], [Enable X11 Support]), , )
@@ -76,7 +80,9 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 	     enable_camera_ptgrey=${enable_camera_ptgrey:-"yes"};
 	     enable_camera_virtual=${enable_camera_virtual:-"yes"};
 	     enable_gestures=${enable_gestures:-"yes"};
-	     enable_vicon=${enable_vicon:-"yes"};
+	     enable_tracking_lazysusan=${enable_tracking_lazysusan:-"yes"};
+	     enable_tracking_polhemus=${enable_tracking_polhemus:-"yes"};
+	     enable_tracking_vicon=${enable_tracking_vicon:-"yes"};
 	     enable_geometry=${enable_gemoetry:-"yes"};
 	     enable_rawports=${enable_rawports:-"yes"};
 	     enable_x11=${enable_x11:-"yes"};
@@ -90,9 +96,19 @@ AC_ARG_ENABLE(all, AC_HELP_STRING([--enable-all], [Enable Support For Everything
 #
 # Automatically turn on network if we are building the vicon module.
 #
-if test "x$enable_vicon" = "xyes"; then
+if test "x$enable_tracking_vicon" = "xyes"; then
 	enable_network="yes";
 	echo "*** Vicon Module selected, automatically enabling Network ***";
+fi
+
+if test "x$enable_tracking_lazysusan" = "xyes"; then
+	enable_rawports="yes";
+	echo "*** Lazysusan Module selected, automatically enabling Rawports ***";
+fi
+
+if test "x$enable_tracking_polhemus" = "xyes"; then
+	enable_rawports="yes";
+	echo "*** Polhemus Module selected, automatically enabling Rawports ***";
 fi
 
 #
@@ -304,33 +320,6 @@ AC_TYPE_SIZE_T
 AC_FUNC_MALLOC
 AC_CHECK_FUNCS([memset])
 
-#
-# Indicate what will be built into libwcl, 
-# Crash out if nothing is defined
-#
-###############################
-echo "-------------------------------"
-echo "libwcl Configuration Summary "
-echo "-----------------------------"
-echo "network support               : ${enable_network:-no}"
-echo "Gesture recognition           : ${enable_gestures:-no}"
-echo "Geometry classes              : ${enable_geometry:-no}"
-echo "Vicon MoCap Support           : ${enable_vicon:-no}"
-echo "X11 Support                   : ${enable_x11:-no}"
-echo "Rawports Support(com/lpt/bt)  : ${enable_rawports:-no}"
-echo "Cameras:                      :"
-echo "   UVC Camera support         : ${enable_camera_uvc:-no}"
-echo "   PTGrey Camera support      : ${enable_camera_ptgrey:-no}"
-echo "   1394 (Firewire) Camera     : ${enable_camera_1394:-no}"
-echo "   Virtual Camera Support     : ${enable_camera_virtual:-no}"
-echo "Parser Support                : ${enable_parsers:-no}"
-echo "ARToolkitPlus Tracker Support : ${enable_tracking_artoolkitplus:-no}"
-echo "Video Encoder/Decoder Support : ${enable_video:-no}"
-echo "Wiimote Support               : ${enable_wiimote:-no}"
-echo "Structured Light Support      : ${enable_structuredlight:-no}"
-echo "Maths Support                 : Enabled (default)"
-echo "Examples Compiled             : ${enable_examples:-no}"
-echo "-------------------------------------------------"
 
 #
 # Tell automake to substitute the values for 
@@ -353,7 +342,11 @@ AM_CONDITIONAL(ENABLE_CAMERA_1394, test "x$enable_camera_1394" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_PTGREY, test "x$enable_camera_ptgrey" = "xyes")
 AM_CONDITIONAL(ENABLE_CAMERA_UVC, test "x$enable_camera_uvc" = "xyes")
 AM_CONDITIONAL(ENABLE_GESTURES, test "x$enable_gestures" = "xyes")
-AM_CONDITIONAL(ENABLE_VICON, test "x$enable_vicon" = "xyes")
+
+AM_CONDITIONAL(ENABLE_TRACKING_LAZYSUSAN, test "x$enable_tracking_lazysusan" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_POLHEMUS, test "x$enable_tracking_polhemus" = "xyes")
+AM_CONDITIONAL(ENABLE_TRACKING_VICON, test "x$enable_tracking_vicon" = "xyes")
+
 AM_CONDITIONAL(ENABLE_GEOMETRY, test "x$enable_geometry" = "xyes")
 AM_CONDITIONAL(ENABLE_RAWPORTS, test "x$enable_rawports" = "xyes")
 AM_CONDITIONAL(ENABLE_X11, test "x$enable_x11" = "xyes")
@@ -394,3 +387,39 @@ AC_CONFIG_FILES([Makefile
 #
 ###########################
 AC_OUTPUT
+
+#
+# Indicate what will be built into libwcl, 
+# Crash out if nothing is defined
+#
+###############################
+echo
+echo
+echo "-------------------------------------------------"
+echo "libwcl Configuration Summary "
+echo "-------------------------------------------------"
+echo "Base Functionality:" 
+echo "   Maths Support              : Enabled (default)"
+echo "   Geometry classes           : ${enable_geometry:-no}"
+echo "   Gesture recognition        : ${enable_gestures:-no}"
+echo "Base IO Support:" 
+echo "   network support            : ${enable_network:-no}"
+echo "   Rawports Support           : ${enable_rawports:-no}"
+echo "Tracking Support" 
+echo "   Lazy Susan Support         : ${enable_tracking_lazysusan:-no}"
+echo "   Polhemus Support           : ${enable_tracking_polhemus:-no}"
+echo "   Vicon MoCap Support        : ${enable_tracking_vicon:-no}"
+echo "   Wiimote Support            : ${enable_wiimote:-no}"
+echo "   ARToolkitPlus Support      : ${enable_tracking_artoolkitplus:-no}"
+echo "Cameras:                      :"
+echo "   UVC Camera support         : ${enable_camera_uvc:-no}"
+echo "   PTGrey Camera support      : ${enable_camera_ptgrey:-no}"
+echo "   1394 (Firewire) Camera     : ${enable_camera_1394:-no}"
+echo "   Virtual Camera Support     : ${enable_camera_virtual:-no}"
+echo "And the rest:"
+echo "   Parser Support             : ${enable_parsers:-no}"
+echo "   Video Encoder/Decoder      : ${enable_video:-no}"
+echo "   Structured Light Support   : ${enable_structuredlight:-no}"
+echo "   X11 Support                : ${enable_x11:-no}"
+echo "   Examples Compiled          : ${enable_examples:-no}"
+echo "-------------------------------------------------"
