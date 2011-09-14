@@ -107,7 +107,7 @@ int VideoDecoder::findVideoStream(const int nth)
     assert( this->formatContext != NULL );
 
     for(i = 0, vstreams=0; i < this->formatContext->nb_streams; i++ ){
-	if( this->formatContext->streams[i]->codec->codec_type ==CODEC_TYPE_VIDEO){
+	if( this->formatContext->streams[i]->codec->codec_type ==AVMEDIA_TYPE_VIDEO){
 	    if( vstreams == nth )
 		return i;
 	    else {
@@ -157,8 +157,11 @@ VideoDecoder::~VideoDecoder()
 
 void VideoDecoder::nextFrame(const unsigned char *ibuffer, const unsigned buffersize)
 {
-    avcodec_decode_video(this->codecContext, this->someFrame, &this->isvalid,
-			 (uint8_t *)ibuffer, buffersize);
+	AVPacket pkt;
+	pkt.data = (uint8_t *) ibuffer;
+	pkt.size = buffersize;
+
+    avcodec_decode_video2(this->codecContext, this->someFrame, &this->isvalid, &pkt);
 
 }
 
@@ -189,8 +192,8 @@ const unsigned char *VideoDecoder::getFrame()
 		// after. This may be more than one frame if autofps limiting is enabled
 		while(!found && av_read_frame(this->formatContext, &packet) >= 0){
 			if( packet.stream_index==this->index){
-				avcodec_decode_video(this->codecContext, this->someFrame,
-						&this->isvalid, packet.data, packet.size);
+				avcodec_decode_video2(this->codecContext, this->someFrame,
+						&this->isvalid, &packet);
 				if( this->isvalid ){
 					this->playedFrames++;
 					sws_scale(this->imageConvertContext,
