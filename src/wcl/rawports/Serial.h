@@ -112,8 +112,12 @@ public:
 		    // hardware
 		    BAUD_115200 = B115200,
 		    BAUD_230400 = B230400,
+#ifdef B460800
 		    BAUD_460800 = B460800,
+#endif
+#ifdef B921600
 		    BAUD_921600 = B921600
+#endif 
 #endif
 		    };
 
