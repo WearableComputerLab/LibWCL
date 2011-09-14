@@ -321,15 +321,20 @@ fi
 #
 
 # X11 Support
-PKG_CHECK_MODULES(X11, x11 xext,,
-				  [
-				   AC_MSG_WARN([X11 and XEXT libraries not found, not building X11 support])
-				   enable_x11="no"
-				   ERRORS+="X11 and XEXT libraries not found, not building X11 support\n"
-				   ]
-				  )
-PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
-PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
+if test "x$platform_linux" = "xyes"; then
+	PKG_CHECK_MODULES(X11, x11 xext,,
+					  [
+					   AC_MSG_WARN([X11 and XEXT libraries not found, not building X11 support])
+					   enable_x11="no"
+					   ERRORS+="X11 and XEXT libraries not found, not building X11 support\n"
+					   ]
+					  )
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $X11_LIBS"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $X11_CFLAGS"
+else
+	ERRORS+="X11 support only compiled on Linux.\n"
+	enable_x11="no"
+fi
 
 # Parsers...
 AC_PROG_YACC
