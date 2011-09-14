@@ -10,6 +10,9 @@ AUTOMAKE_OPTIONS=foreign
 # extra macros
 ACLOCAL_AMFLAGS=-I cfg
 
+LDFLAGS=@PKGCONFIG_OTHERLIBS@
+CXXFLAGS=@PKGCONFIG_OTHERINCLUDES@
+
 #
 # Indicate which directories to process
 #

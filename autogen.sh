@@ -27,7 +27,7 @@ fi
 # LIBTOOLIZE
 #
 # We don't check the libtoolize verision as we don't know if we need to
-$LIBTOOLIZE
+$LIBTOOLIZE --force
 
 #
 #  ACLOCAL

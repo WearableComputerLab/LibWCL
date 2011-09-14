@@ -210,6 +210,7 @@ if test "x$platform_linux" = "xyes"; then
 					    enable_camera_1394="no"
 						ERRORS+="libraw1394 not found, cannot build firewire camera support\n"
 					  ])
+
 	PKG_CHECK_MODULES(LIBDC1394, libdc1394-2 >= 2.0.2,,
 					  [ AC_MSG_WARN([libdc1394 not found, cannot build firewire camera support])
 					    enable_camera_1394="no"
@@ -224,6 +225,7 @@ elif test "x$platform_osx" = "xyes"; then
 						ERRORS+="libdc1394 not found, cannot build firewire camera support\n"
 					  ])
 	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
+	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBDC1394_CFLAGS"
 else
 	AC_MSG_WARN([Firewire Camera Support Is Not Available on your platform])
 	ERRORS+="Firewire Camera Support Is Not Available on your platform\n"
@@ -257,7 +259,7 @@ fi
 
 # artoolkitplus
 AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
+	[PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"],
 				 [
 	     AC_MSG_WARN([You Need to Install ARToolKitPlus. Under ubuntu add
 			deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main
@@ -441,6 +443,10 @@ if test "x$enable_camera_virtual" = "xyes" ; then
 AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
 fi
 
+
+
+LDFLAGS="$PKGCONFIG_OTHERLIBS $LDFLAGS"
+CXXFLAGS="$PKGCONFIG_OTHERINCLUDES $CXXFLAGS"
 
 #
 # Tell automake to substitute the values for 
