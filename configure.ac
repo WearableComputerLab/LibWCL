@@ -256,7 +256,8 @@ fi
 #
 
 # artoolkitplus
-AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
+AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
 				 [
 	     AC_MSG_WARN([You Need to Install ARToolKitPlus. Under ubuntu add
 			deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main
@@ -268,7 +269,6 @@ AC_CHECK_HEADERS([ARToolKitPlus/ARToolKitPlus.h],,
 			]
 	    )
 
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lARToolkitPlus"
 
 # VICON needs nework
 if test "x$enable_network" = "xno"; then
