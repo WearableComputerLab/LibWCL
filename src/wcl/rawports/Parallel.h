@@ -26,9 +26,6 @@
 #ifndef WCL_PARALLEL_PARALLEL_H
 #define WCL_PARALLEL_PARALLEL_H
 
-#ifndef LINUX
-#error "Only Linux Support for the Parallel Port currently exists"
-#endif
 
 #include <wcl/api.h>
 
