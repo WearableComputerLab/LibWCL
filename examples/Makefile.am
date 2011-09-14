@@ -26,9 +26,15 @@ if ENABLE_CAMERA
 SUBDIRS+=camera
 endif
 
-if ENABLE_RAWPORTS
+if ENABLE_SERIAL
 SUBDIRS+=serial
+endif
+
+if ENABLE_PARALLEL
 SUBDIRS+=parallel
+endif
+
+if ENABLE_BLUETOOTH
 SUBDIRS+=bluetooth
 endif
 

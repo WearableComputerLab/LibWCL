@@ -317,18 +317,22 @@ maths_sources=maths/Matrix.cpp\
 #
 rawports_headers=
 rawports_sources=
-if ENABLE_RAWPORTS
-rawports_headers+=rawports/Bluetooth.h\
-				  rawports/IODevice.h\
-                  rawports/Parallel.h\
-		          rawports/Serial.h
+rawports_headers+=rawports/IODevice.h
 
-rawports_sources+=rawports/Bluetooth.cpp\
-                  rawports/Parallel.cpp\
-		          rawports/Serial.cpp
+if ENABLE_SERIAL
+rawports_headers+=rawports/Serial.h
+rawports_sources+=rawports/Serial.cpp
 endif
 
+if ENABLE_PARALLEL
+rawports_headers+=rawports/Parallel.h
+rawports_sources+=rawports/Parallel.cpp
+endif
 
+if ENABLE_BLUETOOTH
+rawports_headers+=rawports/Bluetooth.h
+rawports_sources+=rawports/Bluetooth.cpp
+endif
 
 
 #####################################################################
