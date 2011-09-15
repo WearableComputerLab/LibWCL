@@ -11,11 +11,13 @@ tar xvfz package.tar.gz
 make
 make install
 
+OR, you can use MacPorts to get most of the libraries necessary.
+
+Prerequisites - Manual
+----------------------
+
 Have the Apple Developer Tools (Xcode, etc) installed 
 Work with the terminal ...
-
- Prerequisites
----------------
 
 Get and install pkg-config
 
@@ -23,19 +25,6 @@ git clone git://anongit.freedesktop.org/pkg-config
 set PKG_CONFIG_PATH in to /usr/local/lib in bash profile
 
 Get and extract libwcl. You might have to copy libtool.sh into libwcl/cfg
-
- What doesn't work
--------------------
-UVC Camera, depends on video4linux
-Wiimote, depends on libbluetooth and on bluez
-Rawports, also depend on bluetooth
-ARToolkit, did not even bother to check ...
-
-Examples.
-
-
- Packages
-----------
 Get libavcodec / ffmpeg git clone git://git.videolan.org/ffmpeg.git
 ./configure --disable-yasm
 TODO: interop with libdc1394
@@ -43,12 +32,51 @@ TODO: interop with libdc1394
 download libdc1394, compile and install; it should be in /usr/local/include or lib
 Make sure it's version 2!
 
- Options that work
+
+Prerequisites with MacPorts
+---------------------------
+
+sudo port install autoconf automake ffmpeg-develve libdc1394 libtool pkgconfig   
+
+I *think* that's all we need, please let Michael know if it doesn't work.
+
+
+What does work
+------------------
+Maths Support           
+Geometry classes        
+Gesture recognition     
+Serial Support          
+UDP/TCP Support         
+1394 (Firewire) Camera  
+Virtual Camera Support  
+Lazy Susan Support      
+Polhemus Support        
+Vicon MoCap Support     
+Parser Support          
+Video Encoder/Decoder   
+Structured Light Support
+
+What doesn't work
+
 -------------------
---enable-network
---enable-video
---enable-geometry
---enable-gestures
---enable-camera-1394
---enable-parsers
---enable-camera-virtual
+Bluetooth
+Parallel I/O
+UVC USB Cameras. UVC is a Linux specific library
+X11 support
+
+What hasn't been tested
+
+-----------------------
+Point Grey Cameras
+ARToolkitPlus
+Examples.
+
+
+Build Process
+-------------
+
+./autogen.sh
+./configure
+make
+sudo make install
