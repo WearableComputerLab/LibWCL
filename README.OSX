@@ -36,7 +36,7 @@ Make sure it's version 2!
 Prerequisites with MacPorts
 ---------------------------
 
-sudo port install autoconf automake ffmpeg-develve libdc1394 libtool pkgconfig   
+sudo port install autoconf automake ffmpeg-devel libdc1394 libtool pkgconfig   
 
 I *think* that's all we need, please let Michael know if it doesn't work.
 
