@@ -145,7 +145,13 @@ namespace wcl
 					ss << "Invalid message received from polhemus: " << response;
 				    throw Exception(ss.str());
 				}
-				assert (number <= sensors.size());
+				
+				if (number > sensors.size() || number == 0)
+				{
+					std::stringstream ss;
+					ss << "Invalid polhemus sensor number (" << number << ") in libwcl. Valid range: 1-" << sensors.size();
+					throw Exception(ss.str());
+				}
 				
 				//printf("%d: (%f,%f,%f)\n", number, x, y, z);
 				
