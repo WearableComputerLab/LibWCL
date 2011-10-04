@@ -1,5 +1,6 @@
 /*
  * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2011 Markus Broecker <markus.broecker@unisa.edu.au>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +28,7 @@
 
 #include <assert.h>
 #include <sstream>
+#include <map>
 #include <iostream>
 #include <wcl/tracking/Polhemus.h>
 #include <wcl/tracking/TrackedObject.h>
@@ -38,6 +40,8 @@
 
 namespace wcl
 {
+
+	static std::map<char, std::string> PolhemusAsciiErrorCodes;
 
 	Polhemus::Polhemus(std::string path, TrackerType t) : Tracker(),  activeSensorCount(-1), type(t),continuous(false)
 	{
@@ -86,6 +90,25 @@ namespace wcl
 
 		//setContinuous(true);
 		//printf("connection.getAvailableCount init: %d\n",connection.getAvailableCount());
+
+		// Create the Error code table according to the Patriot user manual
+		PolhemusAsciiErrorCodes[' '] = "No Error";
+		PolhemusAsciiErrorCodes['a'] = "Source Fail X";
+		PolhemusAsciiErrorCodes['b'] = "Source Fail Y";
+		PolhemusAsciiErrorCodes['c'] = "Source Fail XY";
+		PolhemusAsciiErrorCodes['d'] = "Source Fail Z";
+		PolhemusAsciiErrorCodes['e'] = "Source Fail XZ";
+		PolhemusAsciiErrorCodes['f'] = "Source Fail YZ";
+		PolhemusAsciiErrorCodes['g'] = "Source Fail XYZ";
+		PolhemusAsciiErrorCodes['u'] = "Position outside of mapped area";
+		PolhemusAsciiErrorCodes['A'] = "Source Fail X + BIT Errors";
+		PolhemusAsciiErrorCodes['B'] = "Source Fail Y + BIT Errors";
+		PolhemusAsciiErrorCodes['C'] = "Source Fail XY + BIT Errors";
+		PolhemusAsciiErrorCodes['D'] = "Source Fail Z + BIT Errors";
+		PolhemusAsciiErrorCodes['E'] = "Source Fail XZ + BIT Errors";
+		PolhemusAsciiErrorCodes['F'] = "Source Fail YZ + BIT Errors";
+		PolhemusAsciiErrorCodes['G'] = "Source Fail XYZ + BIT Errors";
+		PolhemusAsciiErrorCodes['I'] = "BIT Errors";
 	}
 
 	Polhemus::~Polhemus()
@@ -104,6 +127,21 @@ namespace wcl
 		char* rubbish = new char[bytesAvailable];
 		connection.read((void*) rubbish, bytesAvailable);
 		delete[] rubbish;
+	}
+	
+	void Polhemus::clearRubbish()
+	{
+		connection.flush();
+		int bytesAvailable = connection.getAvailableCount();
+		
+		size_t expectedBytes=0;
+		if (type == PATRIOT)
+			expectedBytes = 69;
+		else if (type == FASTRAK)
+			expectedBytes = 54;
+		
+		
+		
 	}
 
 	void Polhemus::update()
@@ -134,19 +172,47 @@ namespace wcl
 			printf("%d:%s\n", sz, response);
 			*/
 	
-
+	
 			for (int i=0; i<activeSensorCount; i++)
 			{
-				connection.readUntil((void*) &response, expectedBytes);
-				response[expectedBytes] = '\0';
+
+				/* 	Modified read loop to stop at a line break. The polhemus
+					and SAR system sometimes get out of sync by half a line or
+					so and keeps going like that. This loop prevents that by
+					reading one entry (until the line break) at a time. 
+				*/
+ 				{
+					size_t count = 0;
+					char byte;
 					
-				//printf("%d %s\n", sz, response);
+					while (count < expectedBytes)
+					{
+						int read = connection.read(&byte, 1);
+						assert(read >= 0);
+						
+						if (byte == '\n')
+							break;
+							
+						response[count++] = byte;
+					}
+					/*
+					std::clog << "Read " << count << " bytes: [";
+					for (size_t i = 0; i < count; ++i)
+						std::clog << response[i] << " ";
+					std::clog << "]\n";
+					*/
+				}
 				
-				int count = sscanf(response, "%u%lf%lf%lf%lf%lf%lf%lf", &number, &x, &y, &z, &rw, &rx, &ry, &rz);
-				if( count != 8 )
+				
+				char error;
+				int count = sscanf(response, "%u%c %lf %lf %lf %lf %lf %lf %lf", &number, &error, &x, &y, &z, &rw, &rx, &ry, &rz);
+				if (count == EOF)
+					throw Exception("Input read error; message: [" + std::string(response) +"]");
+				
+				if( count != 9 )
 				{
 					std::stringstream ss;
-					ss << "Invalid message received from polhemus: " << response;
+					ss << "Could not read all items from polhemus; read " << count << ", expected 9, message: " << response;
 				    throw Exception(ss.str());
 				}
 				
@@ -157,6 +223,19 @@ namespace wcl
 					throw Exception(ss.str());
 				}
 				
+				// error messages according to the patriot user manual
+				if (error != ' ')
+				{
+					// squelch old errors
+					static char lastError = ' ';
+					if (error != lastError)
+					{
+						lastError = error;
+						// clear BIT error flag -- this hangs the connection after a while
+						//connection.write("^T");
+						throw Exception("Polhemus tracker reported error: " + PolhemusAsciiErrorCodes[error]);
+					}
+				}
 				//printf("%d: (%f,%f,%f)\n", number, x, y, z);
 				
 				if (units == MM)
