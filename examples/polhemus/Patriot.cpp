@@ -100,8 +100,12 @@ int main(int argc, char** argv)
 			return 1;
 		}
 
+
+		cout << client->getAllObjects().size() << " tracking objects available.\n";
+		
+
 		TrackedObject* s1 = client->getObject("sensor1");
-		TrackedObject* s2 = client->getObject("sensor2");
+		//TrackedObject* s2 = client->getObject("sensor2");
 
 		// now lets just loop, printing out the current positions/rotation of each object.
 		cout << endl << "*** Entering update loop ***" << endl << endl;
@@ -110,7 +114,7 @@ int main(int argc, char** argv)
 		{
 			client->update();
 			cout << s1->toString() << endl;
-			cout << s2->toString() << endl;
+			//cout << s2->toString() << endl;
 			//usleep(2000000);
 		}
 	}

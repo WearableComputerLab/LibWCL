@@ -70,6 +70,7 @@ namespace wcl
 		{
 			sensors.push_back(PolhemusTrackedObject("0"));
 			sensors.push_back(PolhemusTrackedObject("1"));
+			activeSensorCount = 2;
 			//getSensorCount();
 		}
 		else
@@ -78,7 +79,10 @@ namespace wcl
 			sensors.push_back(PolhemusTrackedObject("1"));
 			sensors.push_back(PolhemusTrackedObject("2"));
 			sensors.push_back(PolhemusTrackedObject("3"));
+			activeSensorCount = 4;
 		}
+
+		std::cout << "Created " << sensors.size() << " Polhemus tracked objects.\n";
 
 		//setContinuous(true);
 		//printf("connection.getAvailableCount init: %d\n",connection.getAvailableCount());
@@ -174,6 +178,12 @@ namespace wcl
 
 	TrackedObject* Polhemus::getObject(std::string name)
 	{
+		if (sensors.empty())
+			throw Exception("No sensors available!");
+			
+		if (activeSensorCount < 1)
+			throw Exception("No active sensors!");
+		
 		if (name == "sensor1" && activeSensorCount >= 1)
 			return &sensors[0];
 		else if (name == "sensor2" && activeSensorCount >= 2)
@@ -183,7 +193,7 @@ namespace wcl
 		else if (name == "sensor4" && activeSensorCount >= 4)
 			return &sensors[3];
 		else
-			throw Exception("Invalid tracked object name");
+			throw Exception("Invalid tracked object name: '" + name +"'");
 	}
 
 	std::vector<TrackedObject *> Polhemus::getAllObjects()
