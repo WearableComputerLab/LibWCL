@@ -25,6 +25,7 @@
  */
 #include "DummyTracker.h"
 #include "DummyTrackedObject.h"
+#include "../Exception.h"
 
 using namespace wcl;
 
@@ -53,3 +54,17 @@ std::vector<TrackedObject*> DummyTracker::getAllObjects()
 		
 	return objects;
 }
+
+void DummyTracker::setUnits(Units u)
+{
+}
+
+void DummyTracker::addTrackedObject(DummyTrackedObject* to)
+{
+	std::string name = to->getName();
+	if (trackedObjects[name])
+		throw Exception("Dummy tracker with name '" + name + "' already registered.");
+
+	trackedObjects[name] = to;
+}
+

@@ -25,3 +25,34 @@
  */
 
 #include "DummyTrackedObject.h"
+
+using namespace wcl;
+
+DummyTrackedObject::DummyTrackedObject(const std::string& n) : position(3)
+{
+	name = n;
+	type = POSITION;
+	confidence = 1.0; 
+}
+
+Vector DummyTrackedObject::getTranslation() const
+{
+	return position;
+}
+
+SMatrix DummyTrackedObject::getTransform() const
+{
+	SMatrix t(4);
+	t.storeIdentity();
+	
+	for (int i = 0; i < 3; ++i)
+		t[3][i] = position[i];
+	
+	return t;
+}
+
+Quaternion DummyTrackedObject::getOrientation() const
+{
+	Quaternion q;
+	return q;
+}

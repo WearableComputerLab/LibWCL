@@ -37,6 +37,22 @@ class DummyTrackedObject : public TrackedObject
 {
 public:
 	DummyTrackedObject(const std::string& name);
+	
+	/// \name Public interface implementation
+	/// \{
+	
+	inline std::string toString() const { return "DummyTrackedObject '" + name + "'"; }
+	SMatrix getTransform() const;
+	Vector getTranslation() const;
+	Quaternion getOrientation() const;
+	inline bool isVisible() const { return true; }
+	
+	/// \}
+	
+	/// TODO: add methods for setting position, looking at stuff, etc
+	
+private:
+	Vector		position;
 };
 
 	
