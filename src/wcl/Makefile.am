@@ -159,9 +159,13 @@ endif
 #
 tracking_headers=\
 			tracking/TrackedObject.h \
-			tracking/Tracker.h 
+			tracking/Tracker.h \
+			tracking/DummyTracker.h\
+			tracking/DummyTrackedObject.h
 
-tracking_sources=
+tracking_sources=\
+			tracking/DummyTracker.cpp\
+			tracking/DummyTrackedObject.cpp
 
 if ENABLE_TRACKING_LAZYSUSAN
 tracking_headers+=\
