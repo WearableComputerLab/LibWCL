@@ -557,4 +557,4 @@ echo "   X11 Support                : ${enable_x11:-no}"
 echo "   Examples Compiled          : ${enable_examples:-no}"
 echo "-------------------------------------------------"
 
-echo "$ERRORS"
+echo -e "$ERRORS"
