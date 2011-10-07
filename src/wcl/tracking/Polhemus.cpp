@@ -129,21 +129,6 @@ namespace wcl
 		delete[] rubbish;
 	}
 	
-	void Polhemus::clearRubbish()
-	{
-		connection.flush();
-		int bytesAvailable = connection.getAvailableCount();
-		
-		size_t expectedBytes=0;
-		if (type == PATRIOT)
-			expectedBytes = 69;
-		else if (type == FASTRAK)
-			expectedBytes = 54;
-		
-		
-		
-	}
-
 	void Polhemus::update()
 	{
 		char response[70] = {0};
