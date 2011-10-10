@@ -28,7 +28,7 @@
 
 using namespace wcl;
 
-DummyTrackedObject::DummyTrackedObject(const std::string& n) : position(3)
+DummyTrackedObject::DummyTrackedObject(const std::string& n, const Vector& pos) : position(pos)
 {
 	name = n;
 	type = POSITION;
