@@ -45,9 +45,9 @@ public:
 
 	void addTrackedObject(DummyTrackedObject*);
 
-	TrackedObject* getObject(std::string name) = 0;
-	std::vector<TrackedObject *> getAllObjects() = 0;
-	void setUnits(Units u) = 0;
+	TrackedObject* getObject(std::string name);
+	std::vector<TrackedObject *> getAllObjects();
+	void setUnits(Units u);
 
 private:
 	typedef std::map<std::string, DummyTrackedObject*> TrackedObjectList;
