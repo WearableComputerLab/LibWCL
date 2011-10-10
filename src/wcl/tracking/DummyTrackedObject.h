@@ -33,7 +33,7 @@
 
 namespace wcl
 {
-class DummyTrackedObject : public TrackedObject
+class WCL_API DummyTrackedObject : public TrackedObject
 {
 public:
 	DummyTrackedObject(const std::string& name, const Vector& position);

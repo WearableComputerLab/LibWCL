@@ -28,6 +28,7 @@
 #define DUMMYTRACKER_H_SWS8XTZ5
 
 #include <wcl/tracking/Tracker.h>
+#include <wcl/tracking/DummyTrackedObject.h>
 
 #include <string>
 #include <map>
@@ -35,8 +36,7 @@
 namespace wcl
 {
 
-class DummyTrackedObject;
-class DummyTracker : public Tracker
+class WCL_API DummyTracker : public Tracker
 {
 public:
 	~DummyTracker();
