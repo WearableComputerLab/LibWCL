@@ -98,10 +98,7 @@ int main(int argc, char** argv) {
             usage();
             return -1;
         }
-                // 02H 01H 00H 00H 00H 03H 
-                unsigned char toSend[] = { (unsigned char)2, (unsigned char)1, 0, 0, 0, (unsigned char)3 }; 
-                projector.write((char*) toSend, 6); 
-            }
+        
         try {
 
             TCPSocket projector(address,port);
