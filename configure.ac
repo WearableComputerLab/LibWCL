@@ -510,7 +510,8 @@ AC_CONFIG_FILES([Makefile
 				 examples/vicon/Makefile
 				 examples/video/Makefile
 				 examples/wiimote/Makefile
-				 libwcl.pc
+				 examples/projectors/Makefile 
+                 libwcl.pc
 				 ])
 
 #
