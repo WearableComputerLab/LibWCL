@@ -151,7 +151,7 @@ enable_x11="yes"
 enable_parsers="yes"
 enable_video="yes"
 enable_structuredlight="yes"
-
+enable_projectorcontrol="yes"
 
 #
 # LEVEL 5 - Only built examples when asked
@@ -322,6 +322,12 @@ fi
 # LEVEL 5 Checks
 #
 
+# Projector Control support
+if test "x$enable_network" = "xno"; then
+	echo "*** Projector Control cannot be built, because network support was disabled ***";
+	ERRORS+="Projector Control Module Cannot be built, because network support was disabled\n"
+	enable_projectorcontrol="no"
+fi
 # X11 Support
 if test "x$platform_linux" = "xyes"; then
 	PKG_CHECK_MODULES(X11, x11 xext,,
@@ -488,6 +494,7 @@ AM_CONDITIONAL(ENABLE_WIIMOTE, test "x$enable_wiimote" = "xyes")
 AM_CONDITIONAL(ENABLE_EXAMPLES, test "x$enable_examples" = "xyes")
 AM_CONDITIONAL(ENABLE_STRUCTUREDLIGHT, test "x$enable_structuredlight" = "xyes")
 
+AM_CONDITIONAL(ENABLE_PROJECTORCONTROL, test "x$enable_projectorcontrol" = "xyes")
 #
 # Files to create
 #
@@ -555,6 +562,7 @@ echo "   Parser Support             : ${enable_parsers:-no}"
 echo "   Video Encoder/Decoder      : ${enable_video:-no}"
 echo "   Structured Light Support   : ${enable_structuredlight:-no}"
 echo "   X11 Support                : ${enable_x11:-no}"
+echo "   Projector control support  : ${enable_projectorcontrol:-no}"
 echo "   Examples Compiled          : ${enable_examples:-no}"
 echo "-------------------------------------------------"
 

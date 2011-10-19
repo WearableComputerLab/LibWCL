@@ -364,6 +364,17 @@ structuredlight_headers+=graphics/structuredlight/GrayCode.h
 structuredlight_sources+=graphics/structuredlight/GrayCode.cpp
 endif
 
+####################################################################
+#
+# Remote Projector
+#
+projectorcontrol_headers=
+projectorcontrol_sources=
+if ENABLE_PROJECTORCONTROL
+        projectorcontrol_headers+=projector/RemoteProjector.h
+        projectorcontrol_sources+=projector/RemoteProjector.cpp
+endif
+
 
 ####################################################################
 #
@@ -387,7 +398,8 @@ nobase_libwcl_la_include_HEADERS=$(common_headers)\
 				$(parser_headers)\
 				$(video_headers) \
 				$(wiimote_headers) \
-				$(structuredlight_headers) 
+				$(structuredlight_headers) \
+                $(projectorcontrol_headers)
 
 libwcl_la_SOURCES=$(common_sources)\
                  $(network_sources)\
@@ -406,5 +418,5 @@ libwcl_la_SOURCES=$(common_sources)\
 		 $(parser_sources)\
 		 $(video_sources) \
 		 $(wiimote_sources) \
-		 $(structuredlight_sources)
-
+		 $(structuredlight_sources) \
+         $(projectorcontrol_sources)
