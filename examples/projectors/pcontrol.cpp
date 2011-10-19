@@ -37,9 +37,6 @@ using namespace wcl;
 void usage() {
     printf("NAME\n\tpcontrol - Network command controller for NEC projectors\n\n"
             "SYNOPSIS\n\t pcontrol [options] -a <address> -p <port> [COMMAND]\n\n"
-            "When no options, address or port are specified, the defaults of:\n"
-            "127.0.0.1:7142\n"
-            "are used.\n\n"
             "Options:\n"
             "\t-h\n\t--help\n"
             "\t\tDisplay usage options.\n"
@@ -47,9 +44,9 @@ void usage() {
             "\t\tThe address of the projector to communicate with.\n"
             "\t-p\n\t--port\n"
             "\t\tThe port to communicate on.\n"
-            "COMMANDS\n[COMMAND] can be any single value of the following:"
-            "\t--ON\nPower ON\n"
-            "\t--OFF\nPower OFF\n"
+            "COMMANDS\n[COMMAND] can be any single value of the following:\n"
+            "\t--ON\n\t\tPower ON\n"
+            "\t--OFF\n\t\tPower OFF\n"
           );
 }
 
@@ -117,13 +114,21 @@ int main(int argc, char** argv) {
             // Read the response from the projector. 
             unsigned char buffer[4096];
             projector.read((char *)buffer, 4096);
-            std::cout << "Projector responded: " << (int)buffer[0] << "," << buffer[1] << std::endl; 
+            if ( (int) buffer[0] == 34  ) {
+                std::cout << "Projecter sends ACK: Doing task." << std::endl;
+            } else {
+                std::cout << "Projector did not send ACK. Recieved: " << (int)buffer[0] << std::endl;
+            }
+            
             projector.close();
         } catch (SocketException* e) {
             fprintf( stderr, "%s", e->what() ); 
         }
 
-        }
-
-        return 0;
+    } else {
+        usage();
+        return -1;
     }
+
+    return 0;
+}
