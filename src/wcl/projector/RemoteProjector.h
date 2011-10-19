@@ -43,9 +43,13 @@ class WCL_API RemoteProjector
 		RemoteProjector();
         RemoteProjector( const std::string &server, const unsigned port, bool autoConnect) throw (SocketException);
         ~RemoteProjector();
-	protected: 
+    
+        void turnOn();
+        void turnOff();
+        void getResponse();
+    protected: 
         TCPSocket *rprojector;
-
+        
 };
 
 
