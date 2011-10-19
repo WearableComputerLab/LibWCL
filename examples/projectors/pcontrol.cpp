@@ -30,7 +30,7 @@
 #include <string>
 #include <iostream>
 #include <stdio.h>
-#include "wcl/network/TCPServer.h"
+#include <wcl/projector/RemoteProjector.h>
 
 using namespace wcl;
 
@@ -96,34 +96,17 @@ int main(int argc, char** argv) {
             return -1;
         }
         
-        try {
-
-            TCPSocket projector(address,port);
-            // Get the last value, which should be our command, and use it for our command to run. 
-            if ( strcmp (argv[argc-1], "--ON" ) == 0 ) {
-                // 02H 00H 00H 00H 00H 00H 02H
-                unsigned char toSend[] = { (unsigned char)2, 0, 0, 0, 0, (unsigned char)2 }; 
-                projector.write((char*) toSend, 6);
-            }
-            if ( strcmp (argv[argc-1], "--OFF" ) == 0 ) {
-
-                // 02H 01H 00H 00H 00H 03H 
-                unsigned char toSend[] = { (unsigned char)2, (unsigned char)1, 0, 0, 0, (unsigned char)3 }; 
-                projector.write((char*) toSend, 6); 
-            }
-            // Read the response from the projector. 
-            unsigned char buffer[4096];
-            projector.read((char *)buffer, 4096);
-            if ( (int) buffer[0] == 34  ) {
-                std::cout << "Projecter sends ACK: Doing task." << std::endl;
-            } else {
-                std::cout << "Projector did not send ACK. Recieved: " << (int)buffer[0] << std::endl;
-            }
-            
-            projector.close();
-        } catch (SocketException* e) {
-            fprintf( stderr, "%s", e->what() ); 
+        RemoteProjector *rp = new RemoteProjector(address,port,true);
+        // Get the last value, which should be our command, and use it for our command to run. 
+        if ( strcmp (argv[argc-1], "--ON" ) == 0 ) {
+            rp->turnOn();
         }
+        if ( strcmp (argv[argc-1], "--OFF" ) == 0 ) {
+            rp->turnOff(); 
+        }
+
+        rp->getResponse();
+
 
     } else {
         usage();
