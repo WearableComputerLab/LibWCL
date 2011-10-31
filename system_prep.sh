@@ -15,7 +15,7 @@
 cp /etc/apt/sources.list /etc/apt/sources.list.backup
 echo '' >> /etc/apt/sources.list
 echo '# ARToolKitPlus repository' >> /etc/apt/sources.list
-echo 'deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu natty main' >> /etc/apt/sources.list
+echo 'deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main' >> /etc/apt/sources.list
 
 apt-get update
 
