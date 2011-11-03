@@ -53,6 +53,9 @@ preconfigured to generate nice html documentation. Generating the doc is easy:
 
 doxygen libwcl.dox
 
+We also have a bug tracker:
+
+http://wcl.ml.unisa.edu.au/redmine
 
 * EXAMPLES
 ********************
