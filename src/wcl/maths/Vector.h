@@ -67,6 +67,10 @@ public:
     Vector & operator *=( const T & );
     Vector & operator /=( const T & );
 
+
+	inline T length() const { return this->normal(); }
+	inline T lengthSquared() const { return this->dot(*this); }
+
     T normal() const;
     Vector unit() const;
 	Vector crossProduct(const Vector& v) const;
