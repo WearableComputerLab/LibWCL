@@ -103,6 +103,7 @@ geometry_sources=
 if ENABLE_GEOMETRY
 geometry_headers+=\
 			geometry/BoundingBox.h \
+			geometry/BoundingSphere.h\
 			geometry/Face.h \
 			geometry/GeometryLoader.h \
 			geometry/Line.h \
@@ -114,6 +115,7 @@ geometry_headers+=\
 
 geometry_sources+=\
 			geometry/BoundingBox.cpp \
+			geometry/BoundingSphere.cpp\
 			geometry/Face.cpp \
 			geometry/GeometryLoader.cpp \
 			geometry/Line.cpp \
