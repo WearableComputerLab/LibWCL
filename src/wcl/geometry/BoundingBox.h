@@ -100,6 +100,12 @@ namespace wcl
 			 */
 			void clear();
 
+
+			/**
+			 * Moves this bounding box by adding V to both min and max.
+			 */
+			void translate(const wcl::Vector& v);
+
 			/**
 			 * Returns the centroid of the bounding box.
 			 */

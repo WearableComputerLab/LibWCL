@@ -211,5 +211,11 @@ namespace wcl
 	    this->addPoint(box.min);
 		this->addPoint(box.max);
 	}
+
+	void BoundingBox::translate(const wcl::Vector& v)
+	{
+		min += v;
+		max += v;
+	}
 }
 
