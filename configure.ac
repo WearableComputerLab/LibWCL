@@ -348,12 +348,27 @@ fi
 # Parsers...
 AC_PROG_YACC
 AC_PROG_LEX
-if "$LEX" = ":"; then
-	AC_MSG_WARN([Could not find lex. (F)Lex and yacc must be intalled to build parsers])
-	ERRORS+="Could not find lex. (F)Lex and yacc must be intalled to build parsers\n"
+if test "$LEX" = ":"; then
+	AC_MSG_WARN([Could not find lex. (F)Lex and yacc(bison) must be intalled to build parsers])
+	ERRORS+="Could not find lex. (F)Lex and yacc(bison) must be intalled to build parsers\n"
 	enable_parsers="no"
 fi
 
+# add the path belonging to the lexer to the include flags. This is required so
+# the correct version of FlexLexer.h is picked up when there is more than one
+# lexer on the system
+CMD=`which $LEX`	           #ie: flex -> /usr/local/bin/flex
+DIRNAME=`dirname $CMD`             #ie: /usr/local/bin/flex -> /usr/local/bin
+DIRNAME=`dirname $DIRNAME`         #ie: /usr/local/bin -> /usr/local
+if test -e "$DIRNAME/include/FlexLexer.h" ; then
+	CXXFLAGS="$CXXFLAGS -I$DIRNAME/include"         #ie: /usr/local -> -I/usr/local/include
+elif test -e "$DIRNAME/include/$LEX/FlexLexer.h" ; then
+	CXXFLAGS="$CXXFLAGS -I$DIRNAME/include/$LEX"    #ie: /usr/local -> -I/usr/local/include/$LEX
+else
+	AC_MSG_WARN([Could not find c++ Lexer Files, (F)Lex must be installed and FlexLexer.h must exist])
+	ERRORS+="Could not find c++ Lexer Files, (F)Lex must be installed and FlexLexer.h must exist\n"
+	enable_parser="no"
+fi
 
 # Video (de/en)coding
 PKG_CHECK_MODULES(LIBAVCODEC,libavcodec,
@@ -450,8 +465,6 @@ if test "x$enable_camera_virtual" = "xyes" ; then
 AC_DEFINE(ENABLE_CAMERA_VIRTUAL, 1, [Enable Virtual Camera Support])
 fi
 
-
-
 LDFLAGS="$PKGCONFIG_OTHERLIBS $LDFLAGS"
 CXXFLAGS="$PKGCONFIG_OTHERINCLUDES $CXXFLAGS"
 
@@ -464,6 +477,7 @@ AC_SUBST(PKGCONFIG_OTHERINCLUDES)
 AC_SUBST(PKGCONFIG_LIBDIR)
 AC_SUBST(EXAMPLE_LIBS)
 AC_SUBST(EXAMPLE_INCLUDES)
+
 
 #
 # Automake Substitution Variables
