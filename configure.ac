@@ -229,6 +229,7 @@ elif test "x$platform_osx" = "xyes"; then
 else
 	AC_MSG_WARN([Firewire Camera Support Is Not Available on your platform])
 	ERRORS+="Firewire Camera Support Is Not Available on your platform\n"
+	enable_camera_1394="no"
 fi
 
 # Point Grey needs their stupid lib
