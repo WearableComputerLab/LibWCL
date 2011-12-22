@@ -57,7 +57,7 @@ int main( int argc, char **args )
     }
 
     // Read back a line (about BUFSIZE characters from the port)
-    if ( s.read( buffer, BUFSIZE )){
+    if ( s.read( buffer, BUFSIZE ) == -1){
 	printf("Failed to read from device\n");
 	exit(EXIT_FAILURE);
     }
