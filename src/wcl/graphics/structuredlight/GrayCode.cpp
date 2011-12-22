@@ -34,6 +34,10 @@
 
 #define WHITE 255
 
+#ifndef log2
+#define log2(x)        (log(x) / M_LN2)
+#endif
+
 namespace wcl {
 
 using namespace std;
