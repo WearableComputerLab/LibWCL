@@ -29,11 +29,12 @@
 
 #include <string>
 
-	#include <sys/types.h>
-	#include <netinet/in.h>
-	#include <signal.h>
-	#include <stdio.h>
-	#include <cstring>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <signal.h>
+#include <stdio.h>
+#include <cstring>
 
 #include <wcl/api.h>
 #include <wcl/network/SocketException.h>
