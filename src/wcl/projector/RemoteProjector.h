@@ -1,5 +1,7 @@
 /*-
  * Copyright (c) 2011 Tim Simon <tim.simon@radiumblue.net>
+ * Copyright (c) 2012 Michael Marner <michael@20papercups.net>
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,23 +36,24 @@
 
 namespace wcl {
 
-/**
- * A projector can be asked to perform some commands. 
- */
-class WCL_API RemoteProjector
-{
-	public:
-		RemoteProjector();
-        RemoteProjector( const std::string &server, const unsigned port, bool autoConnect) throw (SocketException);
-        ~RemoteProjector();
-    
-        void turnOn();
-        void turnOff();
-        void getResponse();
-    protected: 
-        TCPSocket *rprojector;
-        
-};
+	/**
+	 * A projector can be asked to perform some commands.
+	 */
+	class WCL_API RemoteProjector
+	{
+		public:
+			RemoteProjector(const std::string& ip,
+					const unsigned port = 7412) throw (SocketException);
+
+			~RemoteProjector();
+
+			void turnOn();
+			void turnOff();
+			void getResponse();
+		protected:
+			TCPSocket *mConnection;
+
+	};
 
 
 };  // namespace wcl

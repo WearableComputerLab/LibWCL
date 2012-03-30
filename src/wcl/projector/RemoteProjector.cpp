@@ -1,5 +1,7 @@
 /*-
  * Copyright (c) 2011 Tim Simon <tim.simon@radiumblue.net>
+ * Copyright (c) 2012 Michael Marner <michael@20papercups.net>
+ *
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,46 +31,68 @@
 
 namespace wcl {
 
-/**
- * Default constructor.  
- */
-RemoteProjector::RemoteProjector()
-{}
 
-/**
- * Create a RemoteProjector and attempt to connect the socket to the specified
- * server on the given port.
- *
- * @param address Address of the projector to connect to, this can be a string
- * based ip, or hostname
- * @param port The remote port to connect to
- * @throws SocketError If there was a problem resolving the hostname or connecting to the host
- */
-RemoteProjector::RemoteProjector( const std::string &server, const unsigned port, bool autoConnect) throw (SocketException)
-{
-    rprojector = new TCPSocket(server, port, true);    
-}
+	/**
+	 * Create a RemoteProjector and attempt to connect the socket to the specified
+	 * server on the given port.
+	 *
+	 * @param address Address of the projector to connect to, this can be a
+	 * string based ip, or hostname
+	 *
+	 * @param port The remote port to connect to
+	 *
+	 * @throws SocketError If there was a problem resolving the hostname or
+	 * connecting to the host
+	 */
+	RemoteProjector::RemoteProjector( const std::string &server, const unsigned port) throw (SocketException)
+	{
+		mConnection = new TCPSocket(server, port, true);
+	}
 
-void RemoteProjector::turnOn() {
-    // 02H 00H 00H 00H 00H 00H 02H
-    unsigned char toSend[] = { (unsigned char)2, 0, 0, 0, 0, (unsigned char)2 };  
-    rprojector->write((char*) toSend, 6); 
-}
 
-void RemoteProjector::turnOff() {
-    // 02H 01H 00H 00H 00H 03H 
-    unsigned char toSend[] = { (unsigned char)2, (unsigned char)1, 0, 0, 0, (unsigned char)3 };  
-    rprojector->write((char*) toSend, 6); 
-}
-void RemoteProjector::getResponse() {
-    // Read the response from the projector. 
-    unsigned char buffer[4096];
-    rprojector->read((char *)buffer, 4096);
-    if ( (int) buffer[0] == 34  ) { 
-        std::cout << "Projecter sends ACK: Doing task." << std::endl;
-    } else {
-        std::cout << "Projector did not send ACK. Recieved: " << (int)buffer[0] << std::endl;
-    }   
+	/**
+	 * Closes the connection to the projector.
+	 */
+	RemoteProjector::~RemoteProjector()
+	{
+		if (mConnection != NULL)
+		{
+			mConnection->close();
+			delete mConnection;
+			mConnection = NULL;
+		}
+	}
 
-}
-}; // namespace wcl
+
+	/**
+	 * Turns on the projector.
+	 */
+	void RemoteProjector::turnOn() {
+		// 02H 00H 00H 00H 00H 00H 02H
+		unsigned char toSend[] = { (unsigned char)2, 0, 0, 0, 0, (unsigned char)2 };
+		mConnection->write((char*) toSend, 6);
+	}
+
+
+	/**
+	 * Turns the projector off.
+	 */
+	void RemoteProjector::turnOff() {
+		// 02H 01H 00H 00H 00H 03H
+		unsigned char toSend[] = { (unsigned char)2, (unsigned char)1, 0, 0, 0, (unsigned char)3 };
+		mConnection->write((char*) toSend, 6);
+	}
+
+
+	void RemoteProjector::getResponse() {
+		// Read the response from the projector.
+		unsigned char buffer[4096];
+		mConnection->read((char *)buffer, 4096);
+		if ( (int) buffer[0] == 34  ) {
+			std::cout << "Projecter sends ACK: Doing task." << std::endl;
+		} else {
+			std::cout << "Projector did not send ACK. Recieved: " << (int)buffer[0] << std::endl;
+		}
+	}
+};
+
