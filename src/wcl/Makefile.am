@@ -373,8 +373,10 @@ endif
 projectorcontrol_headers=
 projectorcontrol_sources=
 if ENABLE_PROJECTORCONTROL
-        projectorcontrol_headers+=projector/RemoteProjector.h
-        projectorcontrol_sources+=projector/RemoteProjector.cpp
+        projectorcontrol_headers+=projector/RemoteProjector.h \
+								  projector/MatrixSwitch.h
+        projectorcontrol_sources+=projector/RemoteProjector.cpp \
+								  projector/MatrixSwitch.cpp
 endif
 
 
