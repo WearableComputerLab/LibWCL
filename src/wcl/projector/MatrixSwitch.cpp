@@ -51,7 +51,7 @@ namespace wcl
 		// on creation and disconnect on destruction, we'll just
 		// create a socket each method call.
 
-		if (inputID < 1 && inputID >32 && outputID < 1 && outputID > 32)
+		if (inputID < 1 && inputID >36 && outputID < 1 && outputID > 36)
 			return false;
 
 		// connects on port 23 always
@@ -68,7 +68,7 @@ namespace wcl
 
 	bool MatrixSwitch::disconnect(unsigned int outputID)
 	{
-		if (outputID < 1 && outputID > 32)
+		if (outputID < 1 && outputID > 36)
 			return false;
 
 		// connects on port 23 always
