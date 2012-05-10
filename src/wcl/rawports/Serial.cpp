@@ -184,7 +184,7 @@ Serial::open( const char *device,
     // Determine if the user cares about the DCD line, normally if the DCD line
     // was low and an open was called, the open call would hang until DCD was
     // present
-    if ( ! (signals & DCD) )
+    if ( (signals & DCD) == 0 )
 	mask |= O_NONBLOCK; //Note: O_NDELAY=O_NONBLOCK (except under HPUnix)
 
     this->fd = ::open( device, mask );
