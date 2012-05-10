@@ -747,9 +747,9 @@ Serial::setLine ( const Line line, bool state)
 	    // may not always keep the line low. However should
 	    // provide enough for most cases - benjsc 20100324
             case TXD:
-		if( state ) ioctl( fd, TIOCCBRK, NULL );
-		else ioctl( fd, TIOCSBRK, NULL );
-                break;
+                if( state ) ioctl( fd, TIOCCBRK, NULL );
+                else ioctl( fd, TIOCSBRK, NULL );
+                return true;
             case DTR:
                 if( state ) status |= TIOCM_DTR;
                 else status &= ~TIOCM_DTR;
@@ -763,7 +763,7 @@ Serial::setLine ( const Line line, bool state)
         if ( ioctl(fd, TIOCMSET, status) == -1 )
             return false;
     }
-    return false;
+    return true;
 }
 
 
