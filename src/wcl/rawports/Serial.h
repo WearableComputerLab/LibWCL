@@ -239,7 +239,6 @@ public:
 private:
     int fd;
     Parity parity;
-    bool parityCheckEnabled;
     InputMode input;
     BlockingMode blocking;
     FlowControl flow;
