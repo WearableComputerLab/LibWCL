@@ -91,36 +91,40 @@ bool Serial::setBlockingMode( const BlockingMode mode )
 {
     int flags;
 
-    if ( this->isValid())
+    if ( !this->isValid())
+        return false;
 
-        // In order to set the blocking flag, we must be careful not
-        // to stop on any other flags that have been set. Hence
-        // we obtain all the flags and adjust the blocking flag only
-        flags = ::fcntl(this->fd, F_GETFL, 0 /* ALLFLAGS */);
+    // In order to set the blocking flag, we must be careful not
+    // to stop on any other flags that have been set. Hence
+    // we obtain all the flags and adjust the blocking flag only
+    flags = ::fcntl(this->fd, F_GETFL, 0 /* ALLFLAGS */);
 
-        switch( mode ) {
-            case BLOCKING:
-                flags &=~O_NONBLOCK;
-                if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
-		    this->blocking=mode;
-		    if( this->input == RAW ){
-			// If we are in raw mode, then we must also set the minimum characters
-			// we must receive before a read will return else we do not
-			// block. We also disable the read timer.
-			this->currstate.c_cc[VMIN]=1;
-			this->currstate.c_cc[VTIME]=0;
-			this->apply();
-		    }
-		    return true;
+    if (flags == -1 )
+        return false;
+
+    switch( mode ) {
+        case BLOCKING:
+            flags &=~O_NONBLOCK;
+            if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
+                this->blocking=mode;
+                if( this->input == RAW ){
+                    // If we are in raw mode, then we must also set the minimum characters
+                    // we must receive before a read will return else we do not
+                    // block. We also disable the read timer.
+                    this->currstate.c_cc[VMIN]=1;
+                    this->currstate.c_cc[VTIME]=0;
+                    this->apply();
                 }
-                break;
-            case NONBLOCKING:
-                flags |= O_NONBLOCK;
-                if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
-		    this->blocking=mode;
-                    return true;
-                }
-                break;
+                return true;
+            }
+            break;
+        case NONBLOCKING:
+            flags |= O_NONBLOCK;
+            if ( ::fcntl( this->fd, F_SETFL, flags ) == 0 ){
+                this->blocking=mode;
+                return true;
+            }
+            break;
     }
 
     return false;
