@@ -355,7 +355,7 @@ Serial::write( const void *buffer, size_t size )
     if ( this->isValid())
 	return ::write( this->fd, buffer, size );
 
-    return 0;
+    return -1;
 }
 
 /**
