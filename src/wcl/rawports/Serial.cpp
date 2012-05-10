@@ -405,7 +405,7 @@ Serial::getAvailableCount()
         return bytes;
     }
 
-    return false;
+    return -1;
 }
 
 /**
