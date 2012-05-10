@@ -861,7 +861,9 @@ Serial::scanBaudRate( const char testchar, const BaudRate baudstotry )
     this->setBaudRate(BAUD_115200);
 
     // Read the first character
-    ch = this->read(&ch, 1);
+    if( this->read(&ch, 1) == -1 )
+        return false;
+
     switch( ch ){
         case 0x0d: rate = BAUD_115200; break;
         case 0xe6: rate = BAUD_57600; break;
@@ -875,7 +877,10 @@ Serial::scanBaudRate( const char testchar, const BaudRate baudstotry )
                        usleep(8330); // Slowest wait for 1200Baud (ie guarentee character)
 
                        this->setBaudRate(BAUD_9600);
-                       ch = this->read(&ch,1 );
+
+                       if( this->read(&ch, 1) == -1 )
+                           return false;
+
                        switch(ch ){
                            case 0x0d: rate = BAUD_9600; break;
                            case 0xe6: rate = BAUD_4800; break;
