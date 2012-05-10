@@ -134,7 +134,7 @@ namespace wcl
 		char response[70] = {0};
 		double x, y, z, rx, ry, rz, rw;
 		unsigned number;
-		int expectedBytes=0;
+		size_t expectedBytes=0;
 		if (type == PATRIOT)
 			expectedBytes = 69;
 		else if (type == FASTRAK)
