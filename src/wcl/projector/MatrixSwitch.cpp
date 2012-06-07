@@ -63,8 +63,7 @@ namespace wcl
 		sprintf(message, "*%3d0004%2d%2d!", mSwitchID, outputID, inputID);
 		s.writeUntil(message, 13);
 		s.close();
-
-        return true;
+		return true;
 	}
 
 
@@ -82,8 +81,7 @@ namespace wcl
 		sprintf(message, "*%3d0004%2d%2d!", mSwitchID, outputID, 0);
 		s.writeUntil(message, 13);
 		s.close();
-
-        return true;
+		return true;
 	}
 
 };
