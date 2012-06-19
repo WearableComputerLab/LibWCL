@@ -96,7 +96,7 @@ int main(int argc, char** argv) {
             return -1;
         }
         
-        RemoteProjector *rp = new RemoteProjector(address,port,true);
+        RemoteProjector *rp = new RemoteProjector(address,port);
         // Get the last value, which should be our command, and use it for our command to run. 
         if ( strcmp (argv[argc-1], "--ON" ) == 0 ) {
             rp->turnOn();

@@ -43,7 +43,7 @@ namespace wcl {
 	{
 		public:
 			RemoteProjector(const std::string& ip,
-					const unsigned port = 7412) throw (SocketException);
+					const unsigned port = 7142) throw (SocketException);
 
 			~RemoteProjector();
 
