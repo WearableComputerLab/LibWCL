@@ -35,7 +35,7 @@ VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit, c
 {
     VideoDecoder::libraryInit();
 
-    if( av_open_input_file( &this->formatContext, path.c_str(), NULL, 0, NULL) != 0){
+    if( avformat_open_input( &this->formatContext, path.c_str(), NULL, NULL) != 0){
 	throw std::string("Unable To Open Video File");
     }
 
