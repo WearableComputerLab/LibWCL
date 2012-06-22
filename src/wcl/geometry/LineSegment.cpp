@@ -57,7 +57,7 @@ namespace wcl
 	wcl::Vector LineSegment::closestPoint(const wcl::Vector& point) const
 	{
 		Vector w = point - startPos;
-		wcl::Vector direction = (endPos - startPos).unit();
+		wcl::Vector direction = (endPos - startPos);
 		double proj = w.dot(direction);
 		if (proj <=0)
 		{
