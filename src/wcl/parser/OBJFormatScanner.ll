@@ -17,7 +17,7 @@
 %{
 #include <sstream>
 #include "parser/OBJParser.h"
-#include "OBJFormatGrammar.hh"
+#include "OBJFormatGrammar.h"
 #include "parser/OBJFormatScanner.h"
 #include <string.h>
 

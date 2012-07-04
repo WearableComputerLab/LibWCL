@@ -145,9 +145,9 @@ parser_headers+=	parser/OBJParser.h \
 			parser/ParserException.h
 
 BUILT_SOURCES+=		OBJFormatGrammar.cc \
-		       	OBJFormatGrammar.hh \
+		       	OBJFormatGrammar.h \
 			OBJFormatScanner.cc
-CLEANFILES+=OBJFormatGrammar.hh\
+CLEANFILES+=OBJFormatGrammar.h\
 	   OBJFormatGrammar.cc\
 	   OBJFormatScanner.cc
 endif
