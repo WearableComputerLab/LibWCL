@@ -17,7 +17,12 @@
 %{
 #include <sstream>
 #include "parser/OBJParser.h"
+#include <config.h>
+#ifdef PLATFORM_OSX
+#include "OBJFormatGrammar.hh"
+#else
 #include "OBJFormatGrammar.h"
+#endif
 #include "parser/OBJFormatScanner.h"
 #include <string.h>
 

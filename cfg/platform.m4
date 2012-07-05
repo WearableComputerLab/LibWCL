@@ -42,6 +42,8 @@ AC_SUBST(OBJCCOMPILER)
 AC_SUBST(OBJC)
 AC_SUBST(OBJCFLAGS)
 
+AC_DEFINE(PLATFORM_OSX, 1, [Whether we are on OSX]) 
+
 # Define that which platform we are on
 platform_osx=yes
 

@@ -145,8 +145,14 @@ parser_headers+=	parser/OBJParser.h \
 			parser/ParserException.h
 
 BUILT_SOURCES+=		OBJFormatGrammar.cc \
-		       	OBJFormatGrammar.h \
-			OBJFormatScanner.cc
+					OBJFormatScanner.cc
+
+if PLATFORM_OSX
+BUILT_SOURCES += OBJFormatGrammar.hh
+else
+BUILT_SOURCES += OBJFormatGrammar.h 
+endif
+
 CLEANFILES+=OBJFormatGrammar.h\
 	   OBJFormatGrammar.cc\
 	   OBJFormatScanner.cc

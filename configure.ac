@@ -581,4 +581,4 @@ echo "   Projector control support  : ${enable_projectorcontrol:-no}"
 echo "   Examples Compiled          : ${enable_examples:-no}"
 echo "-------------------------------------------------"
 
-echo -e "$ERRORS"
+echo "$ERRORS"
