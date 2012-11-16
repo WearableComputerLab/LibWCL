@@ -60,9 +60,12 @@ http://wcl.ml.unisa.edu.au/redmine
 * EXAMPLES
 ********************
 
-=Networking examples=
-Networking examples can be found in the src/wcl/network/tests
+To build examples you will need the following extra libraries:
 
-=Gesture Example=
-Can be found in examples/gestures
+sudo apt-get install libncurses5-dev freeglut3-dev libqt4-dev
+
+Following this, you can enable the examples during configure:
+
+./configure --enable-examples
+make
 
