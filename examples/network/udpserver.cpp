@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdio.h>
+#include <unistd.h>
 #include "wcl/network/UDPServer.h"
 
 using namespace wcl;

@@ -3,6 +3,7 @@
 
 
 #include <iostream>
+#include <unistd.h>
 
 #include <wcl/tracking/LazySusan.h>
 

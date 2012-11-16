@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
+#include <unistd.h>
 
 namespace wcl
 {

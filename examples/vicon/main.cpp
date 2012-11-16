@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <signal.h>
+#include <unistd.h>
 
 // include our headers
 #include <wcl/tracking/ViconClient.h>
