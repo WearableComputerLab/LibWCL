@@ -133,11 +133,14 @@ void PTGreyCamera::update()
 
     error = this->camera.RetrieveBuffer( &this->rawImage );
     if( error != PGRERROR_OK ){
+	cout << "ERROR: " << error.GetDescription() << endl;
+	cout << "SUpport info: " << error.CollectSupportInformation() << endl;
 	DEBUG(error.PrintErrorTrace());
-	throw CameraException(CameraException::BUFFERERROR);
     }
-
-    this->currentFrame = this->rawImage.GetData();
+	else
+	{
+		this->currentFrame = this->rawImage.GetData();
+	}
 }
 
 void PTGreyCamera::printDetails(bool full)
@@ -223,60 +226,60 @@ int PTGreyCamera::getControlValue(const Control control)
 
 void PTGreyCamera::setConfiguration(const Configuration &c)
 {
-    bool valid;
-    Error error;
-    Format7PacketInfo fmt7PacketInfo;
-    Format7ImageSettings imageSettings;
-    Camera::ImageFormat which;
+	bool valid;
+	Error error;
+	Format7PacketInfo fmt7PacketInfo;
+	Format7ImageSettings imageSettings;
+	Camera::ImageFormat which;
 
-    // Set the format we want first
-    // Find out the actual format requested
-    if( c.format == Camera::FORMAT7){
-	which = c.format7.format;
-    } else {
-	which = c.format;
-    }
-
-    unsigned i;
-    for(i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
-	if( formatConversion[i].libwcl == which ){
-	    imageSettings.pixelFormat = formatConversion[i].ptGrey;
-	    break;
+	// Set the format we want first
+	// Find out the actual format requested
+	if( c.format == Camera::FORMAT7){
+		which = c.format7.format;
+	} else {
+		which = c.format;
 	}
-    }
-    if( i == ARRAY_SIZE(formatConversion))
-	throw CameraException(CameraException::INVALIDFORMAT);
 
-    // Now the format is set setup the camera's viewports
-    // If we are emulating the camera mode we use the full viewport
-    // and software scale the image
-    if( c.format == Camera::FORMAT7){
-	imageSettings.offsetX = c.format7.xOffset;
-	imageSettings.offsetY = c.format7.yOffset;
-	imageSettings.width = c.format7.xMax;
-	imageSettings.height = c.format7.yMax;
-    } else {
+	unsigned i;
+	for(i = 0; i < ARRAY_SIZE( formatConversion ); i++ ){
+		if( formatConversion[i].libwcl == which ){
+			imageSettings.pixelFormat = formatConversion[i].ptGrey;
+			break;
+		}
+	}
+	if( i == ARRAY_SIZE(formatConversion))
+		throw CameraException(CameraException::INVALIDFORMAT);
 
-	// Emulation mode
-	imageSettings.offsetX = 0;
-	imageSettings.offsetY = 0;
-	imageSettings.width = this->cameraInfo.maxWidth;
-	imageSettings.height = this->cameraInfo.maxHeight;
-    }
+	// Now the format is set setup the camera's viewports
+	// If we are emulating the camera mode we use the full viewport
+	// and software scale the image
+	if( c.format == Camera::FORMAT7){
+		imageSettings.offsetX = c.format7.xOffset;
+		imageSettings.offsetY = c.format7.yOffset;
+		imageSettings.width = c.format7.xMax;
+		imageSettings.height = c.format7.yMax;
+	} else {
 
-    if( !this->camera.IsConnected())
-	this->connect();
+		// Emulation mode
+		imageSettings.offsetX = 0;
+		imageSettings.offsetY = 0;
+		imageSettings.width = this->cameraInfo.maxWidth;
+		imageSettings.height = this->cameraInfo.maxHeight;
+	}
 
-    error = this->camera.ValidateFormat7Settings( &imageSettings, &valid, &fmt7PacketInfo );
-    if (error != PGRERROR_OK || !valid) {
-	throw CameraException(CameraException::INVALIDFORMAT);
-    }
+	if( !this->camera.IsConnected())
+		this->connect();
 
-    this->camera.SetFormat7Configuration(&imageSettings, fmt7PacketInfo.recommendedBytesPerPacket);
-    if( error != PGRERROR_OK )
-	throw CameraException(CameraException::INVALIDFORMAT);
+	error = this->camera.ValidateFormat7Settings( &imageSettings, &valid, &fmt7PacketInfo );
+	if (error != PGRERROR_OK || !valid) {
+		throw CameraException(CameraException::INVALIDFORMAT);
+	}
 
-    Camera::setConfiguration(c);
+	this->camera.SetFormat7Configuration(&imageSettings, fmt7PacketInfo.recommendedBytesPerPacket);
+	if( error != PGRERROR_OK )
+		throw CameraException(CameraException::INVALIDFORMAT);
+
+	Camera::setConfiguration(c);
 }
 
 void PTGreyCamera::probeCamera()
