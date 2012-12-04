@@ -60,6 +60,7 @@ public:
 
     /**
      * Cycle to the next image needed for decoding
+	 * @return true if there is another image to show
      */
     bool next();
 
@@ -118,7 +119,10 @@ private:
     unsigned cheight;
     unsigned char *mask;
 
-    void setPixel(unsigned char *, const unsigned, const unsigned, const unsigned, const unsigned char);
+    void setPixel(unsigned char *data, 
+			      const unsigned x, const unsigned y, const unsigned stride, 
+				  const unsigned char colour );
+
     void createStorage();
     void buildGrayCodes();
 };
