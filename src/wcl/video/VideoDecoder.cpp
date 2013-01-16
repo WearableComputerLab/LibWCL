@@ -31,6 +31,7 @@ namespace wcl
 
 VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit, const bool autoplay)
     throw( const std::string &):
+	codecContext(NULL), formatContext(NULL), imageConvertContext(NULL),
 	isvalid(false),playedFrames(0),autoFPSLimit(iautofpslimit), paused(!autoplay)
 {
     VideoDecoder::libraryInit();
