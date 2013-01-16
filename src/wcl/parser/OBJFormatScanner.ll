@@ -77,8 +77,13 @@ using namespace std;
 	return DOUBLE;
 }
 
+<INITIAL>[-+0-9]+\.[0-9]+(E[-+0-9]+){0,1} {
+	yylval.d = atof(yytext);
+	return DOUBLE;
+}
+
  /* integer number */
-<INITIAL,FACEDATA>[0-9]+ {
+<INITIAL,FACEDATA>[-0-9]+ {
 	yylval.i = atoi(yytext);
 	return INT;
 }

@@ -37,6 +37,7 @@ using namespace wcl;
 %type <d> DOUBLE
 %type <str> STRING
 %type <i> INT
+%type <d> NUMBER
 
 // Where to start grammar parsing
 %start request
@@ -72,28 +73,23 @@ material:	NEW_MTL STRING
 		;
 
 material_property:
-		DIFFUSE DOUBLE DOUBLE DOUBLE
+		DIFFUSE NUMBER NUMBER NUMBER
 		{
 		    parser->setMaterialDiffuse($2,$3,$4);
 		}
-		| AMBIENT DOUBLE DOUBLE DOUBLE
+		| AMBIENT NUMBER NUMBER NUMBER
 		{
 		    parser->setMaterialAmbience($2,$3,$4);
 		}
-
-		| SPECULAR DOUBLE DOUBLE DOUBLE
+		| SPECULAR NUMBER NUMBER NUMBER
 		{
 		    parser->setMaterialSpecular($2,$3,$4);
 		}
-		| OPACITY DOUBLE DOUBLE DOUBLE
-		{
-		    parser->setMaterialOpacity($2,$3,$4);
-		}
-		| OPACITY DOUBLE
+		| OPACITY NUMBER 
 		{
 		    parser->setMaterialOpacity($2,$2,$2);
 		}
-		| REFRACTION_INDEX DOUBLE
+		| REFRACTION_INDEX NUMBER
 		{
 		    parser->setMaterialRefractionIndex($2);
 		}
@@ -101,7 +97,7 @@ material_property:
 		{
 		    parser->setMaterialIlluminationGroup($2);
 		}
-		| SPECULAR_EXP DOUBLE
+		| SPECULAR_EXP NUMBER 
 		{
 		    parser->setMaterialSpecularExponent($2);
 		}
@@ -125,7 +121,7 @@ material_property:
 		{
 		    parser->setMaterialBumpMap($2);
 		}
-		| EMISSIVE DOUBLE DOUBLE DOUBLE
+		| EMISSIVE NUMBER NUMBER NUMBER
 		{
 		    parser->setMaterialEmissive($2,$3,$4);
 		}
@@ -137,19 +133,19 @@ group:		GROUP STRING
 		}
 		;
 
-vertex:		VERTEX DOUBLE DOUBLE DOUBLE
+vertex:		VERTEX NUMBER NUMBER NUMBER
 		{
 		    parser->addVertex($2,$3,$4);
 		}
 		;
 
-vertextexture:	TEX_COORD DOUBLE DOUBLE
+vertextexture:	TEX_COORD NUMBER NUMBER
 		{
 		    parser->addVertexTexture($2,$3);
 		}
 		;
 
-vertexnormal:	NORMAL DOUBLE DOUBLE DOUBLE
+vertexnormal:	NORMAL NUMBER NUMBER NUMBER
 		{
 		    parser->addNormal($2,$3,$4);
 		}
@@ -195,6 +191,15 @@ use_material:	USE_MTL STRING
 		    parser->useMaterial($2);
 		}
 		;
+NUMBER: DOUBLE
+	  {
+	  $$ = $1;
+	  }
+	  | INT
+	  {
+	  $$ = $1;
+	  }
+	  ;
 %%
 
 /**
@@ -209,6 +214,7 @@ void yyerror( wcl::OBJParser *parser, const char *m)
     s << m;
     s << " Line:";
     s << parser->getLineNo();
+	s << std::endl << parser->getLine() << std::endl;
     s << "";
     parser->parseError(ParserException::INVALID_SYNTAX, s.str());
 }

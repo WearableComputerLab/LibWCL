@@ -102,7 +102,7 @@ void wcl::OBJParser::parse() throw (ParserException)
     this->stack.push(lexer);
 
     if( yyparse(this) ){
-        this->parseError(ParserException::INVALID_SYNTAX);
+        this->parseError(ParserException::INVALID_SYNTAX, "WTF IS THIS");
     }
 
     this->stack.pop();
@@ -538,5 +538,10 @@ int wcl::OBJParser::getLineNo()
     return lexer->lineno();
 }
 
+const char* wcl::OBJParser::getLine()
+{
+    OBJFormatScanner *lexer = this->stack.top();
+	return lexer->YYText();
+}
 
 };

@@ -89,6 +89,7 @@ class WCL_API OBJParser: public Parser
         void setMaterialBumpMap(const std::string &);
 
 	int getLineNo();
+	const char* getLine();
 
         static int scanner(OBJParser *);
 
