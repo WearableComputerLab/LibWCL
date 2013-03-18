@@ -431,7 +431,7 @@ if test "x$enable_examples" = "xyes" ; then
 	   test "x$enable_camera" = "xyes"; then
 	
 		if test "x$platform_osx" = "xyes"; then
-			EXAMPLE_LIBS="-framework OpenGL"
+			EXAMPLE_LIBS="-framework OpenGL -framework GLUT"
 		else
 	        PKG_CHECK_MODULES(GL,gl glu)
 			EXAMPLE_LIBS="$GL_LIBS"
@@ -525,6 +525,7 @@ AC_CONFIG_FILES([Makefile
 				 examples/graycode/Makefile
 				 examples/gestures/Makefile
 				 examples/lazysusan/Makefile
+				 examples/kmeans/Makefile
 				 examples/network/Makefile
 				 examples/parallel/Makefile
 				 examples/parsers/Makefile

@@ -31,9 +31,18 @@
 #include <stdlib.h>
 #include <string.h>
 #include <iostream>
+
+// include openGL headers
+#ifdef __APPLE__
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+#else
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <GL/glut.h>
+#endif
+
 #include <wcl/graphics/structuredlight/GrayCode.h>
 #include <wcl/camera/CameraException.h>
 #include <wcl/camera/CameraFactory.h>
