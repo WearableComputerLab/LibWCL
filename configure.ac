@@ -24,7 +24,7 @@ AC_CONFIG_AUX_DIR(cfg)
 AM_INIT_AUTOMAKE(wcl,0.0.0)
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_HEADERS(config.h)
 
 # Init LIBToolize
 AC_CONFIG_MACRO_DIR([cfg])
@@ -429,13 +429,15 @@ if test "x$enable_examples" = "xyes" ; then
 	if test "x$enable_tracker_artoolkitplus" = "xyes" ||
 	   test "x$enable_video" = "xyes" ||
 	   test "x$enable_camera" = "xyes"; then
+	
+		if test "x$platform_osx" = "xyes"; then
+			EXAMPLE_LIBS="-framework OpenGL"
+		else
 	        PKG_CHECK_MODULES(GL,gl glu)
-		EXAMPLE_LIBS="$GL_LIBS"
-		EXAMPLE_INCLUDES="$GL_CFLAGS"
-
-		# These also need glut which isn't pkg-config supported
-		# XXX Really need a test for glut -benjsc 20100802
-		EXAMPLE_LIBS="$EXAMPLE_LIBS -lglut"
+			EXAMPLE_LIBS="$GL_LIBS"
+			EXAMPLE_INCLUDES="$GL_CFLAGS"
+			EXAMPLE_LIBS="$EXAMPLE_LIBS -lglut"
+		fi
 
 		# Many camera examples require the virtual camera so we enable that here as well
 		if test "x$enable_camera" = "xyes"; then
@@ -446,7 +448,6 @@ if test "x$enable_examples" = "xyes" ; then
 		PKG_CHECK_MODULES(QT, QtGui);
 		EXAMPLE_LIBS="$EXAMPLE_LIBS $QT_LIBS"
 		EXAMPLE_INCLUDES="$EXAMPLE_INCLUDES $QT_CFLAGS"
-
 	fi
 fi
 
