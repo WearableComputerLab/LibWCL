@@ -48,6 +48,20 @@ namespace wcl
 	    this->clear();
 	}
 
+
+	BoundingBox::BoundingBox(const std::vector<wcl::Vector>& points) {
+		this->clear();
+		for (std::vector<wcl::Vector>::const_iterator it = points.begin(); it < points.end(); ++it) {
+			addPoint(*it);
+		}
+	}
+
+	void BoundingBox::addPoints(const std::vector<wcl::Vector>& points) {
+		for (std::vector<wcl::Vector>::const_iterator it = points.begin(); it < points.end(); ++it) {
+			addPoint(*it);
+		}
+	}
+
 	void BoundingBox::clear()
 	{
 		double maxDouble = std::numeric_limits<double>::max();

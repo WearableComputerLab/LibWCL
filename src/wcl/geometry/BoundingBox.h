@@ -59,6 +59,8 @@ namespace wcl
 			 */
 			BoundingBox(const std::vector<Vertex*>& verts);
 
+			BoundingBox(const std::vector<wcl::Vector>& points);
+
 			/**
 			 * Creates a bounding box with invalid parameters so
 			 * that addPoint can be used.
@@ -86,6 +88,7 @@ namespace wcl
 			 * @param p The point to add to the bounding volume.
 			 */
 			void addPoint(const wcl::Vector& p);
+			void addPoints(const std::vector<wcl::Vector>& p);
 
 			/**
 			 * Add the given bounding box, adjusting the size of
