@@ -28,6 +28,7 @@
 #ifndef LIBWCL_KMEANS_H
 #define LIBWCL_KMEANS_H
 
+#include <map>
 #include <vector>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/BoundingBox.h>
@@ -36,20 +37,81 @@ namespace wcl {
 
 	typedef std::vector<wcl::Vector> PointList;
 
-	struct Cluster {
-		double mX;
-		double mY;
-		unsigned pointCount;
-		std::vector<unsigned> pointIndices;
+	/**
+	 * Class for comparing wcl vectors.
+	 * Essentially, we compare x, then y, then z
+	 * in less than operations.
+	 */
+	class VectorCompare {
+		public:
+			bool operator()(const wcl::Vector& v1, const wcl::Vector& v2);
 	};
 
-	class KMeans {
+
+	/**
+	 * A Cluster of points.
+	 */
+	struct WCL_API Cluster {
+		/**
+		 * The centroid of the cluster.
+		 */
+		wcl::Vector mean;
+
+		/**
+		 * The points contained in this cluster
+		 */
+		std::vector<wcl::Vector> points;
+
+		Cluster() : mean(3) {}
+	};
+
+
+	/**
+	 * A Class for performing K-Means clustering of a set of 3D points.
+	 */
+	class WCL_API KMeans {
 		public:
-			void compute(const PointList& points, unsigned k);
+			/**
+			 * Construct a new KMeans object with a list of points and a number of clusters.
+			 *
+			 * @param points The list of points.
+			 * @param k The number of clusters.
+			 */
+			KMeans(PointList& points, unsigned k);
+
+			/**
+			 * Runs the algorithm until it converges on a solution.
+			 * This is the equivalent of running step() repeatedly
+			 * until there are no more stops.
+			 */
+			void compute();
+
+			/**
+			 * Performs a single step of the clustering algorithm.
+			 * Useful if you want to see this work step by step.
+			 *
+			 * @return The number of swaps performed in this step.
+			 */
+			unsigned step();
+
+			/**
+			 * Returns the clusters.
+			 */
+			const std::vector<Cluster*>& getClusters();
+
+			/**
+			 * Returns the cluster that point p belongs to.
+			 * Returns NULL if the point is not found, or step/compute have
+			 * not yet been called.
+			 */
+			Cluster* getCluster(wcl::Vector& p);
 
 		private:
+			PointList& points;
+			unsigned k;
 			std::vector<Cluster*> clusters;
 			BoundingBox pointBounds;
+			std::map<wcl::Vector, Cluster*, VectorCompare> cmap;
 	};
 };
 

@@ -66,9 +66,7 @@ namespace wcl
 	{
 		double maxDouble = std::numeric_limits<double>::max();
 		min = wcl::Vector(maxDouble,maxDouble,maxDouble);
-
-		double minDouble = std::numeric_limits<double>::min();
-		max = wcl::Vector(minDouble,minDouble,minDouble);
+		max = wcl::Vector(-maxDouble,-maxDouble,-maxDouble);
 	}
 
 	wcl::Vector BoundingBox::getCentroid() const
@@ -81,8 +79,7 @@ namespace wcl
 		double maxDouble = std::numeric_limits<double>::max();
 		min = wcl::Vector(maxDouble,maxDouble,maxDouble);
 
-		double minDouble = std::numeric_limits<double>::min();
-		max = wcl::Vector(minDouble,minDouble,minDouble);
+		max = wcl::Vector(-maxDouble,-maxDouble,-maxDouble);
 
 		std::vector<Vertex*>::const_iterator it;
 		for (it = verts.begin(); it<verts.end(); ++it)
