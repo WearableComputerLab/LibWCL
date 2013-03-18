@@ -51,6 +51,7 @@ SUBDIRS+=graycode
 endif
 
 SUBDIRS+=lazysusan
+SUBDIRS+=kmeans
 
 
 endif

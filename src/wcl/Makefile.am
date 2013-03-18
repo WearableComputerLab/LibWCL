@@ -106,6 +106,7 @@ geometry_headers+=\
 			geometry/BoundingSphere.h\
 			geometry/Face.h \
 			geometry/GeometryLoader.h \
+			geometry/KMeans.h \
 			geometry/Line.h \
 			geometry/LineSegment.h \
 			geometry/OBJGeometry.h \
@@ -118,6 +119,7 @@ geometry_sources+=\
 			geometry/BoundingSphere.cpp\
 			geometry/Face.cpp \
 			geometry/GeometryLoader.cpp \
+			geometry/KMeans.cpp \
 			geometry/Line.cpp \
 			geometry/LineSegment.cpp \
 			geometry/Plane.cpp \
