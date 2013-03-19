@@ -78,6 +78,7 @@ namespace wcl {
 			 * @param k The number of clusters.
 			 */
 			KMeans(PointList& points, unsigned k);
+			virtual ~KMeans();
 
 			/**
 			 * Runs the algorithm until it converges on a solution.

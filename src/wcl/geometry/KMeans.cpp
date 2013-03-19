@@ -67,6 +67,16 @@ KMeans::KMeans(PointList& p, unsigned kk)
 }
 
 
+KMeans::~KMeans() {
+	cmap.clear();
+	std::vector<Cluster*>::iterator cit;
+	for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
+		delete *cit;
+	}
+	clusters.clear();
+}
+
+
 unsigned KMeans::step() {
 	unsigned swaps = 0;
 	std::vector<Cluster*>::iterator cit;
