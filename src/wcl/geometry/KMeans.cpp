@@ -25,6 +25,8 @@
  */
 
 #include <iostream>
+#include <limits>
+#include <cstdlib>
 
 #include "KMeans.h"
 
