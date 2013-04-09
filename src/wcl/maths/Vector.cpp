@@ -362,6 +362,9 @@ T Vector::dot(const Vector& v) const
  */
 T Vector::angle(const Vector& v) const
 {
+	if (v == *this)
+		return 0;
+
 	Vector v1 = this->unit();
 	Vector v2 = v.unit();
 
