@@ -110,6 +110,18 @@ GLvoid display()
 	}
 	glEnd();
 
+	for (vector<Cluster*>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
+		glColor3ub(colours[*it].r, colours[*it].g, colours[*it].b);
+		glBegin(GL_LINE_LOOP);
+		glVertex3d((*it)->bb.min[0], (*it)->bb.min[1], 0);
+		glVertex3d((*it)->bb.max[0], (*it)->bb.min[1], 0);
+		glVertex3d((*it)->bb.max[0], (*it)->bb.max[1], 0);
+		glVertex3d((*it)->bb.min[0], (*it)->bb.max[1], 0);
+		glEnd();
+		i++;
+	}
+
+
 	glFlush();
 	glutSwapBuffers();
 	GLenum error = glGetError();
