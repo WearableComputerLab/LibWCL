@@ -63,6 +63,8 @@ namespace wcl {
 		std::vector<wcl::Vector> points;
 
 		Cluster() : mean(3) {}
+
+		BoundingBox bb;
 	};
 
 

@@ -84,6 +84,7 @@ unsigned KMeans::step() {
 	std::vector<Cluster*>::iterator cit;
 	for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
 		(*cit)->points.clear();
+		(*cit)->bb.clear();
 	}
 
 	for (PointList::iterator pit = points.begin(); pit < points.end(); ++pit) {
@@ -100,6 +101,7 @@ unsigned KMeans::step() {
 		}
 
 		closestCluster->points.push_back(*pit);
+		closestCluster->bb.addPoint(*pit);
 		if (cmap.find(*pit) == cmap.end()) {
 			//clog << "Adding new mapping" << endl;
 			swaps++;
