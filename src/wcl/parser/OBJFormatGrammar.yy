@@ -22,7 +22,7 @@ using namespace wcl;
 %token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM EMISSIVE
 %token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
 %error-verbose
-%expect 4
+%expect 5
 %parse-param { wcl::OBJParser *parser }
 %lex-param { wcl::OBJParser *parser }
 %debug
@@ -88,6 +88,10 @@ material_property:
 		| OPACITY NUMBER 
 		{
 		    parser->setMaterialOpacity($2,$2,$2);
+		}
+		| OPACITY NUMBER NUMBER NUMBER
+		{
+		    parser->setMaterialOpacity($2,$3,$4);
 		}
 		| REFRACTION_INDEX NUMBER
 		{
