@@ -35,16 +35,25 @@
 
 namespace wcl {
 
-	typedef std::vector<wcl::Vector> PointList;
+	class Position {
+		public:
+			virtual double x() const = 0;
+			virtual double y() const = 0;
+			virtual double z() const = 0;
+	};
+
+
+	typedef std::vector<wcl::Position*> PointList;
 
 	/**
 	 * Class for comparing wcl vectors.
 	 * Essentially, we compare x, then y, then z
 	 * in less than operations.
 	 */
-	class VectorCompare {
+	class PositionCompare {
 		public:
-			bool operator()(const wcl::Vector& v1, const wcl::Vector& v2);
+			bool operator()(const wcl::Position& v1, const wcl::Position& v2);
+			bool operator()(const wcl::Position* v1, const wcl::Position* v2);
 	};
 
 
@@ -60,7 +69,7 @@ namespace wcl {
 		/**
 		 * The points contained in this cluster
 		 */
-		std::vector<wcl::Vector> points;
+		std::vector<wcl::Position*> points;
 
 		Cluster() : mean(3) {}
 
@@ -107,14 +116,14 @@ namespace wcl {
 			 * Returns NULL if the point is not found, or step/compute have
 			 * not yet been called.
 			 */
-			Cluster* getCluster(wcl::Vector& p);
+			Cluster* getCluster(wcl::Position* p);
 
 		private:
 			PointList& points;
 			unsigned k;
 			std::vector<Cluster*> clusters;
 			BoundingBox pointBounds;
-			std::map<wcl::Vector, Cluster*, VectorCompare> cmap;
+			std::map<wcl::Position*, Cluster*, PositionCompare> cmap;
 	};
 };
 

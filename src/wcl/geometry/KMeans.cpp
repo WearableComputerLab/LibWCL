@@ -34,18 +34,25 @@ using namespace std;
 using namespace wcl;
 
 
-bool VectorCompare::operator()(const wcl::Vector& v1, const wcl::Vector& v2) {
+bool PositionCompare::operator()(const wcl::Position& v1, const wcl::Position& v2) {
 
-	return v1[0] < v2[0] || 
-		   (v1[0] == v2[0] && v1[1] < v2[1]) ||
-		   (v1[0] == v2[0] && v1[1] == v2[1] && v1[2] < v2[2]);
+	return v1.x() < v2.x() || 
+		   (v1.x() == v2.x() && v1.y() <  v2.y()) ||
+		   (v1.x() == v2.x() && v1.y() == v2.y() && v1.z() < v2.z());
+}
+bool PositionCompare::operator()(const wcl::Position* v1, const wcl::Position* v2) {
+
+	return this->operator()(*v1, *v2);
 }
 
 
 KMeans::KMeans(PointList& p, unsigned kk)
  : points(p), k(kk) {
 
-	pointBounds.addPoints(points);
+	for (PointList::iterator it = p.begin(); it < p.end(); ++it) {
+		Position* pos = *it;
+		pointBounds.addPoint(wcl::Vector(pos->x(), pos->y(), pos->z()));
+	}
 	//clog << "Creating " << k << " clusters" << endl;
 
 	for (int i = 0; i < k; ++i) {
@@ -93,7 +100,7 @@ unsigned KMeans::step() {
 
 		for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
 
-			double distance = ((*pit) - (*cit)->mean).normal();
+			double distance = (wcl::Vector((*pit)->x(),(*pit)->y(),(*pit)->z()) - (*cit)->mean).normal();
 			if (distance < closestDistance) {
 				closestCluster = *cit;
 				closestDistance = distance;
@@ -101,7 +108,7 @@ unsigned KMeans::step() {
 		}
 
 		closestCluster->points.push_back(*pit);
-		closestCluster->bb.addPoint(*pit);
+		closestCluster->bb.addPoint(wcl::Vector((*pit)->x(),(*pit)->y(),(*pit)->z()));
 		if (cmap.find(*pit) == cmap.end()) {
 			//clog << "Adding new mapping" << endl;
 			swaps++;
@@ -120,7 +127,7 @@ unsigned KMeans::step() {
 			(*cit)->mean[1] = 0;
 			(*cit)->mean[2] = 0;
 			for (PointList::iterator pit = (*cit)->points.begin(); pit < (*cit)->points.end(); ++pit) {
-				(*cit)->mean = (*cit)->mean + *pit;
+				(*cit)->mean = (*cit)->mean + wcl::Vector((*pit)->x(), (*pit)->y(), (*pit)->z()) ;
 			}
 			(*cit)->mean = (*cit)->mean / (*cit)->points.size();
 		}
@@ -138,7 +145,7 @@ const std::vector<Cluster*>& KMeans::getClusters() {
 }
 
 
-Cluster* KMeans::getCluster(wcl::Vector& p) {
+Cluster* KMeans::getCluster(wcl::Position* p) {
 	if (cmap.find(p) == cmap.end())
 		return NULL;
 	else

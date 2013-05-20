@@ -46,9 +46,17 @@ using namespace std;
 #define WINDOW_WIDTH 640
 #define WINDOW_HEIGHT 480 
 
+class SimplePosition : public wcl::Position {
+	public:
+		wcl::Vector pos;
+		virtual double x() const { return pos[0]; };
+		virtual double y() const { return pos[1]; };
+		virtual double z() const { return pos[2]; };
+};
+
 
 // Globals FTW!
-std::vector<wcl::Vector> points;
+wcl::PointList  points;
 KMeans *kmeans;
 
 struct Color {
@@ -87,7 +95,7 @@ GLvoid display()
 	glPointSize(2);
 	glColor3ub(100,100,100);
 	glBegin(GL_POINTS);
-	for (vector<wcl::Vector>::iterator it = points.begin(); it < points.end(); ++it) {
+	for (PointList::iterator it = points.begin(); it < points.end(); ++it) {
 		Cluster* pc = kmeans->getCluster(*it);
 		if (pc == NULL) {
 			glColor3ub(100,100,100);
@@ -96,7 +104,7 @@ GLvoid display()
 			glColor3ub(colours[pc].r, colours[pc].g, colours[pc].b);
 		}
 
-		glVertex3d((*it)[0], (*it)[1], 0);
+		glVertex3d((*it)->x(), (*it)->y(), 0);
 	}
 	glEnd();
 
@@ -153,7 +161,9 @@ int main(int argc, char** argv) {
 		int x = rand() % WINDOW_WIDTH;
 		int y = rand() % WINDOW_HEIGHT;
 		//clog << x << " " << y << endl;
-		points.push_back(wcl::Vector(x,y,0));
+		SimplePosition* p = new SimplePosition;
+		p->pos = wcl::Vector(x,y,0);
+		points.push_back(p);
 	}
 
 	kmeans = new KMeans(points, atoi(argv[1]));
