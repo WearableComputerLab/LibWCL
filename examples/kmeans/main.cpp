@@ -56,8 +56,8 @@ class SimplePosition : public wcl::Position {
 
 
 // Globals FTW!
-wcl::PointList  points;
-KMeans *kmeans;
+std::vector<SimplePosition*>  points;
+KMeans<SimplePosition, wcl::Cluster<SimplePosition> > *kmeans;
 
 struct Color {
 	unsigned char r;
@@ -65,7 +65,7 @@ struct Color {
 	unsigned char b;
 };
 
-std::map<Cluster*, Color> colours;
+std::map<Cluster<SimplePosition> *, Color> colours;
 		
 
 GLvoid idle()
@@ -95,8 +95,8 @@ GLvoid display()
 	glPointSize(2);
 	glColor3ub(100,100,100);
 	glBegin(GL_POINTS);
-	for (PointList::iterator it = points.begin(); it < points.end(); ++it) {
-		Cluster* pc = kmeans->getCluster(*it);
+	for (std::vector<SimplePosition*>::iterator it = points.begin(); it < points.end(); ++it) {
+		Cluster<SimplePosition>* pc = kmeans->getCluster(*it);
 		if (pc == NULL) {
 			glColor3ub(100,100,100);
 		}
@@ -111,14 +111,14 @@ GLvoid display()
 	glPointSize(6);
 	glBegin(GL_POINTS);
 	unsigned i=0;
-	for (vector<Cluster*>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
+	for (vector<Cluster<SimplePosition> *>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
 		glColor3ub(colours[*it].r, colours[*it].g, colours[*it].b);
 		glVertex3d((*it)->mean[0], (*it)->mean[1], (*it)->mean[2]);
 		i++;
 	}
 	glEnd();
 
-	for (vector<Cluster*>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
+	for (vector<Cluster<SimplePosition> *>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
 		glColor3ub(colours[*it].r, colours[*it].g, colours[*it].b);
 		glBegin(GL_LINE_LOOP);
 		glVertex3d((*it)->bb.min[0], (*it)->bb.min[1], 0);
@@ -166,9 +166,9 @@ int main(int argc, char** argv) {
 		points.push_back(p);
 	}
 
-	kmeans = new KMeans(points, atoi(argv[1]));
+	kmeans = new KMeans<SimplePosition, wcl::Cluster<SimplePosition> >(points, atoi(argv[1]));
 
-	for (vector<Cluster*>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
+	for (vector<Cluster<SimplePosition> *>::const_iterator it = kmeans->getClusters().begin(); it < kmeans->getClusters().end(); ++it) {
 		Color c;
 		c.r = rand() % 255;
 		c.g = rand() % 255;

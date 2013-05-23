@@ -32,54 +32,61 @@
 #include <vector>
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/BoundingBox.h>
+#include <iostream>
+#include <limits>
+#include <cstdlib>
 
 namespace wcl {
 
-	class Position {
+	class WCL_API Position {
 		public:
 			virtual double x() const = 0;
 			virtual double y() const = 0;
 			virtual double z() const = 0;
 	};
 
+	/**
+	 * A Cluster of points.
+	 */
+	template <class PositionType>
+	class WCL_API Cluster {
+		public:
+			/**
+			 * The centroid of the cluster.
+			 */
+			wcl::Vector mean;
 
-	typedef std::vector<wcl::Position*> PointList;
+			/**
+			 * The points contained in this cluster
+			 */
+			std::vector<PositionType*> points;
+
+			Cluster() : mean(3) {}
+
+			BoundingBox bb;
+	};
+
 
 	/**
 	 * Class for comparing wcl vectors.
 	 * Essentially, we compare x, then y, then z
 	 * in less than operations.
 	 */
+	template <class PositionType>
 	class PositionCompare {
 		public:
-			bool operator()(const wcl::Position& v1, const wcl::Position& v2);
-			bool operator()(const wcl::Position* v1, const wcl::Position* v2);
+			bool operator()(const PositionType& v1, const PositionType& v2);
+			bool operator()(const PositionType* v1, const PositionType* v2);
 	};
 
 
-	/**
-	 * A Cluster of points.
-	 */
-	struct WCL_API Cluster {
-		/**
-		 * The centroid of the cluster.
-		 */
-		wcl::Vector mean;
-
-		/**
-		 * The points contained in this cluster
-		 */
-		std::vector<wcl::Position*> points;
-
-		Cluster() : mean(3) {}
-
-		BoundingBox bb;
-	};
 
 
 	/**
 	 * A Class for performing K-Means clustering of a set of 3D points.
 	 */
+
+	template <class PositionType, class ClusterType>
 	class WCL_API KMeans {
 		public:
 			/**
@@ -88,7 +95,7 @@ namespace wcl {
 			 * @param points The list of points.
 			 * @param k The number of clusters.
 			 */
-			KMeans(PointList& points, unsigned k);
+			KMeans(std::vector<PositionType *>& points, unsigned k);
 			virtual ~KMeans();
 
 			/**
@@ -109,22 +116,151 @@ namespace wcl {
 			/**
 			 * Returns the clusters.
 			 */
-			const std::vector<Cluster*>& getClusters();
+			const std::vector<ClusterType*>& getClusters();
 
 			/**
 			 * Returns the cluster that point p belongs to.
 			 * Returns NULL if the point is not found, or step/compute have
 			 * not yet been called.
 			 */
-			Cluster* getCluster(wcl::Position* p);
+			ClusterType* getCluster(PositionType* p);
 
 		private:
-			PointList& points;
+			std::vector<PositionType*>& points;
 			unsigned k;
-			std::vector<Cluster*> clusters;
+			std::vector<ClusterType*> clusters;
 			BoundingBox pointBounds;
-			std::map<wcl::Position*, Cluster*, PositionCompare> cmap;
+			std::map<PositionType*, ClusterType*, PositionCompare<PositionType> > cmap;
 	};
+
+	template <class PositionType>
+		bool PositionCompare<PositionType>::operator()(const PositionType& v1, const PositionType& v2) {
+			return v1.x() < v2.x() || 
+				(v1.x() == v2.x() && v1.y() <  v2.y()) ||
+				(v1.x() == v2.x() && v1.y() == v2.y() && v1.z() < v2.z());
+		}
+
+	template <class PositionType>
+		bool PositionCompare<PositionType>::operator()(const PositionType* v1, const PositionType* v2) {
+			return this->operator()(*v1, *v2);
+		}
+
+
+	template <class PositionType, class ClusterType>
+		KMeans<PositionType, ClusterType>::KMeans(std::vector<PositionType*>& p, unsigned kk)
+		: points(p), k(kk) {
+
+			typedef std::vector<PositionType*> PointList;
+			for (typename PointList::iterator it = p.begin(); it < p.end(); ++it) {
+				Position* pos = *it;
+				pointBounds.addPoint(wcl::Vector(pos->x(), pos->y(), pos->z()));
+			}
+			//clog << "Creating " << k << " clusters" << endl;
+
+			for (int i = 0; i < k; ++i) {
+				ClusterType * c = new ClusterType ();
+				double xRange = pointBounds.max[0] - pointBounds.min[0];
+				c->mean[0] = (rand() %  (int) xRange ) + pointBounds.min[0];
+				c->mean[1] = (rand() % ( (int) (pointBounds.max[1] - pointBounds.min[1]))) + pointBounds.min[1];
+
+
+				double zRange = pointBounds.max[2] - pointBounds.min[2];
+
+				if (zRange != 0) {
+					c->mean[2] = (rand() % ( (int) (pointBounds.max[2] - pointBounds.min[2]))) + pointBounds.min[2];
+				}
+				else {
+					c->mean[2] = 0;
+				}
+
+				clusters.push_back(c);
+			}
+		}
+
+
+	template <class PositionType, class ClusterType>
+		KMeans<PositionType, ClusterType>::~KMeans() {
+			cmap.clear();
+			typename std::vector<ClusterType*>::iterator cit;
+			for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
+				delete *cit;
+			}
+			clusters.clear();
+		}
+
+
+	template <class PositionType, class ClusterType>
+		unsigned KMeans<PositionType, ClusterType>::step() {
+			unsigned swaps = 0;
+			typename std::vector<ClusterType*>::iterator cit;
+			typedef std::vector<PositionType*> PointList;
+
+			for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
+				(*cit)->points.clear();
+				(*cit)->bb.clear();
+			}
+
+			for (typename PointList::iterator pit = points.begin(); pit < points.end(); ++pit) {
+				ClusterType* closestCluster = NULL;
+				double closestDistance = std::numeric_limits<double>::max();
+
+				for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
+
+					double distance = (wcl::Vector((*pit)->x(),(*pit)->y(),(*pit)->z()) - (*cit)->mean).normal();
+					if (distance < closestDistance) {
+						closestCluster = *cit;
+						closestDistance = distance;
+					}
+				}
+
+				closestCluster->points.push_back(*pit);
+				closestCluster->bb.addPoint(wcl::Vector((*pit)->x(),(*pit)->y(),(*pit)->z()));
+				if (cmap.find(*pit) == cmap.end()) {
+					//clog << "Adding new mapping" << endl;
+					swaps++;
+					cmap[*pit] = closestCluster;
+				}
+				else if (cmap.find(*pit)->second != closestCluster) {
+					//clog << "Updating mapping" << endl;
+					//clog << "Old Cluster: " << cmap.find(*pit)->second << ", New Cluster: " << closestCluster << endl;
+					swaps++;
+					cmap[*pit] = closestCluster;
+				}
+			}
+			for (cit = clusters.begin(); cit < clusters.end(); ++cit) {
+				if ((*cit)->points.size() > 0) {
+					(*cit)->mean[0] = 0;
+					(*cit)->mean[1] = 0;
+					(*cit)->mean[2] = 0;
+					for (typename PointList::iterator pit = (*cit)->points.begin(); pit < (*cit)->points.end(); ++pit) {
+						(*cit)->mean = (*cit)->mean + wcl::Vector((*pit)->x(), (*pit)->y(), (*pit)->z()) ;
+					}
+					(*cit)->mean = (*cit)->mean / (*cit)->points.size();
+				}
+			}
+
+			return swaps;
+		}
+
+	template <class PositionType, class ClusterType>
+		void KMeans<PositionType, ClusterType>::compute() {
+			while (step() > 0) {}
+		}
+
+	template <class PositionType, class ClusterType>
+		const std::vector<ClusterType*>& KMeans<PositionType, ClusterType>::getClusters() {
+			return clusters;
+		}
+
+
+	template <class PositionType, class ClusterType>
+		ClusterType* KMeans<PositionType, ClusterType>::getCluster(PositionType* p) {
+			if (cmap.find(p) == cmap.end())
+				return NULL;
+			else
+				return cmap[p];
+
+		}
 };
 
 #endif

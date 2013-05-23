@@ -119,7 +119,6 @@ geometry_sources+=\
 			geometry/BoundingSphere.cpp\
 			geometry/Face.cpp \
 			geometry/GeometryLoader.cpp \
-			geometry/KMeans.cpp \
 			geometry/Line.cpp \
 			geometry/LineSegment.cpp \
 			geometry/Plane.cpp \
