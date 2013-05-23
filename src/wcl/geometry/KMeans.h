@@ -131,6 +131,9 @@ namespace wcl {
 			std::vector<ClusterType*> clusters;
 			BoundingBox pointBounds;
 			std::map<PositionType*, ClusterType*, PositionCompare<PositionType> > cmap;
+
+			void randomInitialisation();
+			void forgyInitialisation();
 	};
 
 	template <class PositionType>
@@ -149,10 +152,14 @@ namespace wcl {
 	template <class PositionType, class ClusterType>
 		KMeans<PositionType, ClusterType>::KMeans(std::vector<PositionType*>& p, unsigned kk)
 		: points(p), k(kk) {
+			forgyInitialisation();
+		}
 
+	template <class PositionType, class ClusterType>
+	void KMeans<PositionType, ClusterType>::randomInitialisation() {
 			typedef std::vector<PositionType*> PointList;
-			for (typename PointList::iterator it = p.begin(); it < p.end(); ++it) {
-				Position* pos = *it;
+			for (typename PointList::iterator it = points.begin(); it < points.end(); ++it) {
+				PositionType* pos = *it;
 				pointBounds.addPoint(wcl::Vector(pos->x(), pos->y(), pos->z()));
 			}
 			//clog << "Creating " << k << " clusters" << endl;
@@ -175,7 +182,20 @@ namespace wcl {
 
 				clusters.push_back(c);
 			}
+	}
+
+	template <class PositionType, class ClusterType>
+	void KMeans<PositionType, ClusterType>::forgyInitialisation() {
+		while (clusters.size() < k) {
+			PositionType* p = points[rand() % points.size()];
+			if (getCluster(p) == NULL) {
+				ClusterType * c = new ClusterType ();
+				c->mean[0] = p->x();
+				c->mean[1] = p->y();
+				clusters.push_back(c);
+			}
 		}
+	}
 
 
 	template <class PositionType, class ClusterType>
