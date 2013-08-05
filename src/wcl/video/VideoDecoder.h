@@ -49,7 +49,7 @@ namespace wcl
     {
     public:
 	VideoDecoder(const std::string &path, const bool autofpslimit=true, const bool autoplay = true) throw (const std::string &);
-	VideoDecoder(const unsigned width, const unsigned height, const CodecID codec, bool autofpslimit=true, const bool autoplay = true);
+	VideoDecoder(const unsigned width, const unsigned height, const AVCodecID codec, bool autofpslimit=true, const bool autoplay = true);
 	~VideoDecoder();
 
 	void nextFrame(const unsigned char *inputbuffer, const unsigned buffersize);
@@ -133,7 +133,7 @@ namespace wcl
 	 * @return -1 if the video stream is not found or a avcoded stream  context numberk
 	 */
 	int findVideoStream(const int nth = 0);
-	void findDecoder(const enum CodecID id) throw (const std::string &);
+	void findDecoder(const enum AVCodecID id) throw (const std::string &);
 
 	/**
 	 * Routines to aid in converting from format X to RGB
