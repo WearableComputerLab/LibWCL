@@ -371,16 +371,29 @@ else
 fi
 
 # Video (de/en)coding
-PKG_CHECK_MODULES(LIBAVCODEC,libavcodec,
+PKG_CHECK_MODULES(LIBAVCODEC,libavcodec < 55.0,
 				  [ 
 				   PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBAVCODEC_LIBS"
 				   PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBAVCODEC_CFLAGS"
+				   echo "Using old version of LibAVCodec"
+				   AC_DEFINE(OLD_AVCODEC, 1, [Legacy AVCodec])
 				   ]
 				  ,
 				  [
-				   AC_MSG_WARN([Could not find libavcodec, cannot build video support])
-				   ERRORS+="Could not find libavcodec, cannot build video support\n"
-				   enable_video="no"
+				   PKG_CHECK_MODULES(LIBAVCODEC,libavcodec >= 55.0,
+									 [ 
+									  PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBAVCODEC_LIBS"
+									  PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBAVCODEC_CFLAGS"
+									  echo "Using new version of LibAVCodec"
+									  AC_DEFINE(NEW_AVCODEC, 1, [New AVCodec])
+									  ]
+									 ,
+									 [
+									  AC_MSG_WARN([Could not find libavcodec, cannot build video support])
+									  ERRORS+="Could not find libavcodec, cannot build video support\n"
+									  enable_video="no"
+									  ]
+				  );
 				   ]
 				  );
 PKG_CHECK_MODULES(LIBAVFORMAT,libavformat,
@@ -392,6 +405,18 @@ PKG_CHECK_MODULES(LIBAVFORMAT,libavformat,
 				  [
 				   AC_MSG_WARN([Could not find libavformat, cannot build video support])
 				   ERRORS+="Could not find libavformat, cannot build video support\n"
+				   enable_video="no"
+				   ]
+				  );
+PKG_CHECK_MODULES(LIBAVUTIL,libavutil,
+				  [
+				  PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBAVUTIL_LIBS"
+				  PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBAVUTIL_CFLAGS"
+				  ]
+				  ,
+				  [
+				   AC_MSG_WARN([Could not find libavutil, cannot build video support])
+				   ERRORS+="Could not find libavutil, cannot build video support\n"
 				   enable_video="no"
 				   ]
 				  );
