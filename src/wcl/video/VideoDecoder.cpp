@@ -26,6 +26,8 @@
 #include <assert.h>
 #include "VideoDecoder.h"
 
+#include "config.h"
+
 #ifdef NEW_AVCODEC
 extern "C" {
 #include <libavutil/time.h>
