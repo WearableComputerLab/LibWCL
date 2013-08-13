@@ -75,7 +75,7 @@ VideoDecoder::VideoDecoder(const std::string &path , const bool iautofpslimit, c
 	throw std::string("Unable To Open Video File");
     }
 
-    if(av_find_stream_info(this->formatContext) < 0 )
+    if(avformat_find_stream_info(this->formatContext, NULL) < 0 )
 	throw std::string("No Video Stream Information Exists");
 
 #ifdef DEBUG
@@ -179,7 +179,7 @@ VideoDecoder::~VideoDecoder()
     avcodec_close(this->codecContext);
 
     if( this->formatContext ){
-	av_close_input_file(this->formatContext);
+	avformat_close_input(&(this->formatContext));
     }
     else
 	av_free(this->codecContext);
