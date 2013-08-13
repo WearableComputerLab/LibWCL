@@ -407,7 +407,7 @@ static bool configurationSort ( Camera::Configuration a, Camera::Configuration b
 						    // Init the video decoder on the first MJPEG decoding frame
 						    if( this->internal == NULL){
 							this->internal = new Priv;
-							this->internal->decoder = new VideoDecoder(width, height,CODEC_ID_MJPEG, false );
+							this->internal->decoder = new VideoDecoder(width, height,VideoDecoder::MJPEG, false );
 						    }
 						    internal->decoder->nextFrame(currentFrame, this->getFormatBufferSize());
 						    return internal->decoder->getFrame();
@@ -444,7 +444,7 @@ static bool configurationSort ( Camera::Configuration a, Camera::Configuration b
 					case MJPEG:
 						{
 #if ENABLE_VIDEO
-						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
+						VideoDecoder dec(width, height,VideoDecoder::MJPEG, false );
 						dec.nextFrame(currentFrame, this->getFormatBufferSize());
 						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
 						return buffer;
@@ -511,7 +511,7 @@ NOTIMP:
 #if ENABLE_VIDEO
 						case MJPEG:{
 						    // Init the video decoder on the first MJPEG decoding frame
-							VideoDecoder decoder(width, height,CODEC_ID_MJPEG, false );
+							VideoDecoder decoder(width, height,VideoDecoder::MJPEG, false );
 						    decoder.nextFrame(currentFrame, this->getFormatBufferSize());
 							memcpy(buffer, decoder.getFrame(), getFormatBufferSize(format));
 							return;
@@ -546,7 +546,7 @@ NOTIMP:
 					case MJPEG:
 						{
 #if ENABLE_VIDEO
-						VideoDecoder dec(width, height,CODEC_ID_MJPEG, false );
+						VideoDecoder dec(width, height,VideoDecoder::MJPEG, false );
 						dec.nextFrame(currentFrame, this->getFormatBufferSize());
 						convertImageRGB8toMONO8(dec.getFrame(), buffer, width, height);
 						return;
