@@ -54,7 +54,7 @@ namespace wcl
 
 			std::string toString();
 
-		private:
+		protected:
 			wcl::Vector pos;
 			wcl::Vector dir;
 	};
