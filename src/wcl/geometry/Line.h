@@ -60,5 +60,9 @@ namespace wcl
 	};
 }
 
+inline std::ostream& operator << (std::ostream& os, const wcl::Line& l)
+{
+    return os << "<Line: direction " << l.getDirection() << ", position " << l.getPosition() << ">";
+}
 #endif
 
