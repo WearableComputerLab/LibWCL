@@ -378,7 +378,14 @@ Vector Vector::crossProduct(const Vector& v) const
 				  (*this)[2] * v[0] - (*this)[0] * v[2], 
 				  (*this)[0] * v[1] - (*this)[1] * v[0]);
 }
-	
+
+/**
+ * Find the distance between this and v
+ */
+float Vector::distance(const Vector& v) const 
+{
+    return ((*this)-v).length();
+}
 
 
 }; //namespace wcl

@@ -80,6 +80,8 @@ public:
 
 	T dot(const Vector&) const;
 
+    float distance(const Vector& v) const;
+
 private:
     using Matrix::setSize;
     using Matrix::getCols;
