@@ -27,6 +27,8 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <iostream>
+
 #include <wcl/api.h>
 #include <wcl/maths/Matrix.h>
 
@@ -88,5 +90,10 @@ Vector WCL_API operator *(const T &, const Vector & );
 Vector WCL_API operator *(const Matrix &, const Vector & );
 
 }; //namespace wcl
+
+inline std::ostream& operator << (std::ostream& os, const wcl::Vector& v)
+{
+        return os << "[" << v[0] << "," << v[1] << "," << v[2] << "]";
+}
 
 #endif
