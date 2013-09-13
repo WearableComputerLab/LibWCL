@@ -110,38 +110,28 @@ namespace wcl
 
 	wcl::Vector Line::intersect(const wcl::Plane& p)
 	{
-		wcl::Vector normal = p.getNormal();
-		wcl::Vector point = p.getPosition();
-		double a = normal[0];
-		double b = normal[1];
-		double c = normal[2];
-		double d = -(normal[0]*point[0] + normal[1]*point[1] + normal[2]*point[2]);
+        wcl::Vector normal = p.getNormal();
+        float nDotPos = normal.dot(pos);
+        float nDotDir = normal.dot(dir);
 
-		double numerator = a*pos[0] + b*pos[1] + c*pos[2] + d;
-		double denominator = a*dir[0] + b*dir[1] + c*dir[2];
+        // Denominator: nDotDir. 
+        // Numerator: (p.getD() - nDotPos)
 
-		if (fabs(denominator) < TOL)
-		{
-			if (fabs(numerator) < TOL)
-			{
-				return pos;
-			}
-			else
-			{
-				throw Exception("No Intersection!");
-			}
-		}
-		else
-		{
-			double t = -numerator/denominator;
-			wcl::Vector result;
-			result.setSize(3);
-			result[0] = pos[0] + t*dir[0];
-			result[1] = pos[1] + t*dir[1];
-			result[2] = pos[2] + t*dir[2];
+        // If the denominator is 0, we're either on the plane or 
+        //  parallel to it. 
+      
+        float denominator = nDotDir;
+        float numerator = (p.getD() - nDotPos);
 
-			return result;
-		}
+        if ( fabs(denominator) < TOL ) 
+            if ( fabs(numerator) < TOL ) // On the plane. 
+                return pos;
+            else // Parallel to plane. 
+                throw Exception("No intersection.");
+
+        // So now we're sure we have a single intersection point. 
+        // Find the distance from the line position, and return it.
+        return pos + ((numerator / denominator) * dir);
 	}
 
 	void Line::perturbDirection()
