@@ -44,12 +44,12 @@ namespace wcl
 			Line(const wcl::Vector& position, const wcl::Vector& direction);
 			Line(const Line& l);
 
-			wcl::Vector getPosition();
-			wcl::Vector getDirection();
+			wcl::Vector getPosition() const;
+			wcl::Vector getDirection() const;
 
 			double distanceFromPoint(const wcl::Vector& p);
-			wcl::Vector intersect(const Plane& p);
-			wcl::Vector intersect(const Line& l);
+			wcl::Vector intersect(const Plane& p) const;
+			wcl::Vector intersect(const Line& l) const;
 			void perturbDirection();
 
 			std::string toString();

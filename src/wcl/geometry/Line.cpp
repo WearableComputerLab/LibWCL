@@ -45,12 +45,12 @@ namespace wcl
 		this->dir = l.dir;
 	}
 
-	wcl::Vector Line::getPosition()
+	wcl::Vector Line::getPosition() const
 	{
 		return pos;
 	}
 
-	wcl::Vector Line::getDirection()
+	wcl::Vector Line::getDirection() const
 	{
 		return dir;
 	}
@@ -69,7 +69,7 @@ namespace wcl
 		return (this->pos - p).normal();
 	}
 
-	wcl::Vector Line::intersect(const wcl::Line& l)
+	wcl::Vector Line::intersect(const wcl::Line& l) const
 	{
 		double t;
 		if (fabs(dir[1] * l.dir[0] - dir[0] * l.dir[1]) > TOL)
@@ -108,7 +108,7 @@ namespace wcl
 		return wcl::Vector(x,y,z);
 	}
 
-	wcl::Vector Line::intersect(const wcl::Plane& p)
+	wcl::Vector Line::intersect(const wcl::Plane& p) const
 	{
         wcl::Vector normal = p.getNormal();
         float nDotPos = normal.dot(pos);
