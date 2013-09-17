@@ -46,6 +46,8 @@ namespace wcl
 
 			wcl::Vector getPosition() const;
 			wcl::Vector getDirection() const;
+           
+            void setDirection(const wcl::Vector& direction);
 
 			double distanceFromPoint(const wcl::Vector& p);
 			wcl::Vector intersect(const Plane& p) const;

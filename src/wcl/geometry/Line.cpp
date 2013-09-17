@@ -140,5 +140,9 @@ namespace wcl
 		dir[1] += 1e-5*(((double)rand())/ RAND_MAX);
 		dir[2] += 1e-5*(((double)rand())/ RAND_MAX);
 	}
+
+    void Line::setDirection(const wcl::Vector& direction) {
+        dir = direction;
+    }
 }
 
