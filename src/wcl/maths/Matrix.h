@@ -29,6 +29,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include <iostream>
 #include <wcl/api.h>
 
 namespace wcl {
@@ -46,7 +47,7 @@ typedef double T;
  * expect. The matrix interally stores its matrix as data[row][column] ie row
  * major.
  *
- * If you are working soley in graphics space your probably after the
+ * If you are working soley in graphics space you're probably after the
  * SMatrix class.
  */
 class WCL_API Matrix
@@ -100,4 +101,14 @@ Matrix WCL_API transpose ( const Matrix & );
 
 }; //namespace wcl
 
+inline std::ostream& operator << (std::ostream& os, const wcl::Matrix& m)
+{
+    for ( int i = 0 ; i < m.getRows(); ++i ) {
+        for ( int j = 0 ; j < m.getCols() ; ++j ) {
+            os << "[" << m[i][j] << "]";
+        }
+        os << std::endl;
+    }
+    return os;
+}
 #endif
