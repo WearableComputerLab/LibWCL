@@ -36,14 +36,14 @@ using namespace wcl;
 
 void usage() {
     printf("NAME\n\tpcontrol - Network command controller for NEC projectors\n\n"
-            "SYNOPSIS\n\t pcontrol [options] -a <address> -p <port> [COMMAND]\n\n"
+            "SYNOPSIS\n\t pcontrol [-a <address> [-p <port>]] [COMMAND]\n\n"
             "Options:\n"
             "\t-h\n\t--help\n"
             "\t\tDisplay usage options.\n"
             "\t-a\n\t--address\n"
-            "\t\tThe address of the projector to communicate with.\n"
+            "\t\tThe address of the projector to communicate with. Defaults to 127.0.0.1\n"
             "\t-p\n\t--port\n"
-            "\t\tThe port to communicate on.\n"
+            "\t\tThe port to communicate on. Defaults to 7142.\n"
             "COMMANDS\n[COMMAND] can be any single value of the following:\n"
             "\t--ON\n\t\tPower ON\n"
             "\t--OFF\n\t\tPower OFF\n"

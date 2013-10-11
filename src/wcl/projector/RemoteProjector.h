@@ -31,8 +31,8 @@
 #include <wcl/api.h>
 #include <wcl/network/TCPSocket.h>
 
-#ifndef WCL_PROJECTORCONTROL__
-#define WCL_PROJECTORCONTROL__
+#ifndef WCL_PROJECTORCONTROL_H
+#define WCL_PROJECTORCONTROL_H
 
 namespace wcl {
 
