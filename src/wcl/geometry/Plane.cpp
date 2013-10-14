@@ -117,7 +117,7 @@ namespace wcl
 
 	wcl::Vector Plane::getPosition() const
 	{
-		return normal;
+		return point;
 	}
 
 	std::string Plane::toString()
