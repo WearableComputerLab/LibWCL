@@ -86,6 +86,8 @@ public:
 
     void print () const;
 
+    void cullToZero() const;
+
 private:
     T **data;
 

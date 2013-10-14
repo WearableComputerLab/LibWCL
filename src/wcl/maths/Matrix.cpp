@@ -26,6 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
+#include <config.h>
+
 #include "Matrix.h"
 
 namespace wcl {
@@ -470,6 +472,21 @@ void Matrix::storeZeros()
 	for ( unsigned j = 0; j < this->cols; j++ ){
 	    this->data[i][j]=0.0;
 	}
+    }
+}
+
+/**
+ * Remove values smaller than TOL from our matrix. 
+ * Do this to remove floating-point errors after
+ * calculation. 
+ */
+void Matrix::cullToZero() const 
+{
+    for ( unsigned i = 0 ; i < this->rows ; ++i ) {
+        for ( unsigned j = 0 ; j < this->cols ; ++j ) {
+            if ( this->data[i][j] < TOL ) 
+                this->data[i][j] = 0;
+        }
     }
 }
 
