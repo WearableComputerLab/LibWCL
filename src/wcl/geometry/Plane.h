@@ -108,6 +108,11 @@ namespace wcl
 			 */
 			wcl::Vector point;
 	};
+} // namespace:wcl
+
+inline std::ostream& operator << (std::ostream& os, const wcl::Plane& p)
+{
+    return os << "Point on plane: " << p.getPosition() << ", normal: " << p.getNormal();
 }
 
 #endif
