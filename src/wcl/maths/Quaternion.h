@@ -99,6 +99,8 @@ namespace wcl
 			/// \}
 
 			Quaternion operator * (const Quaternion& rhs) const;
+            
+            bool operator == (const Quaternion &) const;
 
 			inline Quaternion getConjugate() const
 			{

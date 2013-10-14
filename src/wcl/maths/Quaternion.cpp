@@ -180,6 +180,14 @@ namespace wcl
 				w*B.w - x*B.x - y*B.y - z*B.z);
 	}
 
+    bool Quaternion::operator == (const Quaternion &iq) const
+    {
+        
+        return ( (w == iq.w) && 
+                 (x == iq.x) &&
+                 (y == iq.y) &&
+                 (z == iq.z));
+    }
 
 	std::string Quaternion::toString()
 	{
