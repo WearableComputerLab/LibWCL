@@ -95,7 +95,14 @@ Vector WCL_API operator *(const Matrix &, const Vector & );
 
 inline std::ostream& operator << (std::ostream& os, const wcl::Vector& v)
 {
-        return os << "[" << v[0] << "," << v[1] << "," << v[2] << "]";
+    if ( v.getRows() == 0 ) 
+        return os << "[ empty vector ]";
+    
+    os << "[" << v[0];
+    for ( unsigned i = 1 ; i < v.getRows() ; ++i ) 
+        os << "," << v[i];
+    os << "]";
+    return os;
 }
 
 #endif
