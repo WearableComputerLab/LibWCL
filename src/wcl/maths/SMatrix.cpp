@@ -470,5 +470,20 @@ T det ( const SMatrix &im )
     return detvalue;
 }
 
+SMatrix& SMatrix::storeOrthographicProjection(T left, T right, T bottom, T top, T near, T far) {
+    this->setSize(4);
+    (*this)[0][0] = 2.0 / (right - left);
+    (*this)[1][1] = 2.0 / (top - bottom);
+    (*this)[2][2] = -2.0 / (far - near);
+    (*this)[3][3] = 1.0;
+
+	(*this)[0][3] = - ((right + left  ) / (right - left));
+	(*this)[1][3] = - ((top   + bottom) / (top   - bottom));
+	(*this)[2][3] = - ((far   + near  ) / (far   - near));
+
+    return *this;
+}
+
 }; //end namespace
+
 

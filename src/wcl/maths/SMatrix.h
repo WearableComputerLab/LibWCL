@@ -61,6 +61,8 @@ public:
     SMatrix& storeInverse( const SMatrix & );
     SMatrix& storeIdentity();
 
+    SMatrix& storeOrthographicProjection(T left, T right, T bottom, T top, T near = -1.0, T far = 1.0);
+
 private:
     SMatrix();
     using Matrix::setSize;
