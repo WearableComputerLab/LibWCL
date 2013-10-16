@@ -66,7 +66,20 @@ namespace wcl
 
 	double Line::distanceFromPoint(const wcl::Vector& p) const
 	{
-		return (this->pos - p).normal();
+        // From the Wolfram Alpha page on Line-Point distance in 3D:
+        //     http://mathworld.wolfram.com/Point-LineDistance3-Dimensional.html
+        // x0: our point. 
+        // x1: point on line: pos
+        // x2: point 1 Line::dir units from pos, on the line. 
+        wcl::Vector x2 = this->pos + this->dir;
+
+        wcl::Vector x0subx1 = p - this->pos;
+        wcl::Vector x0subx2 = p - x2;
+
+        double denominator = (x2 - this->pos).length();
+        double numerator = x0subx1.crossProduct(x0subx2).length();
+        
+        return numerator / denominator;
 	}
 
 	wcl::Vector Line::intersect(const wcl::Line& l) const
