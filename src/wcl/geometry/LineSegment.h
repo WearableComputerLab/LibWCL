@@ -36,7 +36,7 @@
 
 namespace wcl
 {
-	class WCL_API LineSegment
+	class WCL_API LineSegment : public wcl::Line
 	{
 		public:
 			LineSegment(const wcl::Vector& startPos, const wcl::Vector& endPos);

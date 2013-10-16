@@ -34,7 +34,7 @@
 namespace wcl
 {
 	LineSegment::LineSegment(const wcl::Vector& start, const wcl::Vector& end) : 
-		startPos(start), endPos(end)
+		Line(start, end - start), startPos(start), endPos(end)
 	{
 	}
 
