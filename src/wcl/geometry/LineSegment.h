@@ -28,6 +28,7 @@
 #ifndef LINE_SEGMENT_H
 #define LINE_SEGMENT_H
 
+#include <iostream>
 #include <string>
 #include <wcl/api.h>
 #include <wcl/maths/Vector.h>
@@ -55,5 +56,9 @@ namespace wcl
 	};
 }
 
+inline std::ostream& operator << (std::ostream& os, const wcl::LineSegment& l)
+{
+     return os << "<LineSegment: start " << l.startPos << ", end: " << l.endPos << ", dir: " << l.getDirection() << ">";
+}
 #endif
 
