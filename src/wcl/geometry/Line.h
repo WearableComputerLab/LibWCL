@@ -49,7 +49,7 @@ namespace wcl
            
             void setDirection(const wcl::Vector& direction);
 
-			double distanceFromPoint(const wcl::Vector& p);
+			double distanceFromPoint(const wcl::Vector& p) const;
 			wcl::Vector intersect(const Plane& p) const;
 			wcl::Vector intersect(const Line& l) const;
 			void perturbDirection();

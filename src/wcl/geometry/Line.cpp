@@ -64,7 +64,7 @@ namespace wcl
 		return ss.str();
 	}
 
-	double Line::distanceFromPoint(const wcl::Vector& p)
+	double Line::distanceFromPoint(const wcl::Vector& p) const
 	{
 		return (this->pos - p).normal();
 	}
