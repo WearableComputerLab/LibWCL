@@ -1,6 +1,6 @@
 #m4_include(m4/acx_pthread.m4)
 AC_PREREQ([2.69])
-AC_INIT([minimal-gtest-autotools], [0.1.0], [jon@haeggblad.com])
+AC_INIT([libwcl-gtest], [0.1.0], [tim.simon@radiumblue.net])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([config.h])
 AM_INIT_AUTOMAKE([foreign])
