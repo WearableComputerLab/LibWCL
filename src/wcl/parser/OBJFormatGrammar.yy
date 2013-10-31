@@ -22,7 +22,7 @@ using namespace wcl;
 %token NEW_MTL DIFFUSE AMBIENT SPECULAR OPACITY REFRACTION_INDEX SPECULAR_EXP ILLUM EMISSIVE
 %token DIFFUSE_MAP AMBIENT_MAP SPECULAR_MAP ALPHA_MAP BUMP_MAP
 %error-verbose
-%expect 5
+%expect 6
 %parse-param { wcl::OBJParser *parser }
 %lex-param { wcl::OBJParser *parser }
 %debug
@@ -143,10 +143,14 @@ vertex:		VERTEX NUMBER NUMBER NUMBER
 		}
 		;
 
-vertextexture:	TEX_COORD NUMBER NUMBER
+vertextexture:	TEX_COORD NUMBER NUMBER NUMBER
 		{
 		    parser->addVertexTexture($2,$3);
 		}
+        | TEX_COORD NUMBER NUMBER
+        {
+		    parser->addVertexTexture($2,$3);
+        }
 		;
 
 vertexnormal:	NORMAL NUMBER NUMBER NUMBER
