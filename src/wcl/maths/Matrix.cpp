@@ -380,7 +380,7 @@ bool Matrix::operator == (const Matrix &im) const
  * @param im The matrix to compare against
  * @return true if the input matrix is different to the current matrix
  */
-bool Matrix::operator !=(const Matrix &im)
+bool Matrix::operator !=(const Matrix &im) const
 {
     return ! ( (*this ) == im );
 }

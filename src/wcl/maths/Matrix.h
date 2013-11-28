@@ -75,7 +75,7 @@ public:
     Matrix &operator*=(const T &);
     Matrix &operator/=(const T &);
     bool operator == (const Matrix &) const;
-    bool operator !=(const Matrix &);
+    bool operator !=(const Matrix &) const;
 
     unsigned getRows() const;
     unsigned getCols() const;

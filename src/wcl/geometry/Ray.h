@@ -1,5 +1,5 @@
 /*-
- * Copyright (c) 2008 Michael Marner <michael@20papercups.net>
+ * Copyright (c) 2013 Tim Simon <tim.simon@radiumblue.net>
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,8 +25,8 @@
  */
 
 
-#ifndef LINE_SEGMENT_H
-#define LINE_SEGMENT_H
+#ifndef WCL_RAY_H
+#define WCL_RAY_H
 
 #include <iostream>
 #include <string>
@@ -37,33 +37,34 @@
 
 namespace wcl
 {
-	class WCL_API LineSegment : virtual public wcl::Line
+    /* 
+     * Ray: a line with an origin extending in one direction.
+     */
+	class WCL_API Ray : virtual public wcl::Line
 	{
 		public:
-			LineSegment(const wcl::Vector& startPos, const wcl::Vector& endPos);
+			Ray(const wcl::Vector& startPos, const wcl::Vector& dir);
 
-            wcl::Intersection intersect(const LineSegment& s);
-            bool isOnSegment(const wcl::Vector&) const;
+            wcl::Intersection intersect(const Ray& s);
+
+            bool isOnRay(const wcl::Vector&) const;
+
 			/**
-			 * Returns the closest point on this line segment to the point.
+			 * Returns the closest point on this ray to the point.
 			 */
 			wcl::Vector closestPoint(const wcl::Vector& point) const;
-			
-            std::string toString();
-            
+			std::string toString();
+
             wcl::Vector getStart() const { return startPos; }
-            wcl::Vector getEnd() const { return endPos; }
 
         private:
-			wcl::Vector startPos;
-			wcl::Vector endPos;
-
+            wcl::Vector startPos;
 	};
 }
 
-inline std::ostream& operator << (std::ostream& os, const wcl::LineSegment& l)
+inline std::ostream& operator << (std::ostream& os, const wcl::Ray& l)
 {
-     return os << "<LineSegment: start " << l.getStart() << ", end: " << l.getEnd() << ", dir: " << l.getDirection() << ">";
+     return os << "<Ray: start " << l.getStart() << ", direction: " << l.getDirection() << ">";
 }
 #endif
 

@@ -121,7 +121,7 @@ namespace wcl
 	bool BoundingBox::intersect(const wcl::LineSegment& segment) const
 	{
 		//direction from start to end
-		wcl::Vector dir = segment.endPos - segment.startPos;
+		wcl::Vector dir = segment.getEnd() - segment.getStart();
 		//length of segment
 		double minT = dir.normal(); 
 		double maxS = 0.0;
@@ -132,13 +132,13 @@ namespace wcl
 		double recipX = 1.0/dir[0];
 		if (recipX >= 0.0)
 		{
-			s = (min[0] - segment.startPos[0])*recipX;
-			t = (max[0] - segment.startPos[0])*recipX;
+			s = (min[0] - segment.getStart()[0])*recipX;
+			t = (max[0] - segment.getStart()[0])*recipX;
 		}
 		else
 		{
-			s = (max[0] - segment.startPos[0])*recipX;
-			t = (min[0] - segment.startPos[0])*recipX;
+			s = (max[0] - segment.getStart()[0])*recipX;
+			t = (min[0] - segment.getStart()[0])*recipX;
 		}
 
 		if (s>maxS)
@@ -152,13 +152,13 @@ namespace wcl
 		recipX = 1.0/dir[1];
 		if (recipX >= 0.0)
 		{
-			s = (min[1] - segment.startPos[1])*recipX;
-			t = (max[1] - segment.startPos[1])*recipX;
+			s = (min[1] - segment.getStart()[1])*recipX;
+			t = (max[1] - segment.getStart()[1])*recipX;
 		}
 		else
 		{
-			s = (max[1] - segment.startPos[1])*recipX;
-			t = (min[1] - segment.startPos[1])*recipX;
+			s = (max[1] - segment.getStart()[1])*recipX;
+			t = (min[1] - segment.getStart()[1])*recipX;
 		}
 
 		if (s>maxS)
@@ -172,13 +172,13 @@ namespace wcl
 		recipX = 1.0/dir[2];
 		if (recipX >= 0.0)
 		{
-			s = (min[2] - segment.startPos[2])*recipX;
-			t = (max[2] - segment.startPos[2])*recipX;
+			s = (min[2] - segment.getStart()[2])*recipX;
+			t = (max[2] - segment.getStart()[2])*recipX;
 		}
 		else
 		{
-			s = (max[2] - segment.startPos[2])*recipX;
-			t = (min[2] - segment.startPos[2])*recipX;
+			s = (max[2] - segment.getStart()[2])*recipX;
+			t = (min[2] - segment.getStart()[2])*recipX;
 		}
 
 		if (s>maxS)

@@ -113,7 +113,8 @@ geometry_headers+=\
 			geometry/OBJGeometry.h \
 			geometry/Plane.h \
 			geometry/PolygonObject.h \
-			geometry/Vertex.h
+			geometry/Vertex.h \
+			geometry/Ray.h
 
 geometry_sources+=\
 			geometry/BoundingBox.cpp \
@@ -124,7 +125,8 @@ geometry_sources+=\
 			geometry/LineSegment.cpp \
 			geometry/Plane.cpp \
 			geometry/PolygonObject.cpp \
-			geometry/Vertex.cpp
+			geometry/Vertex.cpp \ 
+			geometry/Ray.cpp
 
 endif
 
