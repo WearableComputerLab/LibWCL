@@ -9,7 +9,7 @@ check_PROGRAMS =
 
 TESTS += func_test
 check_PROGRAMS += func_test
-func_test_SOURCES = Geometry.cpp $(SRC)
+func_test_SOURCES =  Line.cpp $(SRC)
 func_test_CPPFLAGS = -I gtest/include
 func_test_LDADD = ../../wcl/.libs/libwcl.la gtest/lib/libgtest_main.la \
 		  gtest/lib/libgtest.la \
