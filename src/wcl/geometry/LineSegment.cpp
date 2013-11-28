@@ -27,8 +27,10 @@
 
 #include <sstream>
 #include <iostream>
-
+#include <cstdlib>
+#include <config.h>
 #include <wcl/geometry/LineSegment.h>
+#include <wcl/geometry/Intersection.h>
 
 
 namespace wcl
@@ -39,11 +41,36 @@ namespace wcl
 	}
 
 
-	bool LineSegment::intersect(const LineSegment& s)
+    wcl::Intersection LineSegment::intersect(const LineSegment& s)
 	{
-		//TODO Implement LineSegment's intersect
-		return true;
+        wcl::Intersection ip = Line::intersect((wcl::Line)s);
+
+        if ( ip.intersects == wcl::Intersection::IS_SAME ) {
+            return ip;
+        } else if ( ip.intersects == wcl::Intersection::NO ) {
+            return ip;
+        } else if ( ip.intersects == wcl::Intersection::YES ) {
+            // Check whether or not the intersection point is on the segment. 
+    
+        }
 	}
+
+    bool LineSegment::isOnSegment(const wcl::Vector& point) const {
+        wcl::Vector ba = endPos - startPos;
+        wcl::Vector ca = point - startPos;
+
+        wcl::Vector cross = ba.crossProduct(ca);
+        if ( abs(cross.length()) < TOL ) {
+            return false;
+        }
+
+        double dot = ba.dot(ca);
+        if ( dot < 0 ) return false;
+
+        if ( dot > ( endPos.distance(startPos) * endPos.distance(startPos) ) ) return false;
+
+        return true;
+    }
 
 	std::string LineSegment::toString()
 	{
