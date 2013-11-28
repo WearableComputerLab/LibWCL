@@ -42,8 +42,8 @@ namespace wcl
 		public:
 			LineSegment(const wcl::Vector& startPos, const wcl::Vector& endPos);
 
-			bool intersect(const LineSegment& s);
-
+            wcl::Intersection intersect(const LineSegment& s);
+            bool isOnSegment(const wcl::Vector&) const;
 			/**
 			 * Returns the closest point on this line segment to the point.
 			 */

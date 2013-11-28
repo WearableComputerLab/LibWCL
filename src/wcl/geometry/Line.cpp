@@ -82,47 +82,80 @@ namespace wcl
         return numerator / denominator;
 	}
 
-	wcl::Vector Line::intersect(const wcl::Line& l) const
+    double Line::distanceSquaredFromLine(const wcl::Line& l) const {
+    
+        wcl::Vector w0 = pos - l.pos;
+
+        float a = dir.dot( dir );
+        float b = dir.dot( l.dir );
+        float c = l.dir.dot( l.dir );
+        float d = dir.dot( w0 );
+        float e = l.dir.dot( w0 );
+
+        float denom = a * c - b * b;
+        if ( denom < TOL ) {    // We've got two parallel lines.
+            wcl::Vector wc = w0 - (e/c)*l.dir;
+            return wc.dot(wc);
+        } else {
+            wcl::Vector wc = w0 + ((b*e - c*d) / denom) * dir - ((a*e - b*d)/denom) * l.dir;
+            return wc.dot(wc);
+        }
+    }
+
+	wcl::Intersection Line::intersect(const wcl::Line& l) const
 	{
-		double t;
-		if (fabs(dir[1] * l.dir[0] - dir[0] * l.dir[1]) > TOL)
-		{
-			t = (-pos[1]*l.dir[0] +
-			      l.pos[1]*l.dir[0] +
-				  l.dir[1]*pos[0] -
-				  l.dir[1]*l.pos[0]) /
-				(dir[1]*l.dir[0] - dir[0]*l.dir[1]);
-		}
-		else if (fabs(-dir[0] * l.dir[2] + dir[2]*l.dir[0]) > TOL)
-		{
-			t = -(-l.dir[2]*pos[0] +
-				  l.dir[2]*l.pos[0] + 
-				  l.dir[0]*pos[2] -
-				  l.dir[0]*l.pos[2]) /
-				(-dir[0]*l.dir[2]+dir[2]*l.dir[0]);
-		}
-		else if (fabs(-dir[2]*l.dir[1] + dir[1]*l.dir[2]) > TOL)
-		{
-			t = (pos[2]*l.dir[1] -
-				 l.pos[2]*l.dir[1] -
-				 l.dir[2]*pos[1] +
-				 l.dir[2]*l.pos[1]) /
-				(-dir[2]*l.dir[1] + dir[1]*l.dir[2]);
-		}
-		else
-		{
-			throw Exception("No Intersection!");
-		}
+        wcl::Intersection ip;
 
-		double x = pos[0] + dir[0]*t;
-		double y = pos[1] + dir[1]*t;
-		double z = pos[2] + dir[2]*t;
+        double t;
+        if (fabs(dir[1] * l.dir[0] - dir[0] * l.dir[1]) > TOL)
+        {
+            t = (-pos[1]*l.dir[0] +
+                    l.pos[1]*l.dir[0] +
+                    l.dir[1]*pos[0] -
+                    l.dir[1]*l.pos[0]) /
+                (dir[1]*l.dir[0] - dir[0]*l.dir[1]);
+        }
+        else if (fabs(-dir[0] * l.dir[2] + dir[2]*l.dir[0]) > TOL)
+        {
+            t = -(-l.dir[2]*pos[0] +
+                    l.dir[2]*l.pos[0] +
+                    l.dir[0]*pos[2] -
+                    l.dir[0]*l.pos[2]) /
+                (-dir[0]*l.dir[2]+dir[2]*l.dir[0]);
+        }
+        else if (fabs(-dir[2]*l.dir[1] + dir[1]*l.dir[2]) > TOL)
+        {
+            t = (pos[2]*l.dir[1] -
+                    l.pos[2]*l.dir[1] -
+                    l.dir[2]*pos[1] +
+                    l.dir[2]*l.pos[1]) /
+                (-dir[2]*l.dir[1] + dir[1]*l.dir[2]);
+        }
+        else
+        {
+            // At this point we're either parallel or coadjacent. 
+            //Check the distance between position and l
+            if ( distanceFromPoint(l.pos) < TOL ) 
+                ip.intersects = wcl::Intersection::IS_SAME;
+            else
+                ip.intersects = wcl::Intersection::NO;
+            return ip;
+        }
 
-		return wcl::Vector(x,y,z);
+        double x = pos[0] + dir[0]*t;
+        double y = pos[1] + dir[1]*t;
+        double z = pos[2] + dir[2]*t;
+
+        ip.point = wcl::Vector(x,y,z);
+        ip.intersects = wcl::Intersection::YES;
+        return ip;
 	}
-
-	wcl::Vector Line::intersect(const wcl::Plane& p) const
+	
+    wcl::Intersection Line::intersect(const wcl::Plane& p) const
 	{
+        
+        wcl::Intersection ip;
+
         wcl::Vector normal = p.getNormal();
         float nDotPos = normal.dot(pos);
         float nDotDir = normal.dot(dir);
@@ -137,14 +170,23 @@ namespace wcl
         float numerator = (p.getD() - nDotPos);
 
         if ( fabs(denominator) < TOL ) 
-            if ( fabs(numerator) < TOL ) // On the plane. 
-                return pos;
-            else // Parallel to plane. 
-                throw Exception("No intersection.");
+            if ( fabs(numerator) < TOL ) { // On the plane. 
+                ip.intersects = wcl::Intersection::IS_SAME;
+                ip.point = pos;
+
+                return ip;
+            }  else { // Parallel to plane. 
+                ip.intersects = wcl::Intersection::NO;
+
+
+                return ip;
+            }
 
         // So now we're sure we have a single intersection point. 
         // Find the distance from the line position, and return it.
-        return pos + ((numerator / denominator) * dir);
+        ip.point = pos + ((numerator / denominator) * dir);
+        ip.intersects = wcl::Intersection::YES;
+        return ip;
 	}
 
 	void Line::perturbDirection()

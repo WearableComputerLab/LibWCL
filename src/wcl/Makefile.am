@@ -102,6 +102,7 @@ geometry_headers=
 geometry_sources=
 if ENABLE_GEOMETRY
 geometry_headers+=\
+			geometry/Intersection.h \
 			geometry/BoundingBox.h \
 			geometry/BoundingSphere.h\
 			geometry/Face.h \

@@ -34,6 +34,8 @@
 #include <wcl/maths/Vector.h>
 #include <wcl/geometry/Plane.h>
 
+#include <wcl/geometry/Intersection.h>
+
 namespace wcl
 {
 	class Plane;
@@ -50,8 +52,10 @@ namespace wcl
             void setDirection(const wcl::Vector& direction);
 
 			double distanceFromPoint(const wcl::Vector& p) const;
-			wcl::Vector intersect(const Plane& p) const;
-			wcl::Vector intersect(const Line& l) const;
+            double distanceSquaredFromLine(const wcl::Line&) const;          
+            wcl::Intersection intersect(const Line& l) const;
+            wcl::Intersection intersect(const Plane& l) const;
+
 			void perturbDirection();
 
 			std::string toString();
