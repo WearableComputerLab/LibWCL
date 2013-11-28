@@ -7,37 +7,15 @@
 #include <wcl/maths/Vector.h>
 #include <wcl/maths/Quaternion.h>
 #include <wcl/geometry/Plane.h>
+#include <wcl/geometry/Intersection.h>
 #include <wcl/geometry/LineSegment.h>
 #include <wcl/Exception.h>
 
 #include <cmath>
 
-// The fixture for testing class Project1. From google test primer.
-class GeometryTest : public ::testing::Test {
+// The fixture for testing wcl::Line. 
+class LineTest : public ::testing::Test {
     protected:
-        // You can remove any or all of the following functions if its body
-        // is empty.
-
-        GeometryTest() {
-            // You can do set-up work for each test here.
-
-        }
-
-        virtual ~GeometryTest() {
-            // You can do clean-up work that doesn't throw exceptions here.
-        }
-
-        // If the constructor and destructor are not enough for setting up
-        // and cleaning up each test, you can define the following methods:
-        virtual void SetUp() {
-            // Code here will be called immediately after the constructor (right
-            // before each test).
-        }
-
-        virtual void TearDown() {
-            // Code here will be called immediately after each test (right
-            // before the destructor).
-        }
 
         wcl::SMatrix getRotationMatrix(float theta) {
 
@@ -80,7 +58,7 @@ class GeometryTest : public ::testing::Test {
 /*
  * Test the constructor of wcl::Line. 
  */
-TEST_F(GeometryTest, LineConstructor) {
+TEST_F(LineTest, LineConstructor) {
 
     wcl::Vector v(0,0,0);
     wcl::Vector w(1,1,1);
@@ -91,7 +69,7 @@ TEST_F(GeometryTest, LineConstructor) {
     ASSERT_EQ(l.getDirection(),w.unit());
 }
 
-TEST_F(GeometryTest, LineLineIntersection) {
+TEST_F(LineTest, LineLineIntersection) {
     wcl::Vector p(0,1,0);
     wcl::Vector q(1,1,0);
     wcl::Vector r(1,0,0);
@@ -106,15 +84,15 @@ TEST_F(GeometryTest, LineLineIntersection) {
     wcl::Line rs(r,wcl::Vector(-1, 0, 0));
     wcl::Line rp(r,wcl::Vector(-1, 1, 0));
 
-    ASSERT_EQ(pq.intersect(ps), p) << "Lines intersect at p";
-    ASSERT_EQ(rs.intersect(rp), r) << "Lines intersect at r";
+    ASSERT_EQ(pq.intersect(ps).point, p) << "Lines intersect at p";
+    ASSERT_EQ(rs.intersect(rp).point, r) << "Lines intersect at r";
 
-    ASSERT_EQ(rp.intersect(qs), wcl::Vector(0.5, 0.5, 0)) << "Lines intersect: (0.5, 0.5, 0)";
+    ASSERT_TRUE(rp.intersect(qs).point == wcl::Vector(0.5, 0.5, 0)) << "Lines should intersect at (0.5, 0.5, 0). Actual: " << rp.intersect(qs).point;
 
-    ASSERT_THROW(wcl::Vector ps_qr = ps.intersect(qr), wcl::Exception) << "Parallel: throws exception";
+    //ASSERT_THROW(wcl::Vector ps_qr = ps.intersect(qr).point, wcl::Exception) << "Parallel: throws exception";
 }
 
-TEST_F(GeometryTest, RotationMatrix) {
+TEST_F(LineTest, RotationMatrix) {
     
     wcl::SMatrix r = getRotationMatrix(90);
 
@@ -135,7 +113,7 @@ TEST_F(GeometryTest, RotationMatrix) {
     ASSERT_EQ ( 0, M == r) << "m: " << M;
 }
 
-//TEST_F(GeometryTest, VectorRotation45Degrees) {
+//TEST_F(LineTest, VectorRotation45Degrees) {
 //
 //    wcl::Vector v(0,1,0);
 //    wcl::Quaternion q(v);
@@ -158,7 +136,7 @@ TEST_F(GeometryTest, RotationMatrix) {
 //    ASSERT_TRUE ( w == output );
 //}
 
-TEST_F(GeometryTest, VectorRotation90Degrees) {
+TEST_F(LineTest, VectorRotation90Degrees) {
 
     wcl::Vector v(0,1,0);
     wcl::Quaternion q(v);
@@ -179,7 +157,7 @@ TEST_F(GeometryTest, VectorRotation90Degrees) {
     ASSERT_TRUE ( rotated == output );
 }
 
-TEST_F(GeometryTest, intersectLineSegment) {
+TEST_F(LineTest, intersectLineSegment) {
    
     wcl::LineSegment ls(wcl::Vector(0,0,0), wcl::Vector(2,2,2));
     wcl::LineSegment lr(wcl::Vector(2,2,2), wcl::Vector(0,0,0));
@@ -187,11 +165,11 @@ TEST_F(GeometryTest, intersectLineSegment) {
     wcl::LineSegment parallel_a(wcl::Vector(1,0,0), wcl::Vector(4,0,0));
     wcl::LineSegment parallel_b(wcl::Vector(1,2,0), wcl::Vector(4,2,0));
 
-    ASSERT_TRUE(ls.intersect(lr)) << "Line segments " << ls << " and " << lr << " should intersect.";
-    ASSERT_FALSE(parallel_a.intersect(parallel_b)) << "Line segments " << parallel_a << " and " << parallel_b << " should not intersect.";
+    ASSERT_EQ(wcl::Intersection::IS_SAME, ls.intersect(lr).intersects) << "Line segments " << ls << " and " << lr << " are coadjacent.";
+    ASSERT_EQ(wcl::Intersection::NO, parallel_a.intersect(parallel_b).intersects) << "Line segments " << parallel_a << " and " << parallel_b << " should not intersect.";
 }
 
-TEST_F(GeometryTest, distanceFromPoint) {
+TEST_F(LineTest, distanceFromPoint) {
 
     // Test that a point on a line has distance 0 from that line. 
     wcl::Line lp(wcl::Vector(1,1,0), wcl::Vector(0,-1,0));
@@ -203,7 +181,7 @@ TEST_F(GeometryTest, distanceFromPoint) {
     ASSERT_EQ(0, lp.distanceFromPoint(p2)) << "A point (not line::pos) on the line should have 0 distance from the line.";
 }
 
-TEST_F(GeometryTest, getPosition) {
+TEST_F(LineTest, getPosition) {
 
     wcl::Vector min(0,0,0);
     wcl::Vector max(1,1,1);
