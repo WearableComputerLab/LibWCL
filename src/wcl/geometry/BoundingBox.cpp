@@ -25,6 +25,7 @@
  * SUCH DAMAGE.
  */
 
+#include <float.h>
 #include <limits>
 #include <assert.h>
 
@@ -117,6 +118,16 @@ namespace wcl
 		return true;
 	}
 
+    bool BoundingBox::intersect(const wcl::Line& l) const {
+        wcl::LineSegment ls(l.getPosition() - (l.getDirection() * DBL_MAX), 
+                            l.getPosition() + (l.getDirection() * DBL_MAX));
+        return this->intersect(ls);
+    }
+    bool BoundingBox::intersect(const wcl::Ray& r) const {
+        wcl::LineSegment ls(r.getStart() - (r.getDirection() * DBL_MAX), 
+                            r.getStart() + (r.getDirection() * DBL_MAX));
+        return this->intersect(ls);
+    }
 
 	bool BoundingBox::intersect(const wcl::LineSegment& segment) const
 	{

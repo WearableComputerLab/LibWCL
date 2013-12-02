@@ -32,6 +32,8 @@
 
 #include <wcl/api.h>
 #include <wcl/geometry/LineSegment.h>
+#include <wcl/geometry/Line.h>
+#include <wcl/geometry/Ray.h>
 #include <wcl/geometry/Vertex.h>
 #include <wcl/maths/Vector.h>
 
@@ -78,6 +80,8 @@ namespace wcl
 			bool overlaps(const wcl::BoundingBox& b) const;
 
 			bool intersect(const wcl::LineSegment& s) const;
+			bool intersect(const wcl::Line& l) const;
+			bool intersect(const wcl::Ray& r) const;
 
 			bool contains(const wcl::Vector& v) const;
 

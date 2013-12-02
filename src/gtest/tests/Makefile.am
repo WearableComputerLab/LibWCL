@@ -9,7 +9,8 @@ check_PROGRAMS =
 
 TESTS += func_test
 check_PROGRAMS += func_test
-func_test_SOURCES =  Line.cpp \
+func_test_SOURCES =  BoundingBox.cpp \
+					 Line.cpp \
 					 Ray.cpp \
 					 $(SRC)
 func_test_CPPFLAGS = -I gtest/include
