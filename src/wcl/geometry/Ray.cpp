@@ -50,27 +50,6 @@ namespace wcl
         } else if ( ip.intersects == wcl::Intersection::NO ) {
             return ip;
         } else if ( ip.intersects == wcl::Intersection::YES ) {
-            /* Check whether or not the intersection point is on the segment. 
-             * We do this by checking if the intersection point is between the 
-             * start of the ray and MAX_FLOAT*ray-direction. 
-             * Because direction is a unit vector, it can't be more than 1, 
-             * which means we shouldn't overflow during multiplication. 
-             * 
-             * The three values are: start (a), end (b) and intersection (c). 
-             */
-            wcl::Vector end = startPos + ( dir * DBL_MAX ); // because wcl::Vector by default handles doubles
-            
-            float dotproduct = ( end - startPos ).dot(ip.point - startPos);
-            if ( dotproduct < 0 ) {
-                ip.intersects == wcl::Intersection::NO;
-                return ip;
-            }
-
-            if ( dotproduct > squaredlengthba ) {
-                ip.intersects == wcl::Intersection::NO;
-                return ip;
-            }
-
             if ( isOnRay(ip.point) )
                 return ip;
             else {
@@ -108,7 +87,7 @@ namespace wcl
 	std::string Ray::toString()
 	{
 		std::stringstream ss;
-		ss << "Ray. Start: (" << startPos[0] << ", " << startPos[1] << ", " << startPos[2];
+		ss << "Ray. Start: (" << startPos << ", direction: " << dir;
 		ss << ") ";
 		return ss.str();
 	}
