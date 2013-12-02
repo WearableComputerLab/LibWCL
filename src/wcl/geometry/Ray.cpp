@@ -51,12 +51,14 @@ namespace wcl
             return ip;
         } else if ( ip.intersects == wcl::Intersection::YES ) {
             /* Check whether or not the intersection point is on the segment. 
-             * We do this by checking if the intersection point is between the start of the ray and MAX_FLOAT*ray-direction. 
-             * Because direction is a unit vector, it can't be more than 1, which means we shouldn't overflow during multiplication. 
+             * We do this by checking if the intersection point is between the 
+             * start of the ray and MAX_FLOAT*ray-direction. 
+             * Because direction is a unit vector, it can't be more than 1, 
+             * which means we shouldn't overflow during multiplication. 
              * 
              * The three values are: start (a), end (b) and intersection (c). 
              */
-/*            wcl::Vector end = startPos * DBL_MAX; // because wcl::Vector by default handles doubles
+            wcl::Vector end = startPos + ( dir * DBL_MAX ); // because wcl::Vector by default handles doubles
             
             float dotproduct = ( end - startPos ).dot(ip.point - startPos);
             if ( dotproduct < 0 ) {
@@ -68,7 +70,7 @@ namespace wcl
                 ip.intersects == wcl::Intersection::NO;
                 return ip;
             }
-*/
+
             if ( isOnRay(ip.point) )
                 return ip;
             else {
@@ -79,22 +81,28 @@ namespace wcl
 	}
 
     bool Ray::isOnRay(const wcl::Vector& point) const {
-        wcl::Vector endPos = startPos * DBL_MAX;
-        wcl::Vector ba = endPos - startPos;
-        wcl::Vector ca = point - startPos;
 
-        wcl::Vector cross = ba.crossProduct(ca);
-        if ( abs(cross.length()) < TOL ) {
-            return false;
+        /*
+         * We find the cross product of (point-start) X ( end - start). If it's zero, they're co-linear. 
+         */
+        wcl::Vector endPos = startPos + (dir * DBL_MAX) ;
+        wcl::Vector pSubStart = point - startPos;
+        wcl::Vector endSubStart = endPos - startPos;
+
+        wcl::Vector result = pSubStart.crossProduct(endSubStart);
+        if ( result.length() < TOL ) {
+            /*
+             * Now, we need to check if the point is between start and end. 
+             */
+            double product = pSubStart.dot(endSubStart);
+            /*
+             * If the product of the scalar is non-negative, the point is coincident or between start
+             * and end. Otherwise it's outside the line segment. 
+             */
+            if ( product < 0 ) return false; 
+                return true; 
         }
-
-        double dot = ba.dot(ca);
-        if ( dot < 0 ) 
-            return false;
-
-        if ( dot > ( endPos.distance(startPos) * endPos.distance(startPos) ) ) return false;
-
-        return true;
+        return false;
     }
 
 	std::string Ray::toString()
