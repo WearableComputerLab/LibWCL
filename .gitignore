@@ -37,3 +37,5 @@ src/wcl/OBJFormatGrammar.h
 src/wcl/OBJFormatScanner.cc
 src/wcl/Streamable.h
 src/wcl/libwcl.la
+func_test
+
