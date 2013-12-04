@@ -1,4 +1,4 @@
-#include "gtest/gtest.h"
+#include <gtest/gtest.h>
 
 #include <iostream>
 
@@ -12,6 +12,8 @@
 #include <wcl/Exception.h>
 
 #include <cmath>
+
+#define PI 3.141592653589793238L
 
 // The fixture for testing wcl::Line. 
 class LineTest : public ::testing::Test {
@@ -51,8 +53,6 @@ class LineTest : public ::testing::Test {
             return M;
         }
 
-        // Objects declared here can be used by all tests in the test case for Project1.
-        const long double PI = 3.141592653589793238L;
 };
 
 /*

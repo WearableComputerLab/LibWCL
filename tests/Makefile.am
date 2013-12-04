@@ -12,7 +12,11 @@ func_test_SOURCES =  BoundingBox.cpp \
 					 Line.cpp \
 					 Ray.cpp \
 					 $(SRC)
+
 func_test_CPPFLAGS = -I gtest/include
-func_test_LDADD = ../../wcl/.libs/libwcl.la gtest/lib/libgtest_main.la \
-		  gtest/lib/libgtest.la \
-		  $(GTEST_LIBS)
+
+func_test_LDFLAGS = -lgtest -lgtest_main
+
+func_test_LDADD =  \
+		          $(GTEST_LIBS) \
+				  ../src/wcl/.libs/libwcl.la
