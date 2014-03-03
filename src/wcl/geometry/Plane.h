@@ -55,6 +55,7 @@ namespace wcl
 			 * Creates a plane object such that v1, v2, and v3 lie on the plane.
 			 */
 			Plane(const wcl::Vector& v1, const wcl::Vector& v2, const wcl::Vector& v3);
+            Plane(const wcl::Vector& point, const wcl::Vector& normal);
 
 			/**
 			 * Default constructor. Don't use this.

@@ -41,6 +41,12 @@ namespace wcl
 		d = -(normal[0]*point[0] + normal[1]*point[1] + normal[2]*point[2]);
 	}
 
+    Plane::Plane(const wcl::Vector& p, const wcl::Vector& n) {
+        point = p;
+        normal = n.unit();
+		d = -(normal[0]*point[0] + normal[1]*point[1] + normal[2]*point[2]);
+    }
+
 	Plane::Plane()
 	{
 		d = 0;
