@@ -153,39 +153,15 @@ namespace wcl
 	
     wcl::Intersection Line::intersect(const wcl::Plane& p) const
 	{
-        
         wcl::Intersection ip;
+        ip.intersects = wcl::Intersection::NO;
 
-        wcl::Vector normal = p.getNormal();
-        float nDotPos = normal.dot(pos);
-        float nDotDir = normal.dot(dir);
-
-        // Denominator: nDotDir. 
-        // Numerator: (p.getD() - nDotPos)
-
-        // If the denominator is 0, we're either on the plane or 
-        //  parallel to it. 
-      
-        float denominator = nDotDir;
-        float numerator = (p.getD() - nDotPos);
-
-        if ( fabs(denominator) < TOL ) 
-            if ( fabs(numerator) < TOL ) { // On the plane. 
-                ip.intersects = wcl::Intersection::IS_SAME;
-                ip.point = pos;
-
-                return ip;
-            }  else { // Parallel to plane. 
-                ip.intersects = wcl::Intersection::NO;
-
-
-                return ip;
-            }
-
-        // So now we're sure we have a single intersection point. 
-        // Find the distance from the line position, and return it.
-        ip.point = pos + ((numerator / denominator) * dir);
-        ip.intersects = wcl::Intersection::YES;
+        double t = - (pos.dot(p.getNormal()) + p.getD()) / (dir.dot(p.getNormal()));
+        
+        if (t > 0) {
+            ip.point = pos + dir*t;
+            ip.intersects = wcl::Intersection::YES;
+        }
         return ip;
 	}
 
