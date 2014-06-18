@@ -125,7 +125,7 @@ geometry_sources+=\
 			geometry/LineSegment.cpp \
 			geometry/Plane.cpp \
 			geometry/PolygonObject.cpp \
-			geometry/Vertex.cpp \ 
+			geometry/Vertex.cpp \
 			geometry/Ray.cpp
 
 endif
