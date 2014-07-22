@@ -224,7 +224,7 @@ elif test "x$platform_osx" = "xyes"; then
 					    enable_camera_1394="no"
 						ERRORS+="libdc1394 not found, cannot build firewire camera support\n"
 					  ])
-	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS '-framework Carbon' '-framework QuickTime' '-framework AppKit' '-framework IOKit' '-framework Foundation' -lobjc"
+	PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS $LIBDC1394_LIBS -framework Carbon -framework QuickTime -framework AppKit -framework IOKit -framework Foundation -lobjc"
 	PKGCONFIG_OTHERINCLUDES="$PKGCONFIG_OTHERINCLUDES $LIBDC1394_CFLAGS"
 else
 	AC_MSG_WARN([Firewire Camera Support Is Not Available on your platform])
