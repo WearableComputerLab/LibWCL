@@ -27,6 +27,7 @@ common_headers=debug.h\
 	      CircularQueue\
 	      Singleton\
 	      Exception.h\
+		  util/CircularBuffer.h \
 	      api.h\
 	      IO.h
 
