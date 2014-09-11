@@ -59,6 +59,22 @@ namespace wcl
         }
 	}
 
+    wcl::Intersection Ray::intersect(const Plane& p) {
+        wcl::Intersection ip = ((Line*) this)->intersect(p);
+        if ( ip.intersects == wcl::Intersection::NO ) {
+            return ip;
+        } 
+        else if ( ip.intersects == wcl::Intersection::YES ) {
+            if ( isOnRay(ip.point) )
+                return ip;
+            else {
+                ip.intersects == wcl::Intersection::NO;
+                return ip;
+            }
+        }
+    }
+
+
     bool Ray::isOnRay(const wcl::Vector& point) const {
 
         /*

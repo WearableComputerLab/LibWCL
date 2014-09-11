@@ -46,6 +46,7 @@ namespace wcl
 			Ray(const wcl::Vector& startPos, const wcl::Vector& dir);
 
             wcl::Intersection intersect(const Ray& s);
+            wcl::Intersection intersect(const Plane& p);
 
             bool isOnRay(const wcl::Vector&) const;
 
