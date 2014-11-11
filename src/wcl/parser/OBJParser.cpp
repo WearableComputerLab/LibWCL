@@ -50,38 +50,6 @@ OBJParser::OBJParser(istream &stream, RelativeToAbsolute ifunc):
 
 OBJParser::~OBJParser()
 {
-    // Free up the OBJGeometry and all components
-    // We don't add this to the structs as we are trying to keep
-    // them extremely clean
-    for(vector<OBJMaterial *>::iterator it = this->data.materials.begin();
-        it != this->data.materials.end(); ++it ){
-        OBJMaterial *m=*it;
-        delete m;
-    }
-    for(vector<OBJGroup *>::iterator it = this->data.groups.begin();
-        it != this->data.groups.end();
-        ++it ){
-
-        OBJGroup *g = *it;
-
-        for( vector<OBJFace *>::iterator fit = g->faces.begin();
-             fit != g->faces.end();
-             ++fit ){
-
-            OBJFace *f = *fit;
-
-            for( vector<OBJVertex *>::iterator vit = f->verts.begin();
-                 vit != f->verts.end();
-                 ++vit ){
-                OBJVertex *v = *vit;
-                delete v;
-            }
-
-            delete f;
-        }
-
-        delete g;
-    }
 }
 
 /**

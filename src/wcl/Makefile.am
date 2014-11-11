@@ -124,6 +124,7 @@ geometry_sources+=\
 			geometry/GeometryLoader.cpp \
 			geometry/Line.cpp \
 			geometry/LineSegment.cpp \
+			geometry/OBJGeometry.cpp \
 			geometry/Plane.cpp \
 			geometry/PolygonObject.cpp \
 			geometry/Vertex.cpp \

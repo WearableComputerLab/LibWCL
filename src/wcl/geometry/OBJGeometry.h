@@ -47,6 +47,8 @@ namespace wcl
 		int pointIndex;
 		int normalIndex;
 		int uvIndex;
+
+        OBJVertex() : pointIndex(-1), normalIndex(-1), uvIndex(-1) {}
 	};
 
 	struct WCL_API OBJMaterial
@@ -90,9 +92,9 @@ namespace wcl
 
 	struct WCL_API OBJFace
 	{
-                OBJMaterial *material;
-		OBJSmoothing *smoothing;
-		std::vector<OBJVertex *> verts;
+        OBJMaterial *material;
+        OBJSmoothing *smoothing;
+        std::vector<OBJVertex *> verts;
 	};
 
 	struct WCL_API OBJSmoothing
@@ -109,15 +111,17 @@ namespace wcl
 
 	struct WCL_API OBJGeometry
 	{
-		std::vector<wcl::Vector> points;
-		std::vector<wcl::Vector> normals;
-		std::vector<wcl::Vector> texcoords;
-                std::vector<wcl::OBJMaterial *> materials;
-                std::vector<wcl::OBJGroup *>groups;
-		std::vector<wcl::OBJSmoothing *>smoothing;
-		std::map<std::string, wcl::OBJMaterial *> materialMap;
-                std::map<std::string, wcl::OBJGroup *>groupsMap;
-		std::map<std::string, wcl::OBJSmoothing *>smoothingMap;
+        std::vector<wcl::Vector> points;
+        std::vector<wcl::Vector> normals;
+        std::vector<wcl::Vector> texcoords;
+        std::vector<wcl::OBJMaterial *> materials;
+        std::vector<wcl::OBJGroup *>groups;
+        std::vector<wcl::OBJSmoothing *>smoothing;
+        std::map<std::string, wcl::OBJMaterial *> materialMap;
+        std::map<std::string, wcl::OBJGroup *>groupsMap;
+        std::map<std::string, wcl::OBJSmoothing *>smoothingMap;
+
+        virtual ~OBJGeometry();
 	};
 }
 
