@@ -122,6 +122,13 @@ namespace wcl
         std::map<std::string, wcl::OBJSmoothing *>smoothingMap;
 
         virtual ~OBJGeometry();
+
+        OBJGeometry& operator=(const OBJGeometry& rhs);
+        OBJGeometry(const OBJGeometry& rhs);
+        OBJGeometry() {}
+
+        private:
+            void clear();
 	};
 }
 

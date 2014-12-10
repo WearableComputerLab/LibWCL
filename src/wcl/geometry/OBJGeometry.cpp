@@ -33,11 +33,133 @@ using std::vector;
 
 namespace wcl {
 
+    OBJGeometry::OBJGeometry(const OBJGeometry& rhs) {
+        // PREFILL! 
+        for (std::vector<wcl::OBJSmoothing*>::const_iterator it = rhs.smoothing.begin(); it < rhs.smoothing.end(); ++it) {
+            OBJSmoothing* s = new OBJSmoothing();
+            s->name = (*it)->name;
+            smoothing.push_back(s);
+            smoothingMap[s->name] = s;
+        }
+
+        // copy points
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.points.begin(); it < rhs.points.end(); ++it) {
+            points.push_back(*it);
+        }
+
+        // copy normals!
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.normals.begin(); it < rhs.normals.end(); ++it) {
+            normals.push_back(*it);
+        }
+
+        // copy texcoords
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.texcoords.begin(); it < rhs.texcoords.end(); ++it) {
+            texcoords.push_back(*it);
+        }
+
+        // create new materials!
+        for (std::vector<OBJMaterial*>::const_iterator it = rhs.materials.begin(); it < rhs.materials.end(); ++it) {
+            OBJMaterial* m = new OBJMaterial(**it);
+            materials.push_back(m);
+            materialMap[m->name] = m;
+        }
+
+        // create new groups!
+        for (std::vector<OBJGroup*>::const_iterator it = rhs.groups.begin(); it < rhs.groups.end(); ++it) {
+
+            OBJGroup* g = new OBJGroup();
+            g->name = (*it)->name;
+            groups.push_back(g);
+            groupsMap[g->name] = g;
+
+            // create new faces!
+            for (std::vector<OBJFace*>::const_iterator fit = (*it)->faces.begin(); fit < (*it)->faces.end(); ++fit) {
+                OBJFace* f = new OBJFace();
+                if (materialMap.find((*fit)->material->name) != materialMap.end()) {
+                    f->material = materialMap[(*fit)->material->name];
+                }
+                if (smoothingMap.find((*fit)->smoothing->name) != smoothingMap.end()) {
+                    f->smoothing= smoothingMap[(*fit)->smoothing->name];
+                }
+                f->smoothing->faces.push_back(f);
+                g->faces.push_back(f);
+
+                // create new vertices for the damn face!
+                for (std::vector<OBJVertex*>::const_iterator vit = (*fit)->verts.begin(); vit < (*fit)->verts.end(); ++vit) {
+                    OBJVertex* v = new OBJVertex(**vit);
+                    f->verts.push_back(v);
+                }
+            }
+        }
+    }
+
+    OBJGeometry& OBJGeometry::operator=(const OBJGeometry& rhs) {
+        // empty this!
+        clear();
+
+        // PREFILL! 
+        for (std::vector<wcl::OBJSmoothing*>::const_iterator it = rhs.smoothing.begin(); it < rhs.smoothing.end(); ++it) {
+            OBJSmoothing* s = new OBJSmoothing();
+            s->name = (*it)->name;
+            smoothing.push_back(s);
+            smoothingMap[s->name] = s;
+        }
+
+        // copy points
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.points.begin(); it < rhs.points.end(); ++it) {
+            points.push_back(*it);
+        }
+
+        // copy normals!
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.normals.begin(); it < rhs.normals.end(); ++it) {
+            normals.push_back(*it);
+        }
+
+        // copy texcoords
+        for (std::vector<wcl::Vector>::const_iterator it = rhs.texcoords.begin(); it < rhs.texcoords.end(); ++it) {
+            texcoords.push_back(*it);
+        }
+
+        // create new materials!
+        for (std::vector<OBJMaterial*>::const_iterator it = rhs.materials.begin(); it < rhs.materials.end(); ++it) {
+            OBJMaterial* m = new OBJMaterial(**it);
+            materials.push_back(m);
+            materialMap[m->name] = m;
+        }
+
+        // create new groups!
+        for (std::vector<OBJGroup*>::const_iterator it = rhs.groups.begin(); it < rhs.groups.end(); ++it) {
+
+            OBJGroup* g = new OBJGroup();
+            g->name = (*it)->name;
+            groups.push_back(g);
+            groupsMap[g->name] = g;
+
+            // create new faces!
+            for (std::vector<OBJFace*>::const_iterator fit = (*it)->faces.begin(); fit < (*it)->faces.end(); ++fit) {
+                OBJFace* f = new OBJFace();
+                f->material = materialMap[(*fit)->material->name];
+                f->smoothing= smoothingMap[(*fit)->smoothing->name];
+                f->smoothing->faces.push_back(f);
+                g->faces.push_back(f);
+
+                // create new vertices for the damn face!
+                for (std::vector<OBJVertex*>::const_iterator vit = (*fit)->verts.begin(); vit < (*fit)->verts.end(); ++vit) {
+                    OBJVertex* v = new OBJVertex(**vit);
+                    f->verts.push_back(v);
+                }
+            }
+        }
+    }
+
+
 
     OBJGeometry::~OBJGeometry() {
+        clear();
+    }
+
+    void OBJGeometry::clear() {
         // Free up the OBJGeometry and all components
-        // We don't add this to the structs as we are trying to keep
-        // them extremely clean
         for(vector<OBJMaterial *>::iterator it = materials.begin();
                 it != materials.end(); ++it ){
             OBJMaterial *m=*it;
@@ -64,8 +186,16 @@ namespace wcl {
 
                 delete f;
             }
-
             delete g;
         }
+        points.clear();
+        normals.clear();
+        texcoords.clear();
+        materials.clear();
+        groups.clear();
+        smoothing.clear();
+        materialMap.clear();
+        groupsMap.clear();
+        smoothingMap.clear();
     }
 };
