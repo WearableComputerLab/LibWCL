@@ -80,8 +80,8 @@ namespace wcl {
                 }
                 if (smoothingMap.find((*fit)->smoothing->name) != smoothingMap.end()) {
                     f->smoothing= smoothingMap[(*fit)->smoothing->name];
+                    f->smoothing->faces.push_back(f);
                 }
-                f->smoothing->faces.push_back(f);
                 g->faces.push_back(f);
 
                 // create new vertices for the damn face!
@@ -138,9 +138,13 @@ namespace wcl {
             // create new faces!
             for (std::vector<OBJFace*>::const_iterator fit = (*it)->faces.begin(); fit < (*it)->faces.end(); ++fit) {
                 OBJFace* f = new OBJFace();
-                f->material = materialMap[(*fit)->material->name];
-                f->smoothing= smoothingMap[(*fit)->smoothing->name];
-                f->smoothing->faces.push_back(f);
+                if (materialMap.find((*fit)->material->name) != materialMap.end()) {
+                    f->material = materialMap[(*fit)->material->name];
+                }
+                if (smoothingMap.find((*fit)->smoothing->name) != smoothingMap.end()) {
+                    f->smoothing= smoothingMap[(*fit)->smoothing->name];
+                    f->smoothing->faces.push_back(f);
+                }
                 g->faces.push_back(f);
 
                 // create new vertices for the damn face!
