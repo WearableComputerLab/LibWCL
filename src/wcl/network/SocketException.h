@@ -42,10 +42,10 @@ public:
     virtual ~SocketException() throw();
 
     const char *what() const throw();
-    Socket *getSocket() const throw();
+    const Socket *getSocket() const throw();
 
 private:
-    Socket *s;
+    const Socket *s;
     int errornumber;
 };
 

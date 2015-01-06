@@ -51,9 +51,9 @@ class WCL_API TCPServer: private TCPSocket
 		 * These members are pulled into public scope. They
 		 * are private initially due to private inheritance
 		 */
-		TCPSocket::setBlockingMode;
-		TCPSocket::getBlockingMode;
-		TCPSocket::operator *;
+		using TCPSocket::setBlockingMode;
+		using TCPSocket::getBlockingMode;
+		using TCPSocket::operator *;
 };
 
 

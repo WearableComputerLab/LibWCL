@@ -30,6 +30,8 @@
  * together
  */
 
+#define __STDC_FORMAT_MACROS 1
+#include <inttypes.h>
 #include <cassert>
 #include <fstream>
 #include "OBJParser.h"
@@ -345,7 +347,7 @@ void OBJParser::print()
         it != this->data.materials.end(); ++it ){
         OBJMaterial *m=*it;
         printf(" + Name: %s\n",m->name.c_str());
-	printf("   valid[%llu]:", m->valid);
+	printf("   valid[%" PRIu64 "]:", m->valid);
 	for(int i = 0; i <= 128; i++){
 	    if( m->valid & i || (m->valid == 0 && i == 0)){
 		switch(i)
@@ -452,7 +454,7 @@ void OBJParser::print()
 
         OBJGroup *g = *it;
         printf(" + Group: %s\n", g->name.c_str());
-	printf(" +-+ %u Faces\n", g->faces.size());
+	printf(" +-+ %lu Faces\n", g->faces.size());
 
         for( vector<OBJFace *>::iterator fit = g->faces.begin();
              fit != g->faces.end();

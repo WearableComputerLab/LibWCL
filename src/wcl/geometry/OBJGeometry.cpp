@@ -154,6 +154,7 @@ namespace wcl {
                 }
             }
         }
+        return *this;
     }
 
 

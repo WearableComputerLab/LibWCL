@@ -42,36 +42,25 @@ namespace wcl
 
 
     wcl::Intersection Ray::intersect(const Ray& s)
-	{
+    {
         wcl::Intersection ip = Line::intersect((wcl::Line)s);
 
-        if ( ip.intersects == wcl::Intersection::IS_SAME ) {
-            return ip;
-        } else if ( ip.intersects == wcl::Intersection::NO ) {
-            return ip;
-        } else if ( ip.intersects == wcl::Intersection::YES ) {
-            if ( isOnRay(ip.point) )
-                return ip;
-            else {
-                ip.intersects == wcl::Intersection::NO;
-                return ip;
-            }
+        // this takes the Line::intersect result, and makes sure we aren't
+        // behind the ray start point
+        if ( ip.intersects == wcl::Intersection::YES && !isOnRay(ip.point)) {
+            ip.intersects = wcl::Intersection::NO;
         }
-	}
+        return ip;
+    }
 
     wcl::Intersection Ray::intersect(const Plane& p) {
         wcl::Intersection ip = ((Line*) this)->intersect(p);
-        if ( ip.intersects == wcl::Intersection::NO ) {
-            return ip;
-        } 
-        else if ( ip.intersects == wcl::Intersection::YES ) {
-            if ( isOnRay(ip.point) )
-                return ip;
-            else {
-                ip.intersects == wcl::Intersection::NO;
-                return ip;
-            }
+
+        // as above
+        if ( ip.intersects == wcl::Intersection::YES  && ! isOnRay(ip.point)) {
+            ip.intersects = wcl::Intersection::NO;
         }
+        return ip;
     }
 
 

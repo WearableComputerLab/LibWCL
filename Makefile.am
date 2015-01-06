@@ -4,7 +4,7 @@
 # 
 # Indicate this is not a GNU project and that 
 # missing files should be automatically created
-AUTOMAKE_OPTIONS=foreign
+AUTOMAKE_OPTIONS=foreign subdir-objects
 
 # Instruct aclocal to check the cfg directory for
 # extra macros

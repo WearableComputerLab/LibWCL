@@ -45,14 +45,13 @@ namespace wcl
 	{
         wcl::Intersection ip = Line::intersect((wcl::Line)s);
 
-        if ( ip.intersects == wcl::Intersection::IS_SAME ) {
-            return ip;
-        } else if ( ip.intersects == wcl::Intersection::NO ) {
-            return ip;
-        } else if ( ip.intersects == wcl::Intersection::YES ) {
+        if ( ip.intersects == wcl::Intersection::YES ) {
             // Check whether or not the intersection point is on the segment. 
-    
+            if (!(this->isOnSegment(ip.point) && s.isOnSegment(ip.point))) {
+                ip.intersects = wcl::Intersection::NO;
+            }
         }
+        return ip;
 	}
 
     bool LineSegment::isOnSegment(const wcl::Vector& point) const {

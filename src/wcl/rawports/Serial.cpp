@@ -468,7 +468,7 @@ Serial::DataBits
 Serial::getDataBits() const
 {
     unsigned int db = this->currstate.c_cflag & CSIZE;
-    return (DataBits)(this->parity == 'S' ? db - CS6 : db);
+    return (DataBits)((int) this->parity == (int) 'S' ? db - CS6 : db);
 }
 
 /**
@@ -783,7 +783,7 @@ Serial::getSignal ( const Signal signal)
     if( this->isValid()){
 
         Signal all = this->getSignals();
-        if ( all == -1 )
+        if ( (int) all == -1 )
             return false;
 
         if( all & signal )

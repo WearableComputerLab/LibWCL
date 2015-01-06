@@ -35,8 +35,8 @@ namespace wcl {
  * @param reason The reason the exception occurred
  */
 SocketException::SocketException( const Socket *is )
+    : s(is)
 {
-    this->s = s;
 
     this->errornumber  = errno; /* errno defined in errno.h */
 }
@@ -55,7 +55,7 @@ const char *SocketException::what() const throw()
     return strerror( this->errornumber );
 }
 
-Socket *SocketException::getSocket() const throw()
+const Socket *SocketException::getSocket() const throw()
 {
     return this->s;
 }

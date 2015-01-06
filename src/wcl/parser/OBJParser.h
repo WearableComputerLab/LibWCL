@@ -94,7 +94,7 @@ class WCL_API OBJParser: public Parser
         static int scanner(OBJParser *);
 
 	// We expose this so yacc can use it
-	Parser::parseError;
+	using Parser::parseError;
 
     private:
 	RelativeToAbsolute func;

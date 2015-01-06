@@ -21,7 +21,7 @@ AC_CONFIG_AUX_DIR(cfg)
 #
 # Init Automake subsystem
 #
-AM_INIT_AUTOMAKE(wcl,0.0.0)
+AM_INIT_AUTOMAKE
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_CONFIG_HEADERS(config.h)
@@ -47,6 +47,19 @@ AM_MAINTAINER_MODE([enable])
 # System Checks
 #
 #######################################
+distro="x"
+version="x"
+
+# If we're on ubuntu, check the version...
+AC_CHECK_PROG(LSB_RELEASE,lsb_release,1,0)
+if test $LSB_RELEASE = "1"; then
+    distro=`lsb_release -si`
+    version=`lsb_release -sr`
+    if test $version = "12.04"; then
+        AC_DEFINE(OLD_AM, 1, [Whether we should assume and old Automake]) 
+    fi
+fi
+AM_CONDITIONAL(OLD_AM, test "x$version" = "x12.04")
 
 #
 # The vicon system ignorantly assumes that data is in Intel format (little endian)

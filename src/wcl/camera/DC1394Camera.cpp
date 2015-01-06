@@ -34,7 +34,6 @@
 
 #include "CameraException.h"
 #include "DC1394Camera.h"
-#warning "[Note]: DC1394Camera: Doesn't currently support format7"
 
 #define ARRAY_SIZE(x) (sizeof(x)/sizeof(x[0]))
 
@@ -54,7 +53,7 @@ namespace wcl {
     struct DC1394tolibWCLFPS
     {
 	dc1394framerate_t   dc1394fps;
-	unsigned		libwclfps;
+	float libwclfps;
     };
 
     static DC1394tolibWCLModes formatConversion[] =
@@ -97,14 +96,14 @@ namespace wcl {
 
     static DC1394tolibWCLFPS fpsConversion[] =
     {
-	{ DC1394_FRAMERATE_1_875, 1.875 },
-	{ DC1394_FRAMERATE_3_75, 3.75 },
-	{ DC1394_FRAMERATE_7_5, 7.5 },
-	{ DC1394_FRAMERATE_15, 15.0 },
-	{ DC1394_FRAMERATE_30, 30.0 },
-	{ DC1394_FRAMERATE_60, 60.0 },
-	{ DC1394_FRAMERATE_120, 120.0 },
-	{ DC1394_FRAMERATE_240, 240.0 },
+	{ DC1394_FRAMERATE_1_875, 1.875f },
+	{ DC1394_FRAMERATE_3_75, 3.75f },
+	{ DC1394_FRAMERATE_7_5, 7.5f },
+	{ DC1394_FRAMERATE_15, 15.0f },
+	{ DC1394_FRAMERATE_30, 30.0f },
+	{ DC1394_FRAMERATE_60, 60.0f },
+	{ DC1394_FRAMERATE_120, 120.0f },
+	{ DC1394_FRAMERATE_240, 240.0f },
     };
 
 

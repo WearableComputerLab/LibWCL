@@ -278,8 +278,13 @@ void VideoDecoder::libraryInit()
 
 void VideoDecoder::allocateConversionBuffer(const unsigned width, const unsigned height)
 {
+#ifdef NEW_AVCODEC
+    this->someFrame = av_frame_alloc();
+    this->RGBFrame = av_frame_alloc();
+#else
     this->someFrame = avcodec_alloc_frame();
-    this->RGBFrame = avcodec_alloc_frame();
+    this->RGBFrame= avcodec_alloc_frame();
+#endif
     int size = avpicture_get_size(PIX_FMT_RGB24, width, height);
     this->buffer = new uint8_t[size];
     avpicture_fill((AVPicture *)this->RGBFrame, this->buffer, PIX_FMT_RGB24, width, height);

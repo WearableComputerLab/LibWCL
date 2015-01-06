@@ -42,6 +42,7 @@ bool BoundingSphere::contains(const Vector& point) const
 
 bool BoundingSphere::contains(const BoundingSphere& other) const
 {
-	
+    // XXX NOT IMPLEMENTED?!
+	return true;
 }
 	

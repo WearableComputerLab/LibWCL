@@ -7,9 +7,9 @@
 #
 # Environment
 #
-INCLUDES= -I@top_srcdir@/src/
+AUTOMAKE_OPTIONS=subdir-objects
 libwcl_la_includedir=$(includedir)/wcl
-AM_CPPFLAGS=-DWCL_DLL -DWCL_DLL_EXPORTS -fvisibility=hidden
+AM_CPPFLAGS= -I@top_srcdir@/src/ -DWCL_DLL -DWCL_DLL_EXPORTS -fvisibility=hidden
 AM_LDFLAGS=
 AM_YFLAGS=-d
 
@@ -150,18 +150,22 @@ parser_headers+=	parser/OBJParser.h \
 			parser/Parser.h \
 			parser/ParserException.h
 
-BUILT_SOURCES+=		OBJFormatGrammar.cc \
-					OBJFormatScanner.cc
+BUILT_SOURCES +=	parser/OBJFormatGrammar.cc 
+# 					parser/OBJFormatScanner.cc
 
+if OLD_AM
+BUILT_SOURCES += OBJFormatGrammar.h
+else 
 if PLATFORM_OSX
 BUILT_SOURCES += OBJFormatGrammar.hh
 else
-BUILT_SOURCES += OBJFormatGrammar.h 
+BUILT_SOURCES += parser/OBJFormatGrammar.hh
+endif
 endif
 
-CLEANFILES+=OBJFormatGrammar.h\
-	   OBJFormatGrammar.cc\
-	   OBJFormatScanner.cc
+CLEANFILES+=parser/OBJFormatGrammar.h\
+	   /parser/OBJFormatGrammar.cc\
+	   /parser/OBJFormatScanner.cc
 endif
 
 #####################################################################
