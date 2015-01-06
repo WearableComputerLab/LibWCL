@@ -367,4 +367,31 @@ void Socket::storeResolve( const char *input, const unsigned port) throw (Socket
 }
 
 
+/**
+ * Get the remote address represented by this socket
+ * as a sock_addr_in struct
+ */
+sockaddr_in Socket::getRemoteAddress()
+{
+    return this->address;
+}
+
+/**
+ * Get the remote IP address represetned by this stocket
+ * as a string containing dots & numbers (X.X.X.X)
+ */
+std::string Socket::getRemoteIPAddress()
+{
+    return (inet_ntoa(this->address.sin_addr));
+}
+
+/**
+ * Get the remote Port represented by this socket
+ */
+uint32_t Socket::getRemotePort()
+{
+    return ((uint32_t) ntohs(this->address.sin_port));
+}
+
+
 } // namespace wcl

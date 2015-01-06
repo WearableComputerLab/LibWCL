@@ -32,6 +32,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <signal.h>
 #include <stdio.h>
 #include <cstring>
@@ -78,7 +79,23 @@ class WCL_API Socket
 		 * @throw SocketException upon resolution failure
 		 */
 		static sockaddr_in resolve(const char *input, const unsigned port) throw (SocketException);
-	
+
+		/**
+		 *  The <netinet/in.h> header shall define the sockaddr_in structure that includes at least the following members:
+		 *
+		 *  sa_family_t     sin_family   AF_INET. 
+		 *  in_port_t       sin_port     Port number. 
+		 *  struct in_addr  sin_addr     IP address. 
+		 *
+		 *
+		 *  The <netinet/in.h> header shall define the in_addr structure that includes at least the following member:
+		 *
+		 *  in_addr_t  s_addr
+		 */
+		sockaddr_in getRemoteAddress();
+		std::string getRemoteIPAddress();
+		uint32_t getRemotePort();
+
 	protected:
 		int sockfd;
 		struct sockaddr_in address;
