@@ -43,6 +43,7 @@ namespace wcl {
 			virtual double x() const = 0;
 			virtual double y() const = 0;
 			virtual double z() const = 0;
+            virtual ~Position(){}
 	};
 
 	/**
