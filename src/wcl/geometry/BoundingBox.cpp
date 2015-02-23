@@ -123,10 +123,47 @@ namespace wcl
                             l.getPosition() + (l.getDirection() * DBL_MAX));
         return this->intersect(ls);
     }
+
     bool BoundingBox::intersect(const wcl::Ray& r) const {
-        wcl::LineSegment ls(r.getStart() - (r.getDirection() * DBL_MAX), 
-                            r.getStart() + (r.getDirection() * DBL_MAX));
-        return this->intersect(ls);
+        float tmin, tmax, tymin, tymax, tzmin, tzmax;
+
+        if (r.getDirection()[0] >= 0) {
+            tmin = (min[0] - r.getStart()[0]) / r.getDirection()[0];
+            tmax = (max[0] - r.getStart()[0]) / r.getDirection()[0];
+        } else {
+            tmin = (max[0] - r.getStart()[0]) / r.getDirection()[0];
+            tmax = (min[0] - r.getStart()[0]) / r.getDirection()[0];
+        }
+        if (r.getDirection()[1] >= 0) {
+            tymin = (min[1] - r.getStart()[1]) / r.getDirection()[1];
+            tymax = (max[1] - r.getStart()[1]) / r.getDirection()[1];
+        } else {
+            tymin = (max[1] - r.getStart()[1]) / r.getDirection()[1];
+            tymax = (min[1] - r.getStart()[1]) / r.getDirection()[1];
+        }
+        if ( (tmin > tymax) || (tymin > tmax) )
+            return false;
+
+        if (tymin > tmin)
+            tmin = tymin;
+
+        if (tymax < tmax)
+            tmax = tymax;
+
+        if (r.getDirection()[2] >= 0) {
+            tzmin = (min[2] - r.getStart()[2]) / r.getDirection()[2];
+            tzmax = (max[2] - r.getStart()[2]) / r.getDirection()[2];
+        } else {
+            tzmin = (max[2] - r.getStart()[2]) / r.getDirection()[2];
+            tzmax = (min[2] - r.getStart()[2]) / r.getDirection()[2];
+        }
+        if ( (tmin > tzmax) || (tzmin > tmax) )
+            return false;
+        if (tzmin > tmin)
+            tmin = tzmin;
+        if (tzmax < tmax)
+            tmax = tzmax;
+        return tmax > 0;
     }
 
 	bool BoundingBox::intersect(const wcl::LineSegment& segment) const
