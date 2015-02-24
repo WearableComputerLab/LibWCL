@@ -73,6 +73,14 @@ namespace wcl
 			BoundingBox();
 
 			/**
+			 * Bloats the bounding box in all directions by a value
+			 * Suits expanding a bbox around a box objedt for intersections
+			 *
+			 * @param v The bloating value
+			 */
+			void bloatBBox(double value);
+		
+			/**
 			 * Returns true if this bounding box overlaps with b
 			 *
 			 * @param b The bounding box to test against

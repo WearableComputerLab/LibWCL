@@ -39,9 +39,9 @@ namespace wcl
 	{
 		assert(minimum.getRows() == 3);
 		assert(maximum.getRows() == 3);
-		assert(minimum[0] < maximum[0] && "Minium X is larger than Maximum X");
-		assert(minimum[1] < maximum[1] && "Minium Y is larger than Maximum Y");
-		assert(minimum[2] < maximum[2] && "Minium Z is larger than Maxiumn Z");
+		assert(minimum[0] < maximum[0] && "Minimum X is larger than Maximum X");
+		assert(minimum[1] < maximum[1] && "Minimum Y is larger than Maximum Y");
+		assert(minimum[2] < maximum[2] && "Minimum Z is larger than Maximum Z");
 	}
 
 	BoundingBox::BoundingBox()
@@ -61,6 +61,17 @@ namespace wcl
 		for (std::vector<wcl::Vector>::const_iterator it = points.begin(); it < points.end(); ++it) {
 			addPoint(*it);
 		}
+	}
+
+	void BoundingBox::bloatBBox(double value)
+	{
+		this->max[0] += value;
+		this->max[1] += value;
+		this->max[2] += value;
+
+		this->min[0] -= value;
+		this->min[1] -= value;
+		this->min[2] -= value;
 	}
 
 	void BoundingBox::clear()
