@@ -21,7 +21,7 @@
 #ifdef OLD_AM
 #include "OBJFormatGrammar.h"
 #else
-#include "OBJFormatGrammar.h"
+#include "OBJFormatGrammar.hh"
 #endif
 #include "parser/OBJFormatScanner.h"
 #include <string.h>
