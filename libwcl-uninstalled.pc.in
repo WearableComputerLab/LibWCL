@@ -1,0 +1,11 @@
+prefix=
+exec_prefix=
+abs_top_srcdir=@abs_top_srcdir@/src
+abs_top_builddir=@abs_top_builddir@/src/wcl/.libs
+
+Name: libwcl
+Description: Wearable Computer Lab Common Library
+Version: @VERSION@
+Libs: -L${abs_top_builddir} -lwcl @PKGCONFIG_OTHERLIBS@
+Cflags: -I${abs_top_srcdir} @PKGCONFIG_OTHERINCLUDES@ -DWCL_DLL -D__STDC_CONSTANT_MACROS
+

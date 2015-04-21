@@ -601,6 +601,7 @@ AC_CONFIG_FILES([Makefile
 				 examples/projectors/Makefile 
                  tests/Makefile
                  libwcl.pc
+                 libwcl-uninstalled.pc
 				 ])
 
 #
