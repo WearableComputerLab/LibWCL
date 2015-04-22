@@ -154,7 +154,7 @@ BUILT_SOURCES +=	parser/OBJFormatGrammar.cc
 # 					parser/OBJFormatScanner.cc
 
 if OLD_AM
-BUILT_SOURCES += OBJFormatGrammar.h
+BUILT_SOURCES += parser/OBJFormatGrammar.h
 else 
 if PLATFORM_OSX
 BUILT_SOURCES += OBJFormatGrammar.hh
