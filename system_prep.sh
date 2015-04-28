@@ -12,14 +12,14 @@
 # And that's probably bad. Better way to do this would be to check if repo's in 
 # sources list, but that's alot of effort. Feel free to fix. 
 
-cp /etc/apt/sources.list /etc/apt/sources.list.backup
-echo '' >> /etc/apt/sources.list
-echo '# ARToolKitPlus repository' >> /etc/apt/sources.list
-echo 'deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main' >> /etc/apt/sources.list
+# cp /etc/apt/sources.list /etc/apt/sources.list.backup
+# echo '' >> /etc/apt/sources.list
+# echo '# ARToolKitPlus repository' >> /etc/apt/sources.list
+# echo 'deb http://ppa.launchpad.net/michael-the-drummer/wcl/ubuntu lucid main' >> /etc/apt/sources.list
 
 apt-get update
 
-apt-get install \
+apt-get install --force-yes \
 build-essential \
 libtool \
 automake \
@@ -31,8 +31,8 @@ libdc1394-22-dev \
 libavcodec-dev \
 libavformat-dev \
 libswscale-dev \
-artoolkitplus-dev \
+# artoolkitplus-dev \
 libcwiid-dev 
 
 # Replace the sources.list with the backup
-mv /etc/apt/sources.list.backup /etc/apt/sources.list
+#mv /etc/apt/sources.list.backup /etc/apt/sources.list
