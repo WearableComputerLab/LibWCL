@@ -1,0 +1,4 @@
+language: cpp
+compiler: gcc
+install: sudo system_prep.sh
+script: ./autogen.sh && ./configure && make && make check
