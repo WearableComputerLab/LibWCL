@@ -16,7 +16,7 @@ CXXFLAGS=@PKGCONFIG_OTHERINCLUDES@
 #
 # Indicate which directories to process
 #
-SUBDIRS=src examples tests
+SUBDIRS=src examples tests tests/gtest
 
 #
 # Package config information

@@ -1,22 +1,17 @@
-AM_CPPFLAGS = -I$(SRC) $(GTEST_CPPFLAGS)
-AM_CXXFLAGS = $(GTEST_CXXFLAGS)
-
 # TESTS -- Programs run automatically by "make check"
 # check_PROGRAMS -- Programs built by "make check" but not necessarily run
-TESTS = 
-check_PROGRAMS = 
 
-TESTS += func_test
-check_PROGRAMS += func_test
+
+TESTS = func_test
+check_PROGRAMS = func_test
+
 func_test_SOURCES =  BoundingBox.cpp \
 					 Line.cpp \
-					 Ray.cpp \
-					 $(SRC)
+					 Ray.cpp 
 
-func_test_CPPFLAGS = -I gtest/include
+func_test_CPPFLAGS = -I gtest/include -I ../src/
 
-func_test_LDFLAGS = -lgtest -lgtest_main
+func_test_LDFLAGS = -Lgtest/lib -lgtest -lgtest_main -lpthread
 
 func_test_LDADD =  \
-		          $(GTEST_LIBS) \
 				  ../src/wcl/.libs/libwcl.la
