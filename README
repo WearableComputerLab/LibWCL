@@ -1,29 +1,26 @@
-+--------+
-| libwcl |
-+--------+---------
-| $Id$
+# LibWCL
 
 This CVS module contains libwcl, a library that has been 
 developed to aid in the building of applications or other libraries.
 
 
-* BUILDING
-********************
+## BUILDING
 
 In order to build and install libwcl do:
 
+```
 sh autogen.sh
 ./configure --help
 # Work out what options you would like
 ./configure --enable-option1 --enable-option2
 make
 make install
+```
 
 Note that the templates currently crash clang++
 
 
-* Developing 
-********************
+## Developing 
 
 If you want to add code to LibWCL, then great! However, there are a few things
 you need to do before submitting code:
@@ -45,8 +42,7 @@ you need to do before submitting code:
    copy/paste from an existing file.
 
 
-* DOCUMENTATION
-********************
+## DOCUMENTATION
 
 Most of the code is documented with Doxygen comments. There is a doxygen config file
 preconfigured to generate nice html documentation. Generating the doc is easy:
@@ -57,8 +53,7 @@ We also have a bug tracker:
 
 http://wcl.ml.unisa.edu.au/redmine
 
-* EXAMPLES
-********************
+## EXAMPLES
 
 To build examples you will need the following extra libraries:
 
@@ -66,6 +61,8 @@ sudo apt-get install libncurses5-dev freeglut3-dev libqt4-dev
 
 Following this, you can enable the examples during configure:
 
+```
 ./configure --enable-examples
 make
+```
 
