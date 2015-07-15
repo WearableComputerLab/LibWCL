@@ -140,8 +140,7 @@ parser_headers=
 parser_sources=
 
 if ENABLE_PARSERS
-parser_sources+=	parser/OBJFormatGrammar.yy \
-			parser/OBJFormatScanner.ll \
+parser_sources+= \
 			parser/OBJParser.cpp \
 			parser/Parser.cpp \
 			parser/ParserException.cpp
@@ -150,18 +149,6 @@ parser_headers+=	parser/OBJParser.h \
 			parser/Parser.h \
 			parser/ParserException.h
 
-BUILT_SOURCES +=	parser/OBJFormatGrammar.cc 
-# 					parser/OBJFormatScanner.cc
-
-if OLD_AM
-BUILT_SOURCES += parser/OBJFormatGrammar.h
-else 
-BUILT_SOURCES += parser/OBJFormatGrammar.hh
-endif
-
-CLEANFILES+=parser/OBJFormatGrammar.h\
-	   /parser/OBJFormatGrammar.cc\
-	   /parser/OBJFormatScanner.cc
 endif
 
 #####################################################################
