@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 
 #include <iostream>
 
@@ -14,6 +13,8 @@
 #include <cmath>
 
 #define PI 3.141592653589793238L
+
+#include <gtest/gtest.h>
 
 // The fixture for testing wcl::Line. 
 class LineTest : public ::testing::Test {
