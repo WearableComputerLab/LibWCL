@@ -1,4 +1,3 @@
-#include <gtest/gtest.h>
 
 #include <iostream>
 
@@ -7,6 +6,8 @@
 #include <wcl/Exception.h>
 
 #include <cmath>
+
+#include <gtest/gtest.h>
 
 // The fixture for testing wcl::Ray. 
 class RayTest : public ::testing::Test {
