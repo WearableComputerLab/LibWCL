@@ -28,6 +28,8 @@
 
 #include <iostream>
 #include <stack>
+#include <string>
+#include <sstream>
 #include <wcl/parser/ParserException.h>
 #include <wcl/geometry/OBJGeometry.h>
 
@@ -46,16 +48,23 @@ namespace wcl {
     {
         public:
             enum LineType {
-                VERTEX,
-                NORMAL,
-                TEX_COORD,
                 FACE,
+                GROUP,
+                MTL_LIB,
+                NOP,
+                NORMAL,
+                OBJECT,
+                TEX_COORD,
                 USE_MTL,
-                NOP
+                VERTEX,
             };
 
             wcl::OBJGeometry* parse(const std::string& filename);
+
+            void parseLine(const std::string& line, OBJGeometry& obj);
             LineType getLineType(const std::string& token);
+            wcl::Vector parseVector(std::istringstream& tokens);
+            
 
     };
 
