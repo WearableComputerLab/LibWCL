@@ -27,13 +27,38 @@
 
 #include "OBJParser.h"
 
+#include <fstream>
+
 namespace wcl {
 
 
-    wcl::OBJGeometry* parse(const std::string& filename) {
+    wcl::OBJGeometry* OBJParser::parse(const std::string& filename) {
 
+        std::ifstream in(filename.c_str());
+        if (in.fail()) {
+            throw ParserException("Could not open file");
+        }
+
+        while (!in.eof() && in.good()) {
+
+
+        }
 
         return NULL;
     }
 
+
+    OBJParser::LineType OBJParser::getLineType(const std::string& token) {
+
+        if (token == "v") 
+            return VERTEX;
+        if (token == "n") 
+            return NORMAL;
+        if (token == "vt") 
+            return TEX_COORD;
+        if (token == "f") 
+            return FACE;
+        if (token == "usemtl") 
+            return USE_MTL;
+    }
 };

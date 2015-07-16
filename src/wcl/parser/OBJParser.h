@@ -28,10 +28,12 @@
 
 #include <iostream>
 #include <stack>
+#include <wcl/parser/ParserException.h>
 #include <wcl/geometry/OBJGeometry.h>
 
 
 namespace wcl {
+
 
     /**
      * An OBJParser that understands the .obj File format. The parser
@@ -43,7 +45,17 @@ namespace wcl {
     class WCL_API OBJParser
     {
         public:
+            enum LineType {
+                VERTEX,
+                NORMAL,
+                TEX_COORD,
+                FACE,
+                USE_MTL,
+                NOP
+            };
+
             wcl::OBJGeometry* parse(const std::string& filename);
+            LineType getLineType(const std::string& token);
 
     };
 
