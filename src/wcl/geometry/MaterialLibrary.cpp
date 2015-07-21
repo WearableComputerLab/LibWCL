@@ -72,4 +72,20 @@ namespace wcl {
         }
     }
 
+    void MaterialLibrary::removeMaterial(const std::string& name) {
+        using namespace std;
+
+        if (materialMap.find(name) != materialMap.end()) {
+            materialMap.erase(name);
+
+            vector<OBJMaterial*>::iterator it;
+            for(it = materials.begin(); it < materials.end(); ++it) {
+                if ((*it)->name == name) {
+                    break;
+                }
+            }
+            materials.erase(it);
+        }
+    }
+
 };
