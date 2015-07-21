@@ -60,4 +60,16 @@ namespace wcl {
         materialMap.clear();
     }
 
+    void MaterialLibrary::addMaterial(const std::string& name, const wcl::OBJMaterial& m) {
+        // replace the existing material, if found
+        if (materialMap.find(name) != materialMap.end()) {
+            materialMap[name]->operator=(m);
+        }
+        else {
+            OBJMaterial* nm = new OBJMaterial(m);
+            materials.push_back(nm);
+            materialMap[name] = nm;
+        }
+    }
+
 };
