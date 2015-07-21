@@ -111,6 +111,7 @@ geometry_headers+=\
 			geometry/KMeans.h \
 			geometry/Line.h \
 			geometry/LineSegment.h \
+			geometry/MaterialLibrary.h \
 			geometry/OBJGeometry.h \
 			geometry/Plane.h \
 			geometry/PolygonObject.h \
@@ -124,6 +125,7 @@ geometry_sources+=\
 			geometry/GeometryLoader.cpp \
 			geometry/Line.cpp \
 			geometry/LineSegment.cpp \
+			geometry/MaterialLibrary.cpp \
 			geometry/OBJGeometry.cpp \
 			geometry/Plane.cpp \
 			geometry/PolygonObject.cpp \

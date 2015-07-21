@@ -57,12 +57,7 @@ namespace wcl {
             texcoords.push_back(*it);
         }
 
-        // create new materials!
-        for (std::vector<OBJMaterial*>::const_iterator it = rhs.materials.begin(); it < rhs.materials.end(); ++it) {
-            OBJMaterial* m = new OBJMaterial(**it);
-            materials.push_back(m);
-            materialMap[m->name] = m;
-        }
+        this->materials = rhs.materials;
 
         // create new groups!
         for (std::vector<OBJGroup*>::const_iterator it = rhs.groups.begin(); it < rhs.groups.end(); ++it) {
@@ -75,8 +70,11 @@ namespace wcl {
             // create new faces!
             for (std::vector<OBJFace*>::const_iterator fit = (*it)->faces.begin(); fit < (*it)->faces.end(); ++fit) {
                 OBJFace* f = new OBJFace();
-                if (materialMap.find((*fit)->material->name) != materialMap.end()) {
-                    f->material = materialMap[(*fit)->material->name];
+                try {
+                    f->material = materials.getMaterial((*fit)->material->name);
+                }
+                catch (...) {
+
                 }
                 if (smoothingMap.find((*fit)->smoothing->name) != smoothingMap.end()) {
                     f->smoothing= smoothingMap[(*fit)->smoothing->name];
@@ -120,12 +118,7 @@ namespace wcl {
             texcoords.push_back(*it);
         }
 
-        // create new materials!
-        for (std::vector<OBJMaterial*>::const_iterator it = rhs.materials.begin(); it < rhs.materials.end(); ++it) {
-            OBJMaterial* m = new OBJMaterial(**it);
-            materials.push_back(m);
-            materialMap[m->name] = m;
-        }
+        this->materials = rhs.materials;
 
         // create new groups!
         for (std::vector<OBJGroup*>::const_iterator it = rhs.groups.begin(); it < rhs.groups.end(); ++it) {
@@ -138,8 +131,11 @@ namespace wcl {
             // create new faces!
             for (std::vector<OBJFace*>::const_iterator fit = (*it)->faces.begin(); fit < (*it)->faces.end(); ++fit) {
                 OBJFace* f = new OBJFace();
-                if (materialMap.find((*fit)->material->name) != materialMap.end()) {
-                    f->material = materialMap[(*fit)->material->name];
+                try {
+                    f->material = materials.getMaterial((*fit)->material->name);
+                }
+                catch (...) {
+
                 }
                 if (smoothingMap.find((*fit)->smoothing->name) != smoothingMap.end()) {
                     f->smoothing= smoothingMap[(*fit)->smoothing->name];
@@ -165,11 +161,6 @@ namespace wcl {
 
     void OBJGeometry::clear() {
         // Free up the OBJGeometry and all components
-        for(vector<OBJMaterial *>::iterator it = materials.begin();
-                it != materials.end(); ++it ){
-            OBJMaterial *m=*it;
-            delete m;
-        }
         for(vector<OBJGroup *>::iterator it = groups.begin();
                 it != groups.end();
                 ++it ){
@@ -196,11 +187,11 @@ namespace wcl {
         points.clear();
         normals.clear();
         texcoords.clear();
-        materials.clear();
         groups.clear();
         smoothing.clear();
-        materialMap.clear();
         groupsMap.clear();
         smoothingMap.clear();
     }
+
 };
+
