@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <wcl/Exception.h>
 #include "MaterialLibrary.h"
 
 namespace wcl {
@@ -86,6 +87,17 @@ namespace wcl {
             }
             materials.erase(it);
         }
+    }
+
+    OBJMaterial* MaterialLibrary::getMaterial(const std::string& name) {
+        if (materialMap.find(name) == materialMap.end()) {
+            throw wcl::Exception("Material not found in library");
+        }
+        return materialMap[name];
+    }
+
+    const std::vector<OBJMaterial*>& MaterialLibrary::getMaterials() {
+        return materials;
     }
 
 };
