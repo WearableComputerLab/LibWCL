@@ -48,23 +48,41 @@ namespace wcl {
     {
         public:
             enum LineType {
+                // Found in OBJ file
                 FACE,
                 GROUP,
-                MTL_LIB,
+                MTLLIB,
                 NOP,
                 NORMAL,
                 OBJECT,
-                TEX_COORD,
-                USE_MTL,
+                TEXCOORD,
+                USEMTL,
                 VERTEX,
+
+                // Found in MTL file
+                NEWMTL,
+                KA,
+                KD,
+                KS,
+                NS,
+                TR,
+                ILLUM,
+                MAP_KA,
+                MAP_KD,
+                MAP_KS,
+                MAP_NS,
+                MAP_D,
+                MAP_BUMP,
+                MAP_DISP,
+                MAP_STENCIL
             };
 
             wcl::OBJGeometry* parse(const std::string& filename);
-            wcl::OBJGeometry* parseMaterialLibrary(const std::string& filename);
+            wcl::MaterialLibrary parseMaterialLibrary(const std::string& filename);
 
             void parseLine(const std::string& line, OBJGeometry& obj);
-            LineType getLineType(const std::string& token);
-            wcl::Vector parseVector(std::istringstream& tokens);
+            LineType getLineType(const std::string& token) const;
+            wcl::Vector parseVector(std::istringstream& tokens) const;
             
 
     };
