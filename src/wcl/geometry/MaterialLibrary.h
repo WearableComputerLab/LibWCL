@@ -80,7 +80,8 @@ namespace wcl {
             virtual ~MaterialLibrary();
             MaterialLibrary& operator=(const MaterialLibrary& rhs);
 
-            void addMaterial(const std::string& name, const wcl::OBJMaterial& m);
+            Material* addMaterial(const std::string& name);
+            Material* addMaterial(const std::string& name, const wcl::OBJMaterial& m);
             void removeMaterial(const std::string& name);
             wcl::OBJMaterial* getMaterial(const std::string& name);
             const std::vector<OBJMaterial*>& getMaterials();

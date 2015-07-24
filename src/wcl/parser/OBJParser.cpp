@@ -33,6 +33,11 @@ namespace wcl {
 
 
     wcl::OBJGeometry* OBJParser::parse(const std::string& filename) {
+        obj.clear();
+        currentMaterial = NULL;
+        currentGroup = NULL;
+        currentSmoothing = NULL;
+
         using namespace std;
 
         ifstream in(filename.c_str());

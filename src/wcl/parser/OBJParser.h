@@ -30,6 +30,7 @@
 #include <stack>
 #include <string>
 #include <sstream>
+
 #include <wcl/parser/ParserException.h>
 #include <wcl/geometry/OBJGeometry.h>
 
@@ -58,23 +59,6 @@ namespace wcl {
                 TEXCOORD,
                 USEMTL,
                 VERTEX,
-
-                // Found in MTL file
-                NEWMTL,
-                KA,
-                KD,
-                KS,
-                NS,
-                TR,
-                ILLUM,
-                MAP_KA,
-                MAP_KD,
-                MAP_KS,
-                MAP_NS,
-                MAP_D,
-                MAP_BUMP,
-                MAP_DISP,
-                MAP_STENCIL
             };
 
             wcl::OBJGeometry* parse(const std::string& filename);
@@ -84,6 +68,13 @@ namespace wcl {
             LineType getLineType(const std::string& token) const;
             wcl::Vector parseVector(std::istringstream& tokens) const;
             
+        private:
+            OBJGeometry obj;
+            OBJMaterial* currentMaterial;
+            OBJGroup* currentGroup;
+            OBJSmoothing* currentSmoothing;
+
+
 
     };
 

@@ -92,8 +92,7 @@ namespace wcl
         OBJGeometry(const OBJGeometry& rhs);
         OBJGeometry() {}
 
-        private:
-            void clear();
+        void clear();
 	};
 }
 
