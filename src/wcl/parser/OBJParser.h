@@ -67,8 +67,10 @@ namespace wcl {
             void parseLine(const std::string& line, OBJGeometry& obj);
             LineType getLineType(const std::string& token) const;
             wcl::Vector parseVector(std::istringstream& tokens) const;
+            OBJVertex parseVertex(const std::string& token);
             
         private:
+
             OBJGeometry obj;
             OBJMaterial* currentMaterial;
             OBJGroup* currentGroup;

@@ -1,6 +1,8 @@
 
 #include <wcl/parser/OBJParser.h>
+#include <wcl/geometry/OBJGeometry.h>
 #include <sstream>
+#include <string>
 
 #include <gtest/gtest.h>
 
@@ -126,4 +128,41 @@ TEST(OBJParserTest, AddTexCoord) {
     // make sure we didn't also add anything else
     EXPECT_EQ(obj.points.size(), 0);
     EXPECT_EQ(obj.normals.size(), 0);
+}
+
+// make sure we can add texture coordinates 
+TEST(OBJParserTest, ParseVertex) {
+    wcl::OBJParser p;
+
+    // full vertex data
+    wcl::OBJVertex v = p.parseVertex("3/4/5");
+    EXPECT_EQ(v.pointIndex, 3);
+    EXPECT_EQ(v.uvIndex, 4);
+    EXPECT_EQ(v.normalIndex, 5);
+
+    // v + texcoord
+    v = p.parseVertex("1/44");
+    EXPECT_EQ(v.pointIndex, 1);
+    EXPECT_EQ(v.uvIndex, 44);
+    EXPECT_EQ(v.normalIndex, -1);
+
+    // v + normal 
+    v = p.parseVertex("8//5");
+    EXPECT_EQ(v.pointIndex, 8);
+    EXPECT_EQ(v.normalIndex, 5);
+    EXPECT_EQ(v.uvIndex, -1);
+
+    // v
+    v = p.parseVertex("348");
+    EXPECT_EQ(v.pointIndex, 348);
+    EXPECT_EQ(v.normalIndex, -1);
+    EXPECT_EQ(v.uvIndex, -1);
+
+    // invalid lines
+    EXPECT_THROW(p.parseVertex("343.23/543/123.345"), wcl::ParserException);
+    EXPECT_THROW(p.parseVertex("//"), wcl::ParserException);
+    EXPECT_THROW(p.parseVertex("123//////345"), wcl::ParserException);
+    EXPECT_THROW(p.parseVertex("2346.435"), wcl::ParserException);
+    EXPECT_THROW(p.parseVertex("a/b/c"), wcl::ParserException);
+    EXPECT_THROW(p.parseVertex("invalid line here"), wcl::ParserException);
 }

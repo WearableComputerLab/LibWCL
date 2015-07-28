@@ -101,12 +101,10 @@ namespace wcl {
         string lineType;
         tokens >> lineType;
         switch (getLineType(lineType)) {
-            case VERTEX:
-                {
-                wcl::Vector v = parseVector(tokens);
-                obj.points.push_back(v);
-                }
+            case FACE:
+
                 break;
+
             case NORMAL: 
                 {
                 wcl::Vector v = parseVector(tokens);
@@ -119,9 +117,12 @@ namespace wcl {
                 obj.texcoords.push_back(v);
                 }
                 break;
-            case FACE:
+            case VERTEX:
+                {
+                wcl::Vector v = parseVector(tokens);
+                obj.points.push_back(v);
+                }
                 break;
-
             default:
                 throw ParserException("Unexpected line type found in OBJ");
                 break;
@@ -136,6 +137,36 @@ namespace wcl {
         return wcl::Vector(x,y,z);
     }
 
+    OBJVertex OBJParser::parseVertex(const std::string& token) {
+        using namespace std;
+        // vertex data is separated by the / character.
+        
+        OBJVertex v;
+
+        // v/t/n = vertex position, texcoord, normal
+        int result = sscanf(token.c_str(), "%u/%u/%u", &v.pointIndex, &v.uvIndex, &v.normalIndex);
+        if (result == 3) {
+            return v;
+        }
+
+        // v/t = vertex position and texcoord
+        result = sscanf(token.c_str(), "%u/%u", &v.pointIndex, &v.uvIndex);
+        if (result == 2) {
+            return v;
+        }
+
+        // v//n = vertex position, normal
+        result = sscanf(token.c_str(), "%u//%u", &v.pointIndex, &v.normalIndex);
+        if (result == 2) {
+            return v;
+        }
+        // no / = just vertex location
+        result = sscanf(token.c_str(), "%u", &v.pointIndex);
+        if (result == 1) {
+            return v;
+        }
+        throw ParserException("Unable to parse face data");
+    }
 };
 
 
