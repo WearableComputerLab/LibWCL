@@ -53,7 +53,10 @@ namespace wcl {
                        M_AMBIENT_MAP=2,
                        M_SPECULAR_MAP=4,
                        M_ALPHA_MAP=8,
-                       M_BUMP_MAP=16
+                       M_BUMP_MAP=16,
+                       M_SPECULAREXP_MAP=32,
+                       M_DISPLACEMENT_MAP=64,
+                       M_STENCIL_MAP=128,
                         };
                 uint64_t valid;
                 uint32_t maps;
@@ -68,24 +71,105 @@ namespace wcl {
                 std::string diffuseMap;     // map_Kd
                 std::string ambientMap;     // map_Ka
                 std::string specularMap;    // map_Ks
+                std::string specularExpMap;    // map_Ns
                 std::string alphaMap;	    // map_d
                 std::string bumpMap;	    // map_bump | bump
+                std::string displacementMap;	    // map_bump | bump
+                std::string stencilMap;	    // map_bump | bump
 		Vector emissive;	    // Ke
 	};
 
     class WCL_API MaterialLibrary {
         public:
+            /**
+             * Constructs an empty material library
+             */
             MaterialLibrary() {};
+
+            /**
+             * Creates a copy (deep) of the material library passed in as
+             * a parameter.
+             *
+             * @param rhs The material library to copy.
+             */
             MaterialLibrary(const MaterialLibrary& rhs);
+
+            /**
+             * DESTRUCTOR!
+             *
+             * The MaterialLibrary destructor is responsible for deleting any
+             * memory used to store materials. You should make sure you do not
+             * continue to use Materials obtained by getMaterial() after the
+             * MaterialLibrary has been deleted. Do not delete any materials
+             * obtained by getMaterial yourself.
+             *
+             * MaterialLibrary will take care of it.
+             */
             virtual ~MaterialLibrary();
+
+            /**
+             * Makes this MaterialLibrary the same as rhs.
+             *
+             * Clears the current materials and creates new copies of the
+             * materials contained in rhs.
+             *
+             * @param rhs The material library to copy.
+             */
             MaterialLibrary& operator=(const MaterialLibrary& rhs);
 
-            Material* addMaterial(const std::string& name);
-            Material* addMaterial(const std::string& name, const wcl::OBJMaterial& m);
+            /**
+             * Adds a new blank material to the library and returns its
+             * pointer.
+             *
+             * @param name The name of the material.
+             * @return The new material, as stored in the MaterialLibrary.
+             * @throw Exception if a material with this name already exists in
+             *        the library.
+             */
+            OBJMaterial* addMaterial(const std::string& name);
+
+            /**
+             *
+             * Creates a new material stored in this library, with material
+             * properties that match the material passed in as a parameter.
+             *
+             * @param name The name of the material.
+             * @param m The material properties to duplicate.
+             * @return The new material, as stored in the MaterialLibrary.
+             * @throw Exception if a material with this name already exists in
+             *        the library.
+             */
+            OBJMaterial* addMaterial(const std::string& name, const wcl::OBJMaterial& m);
+
+            /**
+             * Removes a material from the library.
+             *
+             * @param name The name of the material to remove.
+             */
             void removeMaterial(const std::string& name);
+
+            /**
+             * Returns a pointer to a material stored in the library.
+             *
+             * @param name The name of the material to return.
+             * @return A pointer to the material.
+             */
             wcl::OBJMaterial* getMaterial(const std::string& name);
+
+            /**
+             * Returns a list of all the materials stored in this library.
+             *
+             * @return A list of all the materials stored in this library.
+             */
             const std::vector<OBJMaterial*>& getMaterials();
 
+            /**
+             * Removes all materials from this library.
+             *
+             * This frees any memory that was used for Materials. After calling
+             * clear, any Material pointers you have stored elsewhere will
+             * become invalid.
+             */
             void clear();
 
         private:

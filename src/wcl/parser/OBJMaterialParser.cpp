@@ -25,12 +25,15 @@
  */
 
 
+#include <wcl/geometry/OBJGeometry.h>
 #include "OBJMaterialParser.h"
+#include <fstream>
+#include <sstream>
 
 namespace wcl {
 
 
-    wcl::MaterialLibrary OBJMaterialParser::parse(const std::string& filename) 
+    MaterialLibrary OBJMaterialParser::parse(const std::string& filename)  {
         using namespace std;
 
         ifstream in(filename.c_str());
@@ -39,7 +42,7 @@ namespace wcl {
         }
 
         MaterialLibrary lib;
-        OBJMaterial activeMaterial;
+        OBJMaterial* activeMaterial = NULL;
 
         unsigned lineNumber = 1;
 
@@ -54,21 +57,176 @@ namespace wcl {
                 string lineType;
                 tokens >> lineType;
                 switch (getLineType(lineType)) {
-                    case (NEWMTL):
-
+                    case NEWMTL:
+                        {
+                            string name;
+                            tokens >> name;
+                            activeMaterial = lib.addMaterial(name);
+                        }
+                        break;
+                    case KA:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->ambient = parseVector(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_AMBIENT;
+                        break;
+                    case KD:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->diffuse = parseVector(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_DIFFUSE;
+                        break;
+                    case KS:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->specular = parseVector(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_SPECULAR;
+                        break;
+                    case NS:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->specularExp = parseDouble(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_SPECULAREXP;
+                        break;
+                    case TR:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->opacity = parseDouble(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_OPACITY;
+                        break;
+                    case ILLUM:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        activeMaterial->illumGroup = parseDouble(tokens);
+                        activeMaterial->valid = activeMaterial->valid | OBJMaterial::M_OPACITY;
+                        break;
+                    case MAP_KA:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->ambientMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_AMBIENT_MAP;
+                        break;
+                    case MAP_KD:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->diffuseMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_DIFFUSE_MAP;
+                        break;
+                    case MAP_KS:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->specularMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_SPECULAR_MAP;
+                        break;
+                    case MAP_NS:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->specularExpMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_SPECULAREXP_MAP;
+                        break;
+                    case MAP_D:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->alphaMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_ALPHA_MAP;
+                        break;
+                    case MAP_BUMP:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->bumpMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_BUMP_MAP;
+                        break;
+                    case MAP_DISP:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->displacementMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_DISPLACEMENT_MAP;
+                        break;
+                    case MAP_STENCIL:
+                        if (activeMaterial == NULL) {
+                            throw ParserException("found material properties before newmtl declaration");
+                        }
+                        tokens >> activeMaterial->stencilMap;
+                        activeMaterial->maps = activeMaterial->maps | OBJMaterial::M_STENCIL_MAP;
+                        break;
                 }
                 lineNumber++;
             }
 
-            return new OBJGeometry(obj);
+            return MaterialLibrary(lib);
+        }
+        catch(ParserException& e) {
+            stringstream ss;
+            ss << e.what() << " on line " << lineNumber << "of " << filename;
+            throw ParserException(ss.str().c_str());
         }
     }
-    catch(ParserException& e) {
-        stringstream ss;
-        ss << e.what() << " on line " << lineNumber << "of " << filename;
+
+
+    OBJMaterialParser::LineType OBJMaterialParser::getLineType(const std::string& token) const {
+        // material library lines
+        if (token == "newmtl")
+            return NEWMTL;
+        if (token == "Ka")
+            return KA;
+        if (token == "Kd")
+            return KD;
+        if (token == "Ks")
+            return KS;
+        if (token == "Ns")
+            return NS;
+        if (token == "Tr")
+            return TR;
+        if (token == "illum")
+            return ILLUM;
+        if (token == "map_Ka")
+            return MAP_KA;
+        if (token == "map_Kd")
+            return MAP_KD;
+        if (token == "map_Ks")
+            return MAP_KS;
+        if (token == "map_Ns")
+            return MAP_NS;
+        if (token == "map_d")
+            return MAP_D;
+        if (token == "map_bump" || token == "bump")
+            return MAP_BUMP;
+        if (token == "disp")
+            return MAP_DISP;
+        if (token == "decal")
+            return MAP_STENCIL;
+
+        std::stringstream ss;
+        ss << "Unknown line type: " << token;
         throw ParserException(ss.str().c_str());
     }
 
+    wcl::Vector OBJMaterialParser::parseVector(std::istringstream& tokens) const {
+        double x,y,z;
+        tokens >> x;
+        tokens >> y;
+        tokens >> z;
+        return wcl::Vector(x,y,z);
+    }
+
+    double OBJMaterialParser::parseDouble(std::istringstream& tokens) const {
+        double v;
+        tokens >> v;
+        return v;
+    }
 
 };
 

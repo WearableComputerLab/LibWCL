@@ -87,37 +87,6 @@ namespace wcl {
         if (token == "v") 
             return VERTEX;
 
-        // material library lines
-        if (token == "newmtl")
-            return NEWMTL;
-        if (token == "Ka")
-            return KA;
-        if (token == "Kd")
-            return KD;
-        if (token == "Ks")
-            return KS;
-        if (token == "Ns")
-            return NS;
-        if (token == "Tr")
-            return TR;
-        if (token == "illum")
-            return ILLUM;
-        if (token == "map_Ka")
-            return MAP_KA;
-        if (token == "map_Kd")
-            return MAP_KD;
-        if (token == "map_Ks")
-            return MAP_KS;
-        if (token == "map_Ns")
-            return MAP_NS;
-        if (token == "map_d")
-            return MAP_D;
-        if (token == "map_bump" || token == "bump")
-            return MAP_BUMP;
-        if (token == "disp")
-            return MAP_DISP;
-        if (token == "decal")
-            return MAP_STENCIL;
 
         std::stringstream ss;
         ss << "Unknown line type: " << token;
@@ -167,46 +136,6 @@ namespace wcl {
         return wcl::Vector(x,y,z);
     }
 
-
-    /// Material Library Functions.
-    MaterialLibrary parseMaterialLibrary(const std::string& filename) {
-        using namespace std;
-
-        ifstream in(filename.c_str());
-        if (in.fail()) {
-            throw ParserException("Could not open file");
-        }
-
-        MaterialLibrary lib;
-        OBJMaterial activeMaterial;
-
-        unsigned lineNumber = 1;
-
-        try {
-            while (!in.eof() && in.good()) {
-
-                string line;
-                getline(in, line);
-
-                istringstream tokens(line);
-
-                string lineType;
-                tokens >> lineType;
-                switch (getLineType(lineType)) {
-                    case (NEWMTL):
-
-                }
-                lineNumber++;
-            }
-
-            return new OBJGeometry(obj);
-        }
-    }
-    catch(ParserException& e) {
-        stringstream ss;
-        ss << e.what() << " on line " << lineNumber << "of " << filename;
-        throw ParserException(ss.str().c_str());
-    }
 };
 
 

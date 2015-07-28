@@ -143,11 +143,14 @@ parser_sources=
 
 if ENABLE_PARSERS
 parser_sources+= \
+			parser/OBJMaterialParser.cpp\
 			parser/OBJParser.cpp \
 			parser/Parser.cpp \
 			parser/ParserException.cpp
 
-parser_headers+=	parser/OBJParser.h \
+parser_headers+=	
+			parser/OBJMaterialParser.h\
+			parser/OBJParser.h \
 			parser/Parser.h \
 			parser/ParserException.h
 

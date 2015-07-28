@@ -65,12 +65,15 @@ namespace wcl {
 
             wcl::MaterialLibrary parse(const std::string& filename);
             LineType getLineType(const std::string& token) const;
+
             wcl::Vector parseVector(std::istringstream& tokens) const;
-            wcl::Vector parseFloat(std::istringstream& tokens) const;
+            double parseDouble(std::istringstream& tokens) const;
 
         private:
             OBJMaterial* currentMaterial;
 
+    };
+};
 
 
 #endif

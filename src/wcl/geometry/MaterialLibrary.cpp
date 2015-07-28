@@ -24,6 +24,7 @@
  * SUCH DAMAGE.
  */
 
+#include <sstream>
 #include <wcl/Exception.h>
 #include "MaterialLibrary.h"
 
@@ -62,10 +63,10 @@ namespace wcl {
     }
 
     OBJMaterial* MaterialLibrary::addMaterial(const std::string& name, const wcl::OBJMaterial& m) {
-        // replace the existing material, if found
         if (materialMap.find(name) != materialMap.end()) {
-            materialMap[name]->operator=(m);
-            return materialMap[name];
+            std::stringstream ss;
+            ss << "Material " << name << " already exists in library";
+            throw Exception(ss.str().c_str());
         }
         else {
             OBJMaterial* nm = new OBJMaterial(m);
@@ -75,16 +76,18 @@ namespace wcl {
         }
     }
 
-    void MaterialLibrary::addMaterial(const std::string& name) {
+    OBJMaterial* MaterialLibrary::addMaterial(const std::string& name) {
         // replace the existing material, if found
         if (materialMap.find(name) != materialMap.end()) {
-            return materialMap[name];
+            std::stringstream ss;
+            ss << "Material " << name << " already exists in library";
+            throw Exception(ss.str().c_str());
         }
         else {
             OBJMaterial* nm = new OBJMaterial();
             materials.push_back(nm);
             materialMap[name] = nm;
-            return nm
+            return nm;
         }
     }
 
