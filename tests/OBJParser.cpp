@@ -1,5 +1,5 @@
 
-#include <wcl/parser/OBJParser.cpp>
+#include <wcl/parser/OBJParser.h>
 #include <sstream>
 
 #include <gtest/gtest.h>
@@ -25,30 +25,9 @@ TEST(OBJParserTest, GetLineType) {
     EXPECT_EQ(wcl::OBJParser::MTLLIB, p.getLineType("mtllib"));
     EXPECT_EQ(wcl::OBJParser::NORMAL, p.getLineType("vn"));
     EXPECT_EQ(wcl::OBJParser::OBJECT, p.getLineType("o"));
-    EXPECT_EQ(wcl::OBJParser::TEX_COORD, p.getLineType("vt"));
-    EXPECT_EQ(wcl::OBJParser::USE_MTL, p.getLineType("usemtl"));
+    EXPECT_EQ(wcl::OBJParser::TEXCOORD, p.getLineType("vt"));
+    EXPECT_EQ(wcl::OBJParser::USEMTL, p.getLineType("usemtl"));
     EXPECT_EQ(wcl::OBJParser::VERTEX, p.getLineType("v"));
-
-    EXPECT_EQ(wcl::OBJParser::NEWMTL, p.getLineType("newmtl"));
-    EXPECT_EQ(wcl::OBJParser::KA, p.getLineType("Ka"));
-    EXPECT_EQ(wcl::OBJParser::KD, p.getLineType("Kd"));
-    EXPECT_EQ(wcl::OBJParser::KS, p.getLineType("Ks"));
-    EXPECT_EQ(wcl::OBJParser::NS, p.getLineType("Ns"));
-
-    EXPECT_EQ(wcl::OBJParser::TR, p.getLineType("Tr"));
-    EXPECT_EQ(wcl::OBJParser::TR, p.getLineType("d"));
-    EXPECT_EQ(wcl::OBJParser::ILLUM, p.getLineType("illum"));
-
-    EXPECT_EQ(wcl::OBJParser::MAP_KA, p.getLineType("map_Ka"));
-    EXPECT_EQ(wcl::OBJParser::MAP_KD, p.getLineType("map_Kd"));
-    EXPECT_EQ(wcl::OBJParser::MAP_KS, p.getLineType("map_Ks"));
-    EXPECT_EQ(wcl::OBJParser::MAP_NS, p.getLineType("map_Ns"));
-    EXPECT_EQ(wcl::OBJParser::MAP_D, p.getLineType("map_d"));
-
-    EXPECT_EQ(wcl::OBJParser::MAP_BUMP, p.getLineType("map_bump"));
-    EXPECT_EQ(wcl::OBJParser::MAP_BUMP, p.getLineType("bump"));
-    EXPECT_EQ(wcl::OBJParser::MAP_DISP, p.getLineType("disp"));
-    EXPECT_EQ(wcl::OBJParser::MAP_STENCIL, p.getLineType("decal"));
 }
 
 
