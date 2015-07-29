@@ -111,6 +111,7 @@ geometry_headers+=\
 			geometry/KMeans.h \
 			geometry/Line.h \
 			geometry/LineSegment.h \
+			geometry/MaterialLibrary.h \
 			geometry/OBJGeometry.h \
 			geometry/Plane.h \
 			geometry/PolygonObject.h \
@@ -124,6 +125,7 @@ geometry_sources+=\
 			geometry/GeometryLoader.cpp \
 			geometry/Line.cpp \
 			geometry/LineSegment.cpp \
+			geometry/MaterialLibrary.cpp \
 			geometry/OBJGeometry.cpp \
 			geometry/Plane.cpp \
 			geometry/PolygonObject.cpp \
@@ -141,11 +143,14 @@ parser_sources=
 
 if ENABLE_PARSERS
 parser_sources+= \
+			parser/OBJMaterialParser.cpp\
 			parser/OBJParser.cpp \
 			parser/Parser.cpp \
 			parser/ParserException.cpp
 
-parser_headers+=	parser/OBJParser.h \
+parser_headers+=	
+			parser/OBJMaterialParser.h\
+			parser/OBJParser.h \
 			parser/Parser.h \
 			parser/ParserException.h
 

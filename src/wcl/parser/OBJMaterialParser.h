@@ -23,16 +23,14 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
-#ifndef WCL_PARSER_OBJPARSER_H
-#define WCL_PARSER_OBJPARSER_H
 
-#include <iostream>
-#include <stack>
-#include <string>
-#include <sstream>
+
+#ifndef LIBWCL_OBJ_MATERIAL_PARSER_H
+#define LIBWCL_OBJ_MATERIAL_PARSER_H
+
+#include <wcl/api.h>
 #include <wcl/parser/ParserException.h>
 #include <wcl/geometry/OBJGeometry.h>
-
 
 namespace wcl {
 
@@ -44,41 +42,39 @@ namespace wcl {
      * The memory for this object is maintained by the OBJParser. Destroying
      * the class instance frees up the memory associated with the Geometry
      */
-    class WCL_API OBJParser
+    class WCL_API OBJMaterialParser
     {
         public:
             enum LineType {
-                // Found in OBJ file
-                FACE,
-                GROUP,
-                MTLLIB,
-                NOP,
-                NORMAL,
-                OBJECT,
-                TEXCOORD,
-                USEMTL,
-                VERTEX,
+                NEWMTL,
+                KA,
+                KD,
+                KS,
+                NS,
+                TR,
+                ILLUM,
+                MAP_KA,
+                MAP_KD,
+                MAP_KS,
+                MAP_NS,
+                MAP_D,
+                MAP_BUMP,
+                MAP_DISP,
+                MAP_STENCIL
             };
 
-            wcl::OBJGeometry* parse(const std::string& filename);
-            wcl::MaterialLibrary parseMaterialLibrary(const std::string& filename);
-
-            void parseLine(const std::string& line, OBJGeometry& obj);
+            wcl::MaterialLibrary parse(const std::string& filename);
             LineType getLineType(const std::string& token) const;
+
             wcl::Vector parseVector(std::istringstream& tokens) const;
-            OBJVertex parseVertex(const std::string& token);
-            
+            double parseDouble(std::istringstream& tokens) const;
+
         private:
-
-            OBJGeometry obj;
             OBJMaterial* currentMaterial;
-            OBJGroup* currentGroup;
-            OBJSmoothing* currentSmoothing;
-
-
 
     };
-
 };
 
+
 #endif
+

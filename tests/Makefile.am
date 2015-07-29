@@ -7,6 +7,7 @@ check_PROGRAMS = func_test
 
 func_test_SOURCES =  BoundingBox.cpp \
 					 Line.cpp \
+					 OBJMaterialParser.cpp \
 					 OBJParser.cpp \
 					 Ray.cpp 
 
