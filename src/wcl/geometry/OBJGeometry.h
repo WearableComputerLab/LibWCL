@@ -82,8 +82,10 @@ namespace wcl
         std::vector<wcl::Vector> texcoords;
         std::vector<wcl::OBJFace* > faces;
         std::vector<wcl::OBJGroup *>groups;
+        std::vector<wcl::OBJGroup *>objects;
         std::vector<wcl::OBJSmoothing *>smoothing;
         std::map<std::string, wcl::OBJGroup *>groupsMap;
+        std::map<std::string, wcl::OBJGroup *>objectsMap;
         std::map<std::string, wcl::OBJSmoothing *>smoothingMap;
         MaterialLibrary materials;
 

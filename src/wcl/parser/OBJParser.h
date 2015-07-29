@@ -76,6 +76,7 @@ namespace wcl {
             OBJGeometry obj;
             OBJMaterial* currentMaterial;
             OBJGroup* currentGroup;
+            OBJGroup* currentObject;
             OBJSmoothing* currentSmoothing;
 
 

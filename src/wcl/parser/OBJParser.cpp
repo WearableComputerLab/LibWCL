@@ -157,6 +157,19 @@ namespace wcl {
                 obj.normals.push_back(v);
                 }
                 break;
+            case OBJECT: 
+                {
+                string name;
+                tokens >> name;
+                OBJGroup* g = new OBJGroup();
+                g->name = name;
+                obj.objects.push_back(g);
+                obj.objectsMap[name] = g;
+                currentObject = g;
+                }
+                break;
+
+
             case TEXCOORD: 
                 {
                 wcl::Vector v = parseVector(tokens);
