@@ -26,8 +26,10 @@
 
 
 #include "OBJParser.h"
+#include "OBJMaterialParser.h"
 
 #include <fstream>
+#include <boost/filesystem.hpp>
 
 namespace wcl {
 
@@ -39,6 +41,9 @@ namespace wcl {
         currentSmoothing = NULL;
 
         using namespace std;
+
+        boost::filesystem::path absPath = boost::filesystem::complete(filename);
+        base = absPath.remove_filename().string();
 
         ifstream in(filename.c_str());
         if (in.fail()) {
@@ -123,7 +128,8 @@ namespace wcl {
                     }
                 }
                 break;
-            case Group:
+            case GROUP:
+                {
                 string name;
                 tokens >> name;
                 OBJGroup* g = new OBJGroup();
@@ -131,8 +137,19 @@ namespace wcl {
                 obj.groups.push_back(g);
                 obj.groupsMap[name] = g;
                 currentGroup = g;
+                }
                 break;
-
+                
+            case MTLLIB:
+                {
+                OBJMaterialParser p;
+                string filename;
+                tokens >> filename;
+                stringstream fullpath;
+                fullpath << base << filename;
+                obj.materials = p.parse(fullpath.str());
+                }
+                break;
 
             case NORMAL: 
                 {

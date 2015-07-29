@@ -69,6 +69,10 @@ namespace wcl {
             
         private:
 
+            // the base directory. We need this because OBJ assumes all assets
+            // (textures, material libraries, etc) reside in the same
+            // directory, which may not be the CWD!
+            std::string base;
             OBJGeometry obj;
             OBJMaterial* currentMaterial;
             OBJGroup* currentGroup;
