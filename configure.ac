@@ -209,6 +209,24 @@ PKG_CHECK_MODULES(BLUETOOTH, bluez,
 # LEVEL 3 CHECKS
 #
 
+# If we're on ubuntu, check the version...
+AC_CHECK_PROG(LSB_RELEASE,lsb_release,1,0)
+if test $LSB_RELEASE = "1"; then
+    distro=`lsb_release -si`
+    version=`lsb_release -sr`
+    if test $distro = "Ubuntu"; then
+        if test $version = "14.04"; then 
+            PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lboost_filesystem -lboost_system"
+        else 
+            PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lboost_filesystem-mt -lboost_system-mt"
+        fi
+    else
+        PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lboost_filesystem-mt -lboost_system-mt"
+    fi
+else
+    PKGCONFIG_OTHERLIBS="$PKGCONFIG_OTHERLIBS -lboost_filesystem-mt -lboost_system-mt"
+fi
+
 # UVC Cameras only work on Linux..
 if test "x$platform_linux" != "xyes"; then
 	enable_camera_uvc="no"
