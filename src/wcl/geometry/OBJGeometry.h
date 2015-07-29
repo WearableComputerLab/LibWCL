@@ -60,7 +60,7 @@ namespace wcl
 	{
         OBJMaterial *material;
         OBJSmoothing *smoothing;
-        std::vector<OBJVertex *> verts;
+        std::vector<OBJVertex*> verts;
 	};
 
 	struct WCL_API OBJSmoothing
@@ -80,6 +80,7 @@ namespace wcl
         std::vector<wcl::Vector> points;
         std::vector<wcl::Vector> normals;
         std::vector<wcl::Vector> texcoords;
+        std::vector<wcl::OBJFace* > faces;
         std::vector<wcl::OBJGroup *>groups;
         std::vector<wcl::OBJSmoothing *>smoothing;
         std::map<std::string, wcl::OBJGroup *>groupsMap;

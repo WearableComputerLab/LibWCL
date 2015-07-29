@@ -61,7 +61,6 @@ namespace wcl {
             };
 
             wcl::OBJGeometry* parse(const std::string& filename);
-            wcl::MaterialLibrary parseMaterialLibrary(const std::string& filename);
 
             void parseLine(const std::string& line, OBJGeometry& obj);
             LineType getLineType(const std::string& token) const;

@@ -102,8 +102,37 @@ namespace wcl {
         tokens >> lineType;
         switch (getLineType(lineType)) {
             case FACE:
-
+                {
+                    OBJFace* f = new OBJFace();;
+                    obj.faces.push_back(f);
+                    if (currentGroup != NULL) {
+                        currentGroup->faces.push_back(f);
+                    }
+                    if (currentSmoothing != NULL) {
+                        currentSmoothing->faces.push_back(f);
+                    }
+                    f->material = currentMaterial;
+                    string token;
+                    tokens >> token;
+                    while (token != "") {
+                        f->verts.push_back( new OBJVertex(parseVertex(token)) );
+                        tokens >> token;
+                    }
+                    if (f->verts.size() < 3) {
+                        throw ParserException("Less than 3 vertices given for face");
+                    }
+                }
                 break;
+            case Group:
+                string name;
+                tokens >> name;
+                OBJGroup* g = new OBJGroup();
+                g->name = name;
+                obj.groups.push_back(g);
+                obj.groupsMap[name] = g;
+                currentGroup = g;
+                break;
+
 
             case NORMAL: 
                 {
