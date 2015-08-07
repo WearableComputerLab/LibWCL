@@ -109,9 +109,11 @@ namespace wcl {
             case FACE:
                 {
                     OBJFace* f = new OBJFace();;
-                    obj.faces.push_back(f);
                     if (currentGroup != NULL) {
                         currentGroup->faces.push_back(f);
+                    }
+                    else {
+                        throw ParserException("Faces must be contained in a group!");
                     }
                     if (currentSmoothing != NULL) {
                         currentSmoothing->faces.push_back(f);
@@ -174,6 +176,13 @@ namespace wcl {
                 {
                 wcl::Vector v = parseVector(tokens);
                 obj.texcoords.push_back(v);
+                }
+                break;
+            case USEMTL: 
+                {
+                    string name;
+                    tokens >> name;
+                    currentMaterial = obj.materials.getMaterial(name);
                 }
                 break;
             case VERTEX:

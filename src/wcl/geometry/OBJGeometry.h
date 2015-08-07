@@ -80,7 +80,6 @@ namespace wcl
         std::vector<wcl::Vector> points;
         std::vector<wcl::Vector> normals;
         std::vector<wcl::Vector> texcoords;
-        std::vector<wcl::OBJFace* > faces;
         std::vector<wcl::OBJGroup *>groups;
         std::vector<wcl::OBJGroup *>objects;
         std::vector<wcl::OBJSmoothing *>smoothing;
